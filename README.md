@@ -135,7 +135,7 @@ pytest
 ## 7. Governance Philosophy
 
 ### Backend Authority
-The Interface State Governor (`backend/core/interface_state_governor.py`) is the single source of truth for all user state. No frontend code may:
+The Interface State Governor (`backend/core/interface_control/`) is the single source of truth for all user state. No frontend code may:
 - Modify user progression state
 - Determine advancement eligibility
 - Store authoritative user data
