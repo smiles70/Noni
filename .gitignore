@@ -49,3 +49,7 @@ htmlcov/
 # Logs
 *.log
 logs/
+
+# Node
+node_modules/
+frontend/dist/

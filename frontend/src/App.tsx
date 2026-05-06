@@ -1,17 +1,11 @@
 /**
- * Noni Frontend - Passive rendering placeholder
- * No business logic. No state management.
- * Backend-governed progression only.
+ * Noni - root component.
+ * Renders backend-governed UI states only.
  */
+import CurriculumRenderer from "./components/CurriculumRenderer";
 
-// Placeholder - UI implementation will follow architectural rules
-const App = () => {
-  return (
-    <div>
-      <h1>Noni</h1>
-      <p>Geragogy-grounded AI learning system</p>
-    </div>
-  );
-};
+function App() {
+  return <CurriculumRenderer />;
+}
 
 export default App;
