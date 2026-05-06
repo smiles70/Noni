@@ -1,6 +1,8 @@
 # Noni — Progress
 
-## Active Sprint: Progress Closeout
+## Active Sprint
+
+None. Progress Closeout sprint completed (tag sprint-closeout-v1).
 
 See SPRINT.md for the active plan.
 

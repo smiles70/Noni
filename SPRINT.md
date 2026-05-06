@@ -1,4 +1,4 @@
-# Sprint: Progress Closeout
+# Sprint: Progress Closeout (CLOSED)
 
 Goal: close every "Still Pending" item in PROGRESS.md.
 
