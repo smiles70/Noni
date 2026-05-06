@@ -1,4 +1,5 @@
 """HTTP route tests via FastAPI TestClient."""
+
 import pytest
 from fastapi.testclient import TestClient
 

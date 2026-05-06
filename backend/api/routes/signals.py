@@ -1,4 +1,5 @@
 """Signals API - ingest user actions and telemetry; never returns UI."""
+
 from fastapi import APIRouter
 from backend.models.user import UserAction
 from backend.services.telemetry import record

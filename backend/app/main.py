@@ -4,6 +4,7 @@ Noni - Geragogy-grounded AI learning system for older adults.
 All UI state transitions are governed by the Interface State Control
 System (ISCS). Subsystems emit signals; the ISCS decides UI states.
 """
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -52,4 +53,7 @@ async def health_check():
 
 @app.get("/")
 async def root():
-    return {"message": f"{settings.PROJECT_NAME} backend running", "version": settings.VERSION}
+    return {
+        "message": f"{settings.PROJECT_NAME} backend running",
+        "version": settings.VERSION,
+    }

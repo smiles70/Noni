@@ -1,5 +1,7 @@
 """ISCS - State Estimator (uncertainty-constrained)."""
+
 import numpy as np
+
 
 class InterfaceStateEstimator:
     def __init__(self, dim: int = 3) -> None:

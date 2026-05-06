@@ -1,4 +1,6 @@
 """NLU - intent proposals only. System never acts without confirmation."""
+
+
 def interpret_text(command: str) -> dict:
     cmd = command.lower()
     if "add" in cmd:

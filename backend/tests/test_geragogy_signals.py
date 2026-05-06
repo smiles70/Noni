@@ -1,4 +1,5 @@
 """Tests for the Geragogy signal model."""
+
 from backend.core.geragogy_engine.cognitive_model import GeragogySignalModel
 from backend.models.user import UserAction
 

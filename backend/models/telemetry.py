@@ -1,4 +1,5 @@
 """Telemetry ORM model. Append-only audit log."""
+
 from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, DateTime, JSON
 

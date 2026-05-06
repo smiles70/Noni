@@ -1,4 +1,5 @@
 """Noni - System configuration via pydantic-settings."""
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,7 +11,9 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True, extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=True, extra="ignore"
+    )
 
 
 settings = Settings()
