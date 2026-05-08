@@ -1,18 +1,17 @@
-# Sprint 3: Golden Landing Flow Contract (CLOSED)
+# Sprint 4: Engineering Foundations (CLOSED)
 
-Goal: lock the Golden Landing Flow as canonical, scaffold its backend contract without finalizing copy or UI.
+Goal: enforce quality gates and adopt production-grade migration discipline.
 
 ## Phases
 
-- 3.1 Spec doc (`docs/flows/golden-landing-flow.md`) + first ADR (`docs/decisions/0001-landing-flow.md`)
-- 3.2 `LandingStep` model + `LANDING_STEPS` (8 steps, sequence 0-7, no display copy)
-- 3.3 `GET /api/landing/steps` and `GET /api/landing/steps/{id}` mounted in `main.py`
-- 3.4 Contract tests: data integrity, exit_always_safe invariant, requires_user_action only for step 4+, no display copy finalized
-- 3.5 Closeout: PROGRESS, commit, tag `sprint-3-landing-contract-v1`
+- 4.1 Pre-commit hooks (ruff + black + standard hygiene hooks)
+- 4.2 GitHub Actions CI workflow (backend + frontend, with Postgres service)
+- 4.3 Alembic migrations replacing `create_all()`; lifespan runs `upgrade head`
+- 4.4 ADRs 0002-0005 (Postgres, Vite+TS, tooling, Alembic)
+- 4.5 Closeout
 
-## Out of Scope (deferred)
+## Deferred (will surface in next sprint planning)
 
-- Final user-facing copy (spec explicitly forbids "copy finalization" here)
-- UI / visual design / frontend rendering of landing steps
-- Per-learner persistence of landing position (requires Auth sprint)
-- Telemetry hooks for steps 4+ (requires consent / opt-in design)
+- Sprint 5 (Landing Copy & UI): requires draft copy decision (you write / I draft / we co-author?)
+- Sprint 6 (Auth + Per-Learner State): requires auth provider choice (Auth0 / Clerk / Cognito / self-hosted JWT?)
+- Sprint 7 (Real Claude Integration): requires Anthropic API key

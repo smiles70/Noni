@@ -30,3 +30,17 @@ def init_db() -> None:
     from backend.models.telemetry import TelemetryEvent  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+
+
+def run_migrations() -> None:
+    """Apply Alembic migrations on startup.
+
+    Replaces the previous Base.metadata.create_all() approach.
+    See ADR 0005 for rationale.
+    """
+    from alembic import command
+    from alembic.config import Config
+
+    cfg = Config("alembic.ini")
+    cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+    command.upgrade(cfg, "head")

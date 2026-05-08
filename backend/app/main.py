@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.core.config import settings
-from backend.core.database import init_db
+from backend.core.database import run_migrations
 from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.signals import router as signals_router
 from backend.api.routes.landing import router as landing_router
@@ -18,7 +18,7 @@ from backend.api.routes.landing import router as landing_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
+    run_migrations()
     yield
 
 

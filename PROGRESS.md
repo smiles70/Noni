@@ -2,46 +2,46 @@
 
 ## Active Sprint
 
-None. **Sprint 3: Golden Landing Flow Contract completed** (tag `sprint-3-landing-contract-v1`).
+None. **Sprint 4: Engineering Foundations completed** (tag `sprint-4-engineering-foundations-v1`).
 
 ## Out of Scope (deferred)
 
 - [ ] Real Claude API integration (currently mocked)
 - [ ] Authentication / user accounts
-- [ ] Production deployment / CI-CD pipeline
-- [ ] Alembic migrations
+- [ ] Production deployment / CI-CD pipeline beyond GitHub Actions config
 - [ ] Real-time durable telemetry export
 - [ ] Accessibility audit (WCAG AA, axe-core)
 - [ ] Internationalization
-- [ ] Pre-commit hooks
-- [ ] Container scanning
+- [ ] Container scanning (Trivy/Grype)
 - [ ] Bundle size budgets
-- [ ] Browser observability
+- [ ] Browser observability (Sentry / Datadog RUM)
 - [ ] Feature flags
 - [ ] E2E tests (Playwright)
 - [ ] Design system / component library
-- [ ] Frontend UI to navigate units (currently only /what-is-ai is rendered)
-- [ ] Landing flow UI + final copy (spec is locked; copy/visual sprint pending)
+- [ ] Frontend UI to navigate units
+- [ ] Landing flow UI + final copy
 
 ## Completed
 
-### Initial Scaffolding
-- [x] Python 3.12 venv; backend + dev deps
-- [x] Repo structure; ARCHITECTURE.md (10 rules); initial README
+### Sprint 0: Initial Scaffolding
+- [x] Python 3.12 venv; backend + dev deps; ARCHITECTURE.md (10 rules)
 
 ### Sprint 1: Progress Closeout (tag `sprint-closeout-v1`)
-- [x] Foundations, Database, Tests (19), Frontend (Vite+React+TS), Cleanup
+- [x] Foundations, Postgres, 19 tests, Vite+React+TS frontend, lint/format/CORS
 
 ### Sprint 2: Curriculum Expansion (tag `sprint-2-curriculum-v1`)
 - [x] Units 2-4 via canonical ISCS; 8 new tests; remediated drop-in block
 
 ### Sprint 3: Golden Landing Flow Contract (tag `sprint-3-landing-contract-v1`)
-- [x] `docs/flows/golden-landing-flow.md` canonical product spec
-- [x] `docs/decisions/0001-landing-flow.md` first ADR
-- [x] `LandingStep` model + 8 steps (sequence 0-7)
-- [x] `GET /api/landing/steps` and `GET /api/landing/steps/{id}`
-- [x] Contract tests (every step `exit_always_safe=True`; no user action before step 4; no display copy finalized)
-- [x] Total tests: 38
+- [x] Spec doc, ADR 0001, LandingStep model, /api/landing routes, 11 tests
+
+### Sprint 4: Engineering Foundations (tag `sprint-4-engineering-foundations-v1`)
+- [x] Pre-commit hooks (ruff, black, standard hooks)
+- [x] GitHub Actions CI (.github/workflows/ci.yml; backend lint+test+migrations, frontend type-check+build)
+- [x] Alembic migrations (env.py reads settings; baseline migration; stamp head)
+- [x] Lifespan switched from create_all() to alembic upgrade head
+- [x] ADRs 0002-0005 (Postgres, Vite+TS, tooling stack, Alembic)
+- [x] All tests still passing under new alembic-driven flow
 
 ## Known Environment Quirks
 

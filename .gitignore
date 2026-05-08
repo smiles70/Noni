@@ -41,3 +41,4 @@ frontend/vite.config.js
 
 # Logs
 *.log
+alembic/__pycache__/
