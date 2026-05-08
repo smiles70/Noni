@@ -13,6 +13,7 @@ from backend.core.config import settings
 from backend.core.database import init_db
 from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.signals import router as signals_router
+from backend.api.routes.landing import router as landing_router
 
 
 @asynccontextmanager
@@ -40,6 +41,7 @@ app.add_middleware(
 
 app.include_router(curriculum_router, prefix="/api/curriculum", tags=["curriculum"])
 app.include_router(signals_router, prefix="/api/signals", tags=["signals"])
+app.include_router(landing_router, prefix="/api/landing", tags=["landing"])
 
 
 @app.get("/health")

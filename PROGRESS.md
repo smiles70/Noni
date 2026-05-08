@@ -2,26 +2,26 @@
 
 ## Active Sprint
 
-None. **Sprint 2: Curriculum Expansion completed** (tag `sprint-2-curriculum-v1`).
+None. **Sprint 3: Golden Landing Flow Contract completed** (tag `sprint-3-landing-contract-v1`).
 
 ## Out of Scope (deferred)
 
 - [ ] Real Claude API integration (currently mocked)
-- [ ] Authentication / user accounts (blocks per-learner curriculum cursor)
-- [ ] Production deployment / CI-CD pipeline (GitHub Actions)
+- [ ] Authentication / user accounts
+- [ ] Production deployment / CI-CD pipeline
 - [ ] Alembic migrations
 - [ ] Real-time durable telemetry export
 - [ ] Accessibility audit (WCAG AA, axe-core)
 - [ ] Internationalization
 - [ ] Pre-commit hooks
-- [ ] Container scanning (Trivy/Grype)
+- [ ] Container scanning
 - [ ] Bundle size budgets
-- [ ] Browser observability (Sentry / Datadog RUM)
+- [ ] Browser observability
 - [ ] Feature flags
 - [ ] E2E tests (Playwright)
-- [ ] ADR directory
 - [ ] Design system / component library
 - [ ] Frontend UI to navigate units (currently only /what-is-ai is rendered)
+- [ ] Landing flow UI + final copy (spec is locked; copy/visual sprint pending)
 
 ## Completed
 
@@ -30,19 +30,18 @@ None. **Sprint 2: Curriculum Expansion completed** (tag `sprint-2-curriculum-v1`
 - [x] Repo structure; ARCHITECTURE.md (10 rules); initial README
 
 ### Sprint 1: Progress Closeout (tag `sprint-closeout-v1`)
-- [x] Phase 1 Foundations: git, .env, pydantic-settings, retired duplicate ISG
-- [x] Phase 2 Database: docker-compose Postgres, SQLAlchemy, TelemetryEvent
-- [x] Phase 3 Tests: 19 tests across ISCS, signals, routes
-- [x] Phase 4 Frontend: Vite+React+TS strict, axios, CurriculumRenderer, CORS
-- [x] Phase 5 Cleanup: lint/format pass, README, gitignore hardened
+- [x] Foundations, Database, Tests (19), Frontend (Vite+React+TS), Cleanup
 
 ### Sprint 2: Curriculum Expansion (tag `sprint-2-curriculum-v1`)
-- [x] CurriculumUnit model with structured CurriculumPage pages
-- [x] Three units of content: "What Is Claude", "How to Use Claude Safely", "Claude-Based Projects"
-- [x] Endpoints: GET /api/curriculum/units, /units/{id}, /next-unit
-- [x] Server-side ISCS-only selection (no client-supplied signals)
-- [x] Tests: data integrity + route contracts (8 new tests)
-- [x] All endpoints route through canonical ISCS
+- [x] Units 2-4 via canonical ISCS; 8 new tests; remediated drop-in block
+
+### Sprint 3: Golden Landing Flow Contract (tag `sprint-3-landing-contract-v1`)
+- [x] `docs/flows/golden-landing-flow.md` canonical product spec
+- [x] `docs/decisions/0001-landing-flow.md` first ADR
+- [x] `LandingStep` model + 8 steps (sequence 0-7)
+- [x] `GET /api/landing/steps` and `GET /api/landing/steps/{id}`
+- [x] Contract tests (every step `exit_always_safe=True`; no user action before step 4; no display copy finalized)
+- [x] Total tests: 38
 
 ## Known Environment Quirks
 
