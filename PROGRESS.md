@@ -1,5 +1,9 @@
 # Noni - Progress
 
+## Deferred Decisions
+
+See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle of 3rd-party / vendor decisions explicitly held for a single later pass (auth, real Claude, email, hosting, observability, etc.).
+
 ## Active Sprint
 None. Sprint 5: Landing Copy + Page Rendering completed (tag sprint-5-landing-copy-v1).
 
