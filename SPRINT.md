@@ -1,19 +1,10 @@
-# Sprint 11: Containerization (CLOSED)
+# Sprint 12: Cross-browser E2E (CLOSED)
 
-Tag: `sprint-11-containers-v1`. Adds production-grade multi-stage Dockerfiles for backend + frontend and wires them into compose so `docker compose up --build` produces a runnable Noni stack from a clean clone.
+Tag: `sprint-12-multi-browser-v1`. Adds firefox + webkit to the Playwright matrix so every push/PR runs the WCAG 2.1 AA scan against three engines.
 
 ## Phases
 
-- 11.1 `backend/Dockerfile` (multi-stage, python:3.12-slim, non-root user, healthcheck)
-- 11.2 `frontend/Dockerfile` (multi-stage, node:18-alpine -> nginx:1.27-alpine) + `nginx.conf` (SPA fallback, asset caching)
-- 11.3 `docker-compose.yml` extended with backend + frontend services and proper depends_on/healthcheck wiring
-- 11.4 `.dockerignore` files for both contexts
-- 11.5 ADR 0010: container strategy
-- 11.6 README updated with Docker run section
-- 11.7 Closeout
-
-## Out of scope
-
-- Image registry / hosting vendor selection (`docs/deferred-decisions.md`)
-- Container scanning (Trivy / Grype / Snyk)
-- Pinning a `requirements.txt` so dev/CI/Docker share an exact version set (cleanup follow-on)
+- 12.1 Add `firefox` and `webkit` projects to `frontend/playwright.config.ts`
+- 12.2 Update CI `e2e` job to install all three browsers (still cached as a unit)
+- 12.3 ADR 0011
+- 12.4 Closeout

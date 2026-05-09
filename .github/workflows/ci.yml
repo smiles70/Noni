@@ -133,13 +133,13 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
-      - name: Install Playwright browser (chromium) + OS deps
+      - name: Install Playwright browsers (chromium + firefox + webkit) + OS deps
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium firefox webkit
         working-directory: frontend
       - name: Install only OS deps when browser is cached
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+        run: npx playwright install-deps chromium firefox webkit
         working-directory: frontend
 
       # --- E2E + axe ---

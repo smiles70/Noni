@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 11: Containerization completed** (tag `sprint-11-containers-v1`).
+None. **Sprint 12: Cross-browser E2E completed** (tag `sprint-12-multi-browser-v1`).
 
 ## Completed
 
@@ -39,6 +39,11 @@ None. **Sprint 11: Containerization completed** (tag `sprint-11-containers-v1`).
   - Multi-stage frontend Dockerfile (node:18-alpine -> nginx:1.27-alpine) + SPA fallback nginx.conf
   - docker-compose.yml extended; `docker compose up --build` boots the full stack
   - ADR 0010
+- Sprint 12: Cross-browser E2E (`sprint-12-multi-browser-v1`)
+  - Playwright matrix expanded to chromium + firefox + webkit
+  - CI `e2e` job installs all 3 browsers (cached as a unit by lockfile hash)
+  - WCAG 2.1 AA axe scan now runs against 3 rendering engines per push/PR
+  - ADR 0011
 
 ## Out of Scope (deferred)
 
@@ -53,7 +58,6 @@ None. **Sprint 11: Containerization completed** (tag `sprint-11-containers-v1`).
 - Feature flags
 - Manual screen-reader audit (NVDA/JAWS/VoiceOver)
 - Design system / component library
-- Cross-browser E2E (Firefox + WebKit) — chromium only for now
 - Copy for Golden Flow Steps 5-7 (post-interaction; needs real Claude)
 
 ## Known Environment Quirks

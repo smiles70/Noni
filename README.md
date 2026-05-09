@@ -334,7 +334,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-8-ci-e2e-v1` | CI Playwright Integration |
 | `sprint-9-curriculum-a11y-v1` | Curriculum View Accessibility Polish |
 | `sprint-10-telemetry-richness-v1` | Telemetry Signal Richness |
-| `sprint-11-containers-v1` | Containerization (this sprint) |
+| `sprint-11-containers-v1` | Containerization |
+| `sprint-12-multi-browser-v1` | Cross-browser E2E (this sprint) |
 
 ---
 
