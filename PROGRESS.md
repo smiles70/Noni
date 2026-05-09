@@ -2,11 +2,11 @@
 
 ## Deferred Decisions
 
-See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle of 3rd-party / vendor decisions explicitly held for a single later pass (auth, real Claude, email, hosting, observability, etc.).
+See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle of 3rd-party / vendor decisions held for a single later pass.
 
 ## Active Sprint
 
-None. **Sprint 6: Hardening & Coverage completed** (tag `sprint-6-hardening-coverage-v1`).
+None. **Sprint 7: Documentation & Developer Onboarding completed** (tag `sprint-7-docs-onboarding-v1`).
 
 ## Completed
 
@@ -17,12 +17,10 @@ None. **Sprint 6: Hardening & Coverage completed** (tag `sprint-6-hardening-cove
 - Sprint 4: Engineering Foundations (`sprint-4-engineering-foundations-v1`)
 - Sprint 5: Landing Copy + Page Rendering (`sprint-5-landing-copy-v1`)
 - Sprint 6: Hardening & Coverage (`sprint-6-hardening-coverage-v1`)
-  - Curriculum Units 5-7: Verifying Suggestions, When to Ignore, Recovering from Mistakes
-  - Telemetry export: `/api/telemetry/export` (JSON) and `/api/telemetry/export.csv`
-  - Accessibility: `:focus-visible` rings, larger-text toggle (localStorage-persisted), `prefers-reduced-motion`
-  - Playwright + axe-playwright E2E suite at `frontend/e2e/` with 4 specs including WCAG 2.1 AA scan
-  - ADRs 0007 (accessibility) + 0008 (E2E + axe)
-  - 49 backend tests; frontend builds 189.70 kB / 63.59 kB gzipped
+- Sprint 7: Documentation & Developer Onboarding (`sprint-7-docs-onboarding-v1`)
+  - README rewritten end-to-end (current setup, structure, API surface, dev workflow, sprint history, ADR + deferred-decisions pointers)
+  - CONTRIBUTING.md added (sprint workflow, ADR convention, how-to guides, commit hygiene)
+  - All commands in README smoke-tested (pytest passes, frontend builds)
 
 ## Out of Scope (deferred)
 
