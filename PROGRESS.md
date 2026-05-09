@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 12: Cross-browser E2E completed** (tag `sprint-12-multi-browser-v1`).
+None. **Sprint 13: Sign-up -> First Safe Win Content completed** (tag `sprint-13-first-win-content-v1`).
 
 ## Completed
 
@@ -44,6 +44,11 @@ None. **Sprint 12: Cross-browser E2E completed** (tag `sprint-12-multi-browser-v
   - CI `e2e` job installs all 3 browsers (cached as a unit by lockfile hash)
   - WCAG 2.1 AA axe scan now runs against 3 rendering engines per push/PR
   - ADR 0011
+- Sprint 13: Sign-up -> First Safe Win Content (`sprint-13-first-win-content-v1`)
+  - `backend/content/signup_first_win.py` + Pydantic schema (`backend/models/signup_first_win.py`)
+  - `GET /api/landing/first-win` endpoint
+  - 5 new tests including no-urgency / reversible-choice invariants (58/58 passing)
+  - Closes the previously deferred 'Copy for Golden Flow Steps 5-7' item
 
 ## Out of Scope (deferred)
 
@@ -58,7 +63,6 @@ None. **Sprint 12: Cross-browser E2E completed** (tag `sprint-12-multi-browser-v
 - Feature flags
 - Manual screen-reader audit (NVDA/JAWS/VoiceOver)
 - Design system / component library
-- Copy for Golden Flow Steps 5-7 (post-interaction; needs real Claude)
 
 ## Known Environment Quirks
 

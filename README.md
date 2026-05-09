@@ -309,6 +309,7 @@ npm run test:e2e           # runs all 4 specs including WCAG 2.1 AA scan
 | GET | `/api/landing/steps` | All 8 Golden Flow steps (conceptual model) |
 | GET | `/api/landing/steps/{id}` | One Golden Flow step |
 | GET | `/api/landing/page` | User-facing landing-page copy |
+| GET | `/api/landing/first-win` | Typed Sign-up -> First Safe Win content (Golden Flow Steps 4-6) |
 | GET | `/api/telemetry/export` | Telemetry dump (JSON) |
 | GET | `/api/telemetry/export.csv` | Telemetry dump (CSV) |
 
@@ -335,7 +336,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-9-curriculum-a11y-v1` | Curriculum View Accessibility Polish |
 | `sprint-10-telemetry-richness-v1` | Telemetry Signal Richness |
 | `sprint-11-containers-v1` | Containerization |
-| `sprint-12-multi-browser-v1` | Cross-browser E2E (this sprint) |
+| `sprint-12-multi-browser-v1` | Cross-browser E2E |
+| `sprint-13-first-win-content-v1` | Sign-up -> First Safe Win content (this sprint) |
 
 ---
 
