@@ -4,6 +4,7 @@
  */
 import { useEffect, useState } from "react";
 import { loadLandingPage, LandingPageContent } from "../api/landing";
+import { isLargeText, toggleLargeText } from "../largeText";
 
 interface Props {
   onBegin: () => void;
@@ -19,39 +20,48 @@ const PAGE: React.CSSProperties = {
   margin: "0 auto",
   fontSize: "1.25rem",
   lineHeight: 1.6,
-  fontFamily: "system-ui, -apple-system, sans-serif",
-  color: "#1a1a1a",
+  color: "var(--noni-text)",
 };
 
 const PRIMARY_BTN: React.CSSProperties = {
   fontSize: "1.25rem",
   padding: "0.9rem 1.6rem",
-  background: "#2a5d8f",
+  background: "var(--noni-accent)",
   color: "white",
-  border: "none",
+  border: "2px solid var(--noni-accent)",
   borderRadius: "6px",
-  cursor: "pointer",
+  fontWeight: 600,
 };
 
 const SECONDARY_BTN: React.CSSProperties = {
   fontSize: "1.25rem",
   padding: "0.9rem 1.6rem",
   background: "transparent",
-  color: "#2a5d8f",
-  border: "2px solid #2a5d8f",
+  color: "var(--noni-accent)",
+  border: "2px solid var(--noni-accent)",
   borderRadius: "6px",
-  cursor: "pointer",
+  fontWeight: 600,
+};
+
+const TEXT_TOGGLE: React.CSSProperties = {
+  fontSize: "1rem",
+  padding: "0.4rem 0.9rem",
+  background: "transparent",
+  color: "var(--noni-accent)",
+  border: "1px solid var(--noni-accent)",
+  borderRadius: "4px",
 };
 
 const CTA_NOTE: React.CSSProperties = {
   fontSize: "1rem",
-  color: "#555",
+  color: "#333",
   marginTop: "0.5rem",
 };
 
 export default function LandingPage({ onBegin }: Props) {
   const [content, setContent] = useState<LandingPageContent | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [largeText, setLargeText] = useState<boolean>(isLargeText());
 
   useEffect(() => {
     loadLandingPage()
@@ -61,9 +71,11 @@ export default function LandingPage({ onBegin }: Props) {
       );
   }, []);
 
+  const handleToggleText = () => setLargeText(toggleLargeText());
+
   if (error) {
     return (
-      <main style={PAGE}>
+      <main style={PAGE} aria-live="polite">
         <p>We are having trouble loading this page. Please try again in a moment.</p>
       </main>
     );
@@ -71,7 +83,7 @@ export default function LandingPage({ onBegin }: Props) {
 
   if (!content) {
     return (
-      <main style={PAGE}>
+      <main style={PAGE} aria-live="polite">
         <p>Loading...</p>
       </main>
     );
@@ -84,11 +96,24 @@ export default function LandingPage({ onBegin }: Props) {
 
   return (
     <main style={PAGE}>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+        <button
+          type="button"
+          onClick={handleToggleText}
+          style={TEXT_TOGGLE}
+          aria-pressed={largeText}
+        >
+          {largeText ? "Standard text" : "Larger text"}
+        </button>
+      </div>
+
       <header>
         <h1 style={{ fontSize: "2.25rem", marginBottom: "0.5rem" }}>
           {content.hero.headline}
         </h1>
-        <p style={{ fontSize: "1.35rem", color: "#444" }}>{content.hero.subheadline}</p>
+        <p style={{ fontSize: "1.35rem", color: "var(--noni-muted)" }}>
+          {content.hero.subheadline}
+        </p>
       </header>
 
       <section aria-labelledby="introduction-heading" style={{ marginTop: "3rem" }}>
@@ -145,7 +170,7 @@ export default function LandingPage({ onBegin }: Props) {
       <footer
         style={{
           marginTop: "3rem",
-          borderTop: "1px solid #e5e5e5",
+          borderTop: "1px solid var(--noni-border)",
           paddingTop: "2rem",
         }}
       >

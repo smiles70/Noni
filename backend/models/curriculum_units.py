@@ -1,4 +1,4 @@
-"""Curriculum Units 2-4 data model.
+"""Curriculum Units 2-7 data model.
 
 Pure data. Selection of which page to render is performed by the
 canonical ISCS (`backend.core.interface_control.state_selector`).
@@ -100,6 +100,90 @@ UNITS: List[CurriculumUnit] = [
         ],
         max_complexity=3,
         stability_threshold=0.8,
+    ),
+    CurriculumUnit(
+        id="unit-5",
+        title="Verifying Claude's Suggestions",
+        description="Build the habit of checking what Claude says before acting on it.",
+        pages=[
+            CurriculumPage(
+                id="u5-p1",
+                title="Read Before You Use",
+                content=[
+                    "Always read what Claude writes before you use it.",
+                    "Take your time. There is no rush.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u5-p2",
+                title="Compare With What You Know",
+                content=[
+                    "Compare Claude's answer to what you already know.",
+                    "If something feels off, set it aside.",
+                    "Ask Claude to explain its reasoning in simple words.",
+                ],
+                complexity=2,
+            ),
+        ],
+        max_complexity=2,
+        stability_threshold=1.0,
+    ),
+    CurriculumUnit(
+        id="unit-6",
+        title="When to Ignore Claude",
+        description="Recognize that your judgment matters more than any AI suggestion.",
+        pages=[
+            CurriculumPage(
+                id="u6-p1",
+                title="Your Judgment Comes First",
+                content=[
+                    "You are the decision-maker.",
+                    "Claude is only a helper.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u6-p2",
+                title="Signals to Pause",
+                content=[
+                    "Stop if anything feels rushed or unclear.",
+                    "Claude can be wrong. That is normal.",
+                    "Setting Claude aside is always a valid choice.",
+                ],
+                complexity=2,
+            ),
+        ],
+        max_complexity=2,
+        stability_threshold=1.0,
+    ),
+    CurriculumUnit(
+        id="unit-7",
+        title="Recovering from a Mistake",
+        description="Mistakes are part of learning. Practice making them small and easy to undo.",
+        pages=[
+            CurriculumPage(
+                id="u7-p1",
+                title="Mistakes Are Normal",
+                content=[
+                    "Everyone makes mistakes when learning something new.",
+                    "A mistake is information, not failure.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u7-p2",
+                title="Undoing and Stepping Back",
+                content=[
+                    "Most actions can be undone. Take your time to find the undo step.",
+                    "If something feels wrong, take a break.",
+                    "Come back when you are ready. Nothing is lost by waiting.",
+                ],
+                complexity=2,
+            ),
+        ],
+        max_complexity=2,
+        stability_threshold=0.9,
     ),
 ]
 

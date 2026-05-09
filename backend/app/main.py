@@ -14,6 +14,7 @@ from backend.core.database import run_migrations
 from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.signals import router as signals_router
 from backend.api.routes.landing import router as landing_router
+from backend.api.routes.telemetry_export import router as telemetry_export_router
 
 
 @asynccontextmanager
@@ -42,6 +43,7 @@ app.add_middleware(
 app.include_router(curriculum_router, prefix="/api/curriculum", tags=["curriculum"])
 app.include_router(signals_router, prefix="/api/signals", tags=["signals"])
 app.include_router(landing_router, prefix="/api/landing", tags=["landing"])
+app.include_router(telemetry_export_router, prefix="/api/telemetry", tags=["telemetry"])
 
 
 @app.get("/health")

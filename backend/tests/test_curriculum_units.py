@@ -16,7 +16,7 @@ def client():
 class TestUnitData:
     def test_three_units_present(self):
         ids = {u.id for u in UNITS}
-        assert ids == {"unit-2", "unit-3", "unit-4"}
+        assert ids == {"unit-2", "unit-3", "unit-4", "unit-5", "unit-6", "unit-7"}
 
     def test_each_unit_has_at_least_one_page(self):
         for u in UNITS:
@@ -39,7 +39,7 @@ class TestUnitsRoute:
         r = client.get("/api/curriculum/units")
         assert r.status_code == 200
         body = r.json()
-        assert len(body["units"]) == 3
+        assert len(body["units"]) == 6
         for u in body["units"]:
             for k in (
                 "id",
@@ -71,4 +71,11 @@ class TestUnitsRoute:
         body = r.json()
         for k in ("unit_id", "title", "stability", "reason"):
             assert k in body
-        assert body["unit_id"] in {"unit-2", "unit-3", "unit-4"}
+        assert body["unit_id"] in {
+            "unit-2",
+            "unit-3",
+            "unit-4",
+            "unit-5",
+            "unit-6",
+            "unit-7",
+        }

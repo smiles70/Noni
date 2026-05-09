@@ -1,0 +1,46 @@
+:root {
+  --noni-text: #1a1a1a;
+  --noni-muted: #444;
+  --noni-accent: #1f4670;
+  --noni-accent-hover: #14304d;
+  --noni-bg: #ffffff;
+  --noni-border: #c8c8c8;
+}
+
+html {
+  font-size: 100%;
+}
+
+html.large-text {
+  font-size: 125%;
+}
+
+body {
+  margin: 0;
+  background: var(--noni-bg);
+  color: var(--noni-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Visible focus ring for keyboard users (does not show on mouse click). */
+:focus-visible {
+  outline: 3px solid #ffbf47;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
