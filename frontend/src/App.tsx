@@ -1,6 +1,8 @@
 /**
  * Noni root component.
- * Default view is the landing page; primary CTA advances to the curriculum view.
+ * Landing is the default view; primary CTA advances to the curriculum view.
+ * Per the Reversibility architectural rule, the curriculum view exposes a
+ * "Return to start" affordance that brings the user back to landing.
  */
 import { useState } from "react";
 import LandingPage from "./components/LandingPage";
@@ -13,7 +15,7 @@ const App: React.FC = () => {
   if (view === "landing") {
     return <LandingPage onBegin={() => setView("curriculum")} />;
   }
-  return <CurriculumRenderer />;
+  return <CurriculumRenderer onReturn={() => setView("landing")} />;
 };
 
 export default App;

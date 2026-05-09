@@ -1,16 +1,11 @@
-# Sprint 8: CI Playwright Integration (CLOSED)
+# Sprint 9: Curriculum View Accessibility Polish (CLOSED)
 
-Tag: `sprint-8-ci-e2e-v1`. Closes the WCAG enforcement loop by running the Playwright + axe E2E suite on every push/PR in GitHub Actions.
+Tag: `sprint-9-curriculum-a11y-v1`. Brings CurriculumRenderer up to the same accessibility bar as LandingPage and enforces the Reversibility architectural rule in code.
 
 ## Phases
 
-- 8.1 New `e2e` job in `.github/workflows/ci.yml` - depends on backend + frontend, runs Postgres service, boots backend, health-checks `/health`, then runs E2E
-- 8.2 Playwright config made CI-aware (forbidOnly, retries=2, traces/screenshots on failure, no server reuse)
-- 8.3 Failure artifacts uploaded: HTML report + backend log
-- 8.4 Closeout
-
-## Out of scope
-
-- Cross-browser matrix (firefox/webkit) - chromium only for now
-- Vendor decisions (see `docs/deferred-decisions.md`)
-- Caching the backend Python deps separately (pip install is cheap on CI)
+- 9.1 Rewrite `CurriculumRenderer.tsx` with semantic landmarks, CSS variables, aria-live
+- 9.2 `onReturn` callback exposes a Return-to-start button (Reversibility rule)
+- 9.3 `App.tsx` wires the callback
+- 9.4 `frontend/e2e/curriculum.spec.ts`: 3 specs incl. axe WCAG 2.1 AA scan
+- 9.5 Closeout

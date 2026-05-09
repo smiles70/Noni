@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 8: CI Playwright Integration completed** (tag `sprint-8-ci-e2e-v1`).
+None. **Sprint 9: Curriculum View Accessibility Polish completed** (tag `sprint-9-curriculum-a11y-v1`).
 
 ## Completed
 
@@ -25,6 +25,10 @@ None. **Sprint 8: CI Playwright Integration completed** (tag `sprint-8-ci-e2e-v1
   - Playwright config now CI-aware: `forbidOnly`, retries=2, traces + screenshots on failure
   - Failure artifacts uploaded: HTML report + backend log (14-day retention)
   - WCAG 2.1 AA axe scan now enforced on every push/PR
+- Sprint 9: Curriculum View Accessibility Polish (`sprint-9-curriculum-a11y-v1`)
+  - CurriculumRenderer rewritten with semantic landmarks + CSS variables + aria-live
+  - Return-to-start affordance added (Reversibility rule enforced in code)
+  - 3 new E2E specs in `frontend/e2e/curriculum.spec.ts` including axe WCAG 2.1 AA scan
 
 ## Out of Scope (deferred)
 
