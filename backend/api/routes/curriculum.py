@@ -4,6 +4,10 @@ All page-level selection is performed by the canonical ISCS.
 Per ARCHITECTURE.md rule 1: no UI complexity decision is delegated
 to the client. Endpoints derive stability from the server-side
 `InterfaceStateEstimator` and never accept signals from the request body.
+
+Per ADR 0009, every ISCS decision is recorded to the telemetry table
+with promoted audit columns (request_path, stability, selected_state_id,
+decision_reason, max_complexity).
 """
 
 from fastapi import APIRouter, HTTPException
@@ -12,6 +16,7 @@ from backend.core.interface_control.state_estimator import InterfaceStateEstimat
 from backend.core.interface_control.stability_metric import compute_stability
 from backend.core.interface_control.state_selector import select_ui_state
 from backend.models.curriculum_units import UNITS, get_unit
+from backend.services import telemetry as telemetry_service
 
 router = APIRouter()
 estimator = InterfaceStateEstimator()
@@ -26,6 +31,15 @@ def _current_stability() -> float:
     """
     _, cov = estimator.update([0.0, 0.0, 0.0])
     return compute_stability(cov)
+
+
+def _selected_id(approved) -> str:
+    """Extract a stable id from whatever shape select_ui_state returned."""
+    if isinstance(approved, dict):
+        sid = approved.get("id")
+        if isinstance(sid, str):
+            return sid
+    return "unknown"
 
 
 @router.get("/what-is-ai")
@@ -51,7 +65,17 @@ def what_is_ai() -> dict:
             "complexity": 2,
         },
     ]
+    max_complexity = max(p["complexity"] for p in pages)
     approved = select_ui_state(pages, stability)
+    telemetry_service.record(
+        "iscs_decision",
+        metadata={"candidate_ids": [p["id"] for p in pages]},
+        request_path="/api/curriculum/what-is-ai",
+        stability=stability,
+        selected_state_id=_selected_id(approved),
+        decision_reason="approved",
+        max_complexity=max_complexity,
+    )
     return {"ui_state": approved, "stability": stability}
 
 
@@ -80,7 +104,6 @@ def get_unit_page(unit_id: str) -> dict:
         raise HTTPException(status_code=404, detail=f"Unit {unit_id} not found")
 
     stability = _current_stability()
-    # Clamp candidates by the unit's max_complexity ceiling.
     candidates = [
         p.model_dump() for p in unit.pages if p.complexity <= unit.max_complexity
     ]
@@ -90,6 +113,18 @@ def get_unit_page(unit_id: str) -> dict:
             detail=f"Unit {unit_id} has no pages within its max_complexity",
         )
     approved = select_ui_state(candidates, stability)
+    telemetry_service.record(
+        "iscs_decision",
+        metadata={
+            "unit_id": unit.id,
+            "candidate_ids": [c["id"] for c in candidates],
+        },
+        request_path=f"/api/curriculum/units/{unit.id}",
+        stability=stability,
+        selected_state_id=_selected_id(approved),
+        decision_reason="approved",
+        max_complexity=unit.max_complexity,
+    )
     return {
         "unit_id": unit.id,
         "unit_title": unit.title,
@@ -118,6 +153,15 @@ def next_unit() -> dict:
             break
     if chosen is None:
         chosen = UNITS[0]
+    telemetry_service.record(
+        "iscs_recommendation",
+        metadata={"unit_count": len(UNITS)},
+        request_path="/api/curriculum/next-unit",
+        stability=stability,
+        selected_state_id=chosen.id,
+        decision_reason="linear-walk",
+        max_complexity=chosen.max_complexity,
+    )
     return {
         "unit_id": chosen.id,
         "title": chosen.title,

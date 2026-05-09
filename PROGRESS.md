@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 9: Curriculum View Accessibility Polish completed** (tag `sprint-9-curriculum-a11y-v1`).
+None. **Sprint 10: Telemetry Signal Richness completed** (tag `sprint-10-telemetry-richness-v1`).
 
 ## Completed
 
@@ -29,6 +29,11 @@ None. **Sprint 9: Curriculum View Accessibility Polish completed** (tag `sprint-
   - CurriculumRenderer rewritten with semantic landmarks + CSS variables + aria-live
   - Return-to-start affordance added (Reversibility rule enforced in code)
   - 3 new E2E specs in `frontend/e2e/curriculum.spec.ts` including axe WCAG 2.1 AA scan
+- Sprint 10: Telemetry Signal Richness (`sprint-10-telemetry-richness-v1`)
+  - 5 new audit columns on `telemetry_events` (request_path, stability, selected_state_id, decision_reason, max_complexity)
+  - Curriculum + next-unit routes record `iscs_decision` / `iscs_recommendation` per request
+  - Baseline migration retroactively populated; fresh DBs (CI) now actually get the schema
+  - 4 new tests (53/53 passing); ADR 0009
 
 ## Out of Scope (deferred)
 

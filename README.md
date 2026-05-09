@@ -323,7 +323,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-6-hardening-coverage-v1` | Hardening & Coverage — Units 5–7, telemetry export, a11y, Playwright + axe |
 | `sprint-7-docs-onboarding-v1` | Documentation & Developer Onboarding |
 | `sprint-8-ci-e2e-v1` | CI Playwright Integration |
-| `sprint-9-curriculum-a11y-v1` | Curriculum View Accessibility Polish (this sprint) |
+| `sprint-9-curriculum-a11y-v1` | Curriculum View Accessibility Polish |
+| `sprint-10-telemetry-richness-v1` | Telemetry Signal Richness (this sprint) |
 
 ---
 

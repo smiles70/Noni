@@ -1,11 +1,19 @@
-# Sprint 9: Curriculum View Accessibility Polish (CLOSED)
+# Sprint 10: Telemetry Signal Richness (CLOSED)
 
-Tag: `sprint-9-curriculum-a11y-v1`. Brings CurriculumRenderer up to the same accessibility bar as LandingPage and enforces the Reversibility architectural rule in code.
+Tag: `sprint-10-telemetry-richness-v1`. Promotes ISCS decision variables to dedicated audit columns and wires the curriculum routes to record every decision.
 
 ## Phases
 
-- 9.1 Rewrite `CurriculumRenderer.tsx` with semantic landmarks, CSS variables, aria-live
-- 9.2 `onReturn` callback exposes a Return-to-start button (Reversibility rule)
-- 9.3 `App.tsx` wires the callback
-- 9.4 `frontend/e2e/curriculum.spec.ts`: 3 specs incl. axe WCAG 2.1 AA scan
-- 9.5 Closeout
+- 10.1 Retroactively populate the empty baseline migration with `telemetry_events` table creation (fresh DBs / CI now actually get the schema)
+- 10.2 New migration `b2c3_telem_rich`: add 5 nullable audit columns
+- 10.3 Extend `TelemetryEvent` model and `telemetry.record(...)` signature
+- 10.4 Wire `/api/curriculum/what-is-ai`, `/units/{id}`, `/next-unit` to record `iscs_decision` / `iscs_recommendation` events with audit fields
+- 10.5 New test file `test_telemetry_richness.py` (4 tests including CSV header check)
+- 10.6 ADR 0009: rationale (defensibility, queryability)
+- 10.7 Closeout
+
+## Out of scope
+
+- PII fields (user_id, session_id) - block on auth vendor selection
+- Index / partitioning strategy at scale
+- Time-series rollups
