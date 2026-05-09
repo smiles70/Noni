@@ -321,7 +321,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-4-engineering-foundations-v1` | Engineering Foundations — pre-commit, CI, Alembic, ADRs 0002–0005 |
 | `sprint-5-landing-copy-v1` | Landing Copy + Page Rendering — content module, endpoint, ADR 0006 |
 | `sprint-6-hardening-coverage-v1` | Hardening & Coverage — Units 5–7, telemetry export, a11y, Playwright + axe |
-| `sprint-7-docs-onboarding-v1` | Documentation & Developer Onboarding (this sprint) |
+| `sprint-7-docs-onboarding-v1` | Documentation & Developer Onboarding |
+| `sprint-8-ci-e2e-v1` | CI Playwright Integration (this sprint) |
 
 ---
 

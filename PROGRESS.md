@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 7: Documentation & Developer Onboarding completed** (tag `sprint-7-docs-onboarding-v1`).
+None. **Sprint 8: CI Playwright Integration completed** (tag `sprint-8-ci-e2e-v1`).
 
 ## Completed
 
@@ -18,9 +18,13 @@ None. **Sprint 7: Documentation & Developer Onboarding completed** (tag `sprint-
 - Sprint 5: Landing Copy + Page Rendering (`sprint-5-landing-copy-v1`)
 - Sprint 6: Hardening & Coverage (`sprint-6-hardening-coverage-v1`)
 - Sprint 7: Documentation & Developer Onboarding (`sprint-7-docs-onboarding-v1`)
-  - README rewritten end-to-end (current setup, structure, API surface, dev workflow, sprint history, ADR + deferred-decisions pointers)
-  - CONTRIBUTING.md added (sprint workflow, ADR convention, how-to guides, commit hygiene)
-  - All commands in README smoke-tested (pytest passes, frontend builds)
+- Sprint 8: CI Playwright Integration (`sprint-8-ci-e2e-v1`)
+  - New `e2e` job in `.github/workflows/ci.yml` running after backend + frontend jobs
+  - Postgres service container, backend booted in background, health-checked
+  - Playwright chromium browser cached by `package-lock.json` hash
+  - Playwright config now CI-aware: `forbidOnly`, retries=2, traces + screenshots on failure
+  - Failure artifacts uploaded: HTML report + backend log (14-day retention)
+  - WCAG 2.1 AA axe scan now enforced on every push/PR
 
 ## Out of Scope (deferred)
 
@@ -35,6 +39,7 @@ None. **Sprint 7: Documentation & Developer Onboarding completed** (tag `sprint-
 - Feature flags
 - Manual screen-reader audit (NVDA/JAWS/VoiceOver)
 - Design system / component library
+- Cross-browser E2E (Firefox + WebKit) — chromium only for now
 - Copy for Golden Flow Steps 5-7 (post-interaction; needs real Claude)
 
 ## Known Environment Quirks
