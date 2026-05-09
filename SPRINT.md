@@ -1,19 +1,19 @@
-# Sprint 10: Telemetry Signal Richness (CLOSED)
+# Sprint 11: Containerization (CLOSED)
 
-Tag: `sprint-10-telemetry-richness-v1`. Promotes ISCS decision variables to dedicated audit columns and wires the curriculum routes to record every decision.
+Tag: `sprint-11-containers-v1`. Adds production-grade multi-stage Dockerfiles for backend + frontend and wires them into compose so `docker compose up --build` produces a runnable Noni stack from a clean clone.
 
 ## Phases
 
-- 10.1 Retroactively populate the empty baseline migration with `telemetry_events` table creation (fresh DBs / CI now actually get the schema)
-- 10.2 New migration `b2c3_telem_rich`: add 5 nullable audit columns
-- 10.3 Extend `TelemetryEvent` model and `telemetry.record(...)` signature
-- 10.4 Wire `/api/curriculum/what-is-ai`, `/units/{id}`, `/next-unit` to record `iscs_decision` / `iscs_recommendation` events with audit fields
-- 10.5 New test file `test_telemetry_richness.py` (4 tests including CSV header check)
-- 10.6 ADR 0009: rationale (defensibility, queryability)
-- 10.7 Closeout
+- 11.1 `backend/Dockerfile` (multi-stage, python:3.12-slim, non-root user, healthcheck)
+- 11.2 `frontend/Dockerfile` (multi-stage, node:18-alpine -> nginx:1.27-alpine) + `nginx.conf` (SPA fallback, asset caching)
+- 11.3 `docker-compose.yml` extended with backend + frontend services and proper depends_on/healthcheck wiring
+- 11.4 `.dockerignore` files for both contexts
+- 11.5 ADR 0010: container strategy
+- 11.6 README updated with Docker run section
+- 11.7 Closeout
 
 ## Out of scope
 
-- PII fields (user_id, session_id) - block on auth vendor selection
-- Index / partitioning strategy at scale
-- Time-series rollups
+- Image registry / hosting vendor selection (`docs/deferred-decisions.md`)
+- Container scanning (Trivy / Grype / Snyk)
+- Pinning a `requirements.txt` so dev/CI/Docker share an exact version set (cleanup follow-on)

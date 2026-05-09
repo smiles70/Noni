@@ -17,3 +17,4 @@ Numbered, immutable records of significant architectural decisions.
 - [0007 - Accessibility approach: WCAG 2.1 AA via axe + visible focus + larger-text mode](./0007-accessibility-approach.md)
 - [0008 - End-to-end and accessibility verification via Playwright + axe-playwright](./0008-e2e-playwright-axe.md)
 - [0009 - Rich audit telemetry: promote ISCS decision variables to columns](./0009-rich-audit-telemetry.md)
+- [0010 - Container strategy: multi-stage Dockerfiles + compose for local parity](./0010-container-strategy.md)

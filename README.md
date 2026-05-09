@@ -143,6 +143,15 @@ npm run dev
 
 The landing page is served at `http://127.0.0.1:5173/`. Click **Begin calmly** to advance to the curriculum view.
 
+
+### Run the whole stack in Docker
+
+```bash
+docker compose up --build
+```
+
+This boots Postgres, the backend (with migrations applied on startup), and an nginx-served frontend. Open `http://localhost:5173/`. See ADR 0010 for the container strategy.
+
 ### Verification
 
 ```bash
@@ -324,7 +333,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-7-docs-onboarding-v1` | Documentation & Developer Onboarding |
 | `sprint-8-ci-e2e-v1` | CI Playwright Integration |
 | `sprint-9-curriculum-a11y-v1` | Curriculum View Accessibility Polish |
-| `sprint-10-telemetry-richness-v1` | Telemetry Signal Richness (this sprint) |
+| `sprint-10-telemetry-richness-v1` | Telemetry Signal Richness |
+| `sprint-11-containers-v1` | Containerization (this sprint) |
 
 ---
 

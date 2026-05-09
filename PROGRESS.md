@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 10: Telemetry Signal Richness completed** (tag `sprint-10-telemetry-richness-v1`).
+None. **Sprint 11: Containerization completed** (tag `sprint-11-containers-v1`).
 
 ## Completed
 
@@ -34,6 +34,11 @@ None. **Sprint 10: Telemetry Signal Richness completed** (tag `sprint-10-telemet
   - Curriculum + next-unit routes record `iscs_decision` / `iscs_recommendation` per request
   - Baseline migration retroactively populated; fresh DBs (CI) now actually get the schema
   - 4 new tests (53/53 passing); ADR 0009
+- Sprint 11: Containerization (`sprint-11-containers-v1`)
+  - Multi-stage backend Dockerfile (python:3.12-slim, non-root, /health healthcheck)
+  - Multi-stage frontend Dockerfile (node:18-alpine -> nginx:1.27-alpine) + SPA fallback nginx.conf
+  - docker-compose.yml extended; `docker compose up --build` boots the full stack
+  - ADR 0010
 
 ## Out of Scope (deferred)
 
