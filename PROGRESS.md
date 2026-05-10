@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 16: Mobile-Device E2E completed** (tag `sprint-16-mobile-e2e-v1`).
+None. **Sprint 17: Module 2 Curriculum (Sustained Claude Use) completed** (tag `sprint-17-module-2-curriculum-v1`).
 
 ## Completed
 

@@ -17,6 +17,10 @@ from backend.core.interface_control.stability_metric import compute_stability
 from backend.core.interface_control.state_selector import select_ui_state
 from backend.models.curriculum_units import UNITS, get_unit
 from backend.services import telemetry as telemetry_service
+from backend.models.curriculum_units_module_2 import (
+    UNITS_MODULE_2,
+    get_module_2_unit,
+)
 
 router = APIRouter()
 estimator = InterfaceStateEstimator()
@@ -163,6 +167,111 @@ def next_unit() -> dict:
         max_complexity=chosen.max_complexity,
     )
     return {
+        "unit_id": chosen.id,
+        "title": chosen.title,
+        "stability": stability,
+        "reason": "system-level recommendation (no per-learner state yet)",
+    }
+
+
+# ===== Module 2: Sustained, real-world use of Claude over time =====
+# See ADR 0015 for why we keep the unit data but reject the drop-in's
+# request-body-signals wiring (Rule 1: Backend Authority).
+
+
+@router.get("/module-2/units")
+def list_module_2_units() -> dict:
+    """Catalog of Module 2 curriculum units (no page-level content)."""
+    return {
+        "module": 2,
+        "units": [
+            {
+                "id": u.id,
+                "title": u.title,
+                "description": u.description,
+                "max_complexity": u.max_complexity,
+                "stability_threshold": u.stability_threshold,
+                "telemetry_requirements": u.telemetry_requirements,
+            }
+            for u in UNITS_MODULE_2
+        ],
+    }
+
+
+@router.get("/module-2/units/{unit_id}")
+def get_module_2_unit_page(unit_id: str) -> dict:
+    """Return the ISCS-approved page from the requested Module 2 unit."""
+    unit = get_module_2_unit(unit_id)
+    if unit is None:
+        raise HTTPException(
+            status_code=404, detail=f"Module 2 unit {unit_id} not found"
+        )
+
+    stability = _current_stability()
+    candidates = [
+        p.model_dump() for p in unit.pages if p.complexity <= unit.max_complexity
+    ]
+    if not candidates:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Module 2 unit {unit_id} has no pages within its max_complexity",
+        )
+    approved = select_ui_state(candidates, stability)
+    telemetry_service.record(
+        "iscs_decision",
+        metadata={
+            "module": 2,
+            "unit_id": unit.id,
+            "candidate_ids": [c["id"] for c in candidates],
+            "telemetry_requirements": unit.telemetry_requirements,
+        },
+        request_path=f"/api/curriculum/module-2/units/{unit.id}",
+        stability=stability,
+        selected_state_id=_selected_id(approved),
+        decision_reason="approved",
+        max_complexity=unit.max_complexity,
+    )
+    return {
+        "module": 2,
+        "unit_id": unit.id,
+        "unit_title": unit.title,
+        "ui_state": approved,
+        "stability": stability,
+    }
+
+
+@router.get("/module-2/next")
+def next_module_2_unit() -> dict:
+    """Recommend the most advanced Module 2 unit reachable at current stability.
+
+    Linear walk through UNITS_MODULE_2. Per-learner volatility / strain /
+    mastery gates from telemetry_requirements are recorded in audit telemetry
+    (ADR 0015) but not yet enforced - per-learner state requires auth.
+    """
+    stability = _current_stability()
+    chosen = None
+    for u in UNITS_MODULE_2:
+        if stability <= u.stability_threshold:
+            chosen = u
+        else:
+            break
+    if chosen is None:
+        chosen = UNITS_MODULE_2[0]
+    telemetry_service.record(
+        "iscs_recommendation",
+        metadata={
+            "module": 2,
+            "unit_count": len(UNITS_MODULE_2),
+            "telemetry_requirements": chosen.telemetry_requirements,
+        },
+        request_path="/api/curriculum/module-2/next",
+        stability=stability,
+        selected_state_id=chosen.id,
+        decision_reason="linear-walk",
+        max_complexity=chosen.max_complexity,
+    )
+    return {
+        "module": 2,
         "unit_id": chosen.id,
         "title": chosen.title,
         "stability": stability,

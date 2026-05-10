@@ -46,3 +46,7 @@ Any of the following should pull this bundle off the deferred list:
 - Investor / funder request for a deployable demo with real Claude
 - IRB submission requiring per-learner data attribution
 - Patent filing scheduled (real per-session telemetry strengthens claims)
+
+## Module 2 enforcement (added in Sprint 17)
+
+- Module 2 units declare `telemetry_requirements` (volatility_max, strain_max, mastery_min). Enforcement requires per-learner state, which requires the auth vendor decision. Until then the values are recorded in audit telemetry per ADR 0009 / 0015.

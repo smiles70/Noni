@@ -1,14 +1,12 @@
-# Sprint 16: Mobile-Device E2E (CLOSED)
+# Sprint 17: Module 2 Curriculum - Sustained Claude Use (CLOSED)
 
-Tag: `sprint-16-mobile-e2e-v1`. Adds Pixel 5 and iPhone 13 emulated projects to the Playwright matrix.
+Tag: `sprint-17-module-2-curriculum-v1`. Lands the 5 Module 2 units (sustained, real-world use of Claude over time) using the architectural patterns established in Sprints 2, 6, 9, 10. The drop-in's request-body signal pattern was explicitly rejected per Rule 1 (Backend Authority); see ADR 0015.
 
 ## Phases
 
-- 16.1 Add `mobile-pixel` and `mobile-iphone` projects
-- 16.2 ADR 0014
-- 16.3 Closeout
-
-## Out of scope
-
-- iPad project (revisit with usage data)
-- Real-device cloud testing (BrowserStack / Sauce - vendor decision)
+- 17.1 `Module2Unit` model (sub-class of `CurriculumUnit`, adds typed `telemetry_requirements`)
+- 17.2 5 units with content verbatim
+- 17.3 Three new endpoints under `/api/curriculum/module-2/`
+- 17.4 7 new tests (65/65 passing) including content invariants and audit-log verification
+- 17.5 ADR 0015
+- 17.6 Closeout

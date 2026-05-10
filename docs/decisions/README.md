@@ -22,3 +22,4 @@ Numbered, immutable records of significant architectural decisions.
 - [0012 - Pinned Python dependencies via requirements files](./0012-pinned-dependencies.md)
 - [0013 - Bundle-size budget enforced in CI](./0013-bundle-size-budget.md)
 - [0014 - Mobile device emulation in the E2E matrix](./0014-mobile-device-e2e.md)
+- [0015 - Module 2 multi-dimensional ISCS gating: data shape kept, request-body signals rejected](./0015-module-2-multi-dim-iscs.md)

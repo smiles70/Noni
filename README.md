@@ -302,6 +302,9 @@ npm run test:e2e           # runs all 4 specs including WCAG 2.1 AA scan
 | GET | `/api/curriculum/units` | All curriculum units (2–7) |
 | GET | `/api/curriculum/units/{id}` | One unit, ISCS-approved page |
 | GET | `/api/curriculum/next-unit` | ISCS recommendation for next unit |
+| GET | `/api/curriculum/module-2/units` | Module 2 unit catalog (sustained Claude use) |
+| GET | `/api/curriculum/module-2/units/{id}` | One Module 2 unit, ISCS-approved page |
+| GET | `/api/curriculum/module-2/next` | ISCS recommendation for next Module 2 unit |
 | POST | `/api/signals/user-action` | Record a user-originated signal |
 | POST | `/api/signals/telemetry` | Record a telemetry event |
 | GET | `/api/landing/steps` | All 8 Golden Flow steps (conceptual model) |
@@ -338,7 +341,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-13-first-win-content-v1` | Sign-up -> First Safe Win content |
 | `sprint-14-pinned-deps-v1` | Pin Backend Dependencies |
 | `sprint-15-bundle-budget-v1` | Bundle-Size Budget |
-| `sprint-16-mobile-e2e-v1` | Mobile-Device E2E (this sprint) |
+| `sprint-16-mobile-e2e-v1` | Mobile-Device E2E |
+| `sprint-17-module-2-curriculum-v1` | Module 2 Curriculum: Sustained Claude Use (this sprint) |
 
 ---
 
