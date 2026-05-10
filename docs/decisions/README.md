@@ -23,3 +23,4 @@ Numbered, immutable records of significant architectural decisions.
 - [0013 - Bundle-size budget enforced in CI](./0013-bundle-size-budget.md)
 - [0014 - Mobile device emulation in the E2E matrix](./0014-mobile-device-e2e.md)
 - [0015 - Module 2 multi-dimensional ISCS gating: data shape kept, request-body signals rejected](./0015-module-2-multi-dim-iscs.md)
+- [0016 - Module 3 (long-term judgment & autonomy): same adaptation pattern as Module 2](./0016-module-3-judgment-recalibration.md)

@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 17: Module 2 Curriculum (Sustained Claude Use) completed** (tag `sprint-17-module-2-curriculum-v1`).
+None. **Sprint 18: Module 3 Curriculum (Long-Term Judgment & Autonomy) completed** (tag `sprint-18-module-3-curriculum-v1`).
 
 ## Completed
 
