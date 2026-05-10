@@ -33,9 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install fastapi 'uvicorn[standard]' pydantic pydantic-settings \
-            sqlalchemy psycopg2-binary numpy python-dotenv httpx \
-            pytest black ruff mypy alembic
+          pip install -r requirements-dev.txt
       - name: Lint (ruff)
         run: ruff check backend/
       - name: Format check (black)
@@ -94,8 +92,7 @@ jobs:
       - name: Install backend deps
         run: |
           python -m pip install --upgrade pip
-          pip install fastapi 'uvicorn[standard]' pydantic pydantic-settings \
-            sqlalchemy psycopg2-binary numpy python-dotenv httpx alembic
+          pip install -r requirements.txt
       - name: Run migrations
         run: alembic upgrade head
       - name: Start backend (background)

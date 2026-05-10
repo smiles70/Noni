@@ -1,0 +1,13 @@
+# Noni runtime dependencies (Sprint 14, ADR 0012).
+# These are the direct deps; pip will resolve transitives consistent with this set.
+# Versions match the Sprint 8-13 verified-passing venv on Python 3.12.
+fastapi==0.136.1
+uvicorn[standard]==0.46.0
+pydantic==2.13.4
+pydantic-settings==2.14.0
+SQLAlchemy==2.0.49
+psycopg2-binary==2.9.12
+alembic==1.18.4
+numpy==2.4.4
+python-dotenv==1.2.2
+httpx==0.28.1

@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 13: Sign-up -> First Safe Win Content completed** (tag `sprint-13-first-win-content-v1`).
+None. **Sprint 14: Pin Backend Dependencies completed** (tag `sprint-14-pinned-deps-v1`).
 
 ## Completed
 
@@ -49,6 +49,11 @@ None. **Sprint 13: Sign-up -> First Safe Win Content completed** (tag `sprint-13
   - `GET /api/landing/first-win` endpoint
   - 5 new tests including no-urgency / reversible-choice invariants (58/58 passing)
   - Closes the previously deferred 'Copy for Golden Flow Steps 5-7' item
+- Sprint 14: Pin Backend Dependencies (`sprint-14-pinned-deps-v1`)
+  - `requirements.txt` (runtime, exact pins) + `requirements-dev.txt` (tooling)
+  - Dockerfile, CI (backend + e2e jobs), README, and CONTRIBUTING.md all install via `pip install -r ...`
+  - Four drift-prone inline package lists eliminated
+  - ADR 0012
 
 ## Out of Scope (deferred)
 

@@ -19,3 +19,4 @@ Numbered, immutable records of significant architectural decisions.
 - [0009 - Rich audit telemetry: promote ISCS decision variables to columns](./0009-rich-audit-telemetry.md)
 - [0010 - Container strategy: multi-stage Dockerfiles + compose for local parity](./0010-container-strategy.md)
 - [0011 - Cross-browser E2E: chromium + firefox + webkit on every CI run](./0011-cross-browser-e2e.md)
+- [0012 - Pinned Python dependencies via requirements files](./0012-pinned-dependencies.md)

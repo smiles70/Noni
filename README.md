@@ -107,10 +107,8 @@ python3 -m venv venv
 source venv/bin/activate         # Linux/macOS/WSL
 # .\venv\Scripts\Activate.ps1    # Windows PowerShell
 
-# 2. Install backend deps
-pip install fastapi 'uvicorn[standard]' pydantic pydantic-settings \
-    sqlalchemy psycopg2-binary numpy python-dotenv httpx \
-    pytest black ruff mypy alembic pre-commit
+# 2. Install backend deps (single source of truth: requirements files)
+pip install -r requirements-dev.txt
 
 # 3. Configure environment
 cp .env.example .env
@@ -337,7 +335,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-10-telemetry-richness-v1` | Telemetry Signal Richness |
 | `sprint-11-containers-v1` | Containerization |
 | `sprint-12-multi-browser-v1` | Cross-browser E2E |
-| `sprint-13-first-win-content-v1` | Sign-up -> First Safe Win content (this sprint) |
+| `sprint-13-first-win-content-v1` | Sign-up -> First Safe Win content |
+| `sprint-14-pinned-deps-v1` | Pin Backend Dependencies (this sprint) |
 
 ---
 

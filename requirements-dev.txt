@@ -1,0 +1,9 @@
+# Noni development dependencies (Sprint 14, ADR 0012).
+# Pulls in the runtime set, then adds tooling.
+-r requirements.txt
+
+pytest==9.0.3
+ruff==0.15.12
+black==26.3.1
+mypy==1.20.2
+pre-commit==4.6.0

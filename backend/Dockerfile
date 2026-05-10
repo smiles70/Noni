@@ -19,9 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN python -m venv "$VIRTUAL_ENV"
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN pip install --upgrade pip && pip install \
-        fastapi 'uvicorn[standard]' pydantic pydantic-settings \
-        sqlalchemy psycopg2-binary numpy python-dotenv httpx alembic
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
 
 # ---------- Stage 2: runtime ----------
 FROM python:3.12-slim AS runtime

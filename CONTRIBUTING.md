@@ -14,7 +14,7 @@ This document covers the development conventions used in this repository. Read t
 After cloning, run once:
 ```bash
 python3 -m venv venv && source venv/bin/activate
-pip install fastapi 'uvicorn[standard]' pydantic pydantic-settings sqlalchemy psycopg2-binary numpy python-dotenv httpx pytest black ruff mypy alembic pre-commit
+pip install -r requirements-dev.txt
 pre-commit install
 ( cd frontend && npm install )
 ```
