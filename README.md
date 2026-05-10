@@ -337,7 +337,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-12-multi-browser-v1` | Cross-browser E2E |
 | `sprint-13-first-win-content-v1` | Sign-up -> First Safe Win content |
 | `sprint-14-pinned-deps-v1` | Pin Backend Dependencies |
-| `sprint-15-bundle-budget-v1` | Bundle-Size Budget (this sprint) |
+| `sprint-15-bundle-budget-v1` | Bundle-Size Budget |
+| `sprint-16-mobile-e2e-v1` | Mobile-Device E2E (this sprint) |
 
 ---
 

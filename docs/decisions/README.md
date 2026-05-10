@@ -21,3 +21,4 @@ Numbered, immutable records of significant architectural decisions.
 - [0011 - Cross-browser E2E: chromium + firefox + webkit on every CI run](./0011-cross-browser-e2e.md)
 - [0012 - Pinned Python dependencies via requirements files](./0012-pinned-dependencies.md)
 - [0013 - Bundle-size budget enforced in CI](./0013-bundle-size-budget.md)
+- [0014 - Mobile device emulation in the E2E matrix](./0014-mobile-device-e2e.md)

@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 15: Bundle-Size Budget completed** (tag `sprint-15-bundle-budget-v1`).
+None. **Sprint 16: Mobile-Device E2E completed** (tag `sprint-16-mobile-e2e-v1`).
 
 ## Completed
 

@@ -1,14 +1,14 @@
-# Sprint 15: Bundle-Size Budget (CLOSED)
+# Sprint 16: Mobile-Device E2E (CLOSED)
 
-Tag: `sprint-15-bundle-budget-v1`. Adds a CI gate so frontend bundle bloat fails the build.
+Tag: `sprint-16-mobile-e2e-v1`. Adds Pixel 5 and iPhone 13 emulated projects to the Playwright matrix.
 
 ## Phases
 
-- 15.1 `frontend/scripts/check-bundle-size.mjs` (dependency-free, gzip in-memory, per-chunk)
-- 15.2 `npm run bundle-size` script
-- 15.3 CI: build then bundle-size, fails on regression
-- 15.4 ADR 0013
+- 16.1 Add `mobile-pixel` and `mobile-iphone` projects
+- 16.2 ADR 0014
+- 16.3 Closeout
 
-## Threshold
+## Out of scope
 
-100 kB gzipped per chunk. Current bundle is ~62 kB.
+- iPad project (revisit with usage data)
+- Real-device cloud testing (BrowserStack / Sauce - vendor decision)
