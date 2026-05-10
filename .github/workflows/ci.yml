@@ -61,6 +61,9 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: frontend
+      - name: Bundle-size budget (gzipped, per chunk)
+        run: npm run bundle-size
+        working-directory: frontend
 
   e2e:
     runs-on: ubuntu-latest

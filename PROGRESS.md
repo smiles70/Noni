@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 14: Pin Backend Dependencies completed** (tag `sprint-14-pinned-deps-v1`).
+None. **Sprint 15: Bundle-Size Budget completed** (tag `sprint-15-bundle-budget-v1`).
 
 ## Completed
 
@@ -63,7 +63,6 @@ None. **Sprint 14: Pin Backend Dependencies completed** (tag `sprint-14-pinned-d
 - Production deployment pipeline beyond GitHub Actions config
 - Internationalization
 - Container scanning (Trivy/Grype) and Dockerfile
-- Bundle size budgets
 - Browser observability (Sentry / Datadog RUM)
 - Feature flags
 - Manual screen-reader audit (NVDA/JAWS/VoiceOver)

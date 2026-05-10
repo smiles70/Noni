@@ -336,7 +336,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-11-containers-v1` | Containerization |
 | `sprint-12-multi-browser-v1` | Cross-browser E2E |
 | `sprint-13-first-win-content-v1` | Sign-up -> First Safe Win content |
-| `sprint-14-pinned-deps-v1` | Pin Backend Dependencies (this sprint) |
+| `sprint-14-pinned-deps-v1` | Pin Backend Dependencies |
+| `sprint-15-bundle-budget-v1` | Bundle-Size Budget (this sprint) |
 
 ---
 

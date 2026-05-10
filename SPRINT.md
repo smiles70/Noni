@@ -1,17 +1,14 @@
-# Sprint 14: Pin Backend Dependencies (CLOSED)
+# Sprint 15: Bundle-Size Budget (CLOSED)
 
-Tag: `sprint-14-pinned-deps-v1`. Replaces four drift-prone inline package lists with a single pair of pinned requirements files (per ADR 0012).
+Tag: `sprint-15-bundle-budget-v1`. Adds a CI gate so frontend bundle bloat fails the build.
 
 ## Phases
 
-- 14.1 `requirements.txt` (runtime, exact pins) + `requirements-dev.txt` (`-r requirements.txt` + tooling)
-- 14.2 `backend/Dockerfile` installs via `pip install -r requirements.txt`
-- 14.3 CI workflow: `backend` job uses `requirements-dev.txt`, `e2e` job uses `requirements.txt`
-- 14.4 `README.md` and `CONTRIBUTING.md` setup commands collapsed to `pip install -r requirements-dev.txt`
-- 14.5 ADR 0012
-- 14.6 Verified: ruff clean, 58/58 tests, frontend builds, install from the new files succeeds
+- 15.1 `frontend/scripts/check-bundle-size.mjs` (dependency-free, gzip in-memory, per-chunk)
+- 15.2 `npm run bundle-size` script
+- 15.3 CI: build then bundle-size, fails on regression
+- 15.4 ADR 0013
 
-## Out of scope
+## Threshold
 
-- Lockfile-style transitive pinning (pip-tools / uv / poetry) - deferred until a concrete trigger
-- Python version bump - 3.12 stays canonical
+100 kB gzipped per chunk. Current bundle is ~62 kB.

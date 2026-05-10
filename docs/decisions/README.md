@@ -20,3 +20,4 @@ Numbered, immutable records of significant architectural decisions.
 - [0010 - Container strategy: multi-stage Dockerfiles + compose for local parity](./0010-container-strategy.md)
 - [0011 - Cross-browser E2E: chromium + firefox + webkit on every CI run](./0011-cross-browser-e2e.md)
 - [0012 - Pinned Python dependencies via requirements files](./0012-pinned-dependencies.md)
+- [0013 - Bundle-size budget enforced in CI](./0013-bundle-size-budget.md)
