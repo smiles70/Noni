@@ -1,91 +1,194 @@
 /**
- * Passive renderer for ISCS-approved curriculum states.
- * Contains zero business logic. UI complexity is server-governed.
+ * Curriculum unit renderer — contract-bound.
+ *
+ * Per ADR 0019 and CONTRACT Section IV:
+ *   - Resolves its envelope from `/api/ui-envelope/curriculum.unit`.
+ *   - Renders inside a RenderGuard boundary (fail-closed).
+ *   - Uses ONLY tokens from `design/tokens.ts`.
+ *
+ * The unit's content (title + lines) still comes from the ISCS-approved
+ * `loadWhatIsAI` endpoint; this component does NOT derive UI complexity.
  */
-import { useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { loadWhatIsAI, ApprovedUIState } from "../api/interfaceController";
+import { loadEnvelope } from "../api/envelope";
+import {
+  COLORS,
+  SPACING,
+  TYPOGRAPHY,
+  RADIUS,
+  MOTION,
+} from "../design/tokens";
+import type { UIStateEnvelope } from "../design/envelope";
+import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 
 interface Props {
   onReturn?: () => void;
 }
 
-const PAGE: React.CSSProperties = {
-  padding: "2rem",
-  maxWidth: "680px",
+// ---- Tokenized style objects ------------------------------------------------
+
+const PAGE: CSSProperties = {
+  padding: SPACING.xl,
+  maxWidth: 680,
   margin: "0 auto",
-  fontSize: "1.25rem",
-  lineHeight: 1.6,
-  color: "var(--noni-text)",
+  fontSize: TYPOGRAPHY.bodySizePx,
+  lineHeight: TYPOGRAPHY.bodyLineHeight,
+  fontFamily: TYPOGRAPHY.fontFamily,
+  color: COLORS.textPrimary,
+  backgroundColor: COLORS.background,
 };
 
-const RETURN_BTN: React.CSSProperties = {
-  fontSize: "1rem",
-  padding: "0.4rem 0.9rem",
-  background: "transparent",
-  color: "var(--noni-accent)",
-  border: "1px solid var(--noni-accent)",
-  borderRadius: "4px",
+const H1: CSSProperties = {
+  fontSize: TYPOGRAPHY.headingScale.level1,
+  marginTop: 0,
+  marginBottom: SPACING.md,
+  color: COLORS.textPrimary,
 };
 
-const ERROR_DETAIL: React.CSSProperties = {
-  color: "var(--noni-muted)",
-  fontSize: "1rem",
-  marginTop: "0.5rem",
+const RETURN_BTN: CSSProperties = {
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.sm}px ${SPACING.md}px`,
+  backgroundColor: COLORS.surface,
+  color: COLORS.accentMutedBlue,
+  border: `1px solid ${COLORS.accentMutedBlue}`,
+  borderRadius: RADIUS.sm,
+  cursor: "pointer",
+  transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
 };
+
+const NAV: CSSProperties = {
+  marginBottom: SPACING.lg,
+};
+
+const PARA: CSSProperties = {
+  marginTop: 0,
+  marginBottom: SPACING.md,
+};
+
+const ERROR_DETAIL: CSSProperties = {
+  fontSize: TYPOGRAPHY.bodySizePx,
+  marginTop: SPACING.sm,
+  color: COLORS.textPrimary,
+};
+
+// ---- Loading / blocked sub-renderers ---------------------------------------
+
+function PendingBanner({ nav }: { nav: React.ReactNode }) {
+  return (
+    <main style={PAGE} aria-live="polite" data-component="PendingBanner">
+      {nav}
+      <p style={PARA}>One moment — loading.</p>
+    </main>
+  );
+}
+
+function BlockedLoad({
+  message,
+  detail,
+  nav,
+}: {
+  message: string;
+  detail?: string;
+  nav: React.ReactNode;
+}) {
+  return (
+    <main
+      style={{ ...PAGE, borderRadius: RADIUS.md }}
+      role="alert"
+      aria-live="polite"
+      data-component="BlockedNotice"
+    >
+      {nav}
+      <h1 style={H1}>This lesson is paused.</h1>
+      <p style={PARA}>{message}</p>
+      {detail ? <p style={ERROR_DETAIL}>{detail}</p> : null}
+    </main>
+  );
+}
+
+// ---- Component --------------------------------------------------------------
 
 export default function CurriculumRenderer({ onReturn }: Props) {
-  const [state, setState] = useState<ApprovedUIState | null>(null);
+  const [unit, setUnit] = useState<ApprovedUIState | null>(null);
+  const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadWhatIsAI()
-      .then(setState)
+    Promise.all([loadEnvelope("curriculum.unit"), loadWhatIsAI()])
+      .then(([env, approved]) => {
+        setEnvelope(env);
+        setUnit(approved);
+      })
       .catch((e: unknown) =>
         setError(e instanceof Error ? e.message : "Failed to load"),
       );
   }, []);
 
-  const Nav = () =>
-    onReturn ? (
-      <nav aria-label="Lesson navigation" style={{ marginBottom: "1.5rem" }}>
-        <button type="button" onClick={onReturn} style={RETURN_BTN}>
-          Return to start
-        </button>
-      </nav>
-    ) : null;
+  const nav = onReturn ? (
+    <nav aria-label="Lesson navigation" style={NAV}>
+      <button type="button" onClick={onReturn} style={RETURN_BTN}>
+        Return to start
+      </button>
+    </nav>
+  ) : null;
 
   if (error) {
     return (
-      <main style={PAGE} aria-live="polite">
-        <Nav />
-        <p>We are having trouble reaching the lesson. Please try again in a moment.</p>
-        <p style={ERROR_DETAIL}>{error}</p>
-      </main>
+      <BlockedLoad
+        message="We are having trouble reaching the lesson. You can try again in a moment."
+        detail={error}
+        nav={nav}
+      />
     );
   }
 
-  if (!state) {
-    return (
-      <main style={PAGE} aria-live="polite">
-        <Nav />
-        <p>Loading...</p>
-      </main>
-    );
+  if (!unit || !envelope) {
+    return <PendingBanner nav={nav} />;
   }
 
-  const page = state.ui_state;
+  const page = unit.ui_state;
+
+  // Proposal: what this render intends to display.
+  const proposal: RenderProposal = {
+    components: [
+      "Heading",
+      "Body",
+      ...(onReturn ? (["Button"] as const) : []),
+    ],
+    primaryActionCount: onReturn ? 1 : 0,
+    irreversibleActionCount: 0,
+    highlightedRecommendationCount: 0,
+    visibleTextLevels: 2, // h1, body
+    colorsUsed: [
+      COLORS.background,
+      COLORS.surface,
+      COLORS.textPrimary,
+      COLORS.accentMutedBlue,
+    ],
+    spacingPxUsed: [SPACING.sm, SPACING.md, SPACING.lg, SPACING.xl],
+    radiusPxUsed: [RADIUS.sm],
+    motionDurationsMs: [MOTION.defaultFadeMs],
+    positionShiftPxUsed: [],
+    hasUnconfirmedIrreversibleAction: false,
+    usesOptimisticProgression: false,
+  };
 
   return (
-    <main style={PAGE}>
-      <Nav />
-      <header>
-        <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>{page.title}</h1>
-      </header>
-      <section aria-label="Lesson content">
-        {page.content.map((line, i) => (
-          <p key={i}>{line}</p>
-        ))}
-      </section>
-    </main>
+    <RenderGuard envelope={envelope} proposal={proposal}>
+      <main style={PAGE}>
+        {nav}
+        <header>
+          <h1 style={H1}>{page.title}</h1>
+        </header>
+        <section aria-label="Lesson content">
+          {page.content.map((line, i) => (
+            <p key={i} style={PARA}>
+              {line}
+            </p>
+          ))}
+        </section>
+      </main>
+    </RenderGuard>
   );
 }
