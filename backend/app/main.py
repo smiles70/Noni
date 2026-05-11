@@ -15,6 +15,7 @@ from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.signals import router as signals_router
 from backend.api.routes.landing import router as landing_router
 from backend.api.routes.telemetry_export import router as telemetry_export_router
+from backend.api.routes.ui_envelope import router as ui_envelope_router
 
 
 @asynccontextmanager
@@ -44,6 +45,7 @@ app.include_router(curriculum_router, prefix="/api/curriculum", tags=["curriculu
 app.include_router(signals_router, prefix="/api/signals", tags=["signals"])
 app.include_router(landing_router, prefix="/api/landing", tags=["landing"])
 app.include_router(telemetry_export_router, prefix="/api/telemetry", tags=["telemetry"])
+app.include_router(ui_envelope_router, prefix="/api/ui-envelope", tags=["ui-envelope"])
 
 
 @app.get("/health")

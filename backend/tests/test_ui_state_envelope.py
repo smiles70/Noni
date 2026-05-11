@@ -15,7 +15,6 @@ from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from backend.app.main import app
-from backend.api.routes.ui_envelope import router as ui_envelope_router
 from backend.models.ui_state_envelope import (
     AuthorizedComponent,
     InteractionLimits,
@@ -26,15 +25,7 @@ from backend.models.ui_state_envelope import (
 )
 
 
-# Phase A: register the router on the existing app for testing. Phase B
-# will move this registration into app/main.py once the route is wired
-# into the production startup path.
-if not any(getattr(r, "path", "").startswith("/api/ui-envelope") for r in app.routes):
-    app.include_router(
-        ui_envelope_router, prefix="/api/ui-envelope", tags=["ui-envelope"]
-    )
-
-
+# Router is registered in backend/app/main.py under /api/ui-envelope.
 client = TestClient(app)
 
 
@@ -203,3 +194,101 @@ def test_endpoint_payload_respects_contract_maxima():
     assert limits["max_highlighted_recommendations"] <= 1
     assert limits["max_visible_text_levels"] <= 3
     assert body["layout_constraints"]["allowed_spacing_px"] == [4, 8, 16, 24, 32, 48]
+
+
+# ---- B2: seeded envelopes for real screens ----------------------------------
+
+
+@pytest.mark.parametrize(
+    "state_id",
+    [
+        "landing.intro",
+        "landing.page",
+        "landing.first_win",
+        "curriculum.unit",
+    ],
+)
+def test_seeded_envelope_resolves(state_id):
+    """Every real screen has a defined envelope."""
+    env = get_envelope(state_id)
+    assert env is not None
+    assert env.state_id == state_id
+
+
+@pytest.mark.parametrize(
+    "state_id",
+    [
+        "landing.intro",
+        "landing.page",
+        "landing.first_win",
+        "curriculum.unit",
+    ],
+)
+def test_seeded_envelope_respects_contract_ceilings(state_id):
+    """CONTRACT Section I.F: every envelope honors the global maxima."""
+    env = get_envelope(state_id)
+    assert env is not None
+    assert env.interaction_limits.max_primary_actions <= 5
+    assert env.interaction_limits.max_irreversible_actions <= 1
+    assert env.interaction_limits.max_highlighted_recommendations <= 1
+    assert env.interaction_limits.max_visible_text_levels <= 3
+
+
+@pytest.mark.parametrize(
+    "state_id",
+    [
+        "landing.intro",
+        "landing.page",
+        "landing.first_win",
+        "curriculum.unit",
+    ],
+)
+def test_seeded_envelope_uses_only_v1_components(state_id):
+    """CONTRACT Section I.D: only V1 component inventory."""
+    env = get_envelope(state_id)
+    assert env is not None
+    for c in env.authorized_components:
+        assert c in AuthorizedComponent
+
+
+@pytest.mark.parametrize(
+    "state_id",
+    [
+        "landing.page",
+        "landing.first_win",
+        "curriculum.unit",
+    ],
+)
+def test_seeded_envelope_endpoint_returns_200(state_id):
+    response = client.get(f"/api/ui-envelope/{state_id}")
+    assert response.status_code == 200
+    assert response.json()["state_id"] == state_id
+
+
+def test_landing_first_win_transitions_to_curriculum():
+    """The first-win flow ends by handing off to the curriculum unit page."""
+    env = get_envelope("landing.first_win")
+    assert env is not None
+    target_ids = {t.to_state_id for t in env.transition_permissions}
+    assert "curriculum.unit" in target_ids
+
+
+def test_curriculum_unit_self_loops_for_next_advance():
+    """Per ADR 0001, advance is user-driven; the unit transitions to itself
+    to render the next unit's content within the same envelope."""
+    env = get_envelope("curriculum.unit")
+    assert env is not None
+    target_ids = {t.to_state_id for t in env.transition_permissions}
+    assert "curriculum.unit" in target_ids
+
+
+def test_every_transition_targets_a_defined_envelope():
+    """Closed-world: no transition may point at an undefined state."""
+    from backend.models.ui_state_envelope import ENVELOPES
+
+    for env in ENVELOPES.values():
+        for t in env.transition_permissions:
+            assert get_envelope(t.to_state_id) is not None, (
+                f"Envelope '{env.state_id}' has a transition to undefined "
+                f"state '{t.to_state_id}'."
+            )

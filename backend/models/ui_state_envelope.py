@@ -118,14 +118,15 @@ class UIStateEnvelope(BaseModel):
 
 # ---- Registry of defined envelopes ------------------------------------------
 #
-# Phase A seeds the registry with a single proof-of-contract state so the
-# `/api/ui-envelope/{state_id}` route has something real to serve and tests
-# have a fixture that exercises every field. Real screen states (landing,
-# curriculum, first-win) are added in Phase B migration, each behind its
-# own envelope.
+# Each envelope corresponds to a real, renderable screen. The frontend
+# resolves a screen by calling `/api/ui-envelope/{state_id}` and rendering
+# only the components and transitions named here. Undefined states 404.
+#
+# Adding a new screen = adding a new envelope here (and tests in
+# backend/tests/test_ui_state_envelope.py).
 
 
-_LANDING_ENVELOPE = UIStateEnvelope(
+_LANDING_INTRO_ENVELOPE = UIStateEnvelope(
     state_id="landing.intro",
     authorized_components=[
         AuthorizedComponent.HEADING,
@@ -148,8 +149,100 @@ _LANDING_ENVELOPE = UIStateEnvelope(
 )
 
 
+# The full landing page (LandingPage.tsx). Richer than the intro card:
+# multiple sections, CTA buttons, and a single highlighted next-step.
+_LANDING_PAGE_ENVELOPE = UIStateEnvelope(
+    state_id="landing.page",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.LIST,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=3,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=3,
+    ),
+    transition_permissions=[
+        TransitionPermission(
+            to_state_id="landing.first_win",
+            requires_confirmation=False,
+        ),
+    ],
+)
+
+
+# Sign-up -> First Safe Win (Golden Flow Steps 4-6).
+# Step 4 invitation: low-density, reversible choice options only.
+# Step 5 guided interaction: single guided action.
+# Step 6 first safe win: reflection card, no required action.
+_LANDING_FIRST_WIN_ENVELOPE = UIStateEnvelope(
+    state_id="landing.first_win",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.FIELD,
+        AuthorizedComponent.LIST,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.PENDING_BANNER,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=3,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=3,
+    ),
+    transition_permissions=[
+        TransitionPermission(
+            to_state_id="curriculum.unit",
+            requires_confirmation=False,
+        ),
+    ],
+)
+
+
+# Curriculum unit page — the renderer used by Module 1 (and the same
+# component used for Modules 2-5 once they ship as renderable screens).
+# Per ADR 0001, curriculum progression is sequenced by user agency, so
+# the only primary action here is the user-driven "next" advance.
+_CURRICULUM_UNIT_ENVELOPE = UIStateEnvelope(
+    state_id="curriculum.unit",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.INDICATOR,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=2,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=3,
+    ),
+    transition_permissions=[
+        TransitionPermission(
+            to_state_id="curriculum.unit",
+            requires_confirmation=False,
+        ),
+    ],
+)
+
+
 ENVELOPES: dict[str, UIStateEnvelope] = {
-    _LANDING_ENVELOPE.state_id: _LANDING_ENVELOPE,
+    _LANDING_INTRO_ENVELOPE.state_id: _LANDING_INTRO_ENVELOPE,
+    _LANDING_PAGE_ENVELOPE.state_id: _LANDING_PAGE_ENVELOPE,
+    _LANDING_FIRST_WIN_ENVELOPE.state_id: _LANDING_FIRST_WIN_ENVELOPE,
+    _CURRICULUM_UNIT_ENVELOPE.state_id: _CURRICULUM_UNIT_ENVELOPE,
 }
 
 
