@@ -6,9 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-**Sprints A2 (DB schema) + A9 (CI/CD) — IN PROGRESS** (launch-preparation Phase A, automation-first, executed in parallel).
-
-Subsequent Phase A sprints (A3–A8, A10) will run in parallel where dependencies allow; see `docs/architecture/` and ADRs 0022–0025.
+**Sprints A3 + A5 + A6 + A7 — IN PROGRESS** (auth/sessions, estimator persistence, retention/deletion, rate limiting). A4 (billing/Stripe) and A8 (frontend paywall) follow.
 
 ## Completed
 
@@ -123,6 +121,26 @@ Subsequent Phase A sprints (A3–A8, A10) will run in parallel where dependencie
   - `.github/workflows/secrets-drift.yml` — daily audit, opens `secrets-drift` issue on drift
   - `.github/workflows/nightly-backup.yml` — pg_dump → R2 nightly; no-ops without secrets
   - `.github/workflows/restore-drill.yml` — manual trigger; downloads latest dump, restores into ephemeral Postgres
+- Sprint A3 — Sessions & identity (mock OAuth) (in progress)
+  - `backend/core/security.py` — token generation, HMAC cookie signing, SHA-256 hashing
+  - `backend/services/auth_provider.py` — `AuthProvider` interface + `MockAuthProvider` + `SupabaseAuthProvider` stub
+  - `backend/services/sessions.py` — session CRUD, account upsert by `auth_user_id`
+  - `backend/api/deps.py` — `get_db`, `get_optional_account`, `get_current_account`
+  - `backend/api/routes/auth.py` — `/auth/callback`, `/auth/signout`, `/auth/whoami`
+  - `backend/core/config.py` — new settings: `SESSION_SECRET`, `SESSION_TTL_DAYS`, `AUTH_PROVIDER`, etc.
+  - `backend/tests/test_a3_auth.py` — 7 tests (happy path, tamper, revoke, idempotent account)
+- Sprint A5 — Estimator persistence (in progress)
+  - `backend/services/estimator_state.py` — load/save per `(account_id, scope)`; restart-safe
+  - `backend/tests/test_a5_estimator_persistence.py` — 4 tests including scope isolation
+- Sprint A6 — Retention + GDPR deletion (in progress)
+  - `backend/services/telemetry_retention.py` — `expires_at_for(event_type)` policy
+  - `backend/services/deletion.py` — request / cancel / execute with grace period
+  - `backend/api/routes/account.py` — `/me/delete`, `/me/delete/cancel`
+  - `backend/tests/test_a6_retention_deletion.py` — retention + deletion lifecycle (8 tests)
+- Sprint A7 — Rate limit primitives (in progress)
+  - `backend/services/rate_limit.py` — fixed-window counter, FastAPI `enforce` helper, predefined limits
+  - `backend/tests/test_a7_rate_limit.py` — 4 tests (allow/block, identifier and action isolation)
+- Main app router registration: `/auth`, `/me`
 
 ## Out of Scope (deferred)
 
