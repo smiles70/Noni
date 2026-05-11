@@ -6,7 +6,9 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 22: Module 5 (Composing Agents from Skills) completed** (tag `sprint-22-module-5-v1`).
+**Sprint A1: Foundations — IN PROGRESS** (launch-preparation Phase A, automation-first).
+
+Subsequent Phase A sprints (A2–A10) run in parallel where dependencies allow; see `docs/architecture/` and ADRs 0022–0025.
 
 ## Completed
 
@@ -94,6 +96,20 @@ None. **Sprint 22: Module 5 (Composing Agents from Skills) completed** (tag `spr
   - New content-level invariant test: any unit mentioning "agent" must include a human-control marker
   - Citations re-grounded under the closed reference list (ADR 0019): Carr 2009 → Fisk 2009; Formosa 2012 → Knowles 2019; Lövdén 2010 → Sweller 2011; Wiener 1948 → IDD + Fisk 2009
   - 124/124 tests passing; ADR 0020
+- Architect/DBA review + topology consolidation (binding docs, no tag yet)
+  - `docs/architecture/SYSTEM.md`, `VENDORS.md`, `SCHEMA.md` — system, third-party, and DB diagrams
+  - ADR 0021 (pricing & tiering) ratified
+  - ADR 0022 (vendor topology — 5 vendors at launch)
+  - ADR 0023 (auth and session model — Supabase Auth, server-side session cookie, logical `auth_user_id`)
+  - ADR 0024 (DB operational policy — pooler mode, migration via Fly release_command, RLS, pg_cron retention, restore drill)
+  - ADR 0025 (secrets — SOPS source of truth + `make secrets-sync` propagation)
+- Sprint A1 — Foundations (in progress)
+  - `infra/Makefile` (operator surface; `make help` lists all targets)
+  - `infra/.env.example` (canonical key manifest)
+  - `infra/scripts/` (bootstrap, sync, rotate, audit, deploy, smoke, stripe, restore-drill, backup-now, observability)
+  - `infra/cloudflare/waf-rules.json`
+  - `.sops.yaml` (encryption rules; public key filled by `make secrets-bootstrap`)
+  - `.gitignore` updated to protect plaintext production env files
 
 ## Out of Scope (deferred)
 

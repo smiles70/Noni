@@ -1,0 +1,11 @@
+# SOPS encryption rules
+# All SOPS-encrypted files in this repo are encrypted with the age public key below.
+# Private keys live at ~/.config/sops/age/keys.txt and are backed up to 1Password.
+#
+# The placeholder public key below will be replaced by `make secrets-bootstrap`
+# on first run. Do not edit by hand after bootstrap.
+
+creation_rules:
+  - path_regex: infra/.env\.(prod|staging)\.sops\.yaml$
+    encrypted_regex: '^(?!#).*$'
+    age: REPLACE_WITH_AGE_PUBLIC_KEY_FROM_make_secrets-bootstrap

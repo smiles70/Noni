@@ -17,6 +17,13 @@ htmlcov/
 .env
 .env.local
 
+# Secrets — only the SOPS-encrypted file is committed (see ADR 0025)
+infra/.env.prod
+infra/.env.prod.draft
+infra/.env.staging
+infra/.env.staging.draft
+*.dump
+
 # Database
 *.db
 *.sqlite

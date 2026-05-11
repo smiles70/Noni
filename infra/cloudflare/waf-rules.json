@@ -1,0 +1,35 @@
+{
+  "_comment": "Cloudflare WAF rate-limit rules for Noni. Applied via wrangler in deploy-prod.",
+  "_applied_via": "wrangler (TODO: implement in infra/scripts/deploy-prod.sh once Cloudflare zone exists)",
+  "rules": [
+    {
+      "description": "Rate limit OAuth sign-in callback per IP",
+      "expression": "(http.request.uri.path eq \"/auth/callback\") and (ip.src ne 0.0.0.0)",
+      "action": "block",
+      "ratelimit": { "characteristics": ["ip.src"], "period": 60, "requests_per_period": 20 }
+    },
+    {
+      "description": "Rate limit account deletion endpoint per session cookie",
+      "expression": "http.request.uri.path eq \"/me/delete\"",
+      "action": "block",
+      "ratelimit": { "characteristics": ["ip.src"], "period": 3600, "requests_per_period": 5 }
+    },
+    {
+      "description": "Rate limit gift redemption attempts per IP",
+      "expression": "http.request.uri.path eq \"/api/gifts/claim\"",
+      "action": "challenge",
+      "ratelimit": { "characteristics": ["ip.src"], "period": 600, "requests_per_period": 10 }
+    },
+    {
+      "description": "Allowlist Stripe webhook source IPs only",
+      "expression": "(http.request.uri.path eq \"/api/billing/stripe-webhook\") and not (ip.src in $stripe_webhooks)",
+      "action": "block"
+    },
+    {
+      "description": "Generic public API throttle per IP",
+      "expression": "(http.request.uri.path matches \"^/api/\") and (cf.threat_score gt 14)",
+      "action": "managed_challenge",
+      "ratelimit": { "characteristics": ["ip.src"], "period": 60, "requests_per_period": 300 }
+    }
+  ]
+}
