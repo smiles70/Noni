@@ -151,6 +151,8 @@ _LANDING_INTRO_ENVELOPE = UIStateEnvelope(
 
 # The full landing page (LandingPage.tsx). Richer than the intro card:
 # multiple sections, CTA buttons, and a single highlighted next-step.
+# PendingBanner and BlockedNotice are included so the page has authorized
+# components for loading and error states (B3 frontend migration).
 _LANDING_PAGE_ENVELOPE = UIStateEnvelope(
     state_id="landing.page",
     authorized_components=[
@@ -160,6 +162,8 @@ _LANDING_PAGE_ENVELOPE = UIStateEnvelope(
         AuthorizedComponent.CARD,
         AuthorizedComponent.DIVIDER,
         AuthorizedComponent.LIST,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
     ],
     interaction_limits=InteractionLimits(
         max_primary_actions=3,

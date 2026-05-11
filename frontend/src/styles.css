@@ -1,11 +1,9 @@
-:root {
-  --noni-text: #1a1a1a;
-  --noni-muted: #444;
-  --noni-accent: #1f4670;
-  --noni-accent-hover: #14304d;
-  --noni-bg: #ffffff;
-  --noni-border: #c8c8c8;
-}
+/*
+ * Global styles — aligned to the closed-world contract (ADR 0019).
+ * All values mirror tokens in src/design/tokens.ts. Do not introduce
+ * new color, spacing, or radius values here without a corresponding
+ * token change.
+ */
 
 html {
   font-size: 100%;
@@ -17,16 +15,17 @@ html.large-text {
 
 body {
   margin: 0;
-  background: var(--noni-bg);
-  color: var(--noni-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #f4f4f2; /* tokens.COLORS.background */
+  color: #222222;      /* tokens.COLORS.textPrimary */
+  font-family: Inter, "Source Sans 3", system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
 }
 
-/* Visible focus ring for keyboard users (does not show on mouse click). */
+/* Focus ring — CONTRACT Section II: 2px muted-blue outline, 2px offset. */
 :focus-visible {
-  outline: 3px solid #ffbf47;
+  outline: 2px solid #4a6fa5; /* tokens.COLORS.accentMutedBlue */
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 8px;          /* tokens.RADIUS.sm */
 }
 
 button,
