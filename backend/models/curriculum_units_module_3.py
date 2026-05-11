@@ -10,21 +10,16 @@ Library-grounded references: Carr (2009), Formosa (2012), Lövdén et al. (2010)
 Norman (2013), Fisk et al. (2009), Wiener (1948). See ADR 0016.
 """
 
-from typing import Dict, Optional
+from typing import Optional
 
-from pydantic import Field
 
 from backend.models.curriculum_units import (
     CurriculumPage,
-    CurriculumUnit as BaseCurriculumUnit,
+    TelemetryGatedUnit,
 )
 
 
-class Module3Unit(BaseCurriculumUnit):
-    """Module 3 unit. Mirrors Module2Unit's telemetry-gated shape; per-learner
-    enforcement deferred to the auth-vendor pass per ADR 0015 / 0016."""
-
-    telemetry_requirements: Dict[str, float] = Field(default_factory=dict)
+Module3Unit = TelemetryGatedUnit
 
 
 def _page(unit_id: str, title: str, lines: list) -> CurriculumPage:

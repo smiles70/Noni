@@ -14,22 +14,16 @@ the content teaches *about* Skills declaratively. Actually creating Skills
 end-to-end remains vendor-blocked.
 """
 
-from typing import Dict, Optional
+from typing import Optional
 
-from pydantic import Field
 
 from backend.models.curriculum_units import (
     CurriculumPage,
-    CurriculumUnit as BaseCurriculumUnit,
+    TelemetryGatedUnit,
 )
 
 
-class Module4Unit(BaseCurriculumUnit):
-    """Module 4 unit. Mirrors Module2Unit / Module3Unit's telemetry-gated
-    shape; per-learner enforcement deferred to the auth-vendor pass per
-    ADR 0015 / 0016 / 0017."""
-
-    telemetry_requirements: Dict[str, float] = Field(default_factory=dict)
+Module4Unit = TelemetryGatedUnit
 
 
 def _page(unit_id: str, title: str, lines: list) -> CurriculumPage:

@@ -25,3 +25,4 @@ Numbered, immutable records of significant architectural decisions.
 - [0015 - Module 2 multi-dimensional ISCS gating: data shape kept, request-body signals rejected](./0015-module-2-multi-dim-iscs.md)
 - [0016 - Module 3 (long-term judgment & autonomy): same adaptation pattern as Module 2](./0016-module-3-judgment-recalibration.md)
 - [0017 - Module 4 (building Claude Skills): same adaptation pattern as Modules 2-3](./0017-module-4-claude-skills.md)
+- [0018 - Extract `TelemetryGatedUnit` as the shared base for Modules 2-4+](./0018-shared-telemetry-gated-unit-base.md)

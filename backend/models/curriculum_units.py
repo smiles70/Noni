@@ -4,8 +4,8 @@ Pure data. Selection of which page to render is performed by the
 canonical ISCS (`backend.core.interface_control.state_selector`).
 """
 
-from typing import List, Optional
-from pydantic import BaseModel
+from typing import Dict, List, Optional
+from pydantic import BaseModel, Field
 
 from backend.models.curriculum import CurriculumPage
 
@@ -194,3 +194,16 @@ def get_unit(unit_id: str) -> Optional[CurriculumUnit]:
         if u.id == unit_id:
             return u
     return None
+
+
+class TelemetryGatedUnit(CurriculumUnit):
+    """Shared base for telemetry-gated curriculum modules (Modules 2-4+).
+
+    Adds typed `telemetry_requirements` so per-learner gating on
+    volatility / strain / mastery can be enforced once per-learner state lands.
+    Until then the field is recorded in audit telemetry per ADR 0009 / 0015.
+    Extracted in Sprint 20 (ADR 0018) after Module2Unit / Module3Unit /
+    Module4Unit were observed to carry identical fields.
+    """
+
+    telemetry_requirements: Dict[str, float] = Field(default_factory=dict)

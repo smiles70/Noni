@@ -8,22 +8,15 @@ Park et al. (2014), Norman (2013), Fisk et al. (2009), Wiener (1948).
 See ADR 0015.
 """
 
-from typing import Dict, Optional
-from pydantic import Field
+from typing import Optional
 
 from backend.models.curriculum_units import (
     CurriculumPage,
-    CurriculumUnit as BaseCurriculumUnit,
+    TelemetryGatedUnit,
 )
 
 
-class Module2Unit(BaseCurriculumUnit):
-    """Module 2 unit. Adds typed `telemetry_requirements` so per-learner gating
-    on volatility / strain / mastery can be enforced once per-learner state lands
-    (deferred to the auth-vendor pass). Until then the field is recorded in
-    audit telemetry per ADR 0009 / ADR 0015."""
-
-    telemetry_requirements: Dict[str, float] = Field(default_factory=dict)
+Module2Unit = TelemetryGatedUnit
 
 
 def _page(unit_id: str, title: str, lines: list) -> CurriculumPage:

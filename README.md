@@ -350,7 +350,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-16-mobile-e2e-v1` | Mobile-Device E2E |
 | `sprint-17-module-2-curriculum-v1` | Module 2 Curriculum: Sustained Claude Use |
 | `sprint-18-module-3-curriculum-v1` | Module 3 Curriculum: Long-Term Judgment & Autonomy |
-| `sprint-19-module-4-curriculum-v1` | Module 4 Curriculum: Building Claude Skills (this sprint) |
+| `sprint-19-module-4-curriculum-v1` | Module 4 Curriculum: Building Claude Skills |
+| `sprint-20-telemetry-gated-unit-v1` | TelemetryGatedUnit Refactor (this sprint) |
 
 ---
 

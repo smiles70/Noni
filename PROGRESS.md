@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 19: Module 4 Curriculum (Building Claude Skills) completed** (tag `sprint-19-module-4-curriculum-v1`).
+None. **Sprint 20: TelemetryGatedUnit Refactor completed** (tag `sprint-20-telemetry-gated-unit-v1`).
 
 ## Completed
 
