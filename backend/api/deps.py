@@ -54,3 +54,43 @@ def get_current_account(
             detail={"envelope_id": "auth.signed_out"},
         )
     return account
+
+
+def require_entitlement(product_code: str):
+    """Dependency factory that gates a route behind an active entitlement.
+
+    See ADR 0021. Behaviour:
+      - No session at all       -> 402 + envelope billing.signin_or_purchase_required
+      - Session but no grant    -> 402 + envelope billing.purchase_required
+      - Active grant            -> returns the Account
+
+    402 (Payment Required) is intentional: the resource exists but cannot
+    be served without payment. The frontend reads `envelope_id` to decide
+    between showing the sign-in page or the paywall page.
+    """
+    # Local import keeps this module import-cycle free at startup.
+    from backend.services import entitlements
+
+    def _dep(
+        account: Optional[Account] = Depends(get_optional_account),
+        db: DbSession = Depends(get_db),
+    ) -> Account:
+        if account is None:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail={
+                    "envelope_id": "billing.signin_or_purchase_required",
+                    "product_code": product_code,
+                },
+            )
+        if not entitlements.has_active(db, account.id, product_code):
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail={
+                    "envelope_id": "billing.purchase_required",
+                    "product_code": product_code,
+                },
+            )
+        return account
+
+    return _dep

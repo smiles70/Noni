@@ -10,8 +10,9 @@ with promoted audit columns (request_path, stability, selected_state_id,
 decision_reason, max_complexity).
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
+from backend.api.deps import require_entitlement
 from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.stability_metric import compute_stability
 from backend.core.interface_control.state_selector import select_ui_state
@@ -36,6 +37,14 @@ from backend.models.curriculum_units_module_5 import (
 
 router = APIRouter()
 estimator = InterfaceStateEstimator()
+
+# Modules 4 and 5 ship as a single paid bundle (ADR 0021).
+PAID_BUNDLE_CODE = "modules_4_5"
+
+# Single dependency instance, shared by every paid route. Exposed at module
+# level so tests can override it via `app.dependency_overrides[paid_bundle_dep]`
+# when their focus is content/behavior, not entitlement enforcement.
+paid_bundle_dep = require_entitlement(PAID_BUNDLE_CODE)
 
 
 def _current_stability() -> float:
@@ -419,7 +428,10 @@ def list_module_4_units() -> dict:
 
 
 @router.get("/module-4/units/{unit_id}")
-def get_module_4_unit_page(unit_id: str) -> dict:
+def get_module_4_unit_page(
+    unit_id: str,
+    _account=Depends(paid_bundle_dep),
+) -> dict:
     unit = get_module_4_unit(unit_id)
     if unit is None:
         raise HTTPException(
@@ -524,7 +536,10 @@ def list_module_5_units() -> dict:
 
 
 @router.get("/module-5/units/{unit_id}")
-def get_module_5_unit_page(unit_id: str) -> dict:
+def get_module_5_unit_page(
+    unit_id: str,
+    _account=Depends(paid_bundle_dep),
+) -> dict:
     unit = get_module_5_unit(unit_id)
     if unit is None:
         raise HTTPException(

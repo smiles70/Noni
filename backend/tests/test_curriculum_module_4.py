@@ -1,11 +1,31 @@
-"""Sprint 19: Module 4 curriculum (building Claude Skills)."""
+"""Sprint 19: Module 4 curriculum (building Claude Skills).
+
+The paid-bundle entitlement gate (Sprint A10) is overridden here so these
+tests stay focused on content/ISCS behavior. Gate enforcement itself is
+tested by `test_a10_smoke.py`.
+"""
 
 import json
 
+import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.main import app
+from backend.api.routes.curriculum import paid_bundle_dep
 from backend.models.curriculum_units_module_4 import UNITS_MODULE_4
+
+
+@pytest.fixture(autouse=True)
+def _bypass_paywall():
+    """Skip the paid-bundle gate so these tests can focus on content/ISCS.
+
+    Scoped per-test and cleaned up so it does not leak into the A10 smoke
+    suite, which exercises the gate intentionally.
+    """
+    app.dependency_overrides[paid_bundle_dep] = lambda: None
+    yield
+    app.dependency_overrides.pop(paid_bundle_dep, None)
+
 
 client = TestClient(app)
 

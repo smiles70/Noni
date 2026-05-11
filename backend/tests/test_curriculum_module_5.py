@@ -1,11 +1,26 @@
-"""Sprint 22: Module 5 curriculum (composing Agents from Claude Skills)."""
+"""Sprint 22: Module 5 curriculum (composing Agents from Claude Skills).
+
+The paid-bundle entitlement gate (Sprint A10) is overridden via an autouse
+fixture so these tests stay focused on content/ISCS behavior. Gate
+enforcement itself is covered by `test_a10_smoke.py`.
+"""
 
 import json
 
+import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.main import app
+from backend.api.routes.curriculum import paid_bundle_dep
 from backend.models.curriculum_units_module_5 import UNITS_MODULE_5
+
+
+@pytest.fixture(autouse=True)
+def _bypass_paywall():
+    app.dependency_overrides[paid_bundle_dep] = lambda: None
+    yield
+    app.dependency_overrides.pop(paid_bundle_dep, None)
+
 
 client = TestClient(app)
 
