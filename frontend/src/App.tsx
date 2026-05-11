@@ -28,14 +28,31 @@ const App: React.FC = () => {
 
   const goLanding = () => setView("landing");
   const goCurriculum = () => setView("curriculum");
+  const goSignIn = () => setView("signin");
+  const goPaywall = () => setView("paywall");
+  const goAccount = () => setView("account");
 
   switch (view) {
     case "landing":
-      return <LandingPage onBegin={goCurriculum} />;
+      return (
+        <LandingPage
+          onBegin={goCurriculum}
+          onSignIn={goSignIn}
+          onContinuePaid={goPaywall}
+          onAccount={goAccount}
+        />
+      );
     case "curriculum":
-      return <CurriculumRenderer onReturn={goLanding} />;
+      return (
+        <CurriculumRenderer
+          onReturn={goLanding}
+          onSignIn={goSignIn}
+          onContinuePaid={goPaywall}
+          onAccount={goAccount}
+        />
+      );
     case "signin":
-      return <SignInPage onSignedIn={goCurriculum} onCancel={goLanding} />;
+      return <SignInPage onSignedIn={goLanding} onCancel={goLanding} />;
     case "paywall":
       return (
         <PaywallPage

@@ -24,9 +24,13 @@ import {
 } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
+import NavBar from "./NavBar";
 
 interface Props {
   onBegin: () => void;
+  onSignIn?: () => void;
+  onContinuePaid?: () => void;
+  onAccount?: () => void;
 }
 
 // ---- Tokenized style objects -----------------------------------------------
@@ -158,7 +162,12 @@ function paragraphs(text: string) {
   ));
 }
 
-export default function LandingPage({ onBegin }: Props) {
+export default function LandingPage({
+  onBegin,
+  onSignIn,
+  onContinuePaid,
+  onAccount,
+}: Props) {
   const [content, setContent] = useState<LandingPageContent | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -206,7 +215,8 @@ export default function LandingPage({ onBegin }: Props) {
       "Divider",
       "List",
     ],
-    primaryActionCount: 3, // text toggle, primary CTA, secondary CTA
+    // text toggle + primary CTA + secondary CTA + up to 2 NavBar entries.
+    primaryActionCount: 5,
     irreversibleActionCount: 0,
     highlightedRecommendationCount: 1, // primary CTA
     visibleTextLevels: 3, // h1, h2, body
@@ -217,7 +227,14 @@ export default function LandingPage({ onBegin }: Props) {
       COLORS.accentMutedBlue,
       COLORS.disabled,
     ],
-    spacingPxUsed: [SPACING.sm, SPACING.md, SPACING.lg, SPACING.xl, SPACING.xxl],
+    spacingPxUsed: [
+      SPACING.xs,
+      SPACING.sm,
+      SPACING.md,
+      SPACING.lg,
+      SPACING.xl,
+      SPACING.xxl,
+    ],
     radiusPxUsed: [RADIUS.sm, RADIUS.md],
     motionDurationsMs: [MOTION.defaultFadeMs],
     positionShiftPxUsed: [],
@@ -228,6 +245,11 @@ export default function LandingPage({ onBegin }: Props) {
   return (
     <RenderGuard envelope={envelope} proposal={proposal}>
       <main style={PAGE}>
+        <NavBar
+          onSignIn={onSignIn}
+          onContinuePaid={onContinuePaid}
+          onAccount={onAccount}
+        />
         <div
           style={{
             display: "flex",

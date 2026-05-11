@@ -166,7 +166,9 @@ _LANDING_PAGE_ENVELOPE = UIStateEnvelope(
         AuthorizedComponent.BLOCKED_NOTICE,
     ],
     interaction_limits=InteractionLimits(
-        max_primary_actions=3,
+        # 3 page actions (text toggle, primary CTA, secondary CTA) +
+        # up to 2 session-aware NavBar entries (sign-in OR continue+account).
+        max_primary_actions=5,
         max_irreversible_actions=0,
         max_highlighted_recommendations=1,
         max_visible_text_levels=3,
@@ -176,6 +178,9 @@ _LANDING_PAGE_ENVELOPE = UIStateEnvelope(
             to_state_id="landing.first_win",
             requires_confirmation=False,
         ),
+        TransitionPermission(to_state_id="account.signin"),
+        TransitionPermission(to_state_id="account.paywall"),
+        TransitionPermission(to_state_id="account.settings"),
     ],
 )
 
@@ -228,7 +233,8 @@ _CURRICULUM_UNIT_ENVELOPE = UIStateEnvelope(
         AuthorizedComponent.BLOCKED_NOTICE,
     ],
     interaction_limits=InteractionLimits(
-        max_primary_actions=2,
+        # Return-to-start + up to 2 NavBar entries.
+        max_primary_actions=3,
         max_irreversible_actions=0,
         max_highlighted_recommendations=1,
         max_visible_text_levels=3,
@@ -238,6 +244,10 @@ _CURRICULUM_UNIT_ENVELOPE = UIStateEnvelope(
             to_state_id="curriculum.unit",
             requires_confirmation=False,
         ),
+        TransitionPermission(to_state_id="landing.page"),
+        TransitionPermission(to_state_id="account.signin"),
+        TransitionPermission(to_state_id="account.paywall"),
+        TransitionPermission(to_state_id="account.settings"),
     ],
 )
 

@@ -21,9 +21,13 @@ import {
 } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
+import NavBar from "./NavBar";
 
 interface Props {
   onReturn?: () => void;
+  onSignIn?: () => void;
+  onContinuePaid?: () => void;
+  onAccount?: () => void;
 }
 
 // ---- Tokenized style objects ------------------------------------------------
@@ -109,7 +113,12 @@ function BlockedLoad({
 
 // ---- Component --------------------------------------------------------------
 
-export default function CurriculumRenderer({ onReturn }: Props) {
+export default function CurriculumRenderer({
+  onReturn,
+  onSignIn,
+  onContinuePaid,
+  onAccount,
+}: Props) {
   const [unit, setUnit] = useState<ApprovedUIState | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -125,13 +134,22 @@ export default function CurriculumRenderer({ onReturn }: Props) {
       );
   }, []);
 
-  const nav = onReturn ? (
-    <nav aria-label="Lesson navigation" style={NAV}>
-      <button type="button" onClick={onReturn} style={RETURN_BTN}>
-        Return to start
-      </button>
-    </nav>
-  ) : null;
+  const nav = (
+    <>
+      <NavBar
+        onSignIn={onSignIn}
+        onContinuePaid={onContinuePaid}
+        onAccount={onAccount}
+      />
+      {onReturn ? (
+        <nav aria-label="Lesson navigation" style={NAV}>
+          <button type="button" onClick={onReturn} style={RETURN_BTN}>
+            Return to start
+          </button>
+        </nav>
+      ) : null}
+    </>
+  );
 
   if (error) {
     return (
@@ -150,13 +168,11 @@ export default function CurriculumRenderer({ onReturn }: Props) {
   const page = unit.ui_state;
 
   // Proposal: what this render intends to display.
+  // NavBar always contributes a Button slot; return-to-start adds another.
   const proposal: RenderProposal = {
-    components: [
-      "Heading",
-      "Body",
-      ...(onReturn ? (["Button"] as const) : []),
-    ],
-    primaryActionCount: onReturn ? 1 : 0,
+    components: ["Heading", "Body", "Button"],
+    // return-to-start + up to 2 NavBar entries.
+    primaryActionCount: (onReturn ? 1 : 0) + 2,
     irreversibleActionCount: 0,
     highlightedRecommendationCount: 0,
     visibleTextLevels: 2, // h1, body
@@ -166,7 +182,7 @@ export default function CurriculumRenderer({ onReturn }: Props) {
       COLORS.textPrimary,
       COLORS.accentMutedBlue,
     ],
-    spacingPxUsed: [SPACING.sm, SPACING.md, SPACING.lg, SPACING.xl],
+    spacingPxUsed: [SPACING.xs, SPACING.sm, SPACING.md, SPACING.lg, SPACING.xl],
     radiusPxUsed: [RADIUS.sm],
     motionDurationsMs: [MOTION.defaultFadeMs],
     positionShiftPxUsed: [],
