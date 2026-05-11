@@ -6,7 +6,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-None. **Sprint 20: TelemetryGatedUnit Refactor completed** (tag `sprint-20-telemetry-gated-unit-v1`).
+None. **Sprint 22: Module 5 (Composing Agents from Skills) completed** (tag `sprint-22-module-5-v1`).
 
 ## Completed
 
@@ -54,6 +54,46 @@ None. **Sprint 20: TelemetryGatedUnit Refactor completed** (tag `sprint-20-telem
   - Dockerfile, CI (backend + e2e jobs), README, and CONTRIBUTING.md all install via `pip install -r ...`
   - Four drift-prone inline package lists eliminated
   - ADR 0012
+- Sprint 15: Bundle-Size Budget in CI (`sprint-15-bundle-budget-v1`)
+  - `scripts/check-bundle-size.mjs` enforces frontend build-output ceiling
+  - `npm run bundle-size` available locally; CI fails on regression
+  - ADR 0013
+- Sprint 16: Mobile Device Emulation in E2E (`sprint-16-mobile-e2e-v1`)
+  - Playwright matrix extended with `mobile-pixel` and `mobile-iphone` projects
+  - WCAG 2.1 AA axe scan now covers desktop + mobile viewports
+  - ADR 0014
+- Sprint 17: Module 2 — Sustained Real-World Use of Claude (`sprint-17-module-2-curriculum-v1`)
+  - `backend/models/curriculum_units_module_2.py` + `/api/curriculum/module-2/*` endpoints
+  - Multi-dimensional ISCS gating via `telemetry_requirements` (recorded, not yet enforced — auth-vendor pass)
+  - Rejected the drop-in's `signals: dict` request body; kept backend-derived stability (Rule 1)
+  - ADR 0015
+- Sprint 18: Module 3 — Long-term Judgment & Recalibration (`sprint-18-module-3-curriculum-v1`)
+  - `backend/models/curriculum_units_module_3.py` + `/api/curriculum/module-3/*` endpoints
+  - Same architectural pattern as Module 2 (backend-authoritative)
+  - ADR 0016
+- Sprint 19: Module 4 — Building Claude Skills (`sprint-19-module-4-curriculum-v1`)
+  - `backend/models/curriculum_units_module_4.py` + `/api/curriculum/module-4/*` endpoints
+  - Same pattern as Modules 2-3; teaches Skills declaratively (vendor-blocked for actual creation)
+  - ADR 0017
+- Sprint 20: TelemetryGatedUnit Shared Base (`sprint-20-telemetry-gated-unit-v1`)
+  - Collapsed three identical `ModuleNUnit(CurriculumUnit)` subclasses to a single `TelemetryGatedUnit` in `curriculum_units.py`
+  - Modules 2/3/4 now use one-line aliases: `ModuleNUnit = TelemetryGatedUnit`
+  - 79/79 tests unchanged; ADR 0018
+- Sprint 21: Closed-World Design Contract (`sprint-21-phase-a-closed-world-v1`, `sprint-21-complete`)
+  - Adopted `docs/library/CONTRACT.md` as authoritative design/rendering/AI-reasoning contract
+  - Closed reference list in `docs/library/README.md` (2 primary + 20 external sources)
+  - UI State Envelope (`/api/ui-envelope/{state_id}`) + Pydantic schema (`backend/models/ui_state_envelope.py`)
+  - Design tokens (`frontend/src/design/tokens.ts`) + `RenderGuard` boundary (fail-closed on violation)
+  - 16 Vitest unit tests for the 10-item self-check
+  - `LandingPage` and `CurriculumRenderer` migrated to tokens + RenderGuard
+  - axe WCAG 2.1 AA still clean across all 5 Playwright projects
+  - ADR 0019
+- Sprint 22: Module 5 — Composing Agents from Skills (`sprint-22-module-5-v1`)
+  - `backend/models/curriculum_units_module_5.py` (5 units via `Module5Unit = TelemetryGatedUnit`)
+  - `/api/curriculum/module-5/*` endpoints — same backend-authoritative pattern
+  - New content-level invariant test: any unit mentioning "agent" must include a human-control marker
+  - Citations re-grounded under the closed reference list (ADR 0019): Carr 2009 → Fisk 2009; Formosa 2012 → Knowles 2019; Lövdén 2010 → Sweller 2011; Wiener 1948 → IDD + Fisk 2009
+  - 124/124 tests passing; ADR 0020
 
 ## Out of Scope (deferred)
 

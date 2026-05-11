@@ -28,3 +28,4 @@ Numbered, immutable records of significant architectural decisions.
 - [0018 - Extract `TelemetryGatedUnit` as the shared base for Modules 2-4+](./0018-shared-telemetry-gated-unit-base.md)
 - [0019 - Closed-world design, rendering, and AI-reasoning contract](./0019-closed-world-design-contract.md)
 - [0020 - Module 5 (composing Agents from Claude Skills): same adaptation pattern as Modules 2-4](./0020-module-5-claude-agents-from-skills.md)
+- [0021 - Pricing and tiering: free Modules 1-3, one-time purchase for Modules 4-5](./0021-pricing-and-tiering.md)
