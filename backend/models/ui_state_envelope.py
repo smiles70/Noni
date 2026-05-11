@@ -1,0 +1,158 @@
+"""UI State Envelope — the backend-approved contract for any renderable screen.
+
+Per ADR 0019 and `docs/library/CONTRACT.md` (Section IV.A), the React frontend
+may render ONLY backend-approved envelopes. Any envelope that does not
+explicitly name its state, authorized components, interaction limits, layout
+constraints, and transition permissions cannot render.
+
+This is a pure data contract. No behavior lives here.
+"""
+
+from enum import Enum
+from typing import List
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class AuthorizedComponent(str, Enum):
+    """The V1 component inventory (CONTRACT Section I.D).
+
+    No other components may be rendered. Expansion requires a new ADR
+    per CONTRACT Section VI.
+    """
+
+    HEADING = "Heading"
+    BODY = "Body"
+    BUTTON = "Button"
+    CARD = "Card"
+    FIELD = "Field"
+    LIST = "List"
+    DIVIDER = "Divider"
+    INDICATOR = "Indicator"
+    CONFIRM_DIALOG = "ConfirmDialog"
+    PENDING_BANNER = "PendingBanner"
+    BLOCKED_NOTICE = "BlockedNotice"
+
+
+class InteractionLimits(BaseModel):
+    """Per-state interaction density ceilings (CONTRACT Section I.F).
+
+    Defaults are the contract's absolute maxima. Individual states MAY be
+    more restrictive but MUST NOT be more permissive.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    max_primary_actions: int = Field(default=5, ge=0, le=5)
+    max_irreversible_actions: int = Field(default=1, ge=0, le=1)
+    max_highlighted_recommendations: int = Field(default=1, ge=0, le=1)
+    max_visible_text_levels: int = Field(default=3, ge=1, le=3)
+
+
+class LayoutConstraints(BaseModel):
+    """Layout rules the frontend must honor for this state
+    (CONTRACT Section I.B).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    grid_base_px: int = Field(default=8, description="Spacing grid base unit.")
+    allowed_spacing_px: List[int] = Field(
+        default_factory=lambda: [4, 8, 16, 24, 32, 48],
+        description="The complete set of permitted spacing values.",
+    )
+    spatial_stability: bool = Field(
+        default=True,
+        description="Element positions persist across states and sessions.",
+    )
+    reflow_permitted: bool = Field(
+        default=False,
+        description="Reflow-driven rearrangement is prohibited by contract.",
+    )
+
+
+class TransitionPermission(BaseModel):
+    """A single permitted transition from this state to another.
+
+    The absence of a transition in this list means the frontend MUST NOT
+    attempt it. Render Guards fail closed on unauthorized transitions.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    to_state_id: str
+    requires_confirmation: bool = Field(
+        default=False,
+        description="True for any irreversible or state-changing action.",
+    )
+    confirmation_copy: str | None = Field(
+        default=None,
+        description=(
+            "If requires_confirmation, must follow the pattern: "
+            "'This will change [X]. You can continue or go back.'"
+        ),
+    )
+
+
+class UIStateEnvelope(BaseModel):
+    """The authoritative envelope for a renderable screen.
+
+    Undefined states MUST NOT render (CONTRACT Section IV.A).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    state_id: str = Field(
+        ...,
+        min_length=1,
+        description="Unique identifier for this UI state.",
+    )
+    authorized_components: List[AuthorizedComponent] = Field(
+        ...,
+        min_length=1,
+        description="Components the frontend may render for this state.",
+    )
+    interaction_limits: InteractionLimits = Field(default_factory=InteractionLimits)
+    layout_constraints: LayoutConstraints = Field(default_factory=LayoutConstraints)
+    transition_permissions: List[TransitionPermission] = Field(default_factory=list)
+
+
+# ---- Registry of defined envelopes ------------------------------------------
+#
+# Phase A seeds the registry with a single proof-of-contract state so the
+# `/api/ui-envelope/{state_id}` route has something real to serve and tests
+# have a fixture that exercises every field. Real screen states (landing,
+# curriculum, first-win) are added in Phase B migration, each behind its
+# own envelope.
+
+
+_LANDING_ENVELOPE = UIStateEnvelope(
+    state_id="landing.intro",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.DIVIDER,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=2,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=2,
+    ),
+    transition_permissions=[
+        TransitionPermission(
+            to_state_id="landing.first_win",
+            requires_confirmation=False,
+        ),
+    ],
+)
+
+
+ENVELOPES: dict[str, UIStateEnvelope] = {
+    _LANDING_ENVELOPE.state_id: _LANDING_ENVELOPE,
+}
+
+
+def get_envelope(state_id: str) -> UIStateEnvelope | None:
+    """Return the envelope for a state, or None if undefined."""
+    return ENVELOPES.get(state_id)
