@@ -1,0 +1,57 @@
+name: Nightly Backup
+
+# pg_dump production Postgres -> Cloudflare R2.
+# No-op when DB / R2 secrets are absent.
+
+on:
+  schedule:
+    - cron: "0 7 * * *"   # 07:00 UTC nightly
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET || 'noni-backups' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate on secrets
+        id: gate
+        run: |
+          missing=()
+          for k in DATABASE_URL_DIRECT CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_API_TOKEN; do
+            if [[ -z "${!k}" ]]; then missing+=("$k"); fi
+          done
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::notice::Backup skipped — missing: ${missing[*]}"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install postgres-client-16
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16
+
+      - name: pg_dump
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          STAMP="$(date -u +%Y%m%d-%H%M%S)"
+          OUT="/tmp/noni-prod-${STAMP}.dump"
+          echo "OUT=$OUT" >> "$GITHUB_ENV"
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+          pg_dump --format=custom --no-owner --no-acl --dbname="$DATABASE_URL_DIRECT" -f "$OUT"
+          ls -la "$OUT"
+
+      - name: Upload to R2
+        if: steps.gate.outputs.skip != 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: r2 object put ${{ env.CLOUDFLARE_R2_BUCKET }}/noni-prod-${{ env.STAMP }}.dump --file=${{ env.OUT }}

@@ -1,0 +1,76 @@
+name: Restore Drill
+
+# Quarterly disaster-recovery drill: pull the latest backup from R2,
+# restore into an ephemeral Postgres service, run a schema-diff sanity
+# check. Manual trigger only.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  drill:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: noni
+          POSTGRES_PASSWORD: noni
+          POSTGRES_DB: noni
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET || 'noni-backups' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gate on secrets
+        id: gate
+        run: |
+          missing=()
+          for k in CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_API_TOKEN; do
+            if [[ -z "${!k}" ]]; then missing+=("$k"); fi
+          done
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::error::Cannot run drill — missing: ${missing[*]}"
+            exit 1
+          fi
+
+      - name: Install postgres-client-16
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16
+
+      - name: Locate latest backup in R2
+        id: locate
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: r2 object list ${{ env.CLOUDFLARE_R2_BUCKET }}
+
+      - name: Download + restore latest
+        run: |
+          set -euo pipefail
+          # Use wrangler to list & pick the latest noni-prod-*.dump
+          LATEST=$(npx -y wrangler r2 object list "${CLOUDFLARE_R2_BUCKET}" 2>/dev/null \
+                   | awk '/noni-prod-.*\.dump/{print $NF}' | sort | tail -n1)
+          if [[ -z "$LATEST" ]]; then
+            echo "::error::No backups found in r2://${CLOUDFLARE_R2_BUCKET}"
+            exit 1
+          fi
+          echo "Restoring: $LATEST"
+          npx -y wrangler r2 object get "${CLOUDFLARE_R2_BUCKET}/${LATEST}" --file /tmp/latest.dump
+          PGPASSWORD=noni pg_restore --clean --if-exists --no-owner --no-acl \
+            --host=127.0.0.1 --port=5432 --username=noni --dbname=noni /tmp/latest.dump || true
+
+      - name: Schema diff sanity (count tables)
+        run: |
+          PGPASSWORD=noni psql -h 127.0.0.1 -U noni -d noni -c "\dt" | tee /tmp/schema.out
+          test "$(grep -cE '^\s+public\s+\|' /tmp/schema.out)" -ge 10

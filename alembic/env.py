@@ -13,8 +13,15 @@ from sqlalchemy import engine_from_config, pool
 from backend.core.config import settings
 from backend.core.database import Base
 
-# Import models so they're registered on Base.metadata
+# Import models so they're registered on Base.metadata.
+# NOTE: every new domain model module MUST be imported here, otherwise
+# alembic autogenerate will not see it.
 from backend.models import telemetry as _telemetry  # noqa: F401
+from backend.models import accounts as _accounts  # noqa: F401
+from backend.models import auth as _auth  # noqa: F401
+from backend.models import billing as _billing  # noqa: F401
+from backend.models import learning as _learning  # noqa: F401
+from backend.models import governance as _governance  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)

@@ -38,8 +38,12 @@ jobs:
         run: ruff check backend/
       - name: Format check (black)
         run: black --check backend/
-      - name: Run migrations
+      - name: Run migrations (forward)
         run: alembic upgrade head
+      - name: Migration round-trip (one revision down + back up)
+        run: |
+          alembic downgrade -1
+          alembic upgrade head
       - name: Tests
         run: pytest backend/tests/ -v
 

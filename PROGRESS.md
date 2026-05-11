@@ -6,9 +6,9 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## Active Sprint
 
-**Sprint A1: Foundations — IN PROGRESS** (launch-preparation Phase A, automation-first).
+**Sprints A2 (DB schema) + A9 (CI/CD) — IN PROGRESS** (launch-preparation Phase A, automation-first, executed in parallel).
 
-Subsequent Phase A sprints (A2–A10) run in parallel where dependencies allow; see `docs/architecture/` and ADRs 0022–0025.
+Subsequent Phase A sprints (A3–A8, A10) will run in parallel where dependencies allow; see `docs/architecture/` and ADRs 0022–0025.
 
 ## Completed
 
@@ -103,13 +103,26 @@ Subsequent Phase A sprints (A2–A10) run in parallel where dependencies allow; 
   - ADR 0023 (auth and session model — Supabase Auth, server-side session cookie, logical `auth_user_id`)
   - ADR 0024 (DB operational policy — pooler mode, migration via Fly release_command, RLS, pg_cron retention, restore drill)
   - ADR 0025 (secrets — SOPS source of truth + `make secrets-sync` propagation)
-- Sprint A1 — Foundations (in progress)
+- Sprint A1 — Foundations (committed `72ad25f`, push pending until auth set up)
   - `infra/Makefile` (operator surface; `make help` lists all targets)
   - `infra/.env.example` (canonical key manifest)
   - `infra/scripts/` (bootstrap, sync, rotate, audit, deploy, smoke, stripe, restore-drill, backup-now, observability)
   - `infra/cloudflare/waf-rules.json`
   - `.sops.yaml` (encryption rules; public key filled by `make secrets-bootstrap`)
   - `.gitignore` updated to protect plaintext production env files
+- Sprint A2 — Launch DB schema (in progress)
+  - `alembic/versions/0003_launch_schema.py` — 12 new tables + telemetry_events additive columns
+  - `backend/models/{accounts,auth,billing,learning,governance}.py` — SQLAlchemy models
+  - `alembic/env.py` updated to import all launch-domain models
+  - `supabase/migrations/0001_rls_and_extensions.sql` — RLS policies + extensions (applied via `supabase db push`)
+  - `supabase/migrations/0002_pg_cron_retention.sql` — telemetry + rate-limit retention jobs
+  - `backend/tests/test_a2_launch_schema.py` — shape, FKs, idempotency, estimator persistence (5 tests)
+- Sprint A9 — CI/CD pipelines (in progress)
+  - `.github/workflows/ci.yml` — added migration round-trip step (down + up)
+  - `.github/workflows/deploy.yml` — preflight + supabase-db-push + fly-deploy + pages-deploy + smoke; no-ops when secrets absent
+  - `.github/workflows/secrets-drift.yml` — daily audit, opens `secrets-drift` issue on drift
+  - `.github/workflows/nightly-backup.yml` — pg_dump → R2 nightly; no-ops without secrets
+  - `.github/workflows/restore-drill.yml` — manual trigger; downloads latest dump, restores into ephemeral Postgres
 
 ## Out of Scope (deferred)
 
