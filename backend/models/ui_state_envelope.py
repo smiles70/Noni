@@ -354,6 +354,29 @@ _ACCOUNT_SETTINGS_ENVELOPE = UIStateEnvelope(
 )
 
 
+# Terminal state after the learner confirms account deletion. The page is
+# read-only: a single transition back to the landing page so the user can
+# leave gracefully or restart sign-up. No irreversible actions remain here.
+_ACCOUNT_DELETED_ENVELOPE = UIStateEnvelope(
+    state_id="account.deleted",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.DIVIDER,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=1,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=0,
+        max_visible_text_levels=2,
+    ),
+    transition_permissions=[
+        TransitionPermission(to_state_id="landing.page"),
+    ],
+)
+
+
 ENVELOPES: dict[str, UIStateEnvelope] = {
     _LANDING_INTRO_ENVELOPE.state_id: _LANDING_INTRO_ENVELOPE,
     _LANDING_PAGE_ENVELOPE.state_id: _LANDING_PAGE_ENVELOPE,
@@ -363,6 +386,7 @@ ENVELOPES: dict[str, UIStateEnvelope] = {
     _ACCOUNT_PAYWALL_ENVELOPE.state_id: _ACCOUNT_PAYWALL_ENVELOPE,
     _ACCOUNT_GIFT_REDEEM_ENVELOPE.state_id: _ACCOUNT_GIFT_REDEEM_ENVELOPE,
     _ACCOUNT_SETTINGS_ENVELOPE.state_id: _ACCOUNT_SETTINGS_ENVELOPE,
+    _ACCOUNT_DELETED_ENVELOPE.state_id: _ACCOUNT_DELETED_ENVELOPE,
 }
 
 
