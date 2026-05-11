@@ -18,6 +18,8 @@ from backend.api.routes.telemetry_export import router as telemetry_export_route
 from backend.api.routes.ui_envelope import router as ui_envelope_router
 from backend.api.routes.auth import router as auth_router
 from backend.api.routes.account import router as account_router
+from backend.api.routes.billing import router as billing_router
+from backend.api.routes.gifts import router as gifts_router
 
 
 @asynccontextmanager
@@ -50,6 +52,8 @@ app.include_router(telemetry_export_router, prefix="/api/telemetry", tags=["tele
 app.include_router(ui_envelope_router, prefix="/api/ui-envelope", tags=["ui-envelope"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(account_router, prefix="/me", tags=["account"])
+app.include_router(billing_router, prefix="/api/billing", tags=["billing"])
+app.include_router(gifts_router, prefix="/api/gifts", tags=["gifts"])
 
 
 @app.get("/health")

@@ -26,6 +26,15 @@ class Settings(BaseSettings):
     SUPABASE_JWT_AUDIENCE: str = "authenticated"
     SUPABASE_JWT_ISSUER: str = ""
 
+    # Payment provider: 'mock' for dev/tests, 'stripe' in production.
+    PAYMENT_PROVIDER: str = "mock"
+    STRIPE_SECRET_KEY: str = ""
+    STRIPE_PUBLISHABLE_KEY: str = ""
+    STRIPE_WEBHOOK_SECRET: str = ""
+    STRIPE_PRICE_ID_MODULES_4_5: str = ""
+    STRIPE_SUCCESS_URL: str = "http://localhost:5173/purchase/success"
+    STRIPE_CANCEL_URL: str = "http://localhost:5173/purchase/cancel"
+
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 7
 

@@ -242,11 +242,127 @@ _CURRICULUM_UNIT_ENVELOPE = UIStateEnvelope(
 )
 
 
+# Account / billing screens (Sprint A8). Each is a single-purpose page.
+
+_ACCOUNT_SIGNIN_ENVELOPE = UIStateEnvelope(
+    state_id="account.signin",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.FIELD,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=2,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=2,
+    ),
+    transition_permissions=[
+        TransitionPermission(to_state_id="account.settings"),
+        TransitionPermission(to_state_id="account.paywall"),
+        TransitionPermission(to_state_id="landing.page"),
+    ],
+)
+
+
+_ACCOUNT_PAYWALL_ENVELOPE = UIStateEnvelope(
+    state_id="account.paywall",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.LIST,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=3,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=2,
+    ),
+    transition_permissions=[
+        TransitionPermission(to_state_id="account.gift_redeem"),
+        TransitionPermission(to_state_id="curriculum.unit"),
+        TransitionPermission(to_state_id="landing.page"),
+    ],
+)
+
+
+_ACCOUNT_GIFT_REDEEM_ENVELOPE = UIStateEnvelope(
+    state_id="account.gift_redeem",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.FIELD,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=2,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=2,
+    ),
+    transition_permissions=[
+        TransitionPermission(to_state_id="curriculum.unit"),
+        TransitionPermission(to_state_id="account.paywall"),
+    ],
+)
+
+
+# Settings page hosts the irreversible Delete Account action, so it permits
+# exactly one irreversible action and requires confirmation copy.
+_ACCOUNT_SETTINGS_ENVELOPE = UIStateEnvelope(
+    state_id="account.settings",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.LIST,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.CONFIRM_DIALOG,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=3,
+        max_irreversible_actions=1,
+        max_highlighted_recommendations=0,
+        max_visible_text_levels=2,
+    ),
+    transition_permissions=[
+        TransitionPermission(
+            to_state_id="account.deleted",
+            requires_confirmation=True,
+            confirmation_copy=(
+                "This will change your account access. " "You can continue or go back."
+            ),
+        ),
+        TransitionPermission(to_state_id="landing.page"),
+    ],
+)
+
+
 ENVELOPES: dict[str, UIStateEnvelope] = {
     _LANDING_INTRO_ENVELOPE.state_id: _LANDING_INTRO_ENVELOPE,
     _LANDING_PAGE_ENVELOPE.state_id: _LANDING_PAGE_ENVELOPE,
     _LANDING_FIRST_WIN_ENVELOPE.state_id: _LANDING_FIRST_WIN_ENVELOPE,
     _CURRICULUM_UNIT_ENVELOPE.state_id: _CURRICULUM_UNIT_ENVELOPE,
+    _ACCOUNT_SIGNIN_ENVELOPE.state_id: _ACCOUNT_SIGNIN_ENVELOPE,
+    _ACCOUNT_PAYWALL_ENVELOPE.state_id: _ACCOUNT_PAYWALL_ENVELOPE,
+    _ACCOUNT_GIFT_REDEEM_ENVELOPE.state_id: _ACCOUNT_GIFT_REDEEM_ENVELOPE,
+    _ACCOUNT_SETTINGS_ENVELOPE.state_id: _ACCOUNT_SETTINGS_ENVELOPE,
 }
 
 
