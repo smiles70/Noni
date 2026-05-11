@@ -50,3 +50,7 @@ Any of the following should pull this bundle off the deferred list:
 ## Module 2 enforcement (added in Sprint 17)
 
 - Module 2 units declare `telemetry_requirements` (volatility_max, strain_max, mastery_min). Enforcement requires per-learner state, which requires the auth vendor decision. Until then the values are recorded in audit telemetry per ADR 0009 / 0015.
+
+## Claude Skills creation flow (added in Sprint 19)
+
+- Module 4 (`/api/curriculum/module-4/...`) lands the *declarative* content about Claude Skills. The *interactive Skill-creation flow* (wizard UI, Anthropic API calls, per-Skill persistence, review/edit cycle) requires the Claude API vendor decision AND the auth vendor decision (per-Skill ownership). Both are tracked above.

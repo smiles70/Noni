@@ -25,6 +25,10 @@ from backend.models.curriculum_units_module_3 import (
     UNITS_MODULE_3,
     get_module_3_unit,
 )
+from backend.models.curriculum_units_module_4 import (
+    UNITS_MODULE_4,
+    get_module_4_unit,
+)
 
 router = APIRouter()
 estimator = InterfaceStateEstimator()
@@ -379,6 +383,109 @@ def next_module_3_unit() -> dict:
     )
     return {
         "module": 3,
+        "unit_id": chosen.id,
+        "title": chosen.title,
+        "stability": stability,
+        "reason": "system-level recommendation (no per-learner state yet)",
+    }
+
+
+# ===== Module 4: Building and using Claude Skills =====
+# Same architectural pattern as Modules 2-3 (ADR 0015 / 0016 / 0017): backend-
+# derived stability, no request-body signals. telemetry_requirements recorded
+# in event_metadata for future per-learner enforcement (deferred to auth).
+
+
+@router.get("/module-4/units")
+def list_module_4_units() -> dict:
+    return {
+        "module": 4,
+        "units": [
+            {
+                "id": u.id,
+                "title": u.title,
+                "description": u.description,
+                "max_complexity": u.max_complexity,
+                "stability_threshold": u.stability_threshold,
+                "telemetry_requirements": u.telemetry_requirements,
+            }
+            for u in UNITS_MODULE_4
+        ],
+    }
+
+
+@router.get("/module-4/units/{unit_id}")
+def get_module_4_unit_page(unit_id: str) -> dict:
+    unit = get_module_4_unit(unit_id)
+    if unit is None:
+        raise HTTPException(
+            status_code=404, detail=f"Module 4 unit {unit_id} not found"
+        )
+
+    stability = _current_stability()
+    candidates = [
+        p.model_dump() for p in unit.pages if p.complexity <= unit.max_complexity
+    ]
+    if not candidates:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Module 4 unit {unit_id} has no pages within its max_complexity",
+        )
+    approved = select_ui_state(candidates, stability)
+    telemetry_service.record(
+        "iscs_decision",
+        metadata={
+            "module": 4,
+            "unit_id": unit.id,
+            "candidate_ids": [c["id"] for c in candidates],
+            "telemetry_requirements": unit.telemetry_requirements,
+        },
+        request_path=f"/api/curriculum/module-4/units/{unit.id}",
+        stability=stability,
+        selected_state_id=_selected_id(approved),
+        decision_reason="approved",
+        max_complexity=unit.max_complexity,
+    )
+    return {
+        "module": 4,
+        "unit_id": unit.id,
+        "unit_title": unit.title,
+        "ui_state": approved,
+        "stability": stability,
+    }
+
+
+@router.get("/module-4/next")
+def next_module_4_unit() -> dict:
+    """Recommend the most advanced Module 4 unit reachable at current stability.
+
+    Linear walk through UNITS_MODULE_4. Per-learner volatility/strain/mastery
+    gates are recorded but not yet enforced (auth-vendor pass).
+    """
+    stability = _current_stability()
+    chosen = None
+    for u in UNITS_MODULE_4:
+        if stability <= u.stability_threshold:
+            chosen = u
+        else:
+            break
+    if chosen is None:
+        chosen = UNITS_MODULE_4[0]
+    telemetry_service.record(
+        "iscs_recommendation",
+        metadata={
+            "module": 4,
+            "unit_count": len(UNITS_MODULE_4),
+            "telemetry_requirements": chosen.telemetry_requirements,
+        },
+        request_path="/api/curriculum/module-4/next",
+        stability=stability,
+        selected_state_id=chosen.id,
+        decision_reason="linear-walk",
+        max_complexity=chosen.max_complexity,
+    )
+    return {
+        "module": 4,
         "unit_id": chosen.id,
         "title": chosen.title,
         "stability": stability,

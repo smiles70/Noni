@@ -1,12 +1,14 @@
-# Sprint 18: Module 3 Curriculum - Long-Term Judgment & Autonomy (CLOSED)
+# Sprint 19: Module 4 Curriculum - Building Claude Skills (CLOSED)
 
-Tag: `sprint-18-module-3-curriculum-v1`. Lands the 4 Module 3 units (declarative, protective, dignity-preserving) following ADR 0015's pattern unchanged. Drop-in's request-body signal wiring rejected per Rule 1; ADR 0016 documents the (now-routine) adaptation.
+Tag: `sprint-19-module-4-curriculum-v1`. Lands the 6 Module 4 units (declarative content about Claude Skills - named, reusable instruction packages) following ADRs 0015 / 0016 unchanged. Drop-in's request-body signal wiring rejected per Rule 1.
+
+The *interactive Skill-creation experience* implied by units 3-5 remains vendor-blocked (Anthropic API + auth).
 
 ## Phases
 
-- 18.1 `Module3Unit` model (mirrors Module2Unit)
-- 18.2 4 units with content verbatim
-- 18.3 Three endpoints under `/api/curriculum/module-3/`
-- 18.4 7 new tests (72/72 passing)
-- 18.5 ADR 0016
-- 18.6 Closeout
+- 19.1 `Module4Unit` model (mirrors Module2Unit / Module3Unit)
+- 19.2 6 units with content verbatim
+- 19.3 Three endpoints under `/api/curriculum/module-4/`
+- 19.4 7 new tests (79/79 passing)
+- 19.5 ADR 0017
+- 19.6 Closeout

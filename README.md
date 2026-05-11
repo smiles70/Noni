@@ -308,6 +308,9 @@ npm run test:e2e           # runs all 4 specs including WCAG 2.1 AA scan
 | GET | `/api/curriculum/module-3/units` | Module 3 unit catalog (long-term judgment) |
 | GET | `/api/curriculum/module-3/units/{id}` | One Module 3 unit, ISCS-approved page |
 | GET | `/api/curriculum/module-3/next` | ISCS recommendation for next Module 3 unit |
+| GET | `/api/curriculum/module-4/units` | Module 4 unit catalog (building Claude Skills) |
+| GET | `/api/curriculum/module-4/units/{id}` | One Module 4 unit, ISCS-approved page |
+| GET | `/api/curriculum/module-4/next` | ISCS recommendation for next Module 4 unit |
 | POST | `/api/signals/user-action` | Record a user-originated signal |
 | POST | `/api/signals/telemetry` | Record a telemetry event |
 | GET | `/api/landing/steps` | All 8 Golden Flow steps (conceptual model) |
@@ -346,7 +349,8 @@ ADR index: [`docs/decisions/README.md`](./docs/decisions/README.md). Currently 0
 | `sprint-15-bundle-budget-v1` | Bundle-Size Budget |
 | `sprint-16-mobile-e2e-v1` | Mobile-Device E2E |
 | `sprint-17-module-2-curriculum-v1` | Module 2 Curriculum: Sustained Claude Use |
-| `sprint-18-module-3-curriculum-v1` | Module 3 Curriculum: Long-Term Judgment & Autonomy (this sprint) |
+| `sprint-18-module-3-curriculum-v1` | Module 3 Curriculum: Long-Term Judgment & Autonomy |
+| `sprint-19-module-4-curriculum-v1` | Module 4 Curriculum: Building Claude Skills (this sprint) |
 
 ---
 
