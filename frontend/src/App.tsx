@@ -7,13 +7,15 @@
  * the additional views are reachable in dev via direct setView calls
  * (e.g. from a debug surface or future settings entry on landing).
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LandingPage from "./components/LandingPage";
 import CurriculumRenderer from "./components/CurriculumRenderer";
 import SignInPage from "./components/SignInPage";
 import PaywallPage from "./components/PaywallPage";
 import GiftRedeemPage from "./components/GiftRedeemPage";
 import AccountSettingsPage from "./components/AccountSettingsPage";
+import { signIn } from "./api/auth";
+import { consumeOAuthFragment } from "./api/oauth";
 
 type View =
   | "landing"
@@ -21,10 +23,23 @@ type View =
   | "signin"
   | "paywall"
   | "gift_redeem"
-  | "account";
+  | "account"
+  | "oauth_finishing";
 
 const App: React.FC = () => {
   const [view, setView] = useState<View>("landing");
+
+  // Sprint B2: if Supabase returned the user with an access_token in the URL
+  // fragment, exchange it for a session cookie before the app renders any
+  // signed-in chrome. Runs exactly once at mount.
+  useEffect(() => {
+    const fragment = consumeOAuthFragment();
+    if (!fragment) return;
+    setView("oauth_finishing");
+    signIn(fragment.accessToken)
+      .then(() => setView("landing"))
+      .catch(() => setView("signin"));
+  }, []);
 
   const goLanding = () => setView("landing");
   const goCurriculum = () => setView("curriculum");
@@ -75,6 +90,12 @@ const App: React.FC = () => {
           onDeleted={goLanding}
           onBack={goLanding}
         />
+      );
+    case "oauth_finishing":
+      return (
+        <main aria-live="polite" data-component="PendingBanner">
+          <p>One moment — finishing sign in.</p>
+        </main>
       );
   }
 };

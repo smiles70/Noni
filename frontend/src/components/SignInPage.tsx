@@ -9,6 +9,7 @@
 import { useEffect, useState } from "react";
 import { signIn } from "../api/auth";
 import { loadEnvelope } from "../api/envelope";
+import { authProvider, startGoogleSignIn } from "../api/oauth";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import {
   COLORS,
@@ -78,6 +79,17 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
     }
   };
 
+  const handleGoogle = () => {
+    setError(null);
+    const ok = startGoogleSignIn();
+    if (!ok) {
+      setError(
+        "Google sign-in is not configured yet. Please contact support.",
+      );
+    }
+    // On success the browser is redirected, so no further state to manage.
+  };
+
   const proposal: RenderProposal = {
     components: ["Heading", "Body", "Button", "Field", "Divider"],
     primaryActionCount: 2,
@@ -100,47 +112,83 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
     usesOptimisticProgression: false,
   };
 
+  const isSupabase = authProvider === "supabase";
+
   return (
     <RenderGuard envelope={envelope} proposal={proposal}>
       <main style={PAGE}>
         <h1 style={H1}>Sign in</h1>
-        <p style={BODY}>
-          Enter the email you would like to use. We will send you a one-time
-          link in a moment. There is no password to remember.
-        </p>
 
-        <form onSubmit={handleSubmit} style={STACK} aria-busy={submitting}>
-          <div>
-            <label htmlFor="signin-email" style={FIELD_LABEL}>
-              Email
-            </label>
-            <input
-              id="signin-email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(ev) => setEmail(ev.target.value)}
-              style={FIELD}
-              disabled={submitting}
-            />
-          </div>
-
-          <div style={STACK}>
-            <button type="submit" style={PRIMARY_BTN} disabled={submitting}>
-              {submitting ? "Signing you in…" : "Continue"}
-            </button>
-            <button type="button" style={SECONDARY_BTN} onClick={onCancel}>
-              Go back
-            </button>
-          </div>
-
-          {error && (
-            <p style={ALERT_TEXT} role="alert">
-              {error}
+        {isSupabase ? (
+          <>
+            <p style={BODY}>
+              Continue with your Google account. We will only see the email
+              you choose to share.
             </p>
-          )}
-        </form>
+            <div style={STACK}>
+              <button
+                type="button"
+                style={PRIMARY_BTN}
+                onClick={handleGoogle}
+              >
+                Continue with Google
+              </button>
+              <button type="button" style={SECONDARY_BTN} onClick={onCancel}>
+                Go back
+              </button>
+              {error && (
+                <p style={ALERT_TEXT} role="alert">
+                  {error}
+                </p>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <p style={BODY}>
+              Enter the email you would like to use. We will send you a
+              one-time link in a moment. There is no password to remember.
+            </p>
+            <form onSubmit={handleSubmit} style={STACK} aria-busy={submitting}>
+              <div>
+                <label htmlFor="signin-email" style={FIELD_LABEL}>
+                  Email
+                </label>
+                <input
+                  id="signin-email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(ev) => setEmail(ev.target.value)}
+                  style={FIELD}
+                  disabled={submitting}
+                />
+              </div>
+              <div style={STACK}>
+                <button
+                  type="submit"
+                  style={PRIMARY_BTN}
+                  disabled={submitting}
+                >
+                  {submitting ? "Signing you in…" : "Continue"}
+                </button>
+                <button
+                  type="button"
+                  style={SECONDARY_BTN}
+                  onClick={onCancel}
+                >
+                  Go back
+                </button>
+              </div>
+              {error && (
+                <p style={ALERT_TEXT} role="alert">
+                  {error}
+                </p>
+              )}
+            </form>
+          </>
+        )}
 
         <hr style={DIVIDER} />
         <p style={BODY}>
