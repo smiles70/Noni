@@ -6,14 +6,24 @@
  * every call. See ADR 0023.
  *
  * Mock provider: `credential = "mock:<email>"` — used in dev/tests only.
- * Supabase provider: `credential = <Supabase access token>`.
+ * Clerk provider (post-ADR-0024): `credential = <Clerk session token>`.
  */
 import axios from "axios";
 
-const API_BASE = "http://127.0.0.1:8000";
+// API base URL. Must match the host the backend session cookie is set
+// on; using "localhost" keeps the cookie usable across XHR. Override
+// with VITE_API_BASE_URL if deploying split origins.
+interface ImportMetaEnvShape {
+  VITE_API_BASE_URL?: string;
+}
+const _env: ImportMetaEnvShape =
+  (import.meta as unknown as { env?: ImportMetaEnvShape }).env ?? {};
+
+export const API_BASE_URL: string =
+  (_env.VITE_API_BASE_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
 const client = axios.create({
-  baseURL: API_BASE,
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 

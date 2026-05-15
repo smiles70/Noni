@@ -14,6 +14,7 @@
     "bundle-size": "node scripts/check-bundle-size.mjs"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.32.0",
     "axios": "^1.7.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

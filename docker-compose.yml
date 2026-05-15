@@ -1,45 +1,61 @@
+# Noni local stack: postgres + backend api + frontend (nginx-served Vite build).
+# For staging deploys see docs/staging-deploy.md.
+
 services:
   db:
     image: postgres:15
     container_name: noni_postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: noni
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-noni}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  backend:
+  api:
     build:
       context: .
-      dockerfile: backend/Dockerfile
-    container_name: noni_backend
+      dockerfile: Dockerfile
+    container_name: noni_api
+    env_file: .env
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/noni
-      ENVIRONMENT: development
-      PROJECT_NAME: Noni
+      # Override host-style URL with docker-network URL.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-noni}
+      CORS_ORIGINS: "http://localhost:8080,http://localhost:5173"
+    ports:
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        # Forwarded from .env. Defaults keep mock signin working without
+        # any external setup. To turn on Clerk, set both in .env then
+        # rebuild the frontend image (Vite bakes these in at build time).
+        VITE_AUTH_PROVIDER: ${VITE_AUTH_PROVIDER:-mock}
+        VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY:-}
     container_name: noni_frontend
-    depends_on:
-      - backend
     ports:
-      - "5173:80"
+      - "8080:80"
+    depends_on:
+      - api
 
 volumes:
   postgres_data:

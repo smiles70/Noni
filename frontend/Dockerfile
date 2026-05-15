@@ -13,6 +13,21 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+
+# Vite reads VITE_* from the environment at build time. Surfacing them
+# as build ARGs keeps the values out of the image tag and lets
+# docker-compose forward them from the project's .env file.
+#
+# Auth selection (ADR 0024):
+#   VITE_AUTH_PROVIDER=mock  -> default; dev/tests; no Clerk required.
+#   VITE_AUTH_PROVIDER=clerk -> production path; requires
+#                               VITE_CLERK_PUBLISHABLE_KEY (pk_test_*
+#                               in dev, pk_live_* in prod).
+ARG VITE_AUTH_PROVIDER=mock
+ARG VITE_CLERK_PUBLISHABLE_KEY=
+ENV VITE_AUTH_PROVIDER=$VITE_AUTH_PROVIDER
+ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
+
 RUN npm run build
 
 # ---------- Stage 2: runtime ----------

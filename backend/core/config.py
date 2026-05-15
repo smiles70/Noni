@@ -19,12 +19,15 @@ class Settings(BaseSettings):
     SESSION_COOKIE_NAME: str = "noni_session"
     SESSION_TTL_DAYS: int = 30
 
-    # Identity provider: 'mock' for dev/tests, 'supabase' in production.
+    # Identity provider. Today: only "mock" is wired. After ADR 0024 lands
+    # this also accepts "clerk" (RS256 + JWKS). The legacy "supabase" value
+    # is rejected by `get_auth_provider()` — Supabase is the Postgres DB,
+    # not an identity provider.
     AUTH_PROVIDER: str = "mock"
-    SUPABASE_URL: str = ""
-    SUPABASE_JWT_SECRET: str = ""
-    SUPABASE_JWT_AUDIENCE: str = "authenticated"
-    SUPABASE_JWT_ISSUER: str = ""
+    # The browser app origin we redirect users back to after auth. Used by
+    # the Clerk integration's post-signin redirect and by any future
+    # backend-initiated redirect. Defaults to the local Compose stack.
+    FRONTEND_URL: str = "http://localhost:8080"
 
     # Payment provider: 'mock' for dev/tests, 'stripe' in production.
     PAYMENT_PROVIDER: str = "mock"
@@ -37,6 +40,9 @@ class Settings(BaseSettings):
 
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 7
+
+    # CORS allowlist (comma-separated origins). Empty -> dev fallback in main.py.
+    CORS_ORIGINS: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env", case_sensitive=True, extra="ignore"

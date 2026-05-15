@@ -1,15 +1,20 @@
 /**
  * Sign-in page (account.signin envelope).
  *
- * Dev/test mode accepts any email and uses MockAuthProvider via
- * `credential = "mock:<email>"`. Production swaps in Google OAuth
- * (handled outside this component; the page just calls signIn() with
- * whatever credential the OAuth flow produced). See ADR 0023.
+ * Two providers, selected at build time by VITE_AUTH_PROVIDER:
+ *   - "mock"  -> dev/tests; renders an email form, sends
+ *                `credential = "mock:<email>"` to /auth/callback.
+ *   - "clerk" -> production (post-ADR-0024); renders Clerk's <SignIn />
+ *                widget. The browser-side handoff to our backend lives
+ *                in ClerkAuthBridge (mounted by App.tsx).
+ *
+ * The RenderGuard envelope is intentionally bypassed in the Clerk branch
+ * because the rendered tree is a vendor widget we don't own.
  */
 import { useEffect, useState } from "react";
+import { SignIn } from "@clerk/clerk-react";
 import { signIn } from "../api/auth";
 import { loadEnvelope } from "../api/envelope";
-import { authProvider, startGoogleSignIn } from "../api/oauth";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import {
   COLORS,
@@ -31,6 +36,10 @@ import {
   STACK,
 } from "./AccountStyles";
 
+const AUTH_PROVIDER =
+  ((import.meta as unknown as { env?: { VITE_AUTH_PROVIDER?: string } }).env
+    ?.VITE_AUTH_PROVIDER ?? "mock");
+
 interface Props {
   onSignedIn: () => void;
   onCancel: () => void;
@@ -47,6 +56,34 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
       .then(setEnvelope)
       .catch(() => setError("This page is paused. Refresh in a moment."));
   }, []);
+
+  // Clerk path: render Clerk's hosted <SignIn /> widget. The bridge
+  // (mounted in App.tsx) detects the resulting Clerk session and will
+  // hand the JWT to our backend in session 3 of the migration. For
+  // session 2 the bridge only logs the token to the console.
+  if (AUTH_PROVIDER === "clerk") {
+    return (
+      <main style={PAGE} data-component="ClerkSignIn">
+        <h1 style={H1}>Sign in</h1>
+        <SignIn
+          routing="virtual"
+          signUpUrl="#"
+          fallbackRedirectUrl="/"
+        />
+        <button
+          type="button"
+          style={SECONDARY_BTN}
+          onClick={onCancel}
+        >
+          Go back
+        </button>
+        {/* onSignedIn is invoked by App.tsx once the bridge completes
+            the backend handshake. SignInPage itself doesn't drive the
+            transition in the Clerk branch. */}
+        {void onSignedIn}
+      </main>
+    );
+  }
 
   if (error) {
     return (
@@ -79,17 +116,6 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
     }
   };
 
-  const handleGoogle = () => {
-    setError(null);
-    const ok = startGoogleSignIn();
-    if (!ok) {
-      setError(
-        "Google sign-in is not configured yet. Please contact support.",
-      );
-    }
-    // On success the browser is redirected, so no further state to manage.
-  };
-
   const proposal: RenderProposal = {
     components: ["Heading", "Body", "Button", "Field", "Divider"],
     primaryActionCount: 2,
@@ -112,83 +138,53 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
     usesOptimisticProgression: false,
   };
 
-  const isSupabase = authProvider === "supabase";
-
   return (
     <RenderGuard envelope={envelope} proposal={proposal}>
       <main style={PAGE}>
         <h1 style={H1}>Sign in</h1>
 
-        {isSupabase ? (
-          <>
-            <p style={BODY}>
-              Continue with your Google account. We will only see the email
-              you choose to share.
+        <p style={BODY}>
+          Enter the email you would like to use. We will send you a
+          one-time link in a moment. There is no password to remember.
+        </p>
+        <form onSubmit={handleSubmit} style={STACK} aria-busy={submitting}>
+          <div>
+            <label htmlFor="signin-email" style={FIELD_LABEL}>
+              Email
+            </label>
+            <input
+              id="signin-email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(ev) => setEmail(ev.target.value)}
+              style={FIELD}
+              disabled={submitting}
+            />
+          </div>
+          <div style={STACK}>
+            <button
+              type="submit"
+              style={PRIMARY_BTN}
+              disabled={submitting}
+            >
+              {submitting ? "Signing you in…" : "Continue"}
+            </button>
+            <button
+              type="button"
+              style={SECONDARY_BTN}
+              onClick={onCancel}
+            >
+              Go back
+            </button>
+          </div>
+          {error && (
+            <p style={ALERT_TEXT} role="alert">
+              {error}
             </p>
-            <div style={STACK}>
-              <button
-                type="button"
-                style={PRIMARY_BTN}
-                onClick={handleGoogle}
-              >
-                Continue with Google
-              </button>
-              <button type="button" style={SECONDARY_BTN} onClick={onCancel}>
-                Go back
-              </button>
-              {error && (
-                <p style={ALERT_TEXT} role="alert">
-                  {error}
-                </p>
-              )}
-            </div>
-          </>
-        ) : (
-          <>
-            <p style={BODY}>
-              Enter the email you would like to use. We will send you a
-              one-time link in a moment. There is no password to remember.
-            </p>
-            <form onSubmit={handleSubmit} style={STACK} aria-busy={submitting}>
-              <div>
-                <label htmlFor="signin-email" style={FIELD_LABEL}>
-                  Email
-                </label>
-                <input
-                  id="signin-email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(ev) => setEmail(ev.target.value)}
-                  style={FIELD}
-                  disabled={submitting}
-                />
-              </div>
-              <div style={STACK}>
-                <button
-                  type="submit"
-                  style={PRIMARY_BTN}
-                  disabled={submitting}
-                >
-                  {submitting ? "Signing you in…" : "Continue"}
-                </button>
-                <button
-                  type="button"
-                  style={SECONDARY_BTN}
-                  onClick={onCancel}
-                >
-                  Go back
-                </button>
-              </div>
-              {error && (
-                <p style={ALERT_TEXT} role="alert">
-                  {error}
-                </p>
-              )}
-            </form>
-          </>
-        )}
+          )}
+        </form>
 
         <hr style={DIVIDER} />
         <p style={BODY}>

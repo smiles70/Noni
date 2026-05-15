@@ -16,6 +16,7 @@ htmlcov/
 # Environment
 .env
 .env.local
+.env.bak.*
 
 # Secrets — only the SOPS-encrypted file is committed (see ADR 0025)
 infra/.env.prod
@@ -23,6 +24,11 @@ infra/.env.prod.draft
 infra/.env.staging
 infra/.env.staging.draft
 *.dump
+
+# Stray secret artifacts that have shown up at the repo root in the past
+# (e.g. JWT secrets pasted from a vendor dashboard). Belt and suspenders.
+jwt.txt
+*.jwt
 
 # Database
 *.db

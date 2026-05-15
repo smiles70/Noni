@@ -1,18 +1,24 @@
 """Authentication routes.
 
-See ADR 0023.
+See ADR 0023 (and ADR 0024 for the Clerk migration in progress).
 
 Endpoints:
-- POST /auth/callback     verify credential, mint session, set cookie
-- POST /auth/signout      revoke active session, clear cookie
-- GET  /auth/whoami       return current account or 401
+- POST /auth/callback   verify credential, mint session, set cookie
+- POST /auth/signout    revoke active session, clear cookie
+- GET  /auth/whoami     return current account or 401
 
-The 'credential' field is provider-shaped: with AUTH_PROVIDER=mock it's
-"mock:<email>"; with AUTH_PROVIDER=supabase it's the Supabase-issued JWT.
+The 'credential' field is provider-shaped. Today that's "mock:<email>"
+(MockAuthProvider). In session 3 of the Clerk migration this becomes
+the Clerk-issued RS256 JWT; the route itself stays provider-agnostic.
+
+The previous /auth/google/* server-orchestrated PKCE endpoints were
+removed when Supabase-as-IdP was decommissioned. Clerk hosts its own
+Google sign-in UI, so we no longer need to drive the OAuth dance.
 """
 
 from __future__ import annotations
 
+import logging
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -30,6 +36,8 @@ from backend.services.sessions import (
     revoke_session,
 )
 
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
