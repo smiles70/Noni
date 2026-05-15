@@ -1,0 +1,33 @@
+# Version control / IDE
+.git
+.gitignore
+.idea
+.vscode
+
+# Python build / cache
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+*.egg-info
+build
+dist
+
+# Frontend (built separately via frontend/Dockerfile)
+frontend
+node_modules
+
+# Local env files (never bake secrets into images)
+.env
+.env.*
+!.env.example
+
+# Docs / large artifacts
+docs/_build
+test-results
+playwright-report

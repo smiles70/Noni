@@ -43,3 +43,169 @@ button,
     scroll-behavior: auto !important;
   }
 }
+
+/* ---- Hero layout (landing page) ----------------------------------------
+ * Token-aligned classes. Spacing values mirror SPACING.* in tokens.ts.
+ * Stacked column: full-width landscape image with a centered overlay
+ * banner (title + Learn more), then a row of auth actions (Create
+ * account / Log in), then the marketing content column.
+ */
+/* The hero band itself breaks out of the centered <main> container so it
+ * spans the full viewport. All inner rows then live in a normal flex
+ * column and center themselves naturally — no nested break-out tricks. */
+.noni-hero {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 48px; /* SPACING.xxl */
+}
+
+/* Image frame fills the full hero band. The image renders at its natural
+ * aspect ratio so the *whole* picture is visible (no cropping). The
+ * overlay banner is absolutely positioned and centered within this
+ * frame. */
+.noni-hero__frame {
+  position: relative;
+  width: 100%;
+  display: block;
+}
+
+.noni-hero__image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Overlay — transparent, floats over the photo. White text with a soft
+ * shadow keeps the headline legible against varied parts of the image
+ * without needing a card background. */
+.noni-hero__overlay {
+  position: absolute;
+  /* Float over the right side of the photo (the laptop area in the
+   * current hero image gives a calmer backdrop than the centre). */
+  top: 50%;
+  right: 6%;
+  left: auto;
+  transform: translateY(-50%);
+  background: transparent;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px; /* SPACING.md */
+  text-align: right;
+  max-width: min(440px, 45%);
+}
+
+.noni-hero__overlay-title {
+  margin: 0;
+  font-size: 36px;
+  line-height: 1.15;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+}
+
+/* Ghost button used over the photo: transparent fill, white text and
+ * border, subtle dark shadow for contrast against light areas of the
+ * image. Hover/focus reuses the global focus-visible ring. */
+.noni-hero__overlay-btn {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px; /* SPACING.sm / SPACING.lg */
+  background: rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 8px; /* tokens.RADIUS.sm */
+  cursor: pointer;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+  transition: background-color 200ms ease-out;
+}
+
+.noni-hero__overlay-btn:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Row directly under the photo: primary CTA + secondary Log in.
+ * Evenly spaced and aligned along the top so the secondary button lines
+ * up with the primary button (the reassurance note hangs below). */
+.noni-hero__auth-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px; /* SPACING.lg */
+  width: 100%;
+  margin-top: 32px; /* SPACING.xl */
+  margin-bottom: 32px; /* SPACING.xl */
+}
+
+.noni-hero__primary-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* SPACING.xs */
+}
+
+.noni-hero__cta-note {
+  margin: 0;
+  font-size: 14px;
+  color: #5a5a55; /* tokens.COLORS.textSecondary-equivalent — calm, not loud */
+}
+
+/* Quiet utility row (Larger text toggle) lives below the auth row so it
+ * does not compete with the primary actions. */
+.noni-hero__utility-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 32px; /* SPACING.xl */
+}
+
+.noni-hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px; /* SPACING.lg */
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* On narrow viewports the overlay can crowd the image; fall back to a
+ * stacked layout where the banner sits beneath the picture. */
+@media (max-width: 640px) {
+  .noni-hero__overlay {
+    position: static;
+    transform: none;
+    right: auto;
+    left: auto;
+    align-items: center;
+    text-align: center;
+    max-width: 90%;
+    margin-top: 16px;
+  }
+  .noni-hero__overlay-title {
+    color: #222222; /* tokens.COLORS.textPrimary — image no longer behind it */
+    text-shadow: none;
+    font-size: 28px;
+  }
+  .noni-hero__overlay-btn {
+    background: transparent;
+    color: #4a6fa5; /* tokens.COLORS.accentMutedBlue */
+    border-color: #4a6fa5;
+    text-shadow: none;
+  }
+}
+
+html,
+body {
+  overflow-x: hidden;
+}

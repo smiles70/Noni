@@ -13,7 +13,6 @@
 import { CSSProperties, useEffect, useState } from "react";
 import { loadLandingPage, LandingPageContent } from "../api/landing";
 import { loadEnvelope } from "../api/envelope";
-import { isLargeText, toggleLargeText } from "../largeText";
 import {
   COLORS,
   SPACING,
@@ -25,6 +24,7 @@ import {
 import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import NavBar from "./NavBar";
+import HowItWorksDialog from "./HowItWorksDialog";
 
 interface Props {
   onBegin: () => void;
@@ -37,7 +37,7 @@ interface Props {
 
 const PAGE: CSSProperties = {
   padding: SPACING.xl,
-  maxWidth: 680, // 85 × 8px = grid-aligned
+  maxWidth: 1080, // 135 × 8px = grid-aligned; gives the hero room
   margin: "0 auto",
   fontSize: TYPOGRAPHY.bodySizePx,
   lineHeight: TYPOGRAPHY.bodyLineHeight,
@@ -51,19 +51,6 @@ const H1: CSSProperties = {
   marginTop: 0,
   marginBottom: SPACING.sm,
   color: COLORS.textPrimary,
-};
-
-const H2: CSSProperties = {
-  fontSize: TYPOGRAPHY.headingScale.level2,
-  marginTop: 0,
-  marginBottom: SPACING.md,
-  color: COLORS.textPrimary,
-};
-
-const SUBHEAD: CSSProperties = {
-  fontSize: TYPOGRAPHY.headingScale.level3,
-  color: COLORS.textPrimary,
-  marginTop: 0,
 };
 
 const PRIMARY_BTN: CSSProperties = {
@@ -88,40 +75,6 @@ const SECONDARY_BTN: CSSProperties = {
   fontWeight: 600,
   cursor: "pointer",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
-};
-
-const TEXT_TOGGLE: CSSProperties = {
-  fontSize: TYPOGRAPHY.bodySizePx,
-  padding: `${SPACING.sm}px ${SPACING.md}px`,
-  backgroundColor: COLORS.surface,
-  color: COLORS.accentMutedBlue,
-  border: `1px solid ${COLORS.accentMutedBlue}`,
-  borderRadius: RADIUS.sm,
-  cursor: "pointer",
-  transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
-};
-
-const CTA_NOTE: CSSProperties = {
-  fontSize: TYPOGRAPHY.bodySizePx,
-  color: COLORS.textPrimary,
-  marginTop: SPACING.sm,
-};
-
-const SECTION: CSSProperties = {
-  marginTop: SPACING.xl,
-};
-
-const DIVIDER: CSSProperties = {
-  border: 0,
-  borderTop: `1px solid ${COLORS.disabled}`,
-  margin: `${SPACING.xl}px 0`,
-};
-
-const CTA_GROUP: CSSProperties = {
-  marginTop: SPACING.xxl,
-  display: "flex",
-  flexDirection: "column",
-  gap: SPACING.lg,
 };
 
 // ---- Loading / blocked states ----------------------------------------------
@@ -154,14 +107,6 @@ function BlockedLoad({ message }: { message: string }) {
 
 // ---- Component -------------------------------------------------------------
 
-function paragraphs(text: string) {
-  return text.split("\n\n").map((p, i) => (
-    <p key={i} style={{ marginTop: 0, marginBottom: SPACING.md }}>
-      {p}
-    </p>
-  ));
-}
-
 export default function LandingPage({
   onBegin,
   onSignIn,
@@ -171,7 +116,12 @@ export default function LandingPage({
   const [content, setContent] = useState<LandingPageContent | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [largeText, setLargeText] = useState<boolean>(isLargeText());
+  // Whether the long-form "How Noni works" dialog is open. Closed by
+  // default; opens when the visitor clicks the overlay button on the
+  // hero. Closing returns focus to the trigger via the browser's default
+  // (we don't currently snapshot a return target — the trigger sits
+  // immediately under the dialog backdrop and is easy to find).
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   useEffect(() => {
     Promise.all([loadEnvelope("landing.page"), loadLandingPage()])
@@ -183,8 +133,6 @@ export default function LandingPage({
         setError(e instanceof Error ? e.message : "Failed to load"),
       );
   }, []);
-
-  const handleToggleText = () => setLargeText(toggleLargeText());
 
   if (error) {
     return (
@@ -198,28 +146,19 @@ export default function LandingPage({
     return <PendingBanner />;
   }
 
-  const scrollToIntro = () => {
-    const el = document.getElementById("introduction");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  // The proposal RenderGuard validates against the envelope. Fixed values
-  // because the landing page's structure is static; if structure changes,
-  // these counts change with it.
+  // The proposal RenderGuard validates against the envelope. Counts
+  // reflect what the landing page actually renders now: hero image,
+  // headline, overlay "See how Noni works" button, primary "Set up my
+  // account" button, secondary "Log in" button, plus up to 2 NavBar
+  // entries when signed in. Long-form copy lives in HowItWorksDialog,
+  // which is rendered outside the guarded subtree.
   const proposal: RenderProposal = {
-    components: [
-      "Heading",
-      "Body",
-      "Button",
-      "Card",
-      "Divider",
-      "List",
-    ],
-    // text toggle + primary CTA + secondary CTA + up to 2 NavBar entries.
+    components: ["Heading", "Body", "Button"],
+    // overlay CTA + primary CTA + secondary CTA + up to 2 NavBar entries.
     primaryActionCount: 5,
     irreversibleActionCount: 0,
-    highlightedRecommendationCount: 1, // primary CTA
-    visibleTextLevels: 3, // h1, h2, body
+    highlightedRecommendationCount: 1, // primary CTA only
+    visibleTextLevels: 2, // h1 + body (note + button labels)
     colorsUsed: [
       COLORS.background,
       COLORS.surface,
@@ -243,90 +182,87 @@ export default function LandingPage({
   };
 
   return (
+    <>
     <RenderGuard envelope={envelope} proposal={proposal}>
       <main style={PAGE}>
-        <NavBar
-          onSignIn={onSignIn}
-          onContinuePaid={onContinuePaid}
-          onAccount={onAccount}
-        />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginBottom: SPACING.md,
-          }}
-        >
-          <button
-            type="button"
-            onClick={handleToggleText}
-            style={TEXT_TOGGLE}
-            aria-pressed={largeText}
-          >
-            {largeText ? "Standard text" : "Larger text"}
-          </button>
-        </div>
+        {/* Hero: full-width landscape image (whole picture visible — no
+            crop) with a centered white banner overlay containing the
+            headline and a "Learn more" action that scrolls to the
+            introduction. Beneath the photo: a primary "Create account"
+            and a secondary "Log in" action. Image is decorative (alt=""),
+            so it does not add to the visible-text-level count.
 
-        <header>
-          <h1 style={H1}>{content.hero.headline}</h1>
-          <p style={SUBHEAD}>{content.hero.subheadline}</p>
-        </header>
-
-        <section aria-labelledby="introduction-heading" style={SECTION}>
-          <h2 id="introduction-heading" style={H2}>
-            {content.introduction.title}
-          </h2>
-          <div id="introduction">{paragraphs(content.introduction.body)}</div>
-        </section>
-
-        <section aria-labelledby="what-noni-does-heading" style={SECTION}>
-          <h2 id="what-noni-does-heading" style={H2}>
-            {content.what_noni_does.title}
-          </h2>
-          <ul>
-            {content.what_noni_does.items.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section aria-labelledby="how-it-feels-heading" style={SECTION}>
-          <h2 id="how-it-feels-heading" style={H2}>
-            {content.how_it_feels.title}
-          </h2>
-          <ul>
-            {content.how_it_feels.items.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section aria-labelledby="trust-heading" style={SECTION}>
-          <h2 id="trust-heading" style={H2}>
-            {content.trust_and_safety.title}
-          </h2>
-          {paragraphs(content.trust_and_safety.body)}
-        </section>
-
-        <section aria-label="Next steps" style={CTA_GROUP}>
-          <div>
-            <button type="button" onClick={onBegin} style={PRIMARY_BTN}>
-              {content.call_to_action.primary.label}
-            </button>
-            <p style={CTA_NOTE}>{content.call_to_action.primary.note}</p>
+            Note: the hero headline and overlay button label are
+            intentional front-end overrides per the user's request for
+            calmer SaaS-style phrasing. Other copy still flows from the
+            backend. */}
+        <section className="noni-hero" aria-labelledby="hero-heading">
+          <div className="noni-hero__frame">
+            <img
+              className="noni-hero__image"
+              src="/nonisplash.jpg"
+              alt=""
+              loading="eager"
+            />
+            <div className="noni-hero__overlay">
+              <h1 id="hero-heading" className="noni-hero__overlay-title">
+                Learn AI on your terms!
+              </h1>
+              <button
+                type="button"
+                onClick={() => setShowHowItWorks(true)}
+                className="noni-hero__overlay-btn"
+              >
+                See how Noni works
+              </button>
+            </div>
           </div>
-          <div>
-            <button type="button" onClick={scrollToIntro} style={SECONDARY_BTN}>
-              {content.call_to_action.secondary.label}
-            </button>
-            <p style={CTA_NOTE}>{content.call_to_action.secondary.note}</p>
+
+          {/* Auth row directly under the photo. The primary label names
+              exactly what the click does today (account setup) and pairs
+              it with a one-line reassurance to remove the card-on-file
+              fear — geragogy research consistently shows older adults
+              respond better to plain, honest action labels than to
+              outcome promises that may not match the next screen. When a
+              real sample lesson exists, revisit this label as
+              "Try your first lesson". */}
+          <div className="noni-hero__auth-row">
+            <div className="noni-hero__primary-cta">
+              <button type="button" onClick={onBegin} style={PRIMARY_BTN}>
+                Set up my account — free
+              </button>
+              <p className="noni-hero__cta-note">
+                Free. No card needed. Stop any time.
+              </p>
+            </div>
+            {onSignIn && (
+              <button type="button" onClick={onSignIn} style={SECONDARY_BTN}>
+                Log in
+              </button>
+            )}
           </div>
+
+          {/* NavBar surfaces signed-in entries (Continue paid / Your
+              account). Signed-out users see no extra entries here. */}
+          <NavBar
+            onContinuePaid={onContinuePaid}
+            onAccount={onAccount}
+          />
         </section>
 
-        <hr style={DIVIDER} />
-        <footer>{paragraphs(content.closing.body)}</footer>
+        {/* Long-form marketing copy used to live here as a scrollable
+            reading column. It now lives in HowItWorksDialog (rendered
+            below, outside the RenderGuard) so the landing surface stays
+            a single calm hero with two clear actions. */}
       </main>
     </RenderGuard>
+    {showHowItWorks && (
+      <HowItWorksDialog
+        content={content}
+        onClose={() => setShowHowItWorks(false)}
+      />
+    )}
+    </>
   );
 }
 
