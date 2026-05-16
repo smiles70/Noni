@@ -153,6 +153,8 @@ const App: React.FC = () => {
             onSignIn={goSignIn}
             onContinuePaid={goPaywall}
             onAccount={goAccount}
+            signedIn={signedIn === true}
+            onSignOut={handleSignedOut}
           />
         );
         break;
