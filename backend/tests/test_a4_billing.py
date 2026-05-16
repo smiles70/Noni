@@ -69,7 +69,14 @@ def client():
 
 
 def _signin(client: TestClient, email: str) -> str:
-    r = client.post("/auth/callback", json={"credential": f"mock:{email}"})
+    """ADR 0024: 'sign in' = attach Bearer header to the client.
+
+    No /auth/callback. The first authenticated request upserts the
+    account row; we fetch /auth/whoami so the caller can return the
+    account_id (some tests use it for FK assertions).
+    """
+    client.headers["Authorization"] = f"Bearer mock:{email}"
+    r = client.get("/auth/whoami")
     assert r.status_code == 200, r.text
     return r.json()["account_id"]
 
@@ -298,9 +305,9 @@ def test_gift_flow_purchase_then_claim(client, DbSession):
     )
     assert rw.status_code == 200
 
-    # Buyer signs out, recipient signs in.
-    client.post("/auth/signout")
-    client.cookies.clear()
+    # Buyer 'signs out' (drops the bearer); recipient signs in.
+    # In the Bearer model swapping users is a header swap, nothing
+    # server-side to revoke.
     _signin(client, "a4-recipient@example.test")
 
     # Preview before claim.
@@ -354,15 +361,11 @@ def test_gift_double_claim_rejected(client, DbSession):
         is_gift=True,
     )
 
-    client.post("/auth/signout")
-    client.cookies.clear()
     _signin(client, "a4-r1@example.test")
     r1 = client.post("/api/gifts/claim", json={"token": raw_token})
     assert r1.status_code == 200
 
     # Second account tries to redeem the same (now consumed) token.
-    client.post("/auth/signout")
-    client.cookies.clear()
     _signin(client, "a4-r2@example.test")
     r2 = client.post("/api/gifts/claim", json={"token": raw_token})
     assert r2.status_code == 400

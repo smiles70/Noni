@@ -1,73 +1,77 @@
 /**
- * Unit tests for `api/auth.ts`.
+ * Unit tests for `api/auth.ts` (ADR 0024 — Bearer model).
  *
- * The auth client is thin (axios + cookies), but its 401-on-whoami swallow
- * behaviour is load-bearing for `NavBar` (which renders the signed-out
- * state on null) and must not regress.
+ * The auth client is thin but its 401-on-whoami swallow behaviour is
+ * load-bearing for App.tsx (which renders signed-out on null) and must
+ * not regress.
  *
- * We replace the module's exported axios `client` instance methods via
- * vi.mock at module-import time.
+ * Post-migration there is no signIn or signOut to test: those are gone
+ * from the API surface. We test:
+ *   - whoami: 200 -> body, 401 -> null, other -> rethrow
+ *   - deleteAccount / cancelDeletion path
+ *   - mock token helpers write/clear localStorage at the agreed key
+ *
+ * The axios mock includes `interceptors.request.use` because client.ts
+ * registers a Bearer interceptor at module-load time; without it the
+ * import itself would crash.
  */
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// `vi.mock` is hoisted to the top of the file, above any `const` lines.
-// `vi.hoisted` lets us declare the spy fns alongside the mock so they
-// initialize together and are accessible inside the factory.
-const { mockGet, mockPost, isAxiosError } = vi.hoisted(() => ({
+const { mockGet, mockPost, mockUse, isAxiosError } = vi.hoisted(() => ({
   mockGet: vi.fn(),
   mockPost: vi.fn(),
+  mockUse: vi.fn(),
   isAxiosError: vi.fn(),
 }));
 
 vi.mock("axios", () => ({
   default: {
-    create: () => ({ get: mockGet, post: mockPost }),
+    create: () => ({
+      get: mockGet,
+      post: mockPost,
+      interceptors: { request: { use: mockUse } },
+    }),
     isAxiosError,
   },
+  // Named export — client.ts does `import { AxiosHeaders } from "axios"`.
+  // The interceptor never runs in unit tests so the value is unused;
+  // we just need the import to resolve to something truthy.
+  AxiosHeaders: class {},
   isAxiosError,
 }));
 
-// Import AFTER vi.mock so the mocked axios is what the module captures.
+// Import AFTER vi.mock so the module captures the mocked axios.
 import {
   cancelDeletion,
+  clearMockToken,
   deleteAccount,
-  signIn,
-  signOut,
+  setMockToken,
   whoami,
 } from "../auth";
+
+// Stub localStorage globally for this test file. Vitest's default
+// `node` environment doesn't ship one, and adding jsdom for two
+// helper tests would be heavier than this 8-line shim.
+beforeEach(() => {
+  const store: Record<string, string> = {};
+  vi.stubGlobal("localStorage", {
+    getItem: (k: string) => (k in store ? store[k] : null),
+    setItem: (k: string, v: string) => {
+      store[k] = v;
+    },
+    removeItem: (k: string) => {
+      delete store[k];
+    },
+    clear: () => {
+      for (const k of Object.keys(store)) delete store[k];
+    },
+  });
+});
 
 afterEach(() => {
   mockGet.mockReset();
   mockPost.mockReset();
   isAxiosError.mockReset();
-});
-
-describe("signIn", () => {
-  it("POSTs the credential to /auth/callback and returns the body", async () => {
-    mockPost.mockResolvedValueOnce({
-      data: {
-        account_id: "acc-1",
-        email: "alice@example.test",
-        has_active_session: true,
-      },
-    });
-
-    const res = await signIn("mock:alice@example.test");
-
-    expect(mockPost).toHaveBeenCalledWith("/auth/callback", {
-      credential: "mock:alice@example.test",
-    });
-    expect(res.account_id).toBe("acc-1");
-    expect(res.has_active_session).toBe(true);
-  });
-});
-
-describe("signOut", () => {
-  it("POSTs to /auth/signout", async () => {
-    mockPost.mockResolvedValueOnce({ data: {} });
-    await signOut();
-    expect(mockPost).toHaveBeenCalledWith("/auth/signout");
-  });
 });
 
 describe("whoami", () => {
@@ -119,5 +123,25 @@ describe("account deletion", () => {
     mockPost.mockResolvedValueOnce({ data: {} });
     await cancelDeletion();
     expect(mockPost).toHaveBeenCalledWith("/me/delete/cancel");
+  });
+});
+
+describe("mock token helpers", () => {
+  // These guard the contract between SignInPage (writer), apiClient
+  // (reader), and AccountSettingsPage (clearer). The exact key string
+  // and value format must stay aligned across all three; if any drifts
+  // the bearer interceptor stops finding the token and the user looks
+  // perpetually signed-out in mock mode.
+  it("setMockToken writes 'mock:<email>' under the agreed key", () => {
+    setMockToken("alice@example.test");
+    expect(localStorage.getItem("noni.mock_token")).toBe(
+      "mock:alice@example.test",
+    );
+  });
+
+  it("clearMockToken removes the key", () => {
+    setMockToken("bob@example.test");
+    clearMockToken();
+    expect(localStorage.getItem("noni.mock_token")).toBeNull();
   });
 });

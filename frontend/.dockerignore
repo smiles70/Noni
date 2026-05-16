@@ -3,5 +3,12 @@ dist
 .vite
 playwright-report
 test-results
-.env
-.env.*
+# NOTE: Do NOT exclude .env / .env.* here. Vite reads them at build
+# time inside the builder stage to bake VITE_* values (Clerk
+# publishable key, AUTH_PROVIDER, etc.) into the static bundle.
+# Multi-stage build still keeps the .env out of the runtime image
+# because only /app/dist is copied to the nginx layer.
+# Exclude .env.local-style files that should never ship though:
+.env.development.local
+.env.production.local
+.env.test.local

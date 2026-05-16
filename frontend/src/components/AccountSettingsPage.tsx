@@ -13,8 +13,8 @@
  */
 import { useEffect, useState } from "react";
 import {
+  clearMockToken,
   deleteAccount,
-  signOut,
   whoami,
   type WhoAmIResponse,
 } from "../api/auth";
@@ -42,6 +42,15 @@ import {
   STACK,
   SUCCESS_TEXT,
 } from "./AccountStyles";
+import ClerkSignOutButton from "./ClerkSignOutButton";
+
+// Build-time switch (mirrors App.tsx). In Clerk mode we render the
+// Clerk-aware sign-out button (uses useClerk()); in mock mode we just
+// clear the localStorage Bearer token. ADR 0024 — no backend round-trip
+// for sign-out in either path.
+const AUTH_PROVIDER =
+  ((import.meta as unknown as { env?: { VITE_AUTH_PROVIDER?: string } }).env
+    ?.VITE_AUTH_PROVIDER ?? "mock");
 
 interface Props {
   onSignedOut: () => void;
@@ -85,7 +94,10 @@ export default function AccountSettingsPage({
   const handleSignOut = async () => {
     setSubmitting(true);
     try {
-      await signOut();
+      // Mock-mode sign-out is purely client-side: drop the Bearer
+      // token from localStorage and let App.tsx re-run whoami (which
+      // will now 401) on the navigation triggered by onSignedOut.
+      clearMockToken();
       onSignedOut();
     } finally {
       setSubmitting(false);
@@ -146,14 +158,24 @@ export default function AccountSettingsPage({
         <section style={CARD}>
           <h2 style={H2}>Signed in as</h2>
           <p style={BODY}>{me?.email ?? "—"}</p>
-          <button
-            type="button"
-            style={SECONDARY_BTN}
-            onClick={handleSignOut}
-            disabled={submitting}
-          >
-            Sign out
-          </button>
+          {AUTH_PROVIDER === "clerk" ? (
+            // In Clerk mode the sign-out has to drop Clerk's cookies
+            // first; ClerkSignOutButton owns that orchestration via the
+            // useClerk() hook, which can only run inside ClerkProvider.
+            <ClerkSignOutButton
+              onSignedOut={onSignedOut}
+              disabled={submitting}
+            />
+          ) : (
+            <button
+              type="button"
+              style={SECONDARY_BTN}
+              onClick={handleSignOut}
+              disabled={submitting}
+            >
+              Sign out
+            </button>
+          )}
         </section>
 
         <section style={CARD}>

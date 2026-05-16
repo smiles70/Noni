@@ -1,50 +1,45 @@
 /**
- * Auth API client.
+ * Auth API surface (ADR 0024 — Bearer model).
  *
- * The session cookie is HTTP-only + SameSite=Lax + Secure (in prod). The
- * browser sends it automatically; we just need `withCredentials: true` on
- * every call. See ADR 0023.
+ * Post-migration the backend has no /auth/callback and no /auth/signout:
+ *   - Sign-in is owned by Clerk's SDK on the client (or by the mock
+ *     SignInPage form in dev/tests). The credential is attached to
+ *     every request as `Authorization: Bearer <token>` via
+ *     `apiClient` from `./client`.
+ *   - Sign-out is purely client-side: `clerk.signOut()` drops the
+ *     Clerk session, or `clearMockToken()` removes the mock token from
+ *     localStorage. Backend tokens we previously issued (none, in this
+ *     model) expire on their own.
  *
- * Mock provider: `credential = "mock:<email>"` — used in dev/tests only.
- * Clerk provider (post-ADR-0024): `credential = <Clerk session token>`.
+ * The only authenticated endpoints we still call from this module are
+ * /auth/whoami (read) and /me/delete[/cancel] (mutation).
+ *
+ * Re-exporting `setMockToken`/`clearMockToken` from this module keeps
+ * the public auth surface in one place; callers don't need to know
+ * about `./client` internals.
  */
 import axios from "axios";
+import { apiClient } from "./client";
 
-// API base URL. Must match the host the backend session cookie is set
-// on; using "localhost" keeps the cookie usable across XHR. Override
-// with VITE_API_BASE_URL if deploying split origins.
-interface ImportMetaEnvShape {
-  VITE_API_BASE_URL?: string;
-}
-const _env: ImportMetaEnvShape =
-  (import.meta as unknown as { env?: ImportMetaEnvShape }).env ?? {};
-
-export const API_BASE_URL: string =
-  (_env.VITE_API_BASE_URL ?? "http://localhost:8000").replace(/\/+$/, "");
-
-const client = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true,
-});
+export { setMockToken, clearMockToken, API_BASE_URL } from "./client";
 
 export interface WhoAmIResponse {
   account_id: string;
+  // Email may be missing on a deleted-but-not-yet-purged account; the
+  // backend returns null in that case rather than 500.
   email: string | null;
+  display_name?: string | null;
   has_active_session: boolean;
 }
 
-export async function signIn(credential: string): Promise<WhoAmIResponse> {
-  const res = await client.post<WhoAmIResponse>("/auth/callback", { credential });
-  return res.data;
-}
-
-export async function signOut(): Promise<void> {
-  await client.post("/auth/signout");
-}
-
+/** Resolve the current account from the attached Bearer.
+ *
+ * Returns null on 401 (no/invalid token) so callers can branch
+ * between "render signed-in" and "render signed-out" without
+ * inspecting axios errors. Other errors propagate. */
 export async function whoami(): Promise<WhoAmIResponse | null> {
   try {
-    const res = await client.get<WhoAmIResponse>("/auth/whoami");
+    const res = await apiClient.get<WhoAmIResponse>("/auth/whoami");
     return res.data;
   } catch (e: unknown) {
     if (axios.isAxiosError(e) && e.response?.status === 401) return null;
@@ -53,9 +48,9 @@ export async function whoami(): Promise<WhoAmIResponse | null> {
 }
 
 export async function deleteAccount(): Promise<void> {
-  await client.post("/me/delete");
+  await apiClient.post("/me/delete");
 }
 
 export async function cancelDeletion(): Promise<void> {
-  await client.post("/me/delete/cancel");
+  await apiClient.post("/me/delete/cancel");
 }

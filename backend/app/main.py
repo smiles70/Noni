@@ -45,7 +45,14 @@ _cors_origins = (
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
-    allow_credentials=True,
+    # ADR 0024: stateless Bearer auth. We do not read or write cookies
+    # on cross-origin requests, so `allow_credentials=False` is correct
+    # AND has a useful side effect: with credentials disabled the CORS
+    # spec treats `allow_headers="*"` as a true wildcard (Clerk's SDK
+    # sends `x-client-version` and friends without any explicit
+    # allowlist). With credentials enabled, the wildcard does not match
+    # any header per the Fetch spec.
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

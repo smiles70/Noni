@@ -166,12 +166,15 @@ def test_me_delete_requires_session(client):
 
 
 def test_me_delete_after_signin_returns_pending(client):
-    cred = "mock:a6-http@example.test"
-    client.post("/auth/callback", json={"credential": cred})
+    """ADR 0024 Bearer flow: deletion request returns 202 with the
+    scheduled timestamp. There is no cookie to clear server-side; the
+    frontend calls clerk.signOut() / clears its mock token after a
+    successful 202 (covered in the frontend tests)."""
+    client.headers["Authorization"] = "Bearer mock:a6-http@example.test"
     r = client.post("/me/delete")
     assert r.status_code == 202
     body = r.json()
     assert body["status"] == "requested"
     assert "scheduled_for" in body
-    # Session cookie cleared.
-    assert client.cookies.get(settings.SESSION_COOKIE_NAME) is None
+    # No Set-Cookie header on the response.
+    assert settings.SESSION_COOKIE_NAME not in r.cookies

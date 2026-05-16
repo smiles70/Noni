@@ -1,17 +1,34 @@
 /**
- * Curriculum unit renderer — contract-bound.
+ * Curriculum unit renderer — linear, contract-bound.
+ *
+ * Walks a fixed sequence of 15 free-track units (modules 1-3) one at a
+ * time. Continue advances within the sequence; on the final entry it
+ * delegates to `onContinueGated` so App.tsx can switch to the paywall
+ * view (modules 4-5 are gated behind a one-time purchase).
  *
  * Per ADR 0019 and CONTRACT Section IV:
  *   - Resolves its envelope from `/api/ui-envelope/curriculum.unit`.
  *   - Renders inside a RenderGuard boundary (fail-closed).
  *   - Uses ONLY tokens from `design/tokens.ts`.
  *
- * The unit's content (title + lines) still comes from the ISCS-approved
- * `loadWhatIsAI` endpoint; this component does NOT derive UI complexity.
+ * RenderGuard proposal math (verified against `curriculum.unit` envelope):
+ *   primary actions    = NavBar(2 signed-in) + Continue(1) = 3 = max
+ *   highlighted recs   = 1 (Continue) = max
+ *   visibleTextLevels  = 2 (h1 + body) <= max(3)
+ *   components in {Heading, Body, Button, Indicator} ⊂ authorized set
+ *
+ * Resume position is persisted to localStorage by ../lib/progress so a
+ * learner can close the tab and pick up where they left off. Stale or
+ * unknown positions fall back to the first unit.
  */
-import { CSSProperties, useEffect, useState } from "react";
-import { loadWhatIsAI, ApprovedUIState } from "../api/interfaceController";
+import { CSSProperties, useEffect, useMemo, useState } from "react";
+import { loadFreeUnit, type ApprovedUnit } from "../api/curriculum";
 import { loadEnvelope } from "../api/envelope";
+import {
+  readProgress,
+  writeProgress,
+  type Progress,
+} from "../lib/progress";
 import {
   COLORS,
   SPACING,
@@ -24,17 +41,45 @@ import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import NavBar from "./NavBar";
 
 interface Props {
-  onReturn?: () => void;
   onSignIn?: () => void;
-  onContinuePaid?: () => void;
+  /** Invoked when Continue is pressed on the final free unit. App.tsx
+   *  routes this to setView("paywall"). The same handler is wired to
+   *  NavBar's Upgrade button so the navigation target is consistent
+   *  whether the user clicks Continue or the nav entry. */
+  onContinueGated: () => void;
   onAccount?: () => void;
 }
+
+// Free-track entries narrow `module` from Progress's 1..5 to 1..3 so the
+// loadFreeUnit call site type-checks without a runtime cast.
+type FreeProgress = Omit<Progress, "module"> & { module: 1 | 2 | 3 };
+
+// Canonical free-track order. IDs verified at design time against
+// backend/models/curriculum_units*.py (module 1 reserves unit-1 / does
+// not expose it; the real sequence starts at unit-2).
+const FREE_SEQUENCE: ReadonlyArray<FreeProgress> = [
+  { module: 1, unitId: "unit-2" },
+  { module: 1, unitId: "unit-3" },
+  { module: 1, unitId: "unit-4" },
+  { module: 1, unitId: "unit-5" },
+  { module: 1, unitId: "unit-6" },
+  { module: 1, unitId: "unit-7" },
+  { module: 2, unitId: "module2-unit-1" },
+  { module: 2, unitId: "module2-unit-2" },
+  { module: 2, unitId: "module2-unit-3" },
+  { module: 2, unitId: "module2-unit-4" },
+  { module: 2, unitId: "module2-unit-5" },
+  { module: 3, unitId: "module3-unit-1" },
+  { module: 3, unitId: "module3-unit-2" },
+  { module: 3, unitId: "module3-unit-3" },
+  { module: 3, unitId: "module3-unit-4" },
+];
 
 // ---- Tokenized style objects ------------------------------------------------
 
 const PAGE: CSSProperties = {
   padding: SPACING.xl,
-  maxWidth: 680,
+  maxWidth: 720,
   margin: "0 auto",
   fontSize: TYPOGRAPHY.bodySizePx,
   lineHeight: TYPOGRAPHY.bodyLineHeight,
@@ -50,24 +95,36 @@ const H1: CSSProperties = {
   color: COLORS.textPrimary,
 };
 
-const RETURN_BTN: CSSProperties = {
-  fontSize: TYPOGRAPHY.bodySizePx,
-  padding: `${SPACING.sm}px ${SPACING.md}px`,
-  backgroundColor: COLORS.surface,
-  color: COLORS.accentMutedBlue,
-  border: `1px solid ${COLORS.accentMutedBlue}`,
-  borderRadius: RADIUS.sm,
-  cursor: "pointer",
-  transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
-};
-
-const NAV: CSSProperties = {
-  marginBottom: SPACING.lg,
-};
-
 const PARA: CSSProperties = {
   marginTop: 0,
   marginBottom: SPACING.md,
+};
+
+const INDICATOR: CSSProperties = {
+  fontSize: TYPOGRAPHY.bodySizePx,
+  color: COLORS.textPrimary,
+  opacity: 0.7,
+  marginTop: 0,
+  marginBottom: SPACING.md,
+};
+
+const ACTIONS: CSSProperties = {
+  display: "flex",
+  justifyContent: "flex-end",
+  marginTop: SPACING.lg,
+  gap: SPACING.sm,
+};
+
+const CONTINUE_BTN: CSSProperties = {
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.md}px ${SPACING.lg}px`,
+  backgroundColor: COLORS.accentMutedBlue,
+  color: COLORS.surface,
+  border: `2px solid ${COLORS.accentMutedBlue}`,
+  borderRadius: RADIUS.sm,
+  fontWeight: 600,
+  cursor: "pointer",
+  transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
 };
 
 const ERROR_DETAIL: CSSProperties = {
@@ -114,41 +171,81 @@ function BlockedLoad({
 // ---- Component --------------------------------------------------------------
 
 export default function CurriculumRenderer({
-  onReturn,
   onSignIn,
-  onContinuePaid,
+  onContinueGated,
   onAccount,
 }: Props) {
-  const [unit, setUnit] = useState<ApprovedUIState | null>(null);
+  // Resume from localStorage; fall back to first unit if missing/stale.
+  const initialIdx = useMemo(() => {
+    const saved = readProgress();
+    if (!saved) return 0;
+    const i = FREE_SEQUENCE.findIndex(
+      (p) => p.module === saved.module && p.unitId === saved.unitId,
+    );
+    return i >= 0 ? i : 0;
+  }, []);
+
+  const [idx, setIdx] = useState(initialIdx);
+  const [unit, setUnit] = useState<ApprovedUnit | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Envelope: load once. Cancelled flag covers React 18 StrictMode
+  // double-invoke in development.
   useEffect(() => {
-    Promise.all([loadEnvelope("curriculum.unit"), loadWhatIsAI()])
-      .then(([env, approved]) => {
-        setEnvelope(env);
-        setUnit(approved);
+    let cancelled = false;
+    loadEnvelope("curriculum.unit")
+      .then((env) => {
+        if (!cancelled) setEnvelope(env);
       })
-      .catch((e: unknown) =>
-        setError(e instanceof Error ? e.message : "Failed to load"),
-      );
+      .catch((e: unknown) => {
+        if (!cancelled) {
+          setError(
+            e instanceof Error ? e.message : "Failed to load envelope",
+          );
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
+  // Unit content: refetch on every idx change. Stale responses dropped
+  // by the cancelled flag so rapid Continue presses don't race.
+  useEffect(() => {
+    let cancelled = false;
+    setUnit(null);
+    setError(null);
+    const { module, unitId } = FREE_SEQUENCE[idx];
+    loadFreeUnit(module, unitId)
+      .then((u) => {
+        if (cancelled) return;
+        setUnit(u);
+        writeProgress({ module, unitId });
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        setError(e instanceof Error ? e.message : "Failed to load unit");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [idx]);
+
+  const handleContinue = () => {
+    if (idx >= FREE_SEQUENCE.length - 1) {
+      onContinueGated();
+      return;
+    }
+    setIdx((i) => i + 1);
+  };
+
   const nav = (
-    <>
-      <NavBar
-        onSignIn={onSignIn}
-        onContinuePaid={onContinuePaid}
-        onAccount={onAccount}
-      />
-      {onReturn ? (
-        <nav aria-label="Lesson navigation" style={NAV}>
-          <button type="button" onClick={onReturn} style={RETURN_BTN}>
-            Return to start
-          </button>
-        </nav>
-      ) : null}
-    </>
+    <NavBar
+      onSignIn={onSignIn}
+      onContinuePaid={onContinueGated}
+      onAccount={onAccount}
+    />
   );
 
   if (error) {
@@ -166,16 +263,24 @@ export default function CurriculumRenderer({
   }
 
   const page = unit.ui_state;
+  const { module } = FREE_SEQUENCE[idx];
+  const isLast = idx >= FREE_SEQUENCE.length - 1;
+  const continueLabel = isLast
+    ? "Continue to paid modules →"
+    : "Continue →";
 
-  // Proposal: what this render intends to display.
-  // NavBar always contributes a Button slot; return-to-start adds another.
+  // RenderGuard proposal — math verified against curriculum.unit envelope:
+  //   primary actions     = NavBar(2 signed-in) + Continue(1) = 3 = max
+  //   highlighted recs    = 1 (Continue)                          = max
+  //   visibleTextLevels   = 2 (h1 + body; Indicator is body-styled) <= max(3)
+  //   components          ⊂ {Heading, Body, Button, Card, Divider,
+  //                          Indicator, PendingBanner, BlockedNotice}
   const proposal: RenderProposal = {
-    components: ["Heading", "Body", "Button"],
-    // return-to-start + up to 2 NavBar entries.
-    primaryActionCount: (onReturn ? 1 : 0) + 2,
+    components: ["Heading", "Body", "Button", "Indicator"],
+    primaryActionCount: 3,
     irreversibleActionCount: 0,
-    highlightedRecommendationCount: 0,
-    visibleTextLevels: 2, // h1, body
+    highlightedRecommendationCount: 1,
+    visibleTextLevels: 2,
     colorsUsed: [
       COLORS.background,
       COLORS.surface,
@@ -194,6 +299,9 @@ export default function CurriculumRenderer({
     <RenderGuard envelope={envelope} proposal={proposal}>
       <main style={PAGE}>
         {nav}
+        <p style={INDICATOR} data-component="Indicator">
+          Module {module} · Lesson {idx + 1} of {FREE_SEQUENCE.length}
+        </p>
         <header>
           <h1 style={H1}>{page.title}</h1>
         </header>
@@ -204,6 +312,16 @@ export default function CurriculumRenderer({
             </p>
           ))}
         </section>
+        <div style={ACTIONS}>
+          <button
+            type="button"
+            onClick={handleContinue}
+            style={CONTINUE_BTN}
+            aria-label={continueLabel}
+          >
+            {continueLabel}
+          </button>
+        </div>
       </main>
     </RenderGuard>
   );

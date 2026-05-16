@@ -7,7 +7,7 @@
  * the additional views are reachable in dev via direct setView calls
  * (e.g. from a debug surface or future settings entry on landing).
  */
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import LandingPage from "./components/LandingPage";
 import CurriculumRenderer from "./components/CurriculumRenderer";
@@ -15,11 +15,12 @@ import SignInPage from "./components/SignInPage";
 import PaywallPage from "./components/PaywallPage";
 import GiftRedeemPage from "./components/GiftRedeemPage";
 import AccountSettingsPage from "./components/AccountSettingsPage";
-import ClerkAuthBridge from "./components/ClerkAuthBridge";
+import ClerkAuthSync from "./components/ClerkAuthSync";
 import { whoami } from "./api/auth";
 
 // Build-time selector. Mock keeps the dev/test path; clerk turns on the
-// ClerkAuthBridge + the <SignIn /> widget inside SignInPage.
+// <SignIn /> widget inside SignInPage and mounts ClerkAuthSync to
+// observe Clerk's hook-based auth state (ADR 0024).
 const AUTH_PROVIDER =
   ((import.meta as unknown as { env?: { VITE_AUTH_PROVIDER?: string } }).env
     ?.VITE_AUTH_PROVIDER ?? "mock");
@@ -49,16 +50,28 @@ const App: React.FC = () => {
   // while signed out -> we remember "curriculum" and forward post-auth).
   const [pendingView, setPendingView] = useState<View | null>(null);
 
-  // On mount: ask the backend whether a session already exists so route
-  // gating works correctly. With AUTH_PROVIDER=mock the user explicitly
-  // signs in via SignInPage; with Clerk (post-ADR-0024) Clerk's session
-  // is exchanged for our HttpOnly cookie via POST /auth/callback before
-  // this whoami runs.
-  useEffect(() => {
-    whoami()
-      .then((res) => setSignedIn(res?.has_active_session === true))
-      .catch(() => setSignedIn(false));
+  // Single source of truth for the auth check. Called on mount (mock
+  // mode) or by ClerkAuthSync once Clerk has hydrated (clerk mode), and
+  // re-called after every sign-in / sign-out transition.
+  const refreshAuth = useCallback(async () => {
+    try {
+      const me = await whoami();
+      setSignedIn(me?.has_active_session === true);
+    } catch {
+      setSignedIn(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // In clerk mode we deliberately defer the first whoami until
+    // ClerkAuthSync fires its onAuthChanged: window.Clerk.session
+    // isn't available until the SDK finishes hydrating, so an
+    // immediate call would race the SDK and resolve signed-out for
+    // ~100-500ms (causing a CTA flicker on the landing page).
+    if (AUTH_PROVIDER === "mock") {
+      void refreshAuth();
+    }
+  }, [refreshAuth]);
 
   const goLanding = () => setView("landing");
   // Gate: signed-out callers are routed through sign-in and forwarded.
@@ -75,23 +88,46 @@ const App: React.FC = () => {
   const goPaywall = () => requireAuth("paywall");
   const goAccount = () => requireAuth("account");
 
-  // Successful sign-in: forward to the intent (e.g. curriculum) the user
-  // had before being bounced. Falls back to curriculum so a returning user
-  // who clicked "Sign in" lands inside the app, not back on marketing.
-  const handleSignedIn = () => {
-    setSignedIn(true);
+  // Successful sign-in: forward to the intent (e.g. curriculum) the
+  // user had before being bounced. Falls back to curriculum so a
+  // returning user who clicked "Sign in" lands inside the app, not
+  // back on marketing. Awaits refreshAuth so the next render sees
+  // signedIn=true and gated views actually render.
+  const handleSignedIn = async () => {
+    await refreshAuth();
     const next = pendingView ?? "curriculum";
     setPendingView(null);
     setView(next);
   };
 
-  // ClerkAuthBridge is a render-null component that uses Clerk hooks to
-  // forward Clerk's session token to our backend. Only mount it when
-  // Clerk is the configured provider AND its provider is in the tree
-  // (main.tsx). Mounting under mock would call useAuth() without a
-  // ClerkProvider and crash.
-  const authBridge =
-    AUTH_PROVIDER === "clerk" ? <ClerkAuthBridge /> : null;
+  const handleSignedOut = async () => {
+    await refreshAuth();
+    setView("landing");
+  };
+
+  // Clerk's hook state changes are asynchronous: ClerkAuthSync may
+  // fire because (a) the SDK just finished hydrating on a returning
+  // visit, (b) the user just signed in via the <SignIn /> widget, or
+  // (c) the user signed out in another tab. We treat them all the
+  // same — re-fetch whoami — except we only auto-advance the view
+  // when the user is on the signin screen (case b).
+  const handleClerkAuthChanged = useCallback(async () => {
+    await refreshAuth();
+    if (view === "signin") {
+      const next = pendingView ?? "curriculum";
+      setPendingView(null);
+      setView(next);
+    }
+  }, [refreshAuth, view, pendingView]);
+
+  // ClerkAuthSync is render-null and uses Clerk hooks; only mount it
+  // under ClerkProvider (i.e. when AUTH_PROVIDER === "clerk"). Mounting
+  // in mock mode would crash because there's no ClerkProvider in the
+  // tree.
+  const clerkSync =
+    AUTH_PROVIDER === "clerk" ? (
+      <ClerkAuthSync onAuthChanged={handleClerkAuthChanged} />
+    ) : null;
 
   // Resolve the active view to a React node, then wrap it together with
   // the bridge so we never duplicate the auth-bridge mount across six
@@ -123,9 +159,8 @@ const App: React.FC = () => {
       case "curriculum":
         body = (
           <CurriculumRenderer
-            onReturn={goLanding}
             onSignIn={goSignIn}
-            onContinuePaid={goPaywall}
+            onContinueGated={goPaywall}
             onAccount={goAccount}
           />
         );
@@ -155,7 +190,7 @@ const App: React.FC = () => {
       case "account":
         body = (
           <AccountSettingsPage
-            onSignedOut={goLanding}
+            onSignedOut={handleSignedOut}
             onDeleted={goLanding}
             onBack={goLanding}
           />
@@ -173,7 +208,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      {authBridge}
+      {clerkSync}
       {body}
     </>
   );
