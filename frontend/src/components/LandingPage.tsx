@@ -25,12 +25,20 @@ import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import NavBar from "./NavBar";
 import HowItWorksDialog from "./HowItWorksDialog";
+import SignOutLink from "./SignOutLink";
 
 interface Props {
   onBegin: () => void;
   onSignIn?: () => void;
   onContinuePaid?: () => void;
   onAccount?: () => void;
+  /** Drives which CTA pair the auth row renders. When true the primary
+   *  CTA becomes 'Continue learning →' and the secondary becomes 'Sign
+   *  out'; the 'Set up my account / Log in' pair is hidden. */
+  signedIn?: boolean;
+  /** Called after a successful sign-out so App.tsx can refresh whoami
+   *  and re-render the signed-out landing surface. */
+  onSignOut?: () => void | Promise<void>;
 }
 
 // ---- Tokenized style objects -----------------------------------------------
@@ -112,6 +120,8 @@ export default function LandingPage({
   onSignIn,
   onContinuePaid,
   onAccount,
+  signedIn,
+  onSignOut,
 }: Props) {
   const [content, setContent] = useState<LandingPageContent | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
@@ -227,24 +237,53 @@ export default function LandingPage({
               real sample lesson exists, revisit this label as
               "Try your first lesson". */}
           <div className="noni-hero__auth-row">
-            <div className="noni-hero__primary-cta">
-              <button type="button" onClick={onBegin} style={PRIMARY_BTN}>
-                Set up my account — free
-              </button>
-              <p className="noni-hero__cta-note">
-                Free. No card needed. Stop any time.
-              </p>
-            </div>
-            {onSignIn && (
-              <button type="button" onClick={onSignIn} style={SECONDARY_BTN}>
-                Log in
-              </button>
+            {signedIn ? (
+              <>
+                <div className="noni-hero__primary-cta">
+                  <button
+                    type="button"
+                    onClick={onBegin}
+                    style={PRIMARY_BTN}
+                  >
+                    Continue learning →
+                  </button>
+                </div>
+                {onSignOut && <SignOutLink onSignedOut={onSignOut} />}
+              </>
+            ) : (
+              <>
+                <div className="noni-hero__primary-cta">
+                  <button
+                    type="button"
+                    onClick={onBegin}
+                    style={PRIMARY_BTN}
+                  >
+                    Set up my account — free
+                  </button>
+                  <p className="noni-hero__cta-note">
+                    Free. No card needed. Stop any time.
+                  </p>
+                </div>
+                {onSignIn && (
+                  <button
+                    type="button"
+                    onClick={onSignIn}
+                    style={SECONDARY_BTN}
+                  >
+                    Log in
+                  </button>
+                )}
+              </>
             )}
           </div>
 
-          {/* NavBar surfaces signed-in entries (Continue paid / Your
-              account). Signed-out users see no extra entries here. */}
+          {/* NavBar surfaces signed-in entries (Upgrade / Your account).
+              Signed-out users see no extra entries here. The `key`
+              forces a remount when auth state flips so NavBar's internal
+              whoami() fetch re-runs — otherwise the cached email + nav
+              entries would persist for a frame after sign-out. */}
           <NavBar
+            key={signedIn ? "nav-signed-in" : "nav-signed-out"}
             onContinuePaid={onContinuePaid}
             onAccount={onAccount}
           />
