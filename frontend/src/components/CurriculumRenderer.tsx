@@ -1,28 +1,50 @@
 /**
- * Curriculum unit renderer — linear, contract-bound.
+ * Curriculum unit renderer — linear, multi-page-per-unit, contract-bound.
  *
  * Walks a fixed sequence of 15 free-track units (modules 1-3) one at a
- * time. Continue advances within the sequence; on the final entry it
- * delegates to `onContinueGated` so App.tsx can switch to the paywall
- * view (modules 4-5 are gated behind a one-time purchase).
+ * time. Each unit is now a 1–5 page lesson (Curriculum-expansion
+ * Phase 1); Continue advances within the unit's pages, and once the
+ * last page is acknowledged advances to the next unit. On the final
+ * unit's last page Continue delegates to `onContinueGated` so App.tsx
+ * can switch to the paywall view (modules 4-5 are gated behind a
+ * one-time purchase).
  *
  * Per ADR 0019 and CONTRACT Section IV:
  *   - Resolves its envelope from `/api/ui-envelope/curriculum.unit`.
  *   - Renders inside a RenderGuard boundary (fail-closed).
  *   - Uses ONLY tokens from `design/tokens.ts`.
  *
- * RenderGuard proposal math (verified against `curriculum.unit` envelope):
- *   primary actions    = NavBar(2 signed-in) + Continue(1) = 3 = max
- *   highlighted recs   = 1 (Continue) = max
- *   visibleTextLevels  = 2 (h1 + body) <= max(3)
- *   components in {Heading, Body, Button, Indicator} ⊂ authorized set
+ * Page-type dispatch: each page carries an optional `page_type`
+ * (recap / context / principle / example / retrieval). Sub-renderers
+ * live in `./curriculum/PageTypes.tsx`; the proposal contribution of
+ * each is computed by `buildPageProposalContribution` so the
+ * RenderGuard math stays adjacent to the JSX.
+ *
+ * RenderGuard proposal math (verified against `curriculum.unit` envelope
+ * after the Phase-1 bump to max_primary_actions=5):
+ *
+ *   non-retrieval (or retrieval post-answer):
+ *     primary actions  = NavBar(≤2) + Continue(1)           = ≤3
+ *     highlighted recs = 1 (Continue)                       = max
+ *     text levels      = 2 (h1 + body)                      ≤ max(3)
+ *
+ *   retrieval pre-answer:
+ *     primary actions  = NavBar(≤2) + 2 choice Buttons       = ≤4
+ *     highlighted recs = 0  (choices are equal options)
+ *     text levels      = 2
  *
  * Resume position is persisted to localStorage by ../lib/progress so a
- * learner can close the tab and pick up where they left off. Stale or
- * unknown positions fall back to the first unit.
+ * learner can close the tab and pick up where they left off, INCLUDING
+ * the page index within the unit. Stale or unknown positions fall
+ * back to the first unit / first page.
  */
 import { CSSProperties, useEffect, useMemo, useState } from "react";
-import { loadFreeUnit, type ApprovedUnit } from "../api/curriculum";
+import {
+  loadFreeLesson,
+  recordRetrievalChoice,
+  type CurriculumPage,
+  type LessonResponse,
+} from "../api/curriculum";
 import { loadEnvelope } from "../api/envelope";
 import {
   readProgress,
@@ -39,6 +61,18 @@ import {
 import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import NavBar from "./NavBar";
+import {
+  RecapPage,
+  ContextPage,
+  PrinciplePage,
+  ExamplePage,
+  RetrievalPage,
+  buildPageProposalContribution,
+  PAGE_COLORS_USED,
+  PAGE_SPACING_USED,
+  PAGE_RADIUS_USED,
+  PAGE_MOTION_DURATIONS_MS,
+} from "./curriculum/PageTypes";
 
 interface Props {
   onSignIn?: () => void;
@@ -168,6 +202,53 @@ function BlockedLoad({
   );
 }
 
+const CHOICE_BTN: CSSProperties = {
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.md}px ${SPACING.lg}px`,
+  backgroundColor: COLORS.surface,
+  color: COLORS.textPrimary,
+  border: `2px solid ${COLORS.accentMutedBlue}`,
+  borderRadius: RADIUS.sm,
+  fontWeight: 600,
+  cursor: "pointer",
+  transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
+  textAlign: "left",
+  fontFamily: TYPOGRAPHY.fontFamily,
+  lineHeight: TYPOGRAPHY.bodyLineHeight,
+};
+
+const CHOICES_COLUMN: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: SPACING.sm,
+  marginTop: SPACING.lg,
+};
+
+// ---- Page-body dispatch ----------------------------------------------------
+
+function renderPageBody(
+  page: CurriculumPage,
+  retrievalAnswered: string | null,
+): React.ReactElement {
+  const pageType = page.page_type ?? "principle";
+  if (pageType === "recap") return <RecapPage page={page} />;
+  if (pageType === "context") return <ContextPage page={page} />;
+  if (pageType === "example" && page.example) {
+    return <ExamplePage page={page} example={page.example} />;
+  }
+  if (pageType === "retrieval" && page.retrieval) {
+    return (
+      <RetrievalPage
+        page={page}
+        retrieval={page.retrieval}
+        answered={retrievalAnswered}
+      />
+    );
+  }
+  // Default = principle (also covers legacy pages with no page_type).
+  return <PrinciplePage page={page} />;
+}
+
 // ---- Component --------------------------------------------------------------
 
 export default function CurriculumRenderer({
@@ -175,20 +256,31 @@ export default function CurriculumRenderer({
   onContinueGated,
   onAccount,
 }: Props) {
-  // Resume from localStorage; fall back to first unit if missing/stale.
-  const initialIdx = useMemo(() => {
+  // Resume from localStorage; fall back to first unit / first page if
+  // missing or stale. `pageIdx` is clamped to the unit's lesson length
+  // once the lesson is loaded.
+  const initialPosition = useMemo(() => {
     const saved = readProgress();
-    if (!saved) return 0;
+    if (!saved) return { idx: 0, pageIdx: 0 };
     const i = FREE_SEQUENCE.findIndex(
       (p) => p.module === saved.module && p.unitId === saved.unitId,
     );
-    return i >= 0 ? i : 0;
+    return {
+      idx: i >= 0 ? i : 0,
+      pageIdx: i >= 0 ? saved.pageIdx ?? 0 : 0,
+    };
   }, []);
 
-  const [idx, setIdx] = useState(initialIdx);
-  const [unit, setUnit] = useState<ApprovedUnit | null>(null);
+  const [idx, setIdx] = useState(initialPosition.idx);
+  const [pageIdx, setPageIdx] = useState(initialPosition.pageIdx);
+  const [lesson, setLesson] = useState<LessonResponse | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
+  /** Null until the learner picks a retrieval choice on the current
+   *  page, then the chosen choice id. Reset on every page change. */
+  const [retrievalAnswered, setRetrievalAnswered] = useState<string | null>(
+    null,
+  );
 
   // Envelope: load once. Cancelled flag covers React 18 StrictMode
   // double-invoke in development.
@@ -210,34 +302,73 @@ export default function CurriculumRenderer({
     };
   }, []);
 
-  // Unit content: refetch on every idx change. Stale responses dropped
-  // by the cancelled flag so rapid Continue presses don't race.
+  // Lesson content: refetch on every idx change. Stale responses
+  // dropped by the cancelled flag so rapid Continue presses don't race.
   useEffect(() => {
     let cancelled = false;
-    setUnit(null);
+    setLesson(null);
     setError(null);
+    setRetrievalAnswered(null);
     const { module, unitId } = FREE_SEQUENCE[idx];
-    loadFreeUnit(module, unitId)
-      .then((u) => {
+    loadFreeLesson(module, unitId)
+      .then((l) => {
         if (cancelled) return;
-        setUnit(u);
-        writeProgress({ module, unitId });
+        setLesson(l);
+        // Clamp pageIdx to the loaded lesson; persisted values from a
+        // previous deploy can legitimately point past the new end.
+        setPageIdx((current) => {
+          const safe =
+            current >= 0 && current < l.pages.length ? current : 0;
+          writeProgress({ module, unitId, pageIdx: safe });
+          return safe;
+        });
       })
       .catch((e: unknown) => {
         if (cancelled) return;
-        setError(e instanceof Error ? e.message : "Failed to load unit");
+        setError(e instanceof Error ? e.message : "Failed to load lesson");
       });
     return () => {
       cancelled = true;
     };
   }, [idx]);
 
+  // Re-persist on every successful page change within the unit.
+  useEffect(() => {
+    if (!lesson) return;
+    const { module, unitId } = FREE_SEQUENCE[idx];
+    writeProgress({ module, unitId, pageIdx });
+    setRetrievalAnswered(null);
+  }, [pageIdx, idx, lesson]);
+
   const handleContinue = () => {
+    if (!lesson) return;
+    // Advance within the current unit's pages first.
+    if (pageIdx < lesson.pages.length - 1) {
+      setPageIdx((p) => p + 1);
+      return;
+    }
+    // End of unit: advance to next unit, reset to its first page.
     if (idx >= FREE_SEQUENCE.length - 1) {
       onContinueGated();
       return;
     }
+    setPageIdx(0);
     setIdx((i) => i + 1);
+  };
+
+  const handleChoice = (chosenId: string) => {
+    if (!lesson) return;
+    const page = lesson.pages[pageIdx];
+    if (!page.retrieval) return;
+    setRetrievalAnswered(chosenId);
+    const { module, unitId } = FREE_SEQUENCE[idx];
+    void recordRetrievalChoice({
+      module,
+      unit_id: unitId,
+      page_id: page.id,
+      chosen_id: chosenId,
+      correct: chosenId === page.retrieval.correct_id,
+    });
   };
 
   const nav = (
@@ -258,38 +389,58 @@ export default function CurriculumRenderer({
     );
   }
 
-  if (!unit || !envelope) {
+  if (!lesson || !envelope) {
     return <PendingBanner nav={nav} />;
   }
 
-  const page = unit.ui_state;
+  const page = lesson.pages[pageIdx] ?? lesson.pages[0];
   const { module } = FREE_SEQUENCE[idx];
-  const isLast = idx >= FREE_SEQUENCE.length - 1;
-  const continueLabel = isLast
-    ? "Continue to paid modules →"
-    : "Continue →";
+  const isLastUnit = idx >= FREE_SEQUENCE.length - 1;
+  const isLastPage = pageIdx >= lesson.pages.length - 1;
+  const isRetrievalPage =
+    (page.page_type ?? "principle") === "retrieval" && !!page.retrieval;
+  const showChoices = isRetrievalPage && retrievalAnswered === null;
+  const showContinue = !showChoices;
+  const continueLabel =
+    isLastUnit && isLastPage ? "Continue to paid modules →" : "Continue →";
 
-  // RenderGuard proposal — math verified against curriculum.unit envelope:
-  //   primary actions     = NavBar(2 signed-in) + Continue(1) = 3 = max
-  //   highlighted recs    = 1 (Continue)                          = max
-  //   visibleTextLevels   = 2 (h1 + body; Indicator is body-styled) <= max(3)
-  //   components          ⊂ {Heading, Body, Button, Card, Divider,
-  //                          Indicator, PendingBanner, BlockedNotice}
+  // ---- Proposal accounting -------------------------------------------------
+  //
+  // NavBar contribution: up to 2 primary actions when signed in
+  // (Upgrade + Account). We use 2 as the worst case so the proposal
+  // is valid regardless of session state.
+  const NAVBAR_PRIMARY_ACTIONS = 2;
+  const contribution = buildPageProposalContribution(
+    page,
+    retrievalAnswered,
+  );
+
+  const components = new Set<RenderProposal["components"][number]>(
+    contribution.components,
+  );
+  components.add("Indicator");
+  if (showContinue) components.add("Button");
+  if (showChoices) components.add("Button");
+
+  const primaryActionCount =
+    NAVBAR_PRIMARY_ACTIONS +
+    (showContinue ? 1 : 0) +
+    contribution.primaryActionsFromBody;
+
+  // Continue is the single highlighted recommendation. Choice buttons
+  // are equal options, never highlighted.
+  const highlightedRecommendationCount = showContinue ? 1 : 0;
+
   const proposal: RenderProposal = {
-    components: ["Heading", "Body", "Button", "Indicator"],
-    primaryActionCount: 3,
+    components: Array.from(components),
+    primaryActionCount,
     irreversibleActionCount: 0,
-    highlightedRecommendationCount: 1,
-    visibleTextLevels: 2,
-    colorsUsed: [
-      COLORS.background,
-      COLORS.surface,
-      COLORS.textPrimary,
-      COLORS.accentMutedBlue,
-    ],
-    spacingPxUsed: [SPACING.xs, SPACING.sm, SPACING.md, SPACING.lg, SPACING.xl],
-    radiusPxUsed: [RADIUS.sm],
-    motionDurationsMs: [MOTION.defaultFadeMs],
+    highlightedRecommendationCount,
+    visibleTextLevels: contribution.visibleTextLevels,
+    colorsUsed: [...PAGE_COLORS_USED],
+    spacingPxUsed: [...PAGE_SPACING_USED],
+    radiusPxUsed: [...PAGE_RADIUS_USED],
+    motionDurationsMs: [...PAGE_MOTION_DURATIONS_MS],
     positionShiftPxUsed: [],
     hasUnconfirmedIrreversibleAction: false,
     usesOptimisticProgression: false,
@@ -300,28 +451,43 @@ export default function CurriculumRenderer({
       <main style={PAGE}>
         {nav}
         <p style={INDICATOR} data-component="Indicator">
-          Module {module} · Lesson {idx + 1} of {FREE_SEQUENCE.length}
+          Module {module} · Lesson {idx + 1} of {FREE_SEQUENCE.length} ·
+          Page {pageIdx + 1} of {lesson.pages.length}
         </p>
-        <header>
-          <h1 style={H1}>{page.title}</h1>
-        </header>
-        <section aria-label="Lesson content">
-          {page.content.map((line, i) => (
-            <p key={i} style={PARA}>
-              {line}
-            </p>
-          ))}
-        </section>
-        <div style={ACTIONS}>
-          <button
-            type="button"
-            onClick={handleContinue}
-            style={CONTINUE_BTN}
-            aria-label={continueLabel}
+        {renderPageBody(page, retrievalAnswered)}
+        {showChoices && page.retrieval ? (
+          <div
+            style={CHOICES_COLUMN}
+            role="group"
+            aria-label="Pick one"
           >
-            {continueLabel}
-          </button>
-        </div>
+            {page.retrieval.choices.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => handleChoice(c.id)}
+                style={CHOICE_BTN}
+                data-component="Button"
+                data-choice-id={c.id}
+              >
+                {c.text}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {showContinue ? (
+          <div style={ACTIONS}>
+            <button
+              type="button"
+              onClick={handleContinue}
+              style={CONTINUE_BTN}
+              aria-label={continueLabel}
+              data-component="Button"
+            >
+              {continueLabel}
+            </button>
+          </div>
+        ) : null}
       </main>
     </RenderGuard>
   );

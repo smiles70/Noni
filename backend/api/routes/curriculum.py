@@ -11,12 +11,13 @@ decision_reason, max_complexity).
 """
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, ConfigDict, Field
 
 from backend.api.deps import require_entitlement
 from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.stability_metric import compute_stability
 from backend.core.interface_control.state_selector import select_ui_state
-from backend.models.curriculum_units import UNITS, get_unit
+from backend.models.curriculum_units import UNITS, CurriculumUnit, get_unit
 from backend.services import telemetry as telemetry_service
 from backend.models.curriculum_units_module_2 import (
     UNITS_MODULE_2,
@@ -577,6 +578,142 @@ def get_module_5_unit_page(
         "ui_state": approved,
         "stability": stability,
     }
+
+
+# ===== Curriculum-expansion (Phase 1): /lesson + retrieval-choice =====
+# `/lesson` is the additive endpoint that powers the new multi-page
+# renderer. The original `/units/{id}` route is left untouched so the
+# existing test (`test_get_unit_page_returns_iscs_approved`) and any
+# external consumer keep their ISCS-selected single-page behavior.
+#
+# Per ADR 0009 each call records an `iscs_recommendation` telemetry row;
+# the lesson endpoint does NOT use ISCS to *select* a page (the whole
+# lesson is returned in author order) but the stability snapshot is
+# still useful for audit context.
+
+
+def _build_lesson_payload(module: int, unit: CurriculumUnit, request_path: str) -> dict:
+    """Construct the lesson response for a free-track unit.
+
+    Pages are returned in author order, filtered to those at or below
+    the unit's `max_complexity`. The complexity filter is identical to
+    the one used by the legacy `/units/{id}` ISCS path so the lesson
+    sequence never exposes content the unit's complexity ceiling would
+    otherwise exclude.
+
+    `model_dump(exclude_none=True)` keeps the wire payload minimal for
+    legacy pages (which carry None for the new optional blocks).
+    """
+    pages = [
+        p.model_dump(exclude_none=True)
+        for p in unit.pages
+        if p.complexity <= unit.max_complexity
+    ]
+    if not pages:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unit {unit.id} has no pages within its max_complexity",
+        )
+    stability = _current_stability()
+    telemetry_service.record(
+        "curriculum.lesson_served",
+        metadata={
+            "module": module,
+            "unit_id": unit.id,
+            "page_ids": [p["id"] for p in pages],
+            "page_count": len(pages),
+        },
+        request_path=request_path,
+        stability=stability,
+        selected_state_id=unit.id,
+        decision_reason="lesson-sequence",
+        max_complexity=unit.max_complexity,
+    )
+    return {
+        "module": module,
+        "unit_id": unit.id,
+        "unit_title": unit.title,
+        "pages": pages,
+        "stability": stability,
+    }
+
+
+@router.get("/units/{unit_id}/lesson")
+def get_lesson_module_1(unit_id: str) -> dict:
+    """Module 1 lesson endpoint — full ordered page list for the unit."""
+    unit = get_unit(unit_id)
+    if unit is None:
+        raise HTTPException(status_code=404, detail=f"Unit {unit_id} not found")
+    return _build_lesson_payload(1, unit, f"/api/curriculum/units/{unit.id}/lesson")
+
+
+@router.get("/module-2/units/{unit_id}/lesson")
+def get_lesson_module_2(unit_id: str) -> dict:
+    unit = get_module_2_unit(unit_id)
+    if unit is None:
+        raise HTTPException(
+            status_code=404, detail=f"Module 2 unit {unit_id} not found"
+        )
+    return _build_lesson_payload(
+        2, unit, f"/api/curriculum/module-2/units/{unit.id}/lesson"
+    )
+
+
+@router.get("/module-3/units/{unit_id}/lesson")
+def get_lesson_module_3(unit_id: str) -> dict:
+    unit = get_module_3_unit(unit_id)
+    if unit is None:
+        raise HTTPException(
+            status_code=404, detail=f"Module 3 unit {unit_id} not found"
+        )
+    return _build_lesson_payload(
+        3, unit, f"/api/curriculum/module-3/units/{unit.id}/lesson"
+    )
+
+
+class RetrievalChoiceBody(BaseModel):
+    """Body schema for the retrieval-choice telemetry endpoint.
+
+    `correct` is computed client-side by comparing `chosen_id` to the
+    page's `retrieval.correct_id`. The backend records both fields so
+    audit can detect tampering or client bugs (e.g., `correct=true`
+    paired with a `chosen_id` that does not match the published
+    `correct_id`).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    module: int = Field(..., ge=1, le=3)
+    unit_id: str = Field(..., min_length=1)
+    page_id: str = Field(..., min_length=1)
+    chosen_id: str = Field(..., min_length=1)
+    correct: bool
+
+
+@router.post("/retrieval-choice")
+def record_retrieval_choice(body: RetrievalChoiceBody) -> dict:
+    """Record a learner's retrieval-page choice as a telemetry event.
+
+    The endpoint is intentionally permissive: it accepts the choice
+    even if the body's `correct` flag disagrees with the unit's
+    canonical `correct_id`. Audit can reconcile after the fact.
+    Returning a stable shape (`{recorded: true}`) lets the frontend
+    treat this as fire-and-forget without parsing.
+    """
+    telemetry_service.record(
+        "curriculum.retrieval_choice",
+        metadata={
+            "module": body.module,
+            "unit_id": body.unit_id,
+            "page_id": body.page_id,
+            "chosen_id": body.chosen_id,
+            "correct": body.correct,
+        },
+        request_path="/api/curriculum/retrieval-choice",
+        selected_state_id=body.unit_id,
+        decision_reason="retrieval-choice",
+    )
+    return {"recorded": True}
 
 
 @router.get("/module-5/next")

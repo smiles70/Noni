@@ -7,7 +7,12 @@ canonical ISCS (`backend.core.interface_control.state_selector`).
 from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
-from backend.models.curriculum import CurriculumPage
+from backend.models.curriculum import (
+    CurriculumPage,
+    ExampleBlock,
+    RetrievalBlock,
+    RetrievalChoice,
+)
 
 
 class CurriculumUnit(BaseModel):
@@ -20,19 +25,95 @@ class CurriculumUnit(BaseModel):
 
 
 UNITS: List[CurriculumUnit] = [
+    # ---- Unit 2: full Phase-1 expansion exemplar ----------------------------
+    # Four page types (context / principle / example / retrieval). All pages
+    # are complexity=1 to respect unit.max_complexity=1, which the legacy
+    # ISCS path also relies on. Authored to the geragogy guidance: short
+    # sentences, concrete words, no jargon, no imperatives implying rush,
+    # confidence-preserving framing. The "recap" page-type is omitted here
+    # because this is the first free-track lesson — there is nothing to
+    # recap. Subsequent units may begin with a recap page in Phase 2.
     CurriculumUnit(
         id="unit-2",
         title="What Is Claude",
         description="Understand Claude as a supportive language assistant, not an authority.",
         pages=[
             CurriculumPage(
-                id="u2-p1",
-                title="What Is Claude",
+                id="u2-context",
+                title="What changes when you use Claude",
+                page_type="context",
                 content=[
-                    "Claude is a tool that responds to words.",
-                    "Claude does not decide or act on its own.",
-                    "You can question, change, or ignore Claude.",
+                    "Claude is a writing helper. You type words, and Claude writes words back.",
+                    "Claude does not see your screen. It does not press buttons. It only puts words on the page.",
+                    "Nothing happens until you decide it should. You read what Claude wrote, and then you choose what to do with it.",
+                    "There is no rush in this lesson. You can read each page as slowly as you like.",
                 ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u2-principle",
+                title="The one rule to carry with you",
+                page_type="principle",
+                principle="Claude offers words. You decide what to do with them.",
+                content=[
+                    "This is the rule the rest of the course is built on.",
+                    "Claude can suggest, draft, or explain. It cannot decide for you, and it does not act on its own.",
+                    "If a suggestion does not feel right, you can ignore it. Nothing is lost.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u2-example",
+                title="What it might look like",
+                page_type="example",
+                content=[
+                    "Here is a small, ordinary moment of using Claude.",
+                ],
+                example=ExampleBlock(
+                    situation=(
+                        "You want to send a short note to a friend who has been "
+                        "unwell. You ask Claude to help you find the right words."
+                    ),
+                    claude_says=(
+                        "Here is one way to start:\n\n"
+                        '  "I have been thinking about you. There is no need to write '
+                        'back — I just wanted you to know."\n\n'
+                        "Change anything that does not sound like you."
+                    ),
+                    takeaway=(
+                        "Claude offered a starting point. You stay the author of the note."
+                    ),
+                ),
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u2-retrieval",
+                title="Which one matches the rule?",
+                page_type="retrieval",
+                content=[
+                    "Read both options. Pick the one that fits the rule from the last page.",
+                    "There is no time limit. Either choice is a fine answer to think about.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt=(
+                        "Claude suggests a sentence for your note. What is the next step?"
+                    ),
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="Read the sentence and decide whether to use it, change it, or set it aside.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="Send the sentence right away because Claude wrote it.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "Claude offers words; you decide what to do with them. "
+                        "Reading first, then choosing, keeps the decision yours."
+                    ),
+                ),
                 complexity=1,
             ),
         ],

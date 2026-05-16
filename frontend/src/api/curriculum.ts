@@ -13,11 +13,50 @@
  */
 import { apiClient } from "./client";
 
+// ---- Page-type extension (Curriculum-expansion Phase 1) --------------------
+//
+// The backend's `CurriculumPage` (backend/models/curriculum.py) now carries
+// an optional `page_type` plus one of three optional structured blocks
+// (principle / example / retrieval). These types mirror that shape; all
+// new fields are optional so legacy pages (older units that only set
+// id/title/content/complexity) keep deserializing without ceremony.
+
+export type PageType =
+  | "recap"
+  | "context"
+  | "principle"
+  | "example"
+  | "retrieval";
+
+export interface RetrievalChoice {
+  id: string;
+  text: string;
+}
+
+export interface RetrievalBlock {
+  prompt: string;
+  choices: RetrievalChoice[];
+  correct_id: string;
+  explanation: string;
+}
+
+export interface ExampleBlock {
+  situation: string;
+  claude_says: string;
+  takeaway: string;
+}
+
 export interface CurriculumPage {
   id: string;
   title: string;
   content: string[];
   complexity: number;
+  // Optional Phase-1 fields. Legacy responses (which the backend
+  // serializes with `exclude_none=True`) simply omit these.
+  page_type?: PageType;
+  principle?: string;
+  example?: ExampleBlock;
+  retrieval?: RetrievalBlock;
 }
 
 export interface ApprovedUnit {
@@ -92,4 +131,66 @@ export async function loadFreeUnit(
       : `/api/curriculum/module-${module}/units/${unitId}`;
   const res = await apiClient.get<Omit<ApprovedUnit, "module">>(path);
   return { ...res.data, module };
+}
+
+// ---- /lesson loader (Curriculum-expansion Phase 1) ------------------------
+//
+// `loadFreeLesson` fetches the full ordered page list for a unit. The
+// renderer walks these pages locally; ISCS already gated which pages are
+// in the response (by complexity ≤ unit.max_complexity), so the frontend
+// does no selection — only sequencing.
+
+export interface LessonResponse {
+  module: 1 | 2 | 3;
+  unit_id: string;
+  unit_title: string;
+  pages: CurriculumPage[];
+  stability: number;
+}
+
+export async function loadFreeLesson(
+  module: 1 | 2 | 3,
+  unitId: string,
+): Promise<LessonResponse> {
+  const path =
+    module === 1
+      ? `/api/curriculum/units/${unitId}/lesson`
+      : `/api/curriculum/module-${module}/units/${unitId}/lesson`;
+  // The backend response includes `module`, but for module 1 it always
+  // emits 1; we cast through `unknown` so the call site sees the narrow
+  // 1|2|3 type even when the JSON `module` is widened to `number`.
+  const res = await apiClient.get<{
+    module: number;
+    unit_id: string;
+    unit_title: string;
+    pages: CurriculumPage[];
+    stability: number;
+  }>(path);
+  return { ...res.data, module };
+}
+
+// ---- Retrieval-choice telemetry --------------------------------------------
+
+export interface RetrievalChoiceRecord {
+  module: 1 | 2 | 3;
+  unit_id: string;
+  page_id: string;
+  chosen_id: string;
+  correct: boolean;
+}
+
+/**
+ * Record a learner's retrieval-page selection. Fire-and-forget: callers
+ * should not block UI on this. Network failure is silently swallowed
+ * because losing one audit row must not break the learning flow.
+ */
+export async function recordRetrievalChoice(
+  body: RetrievalChoiceRecord,
+): Promise<void> {
+  try {
+    await apiClient.post("/api/curriculum/retrieval-choice", body);
+  } catch {
+    /* fire-and-forget — telemetry loss is acceptable, blocking the
+     *  learner is not. */
+  }
 }
