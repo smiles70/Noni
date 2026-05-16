@@ -1,19 +1,26 @@
 /**
  * Sign-in page (account.signin envelope).
  *
- * Two providers, selected at build time by VITE_AUTH_PROVIDER:
- *   - "mock"  -> dev/tests; renders an email form, sends
- *                `credential = "mock:<email>"` to /auth/callback.
- *   - "clerk" -> production (post-ADR-0024); renders Clerk's <SignIn />
- *                widget. The browser-side handoff to our backend lives
- *                in ClerkAuthBridge (mounted by App.tsx).
+ * Two providers, selected at build time by VITE_AUTH_PROVIDER (ADR 0024):
  *
- * The RenderGuard envelope is intentionally bypassed in the Clerk branch
- * because the rendered tree is a vendor widget we don't own.
+ *   - "mock"  -> dev/tests; renders an email form. On submit we write
+ *                `mock:<email>` to localStorage via setMockToken; the
+ *                next API call carries it as Bearer. No round-trip to
+ *                the backend is required at submit time — the upsert
+ *                happens lazily on the first authenticated request
+ *                (whoami fired by App.tsx after onSignedIn).
+ *
+ *   - "clerk" -> production; renders Clerk's hosted <SignIn /> widget.
+ *                Sign-in completion is detected via `useAuth()` inside
+ *                a child component (ClerkSignInBranch) so the hook is
+ *                only evaluated when ClerkProvider is in the tree.
+ *
+ * The RenderGuard envelope is intentionally bypassed in the Clerk
+ * branch because the rendered tree is a vendor widget we don't own.
  */
 import { useEffect, useState } from "react";
-import { SignIn } from "@clerk/clerk-react";
-import { signIn } from "../api/auth";
+import { SignIn, useAuth } from "@clerk/clerk-react";
+import { setMockToken } from "../api/auth";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import {
@@ -45,6 +52,36 @@ interface Props {
   onCancel: () => void;
 }
 
+/**
+ * Clerk-only sub-component: renders the <SignIn /> widget and watches
+ * useAuth() to detect a successful sign-in. When `isSignedIn` flips
+ * true (after the user completes Clerk's flow), we call onSignedIn so
+ * App.tsx can refresh /auth/whoami and advance the view.
+ *
+ * Lives inside SignInPage so it can only mount when AUTH_PROVIDER ===
+ * "clerk"; otherwise the useAuth() hook would throw for lack of
+ * ClerkProvider in the tree.
+ */
+function ClerkSignInBranch({ onSignedIn, onCancel }: Props) {
+  const { isLoaded, isSignedIn } = useAuth();
+  useEffect(() => {
+    if (isLoaded && isSignedIn) onSignedIn();
+  }, [isLoaded, isSignedIn, onSignedIn]);
+  return (
+    <main style={PAGE} data-component="ClerkSignIn">
+      <h1 style={H1}>Sign in</h1>
+      {/* routing="virtual" keeps Clerk inside our SPA (no URL changes).
+          fallbackRedirectUrl is required by Clerk's API but unused in
+          our flow because we drive the post-signin transition
+          ourselves via onSignedIn -> App.tsx. */}
+      <SignIn routing="virtual" fallbackRedirectUrl="/" />
+      <button type="button" style={SECONDARY_BTN} onClick={onCancel}>
+        Go back
+      </button>
+    </main>
+  );
+}
+
 export default function SignInPage({ onSignedIn, onCancel }: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [email, setEmail] = useState("");
@@ -57,32 +94,12 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
       .catch(() => setError("This page is paused. Refresh in a moment."));
   }, []);
 
-  // Clerk path: render Clerk's hosted <SignIn /> widget. The bridge
-  // (mounted in App.tsx) detects the resulting Clerk session and will
-  // hand the JWT to our backend in session 3 of the migration. For
-  // session 2 the bridge only logs the token to the console.
+  // Clerk path: delegate to a child component so the useAuth() hook
+  // is only evaluated when ClerkProvider is in the tree (i.e. when
+  // AUTH_PROVIDER === "clerk"). Calling useAuth() in mock mode would
+  // crash because the provider is intentionally absent.
   if (AUTH_PROVIDER === "clerk") {
-    return (
-      <main style={PAGE} data-component="ClerkSignIn">
-        <h1 style={H1}>Sign in</h1>
-        <SignIn
-          routing="virtual"
-          signUpUrl="#"
-          fallbackRedirectUrl="/"
-        />
-        <button
-          type="button"
-          style={SECONDARY_BTN}
-          onClick={onCancel}
-        >
-          Go back
-        </button>
-        {/* onSignedIn is invoked by App.tsx once the bridge completes
-            the backend handshake. SignInPage itself doesn't drive the
-            transition in the Clerk branch. */}
-        {void onSignedIn}
-      </main>
-    );
+    return <ClerkSignInBranch onSignedIn={onSignedIn} onCancel={onCancel} />;
   }
 
   if (error) {
@@ -107,7 +124,10 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      await signIn(`mock:${email.trim()}`);
+      // Mock provider: persist the bearer token so the apiClient picks
+      // it up on the very next request. The account row is upserted
+      // lazily by /auth/whoami when App.tsx refreshes after onSignedIn.
+      setMockToken(email.trim());
       onSignedIn();
     } catch {
       setError("We could not sign you in. Please try again.");

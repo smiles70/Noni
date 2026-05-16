@@ -93,7 +93,14 @@ def client():
 
 
 def _signin(client: TestClient, email: str) -> str:
-    r = client.post("/auth/callback", json={"credential": f"mock:{email}"})
+    """Attach a mock Bearer header to the client (ADR 0024).
+
+    The Bearer is read by `get_optional_account` on the next request;
+    the account row is upserted lazily. We hit /auth/whoami here so
+    the caller can return the account_id for cross-account assertions.
+    """
+    client.headers["Authorization"] = f"Bearer mock:{email}"
+    r = client.get("/auth/whoami")
     assert r.status_code == 200, r.text
     return r.json()["account_id"]
 
@@ -248,9 +255,8 @@ def test_smoke_gift_flow_grants_only_recipient(client, DbSession):
     assert r_buyer.status_code == 402, r_buyer.text
     assert r_buyer.json()["detail"]["envelope_id"] == "billing.purchase_required"
 
-    # Buyer signs out; recipient signs in and claims.
-    client.post("/auth/signout")
-    client.cookies.clear()
+    # Buyer 'signs out' implicitly when we overwrite the Bearer for the
+    # recipient. Nothing server-side to clean up in the Bearer model.
     recipient_id = _signin(client, "a10-recipient@example.test")
     assert recipient_id != buyer_id
 

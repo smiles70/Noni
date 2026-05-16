@@ -84,7 +84,7 @@ export default function NavBar({
 
       {signedIn && onContinuePaid && (
         <button type="button" style={LINK_BTN} onClick={onContinuePaid}>
-          Continue paid content
+          Upgrade — Modules 4 & 5
         </button>
       )}
 

@@ -26,8 +26,14 @@ from backend.models import governance as _governance  # noqa: F401
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+# NB: we intentionally skip fileConfig(config.config_file_name). The
+# logging section in alembic.ini sets the root logger to WARNING, which
+# would override uvicorn's INFO-level access logs and our own
+# logger.info() calls (e.g. clerk_user_lookup_* in auth_provider.py)
+# after `run_migrations()` runs at FastAPI lifespan startup. Alembic's
+# own migration messages still print via Python's default handler, which
+# uvicorn already configures.
+_ = fileConfig  # imported for type checkers; intentionally unused
 
 target_metadata = Base.metadata
 

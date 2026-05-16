@@ -1,120 +1,64 @@
 """Authentication routes.
 
-See ADR 0023 (and ADR 0024 for the Clerk migration in progress).
+See ADR 0023 (original session-cookie design) and ADR 0024 (Clerk
+migration; this module's current shape).
 
 Endpoints:
-- POST /auth/callback   verify credential, mint session, set cookie
-- POST /auth/signout    revoke active session, clear cookie
-- GET  /auth/whoami     return current account or 401
+- GET /auth/whoami   return current account or 401
 
-The 'credential' field is provider-shaped. Today that's "mock:<email>"
-(MockAuthProvider). In session 3 of the Clerk migration this becomes
-the Clerk-issued RS256 JWT; the route itself stays provider-agnostic.
+Removed in ADR 0024:
+- POST /auth/callback  (no session table to populate; Bearer tokens
+                        are verified per-request by `get_current_account`)
+- POST /auth/signout   (sign-out is client-side: `clerk.signOut()` in
+                        Clerk mode, localStorage clear in mock mode;
+                        tokens we issued expire on their own)
 
-The previous /auth/google/* server-orchestrated PKCE endpoints were
-removed when Supabase-as-IdP was decommissioned. Clerk hosts its own
-Google sign-in UI, so we no longer need to drive the OAuth dance.
+The `credential` exchange endpoint and the `sessions` table outlived
+their usefulness once we standardised on Clerk + per-request JWT
+verification. Removing them eliminates the cross-origin cookie /
+SameSite / CSRF surface that caused repeated sign-in loops during the
+migration.
 """
 
 from __future__ import annotations
 
-import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from sqlalchemy.orm import Session as DbSession
 
-from backend.api.deps import get_current_account, get_db
-from backend.core.config import settings
+from backend.api.deps import get_current_account
 from backend.models.accounts import Account
-from backend.services.auth_provider import get_auth_provider
-from backend.services.sessions import (
-    create_session,
-    find_or_create_account_for_claims,
-    lookup_session,
-    revoke_session,
-)
 
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 
-class AuthCallbackRequest(BaseModel):
-    credential: str
+class WhoAmIResponse(BaseModel):
+    """Shape returned by /auth/whoami.
 
+    `has_active_session` is preserved as the frontend's compatibility
+    field — in the Bearer model a successful response by definition
+    means "active". A 401 (no/invalid token) returns no body, and the
+    frontend treats that as signed-out.
+    """
 
-class AuthCallbackResponse(BaseModel):
     account_id: str
-    email: str
+    # Email may be missing in pathological provider states (e.g. an
+    # account row predating the Clerk migration). Treat as nullable on
+    # the wire so we don't 500 instead of returning a usable response.
+    email: Optional[str] = None
     display_name: Optional[str] = None
+    has_active_session: bool = True
 
 
-@router.post("/callback", response_model=AuthCallbackResponse)
-def auth_callback(
-    body: AuthCallbackRequest,
-    request: Request,
-    response: Response,
-    db: DbSession = Depends(get_db),
-) -> AuthCallbackResponse:
-    provider = get_auth_provider()
-    claims = provider.verify_credential(body.credential)
-    if claims is None:
-        # Fail closed; do not leak which validation step failed.
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"envelope_id": "auth.signed_out"},
-        )
-
-    account = find_or_create_account_for_claims(db, claims)
-    _, cookie_value = create_session(
-        db,
-        account,
-        last_ip=request.client.host if request.client else None,
-        last_user_agent=request.headers.get("user-agent"),
-    )
-    db.commit()
-
-    response.set_cookie(
-        key=settings.SESSION_COOKIE_NAME,
-        value=cookie_value,
-        httponly=True,
-        secure=settings.ENVIRONMENT == "production",
-        samesite="lax",
-        max_age=settings.SESSION_TTL_DAYS * 24 * 3600,
-        path="/",
-    )
-    return AuthCallbackResponse(
-        account_id=str(account.id),
-        email=account.email,
-        display_name=account.display_name,
-    )
-
-
-@router.post("/signout")
-def auth_signout(
-    request: Request,
-    response: Response,
-    db: DbSession = Depends(get_db),
-):
-    cookie_value = request.cookies.get(settings.SESSION_COOKIE_NAME)
-    if cookie_value:
-        session_row = lookup_session(db, cookie_value)
-        if session_row is not None:
-            revoke_session(db, session_row, reason="user_signed_out")
-            db.commit()
-    response.delete_cookie(settings.SESSION_COOKIE_NAME, path="/")
-    return {"signed_out": True}
-
-
-@router.get("/whoami", response_model=AuthCallbackResponse)
+@router.get("/whoami", response_model=WhoAmIResponse)
 def auth_whoami(
     account: Account = Depends(get_current_account),
-) -> AuthCallbackResponse:
-    return AuthCallbackResponse(
+) -> WhoAmIResponse:
+    return WhoAmIResponse(
         account_id=str(account.id),
         email=account.email,
         display_name=account.display_name,
+        has_active_session=True,
     )

@@ -1,15 +1,10 @@
 /**
- * Billing & gift API client. Cookie-authenticated like auth.ts.
- * See ADR 0021.
+ * Billing & gift API client.
+ *
+ * Auth (ADR 0024): uses the centralized `apiClient` so the Bearer
+ * token is attached automatically. See ADR 0021 for billing semantics.
  */
-import axios from "axios";
-
-const API_BASE = "http://127.0.0.1:8000";
-
-const client = axios.create({
-  baseURL: API_BASE,
-  withCredentials: true,
-});
+import { apiClient } from "./client";
 
 export interface CheckoutResponse {
   purchase_id: string;
@@ -21,7 +16,7 @@ export async function startCheckout(
   productCode: string,
   isGift: boolean,
 ): Promise<CheckoutResponse> {
-  const res = await client.post<CheckoutResponse>("/api/billing/checkout", {
+  const res = await apiClient.post<CheckoutResponse>("/api/billing/checkout", {
     product_code: productCode,
     is_gift: isGift,
   });
@@ -35,7 +30,7 @@ export interface GiftPreview {
 }
 
 export async function previewGift(token: string): Promise<GiftPreview> {
-  const res = await client.post<GiftPreview>("/api/gifts/preview", { token });
+  const res = await apiClient.post<GiftPreview>("/api/gifts/preview", { token });
   return res.data;
 }
 
@@ -46,6 +41,6 @@ export interface GiftClaim {
 }
 
 export async function claimGift(token: string): Promise<GiftClaim> {
-  const res = await client.post<GiftClaim>("/api/gifts/claim", { token });
+  const res = await apiClient.post<GiftClaim>("/api/gifts/claim", { token });
   return res.data;
 }

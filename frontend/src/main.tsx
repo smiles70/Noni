@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { applyLargeTextOnBoot } from './largeText';
 import { ClerkProvider } from '@clerk/clerk-react';
+import { ClerkTokenBridge } from './components/ClerkTokenBridge';
 
 applyLargeTextOnBoot();
 
@@ -33,7 +34,12 @@ if (provider === 'clerk') {
   }
   root.render(
     <React.StrictMode>
-      <ClerkProvider publishableKey={clerkKey} afterSignOutUrl="/">
+      {/* No `afterSignOutUrl` here: post-signout navigation is owned by
+          App.tsx (handleSignedOut), which is the single source of truth
+          for view transitions. Letting Clerk redirect us would race
+          our state updates and unmount the SignOut button mid-await. */}
+      <ClerkProvider publishableKey={clerkKey}>
+        <ClerkTokenBridge />
         <App />
       </ClerkProvider>
     </React.StrictMode>,
