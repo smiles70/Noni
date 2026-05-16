@@ -218,8 +218,17 @@ _LANDING_FIRST_WIN_ENVELOPE = UIStateEnvelope(
 
 # Curriculum unit page — the renderer used by Module 1 (and the same
 # component used for Modules 2-5 once they ship as renderable screens).
-# Per ADR 0001, curriculum progression is sequenced by user agency, so
-# the only primary action here is the user-driven "next" advance.
+# Per ADR 0001, curriculum progression is sequenced by user agency.
+#
+# Curriculum-expansion sprint (Phase 1): a single envelope now hosts five
+# page types (recap / context / principle / example / retrieval) within
+# the same renderer. The retrieval page presents the highest interaction
+# density: two answer-choice Buttons + up to two NavBar entries (Upgrade
+# and Account when signed in) = 4 primary actions on the pre-answer
+# render. The post-answer render returns to the standard 1-page-action
+# shape (Continue + NavBar). LIST is added so example pages can render
+# bullet lists of permitted/forbidden phrasings without violating the
+# component allow-list.
 _CURRICULUM_UNIT_ENVELOPE = UIStateEnvelope(
     state_id="curriculum.unit",
     authorized_components=[
@@ -227,14 +236,16 @@ _CURRICULUM_UNIT_ENVELOPE = UIStateEnvelope(
         AuthorizedComponent.BODY,
         AuthorizedComponent.BUTTON,
         AuthorizedComponent.CARD,
+        AuthorizedComponent.LIST,
         AuthorizedComponent.DIVIDER,
         AuthorizedComponent.INDICATOR,
         AuthorizedComponent.PENDING_BANNER,
         AuthorizedComponent.BLOCKED_NOTICE,
     ],
     interaction_limits=InteractionLimits(
-        # Return-to-start + up to 2 NavBar entries.
-        max_primary_actions=3,
+        # Pre-answer retrieval = 2 choice Buttons + 2 NavBar entries = 4.
+        # Headroom of 1 is reserved for the contract ceiling, not used.
+        max_primary_actions=5,
         max_irreversible_actions=0,
         max_highlighted_recommendations=1,
         max_visible_text_levels=3,

@@ -13,8 +13,9 @@
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const { mockGet, mockUse } = vi.hoisted(() => ({
+const { mockGet, mockPost, mockUse } = vi.hoisted(() => ({
   mockGet: vi.fn(),
+  mockPost: vi.fn(),
   mockUse: vi.fn(),
 }));
 
@@ -24,6 +25,7 @@ vi.mock("axios", () => ({
   default: {
     create: () => ({
       get: mockGet,
+      post: mockPost,
       interceptors: { request: { use: mockUse } },
     }),
     isAxiosError: vi.fn(),
@@ -31,10 +33,16 @@ vi.mock("axios", () => ({
   AxiosHeaders: class {},
 }));
 
-import { loadFreeUnit, loadPaidUnit } from "../curriculum";
+import {
+  loadFreeLesson,
+  loadFreeUnit,
+  loadPaidUnit,
+  recordRetrievalChoice,
+} from "../curriculum";
 
 afterEach(() => {
   mockGet.mockReset();
+  mockPost.mockReset();
 });
 
 describe("loadPaidUnit", () => {
@@ -202,5 +210,146 @@ describe("loadFreeUnit", () => {
   it("propagates a rejected request as a thrown error", async () => {
     mockGet.mockRejectedValueOnce(new Error("nope"));
     await expect(loadFreeUnit(1, "unit-2")).rejects.toThrow("nope");
+  });
+});
+
+// ---- /lesson loader (Curriculum-expansion Phase 1) -------------------------
+
+describe("loadFreeLesson", () => {
+  it("hits /api/curriculum/units/{id}/lesson for module 1 and synthesizes module=1", async () => {
+    mockGet.mockResolvedValueOnce({
+      status: 200,
+      data: {
+        module: 1,
+        unit_id: "unit-2",
+        unit_title: "What Is Claude",
+        pages: [
+          {
+            id: "u2-context",
+            title: "Context",
+            content: ["a"],
+            complexity: 1,
+            page_type: "context",
+          },
+          {
+            id: "u2-principle",
+            title: "Principle",
+            content: [],
+            complexity: 1,
+            page_type: "principle",
+            principle: "x",
+          },
+        ],
+        stability: 0.1,
+      },
+    });
+
+    const lesson = await loadFreeLesson(1, "unit-2");
+
+    expect(mockGet).toHaveBeenCalledWith(
+      "/api/curriculum/units/unit-2/lesson",
+    );
+    expect(lesson.module).toBe(1);
+    expect(lesson.unit_id).toBe("unit-2");
+    expect(lesson.pages).toHaveLength(2);
+    expect(lesson.pages[0].page_type).toBe("context");
+  });
+
+  it("hits the module-2 path for module 2", async () => {
+    mockGet.mockResolvedValueOnce({
+      status: 200,
+      data: {
+        module: 2,
+        unit_id: "module2-unit-1",
+        unit_title: "T",
+        pages: [
+          { id: "p", title: "T", content: [], complexity: 1 },
+        ],
+        stability: 0.2,
+      },
+    });
+
+    const lesson = await loadFreeLesson(2, "module2-unit-1");
+
+    expect(mockGet).toHaveBeenCalledWith(
+      "/api/curriculum/module-2/units/module2-unit-1/lesson",
+    );
+    expect(lesson.module).toBe(2);
+  });
+
+  it("preserves pages with retrieval/example structured blocks", async () => {
+    mockGet.mockResolvedValueOnce({
+      status: 200,
+      data: {
+        module: 1,
+        unit_id: "unit-2",
+        unit_title: "U2",
+        pages: [
+          {
+            id: "u2-retrieval",
+            title: "Pick one",
+            content: ["read both"],
+            complexity: 1,
+            page_type: "retrieval",
+            retrieval: {
+              prompt: "Which?",
+              choices: [
+                { id: "a", text: "A" },
+                { id: "b", text: "B" },
+              ],
+              correct_id: "a",
+              explanation: "because",
+            },
+          },
+        ],
+        stability: 0,
+      },
+    });
+
+    const lesson = await loadFreeLesson(1, "unit-2");
+    expect(lesson.pages[0].retrieval?.choices).toHaveLength(2);
+    expect(lesson.pages[0].retrieval?.correct_id).toBe("a");
+  });
+});
+
+// ---- recordRetrievalChoice -------------------------------------------------
+
+describe("recordRetrievalChoice", () => {
+  it("POSTs the body to /api/curriculum/retrieval-choice", async () => {
+    mockPost.mockResolvedValueOnce({ status: 200, data: { recorded: true } });
+
+    await recordRetrievalChoice({
+      module: 1,
+      unit_id: "unit-2",
+      page_id: "u2-retrieval",
+      chosen_id: "a",
+      correct: true,
+    });
+
+    expect(mockPost).toHaveBeenCalledWith(
+      "/api/curriculum/retrieval-choice",
+      {
+        module: 1,
+        unit_id: "unit-2",
+        page_id: "u2-retrieval",
+        chosen_id: "a",
+        correct: true,
+      },
+    );
+  });
+
+  it("swallows network failures (fire-and-forget)", async () => {
+    mockPost.mockRejectedValueOnce(new Error("offline"));
+
+    // Must not throw — losing telemetry must never block the learner.
+    await expect(
+      recordRetrievalChoice({
+        module: 1,
+        unit_id: "unit-2",
+        page_id: "u2-retrieval",
+        chosen_id: "b",
+        correct: false,
+      }),
+    ).resolves.toBeUndefined();
   });
 });

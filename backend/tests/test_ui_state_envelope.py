@@ -282,6 +282,25 @@ def test_curriculum_unit_self_loops_for_next_advance():
     assert "curriculum.unit" in target_ids
 
 
+def test_curriculum_unit_authorizes_list_and_card():
+    """Curriculum-expansion Phase 1: example pages need LIST; example/retrieval
+    pages need CARD. Both must be in the curriculum.unit envelope."""
+    env = get_envelope("curriculum.unit")
+    assert env is not None
+    components = {c.value for c in env.authorized_components}
+    assert "List" in components
+    assert "Card" in components
+    assert "Indicator" in components
+
+
+def test_curriculum_unit_permits_retrieval_density():
+    """Pre-answer retrieval = 2 choice Buttons + up to 2 NavBar entries = 4
+    primary actions. The envelope must permit at least 4."""
+    env = get_envelope("curriculum.unit")
+    assert env is not None
+    assert env.interaction_limits.max_primary_actions >= 4
+
+
 def test_every_transition_targets_a_defined_envelope():
     """Closed-world: no transition may point at an undefined state."""
     from backend.models.ui_state_envelope import ENVELOPES

@@ -15,6 +15,14 @@ const KEY = "noni_progress_v1";
 export interface Progress {
   module: 1 | 2 | 3 | 4 | 5;
   unitId: string;
+  /** Page index within the current unit's lesson (0-based).
+   *
+   *  Added in Curriculum-expansion Phase 1: lessons are now multi-page
+   *  decks, so resume position must include the page offset within the
+   *  unit. Older stored progress objects (v1 schema before this field)
+   *  read as `pageIdx: 0`, which is the safe default — they re-start
+   *  the unit from its first page on the next visit. */
+  pageIdx?: number;
 }
 
 export function readProgress(): Progress | null {
@@ -29,9 +37,16 @@ export function readProgress(): Progress | null {
       parsed.module >= 1 &&
       parsed.module <= 5
     ) {
+      const pageIdx =
+        typeof parsed.pageIdx === "number" &&
+        Number.isFinite(parsed.pageIdx) &&
+        parsed.pageIdx >= 0
+          ? Math.floor(parsed.pageIdx)
+          : 0;
       return {
         module: parsed.module as Progress["module"],
         unitId: parsed.unitId,
+        pageIdx,
       };
     }
     return null;
@@ -42,7 +57,12 @@ export function readProgress(): Progress | null {
 
 export function writeProgress(p: Progress): void {
   try {
-    localStorage.setItem(KEY, JSON.stringify(p));
+    const payload: Progress = {
+      module: p.module,
+      unitId: p.unitId,
+      pageIdx: typeof p.pageIdx === "number" ? p.pageIdx : 0,
+    };
+    localStorage.setItem(KEY, JSON.stringify(payload));
   } catch {
     /* quota / disabled storage — intentionally swallowed */
   }
