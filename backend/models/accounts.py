@@ -21,8 +21,10 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    Index,
     String,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.dialects.postgresql import CITEXT, UUID
 from sqlalchemy.orm import relationship
@@ -36,14 +38,26 @@ def _utcnow() -> datetime:
 
 class Account(Base):
     __tablename__ = "accounts"
+    # M1 (alembic m1_login_schema) relaxed the schema (B12, B8, I-D):
+    # - email is now NULLable (identity-provider default tokens may not
+    #   carry an email claim; B11 forbids gating the critical path on
+    #   an optional provider Backend API call to materialize one).
+    # - The UNIQUE constraint on email was dropped to structurally
+    #   eliminate the email-collision-relink failure class (FC3).
+    # auth_user_id remains the sole identity key.
     __table_args__ = (
         UniqueConstraint("auth_user_id", name="uq_accounts_auth_user_id"),
-        UniqueConstraint("email", name="uq_accounts_email"),
+        Index(
+            "idx_accounts_email_active",
+            "email",
+            unique=False,
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
     )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     auth_user_id = Column(UUID(as_uuid=True), nullable=True, index=True)
-    email = Column(CITEXT(), nullable=False)
+    email = Column(CITEXT(), nullable=True)
     display_name = Column(String(256), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
