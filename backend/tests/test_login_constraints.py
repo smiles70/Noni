@@ -504,26 +504,75 @@ def test_T_G2_two_subjects_sharing_email_do_not_silently_relink() -> None:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=True, reason="redesign-pending: T-H1")
-def test_T_H1_no_credential_prefix_in_logs() -> None:
+@_requires_postgres
+def test_T_H1_no_credential_prefix_in_logs(capsys, caplog) -> None:
     """T-H1 — Inspect logs for credential leakage.
 
     Action:
-        Across all environments, capture log output during
-        authenticated request flows.
+        Drive an authenticated request through every auth-touching
+        surface (legacy /auth/whoami AND the redesigned /auth/session
+        and /auth/session/init); capture BOTH stdout/stderr (where the
+        removed DIAG_/VERIFY_ prints used to land) AND the logging
+        framework's records.
 
     Expected:
-        Zero log lines containing any prefix of any token, header, or
-        cookie value.
+        No captured output contains any byte of the credential — not
+        the token in full, not any prefix of length >= 8, not the email
+        portion of a mock token. Removing the prints is a B10 fix; this
+        test guards against re-introduction.
 
     Forbidden:
-        Any DIAG_AUTHZ_HEADER-style leakage; any redaction-by-truncation
-        that still emits a non-empty prefix.
+        Any DIAG_AUTHZ_HEADER-style leakage; any prefix-truncation that
+        still emits a non-empty prefix of a token.
 
     Validates: B10
     Prevents:  F10
     """
-    raise NotImplementedError
+    import logging
+
+    unique_email = f"t-h1-{uuid.uuid4().hex[:8]}@example.test"
+    token_value = f"mock:{unique_email}"
+    # Substrings whose presence in captured output would be a leak.
+    # 8-char prefix mirrors the previous DIAG truncation depth (24 chars
+    # of "Bearer mock:..." — we test at the smaller, conservative bound).
+    forbidden_substrings = (
+        token_value,  # full token
+        token_value[:16],  # generous prefix
+        token_value[:8],  # the previous DIAG truncation length
+        unique_email,  # the PII portion of the mock token
+        "DIAG_AUTHZ_HEADER",  # the removed marker
+        "VERIFY_START",  # removed Clerk markers
+        "VERIFY_JWKS_OK",
+        "VERIFY_DECODE_OK",
+    )
+
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {token_value}"}
+
+    # Capture at root so any logger.* call lands in caplog.
+    with caplog.at_level(logging.DEBUG, logger=""):
+        r1 = client.get("/auth/whoami", headers=headers)
+        r2 = client.get("/auth/session", headers=headers)
+        r3 = client.post("/auth/session/init", headers=headers)
+
+    assert r1.status_code == 200, r1.text
+    assert r2.status_code == 200, r2.text
+    assert r3.status_code == 200, r3.text
+
+    captured = capsys.readouterr()
+    combined = (
+        captured.out
+        + "\n"
+        + captured.err
+        + "\n"
+        + "\n".join(rec.getMessage() for rec in caplog.records)
+    )
+
+    hits = [s for s in forbidden_substrings if s in combined]
+    assert not hits, (
+        "B10 violation: credential / removed-marker substring leaked "
+        f"into captured output. hits={hits!r}\n--- captured ---\n" + combined[:2000]
+    )
 
 
 @pytest.mark.xfail(strict=True, reason="redesign-pending: T-H2")

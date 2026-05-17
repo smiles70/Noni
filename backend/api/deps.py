@@ -52,16 +52,15 @@ def _parse_bearer(authorization: Optional[str]) -> Optional[str]:
 
     Returns None for any malformed input (missing header, wrong scheme,
     empty token). The dep treats None as "not signed in" — never raises.
+
+    B10: this function never logs the header value. The previous
+    `DIAG_AUTHZ_HEADER` print emitted a prefix of every Bearer token to
+    stdout, which is a credential-leakage class even when truncated.
+    Removed as part of Stage 2 BE cleanup; the replacement is no log
+    line at all — request-level observability lives in
+    `backend.app.telemetry.TelemetryMiddleware`, which records
+    path/status/latency only.
     """
-    print(
-        "DIAG_AUTHZ_HEADER=",
-        (
-            (authorization[:24] + "...")
-            if isinstance(authorization, str) and len(authorization) > 24
-            else authorization
-        ),
-        flush=True,
-    )
     if not authorization:
         return None
     parts = authorization.split(None, 1)
@@ -134,6 +133,7 @@ def _upsert_account(
     except IntegrityError:
         db.rollback()
         # Race A: another request inserted the same auth_user_id first.
+        # Re-SELECT the winner.
         existing = (
             db.query(Account)
             .filter(Account.auth_user_id == claims.auth_user_id)
@@ -141,17 +141,18 @@ def _upsert_account(
         )
         if existing is not None:
             return existing
-        # Race B: a pre-existing row owns this email under a different
-        # auth_user_id (e.g. legacy Supabase row or prior mock login).
-        # Clerk is authoritative now -- relink the row to the new subject.
-        existing = db.query(Account).filter(Account.email == email).one_or_none()
-        if existing is not None:
-            existing.auth_user_id = claims.auth_user_id
-            if display_name and existing.display_name != display_name:
-                existing.display_name = display_name
-            existing.updated_at = datetime.now(timezone.utc)
-            db.flush()
-            return existing
+        # Race B (FORMERLY: silent email-collision relink) is no longer
+        # handled here. Per B8 / I-D, the (subject -> row) mapping is
+        # monotonic; relinking an existing row's auth_user_id to a new
+        # subject is forbidden because it transfers ownership of any
+        # entitlements / progress / billing tied to that row.
+        #
+        # M1 (alembic m1_login_schema) also dropped the UNIQUE
+        # constraint on accounts.email, so two subjects sharing an
+        # email can each own their own row. If we reach this point
+        # without an existing auth_user_id row, returning None surfaces
+        # as a 401 and the caller logs it; this is the correct outcome
+        # for the rare cases this branch could be reached.
         return None
 
 

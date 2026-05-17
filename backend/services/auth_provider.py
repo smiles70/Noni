@@ -162,25 +162,22 @@ class ClerkAuthProvider:
         self._jwk_client = PyJWKClient(jwks_url, cache_keys=True)
 
     def verify_credential(self, credential: str) -> Optional[AuthClaims]:
-        print(
-            "VERIFY_START token_len=",
-            len(credential) if isinstance(credential, str) else "not-str",
-            flush=True,
-        )
+        # B10: previously this function emitted `VERIFY_START`,
+        # `VERIFY_JWKS_OK`, `VERIFY_DECODE_OK sub=...` and friends via
+        # print(). Even though tokens were not echoed verbatim, the
+        # `sub` / `iss` values are PII-adjacent and were leaking into
+        # any process that captured stdout. Removed as part of Stage 2
+        # BE cleanup. Structured `logger.info` lines remain for the
+        # failure branches; they contain only the exception class
+        # name, never the token or any claim value.
         if not isinstance(credential, str) or not credential:
-            print("VERIFY_EXIT empty_token", flush=True)
             return None
         try:
             signing_key = self._jwk_client.get_signing_key_from_jwt(credential)
-            print("VERIFY_JWKS_OK", flush=True)
         except PyJWKClientError as exc:
-            print("VERIFY_JWKS_FAIL", repr(exc), flush=True)
-            logger.info("clerk_jwks_lookup_failed: %s", exc)
+            logger.info("clerk_jwks_lookup_failed: %s", exc.__class__.__name__)
             return None
         except Exception as exc:  # network/parse fail — fail closed
-            print(
-                "VERIFY_JWKS_UNEXPECTED", exc.__class__.__name__, repr(exc), flush=True
-            )
             logger.info("clerk_jwks_unexpected_error: %s", exc.__class__.__name__)
             return None
 
@@ -196,15 +193,7 @@ class ClerkAuthProvider:
                     "verify_aud": False,
                 },
             )
-            print(
-                "VERIFY_DECODE_OK sub=",
-                decoded.get("sub"),
-                "iss=",
-                decoded.get("iss"),
-                flush=True,
-            )
         except InvalidTokenError as exc:
-            print("VERIFY_DECODE_FAIL", exc.__class__.__name__, repr(exc), flush=True)
             logger.info("clerk_jwt_rejected: %s", exc.__class__.__name__)
             return None
 
