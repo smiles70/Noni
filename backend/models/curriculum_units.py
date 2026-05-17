@@ -25,6 +25,97 @@ class CurriculumUnit(BaseModel):
 
 
 UNITS: List[CurriculumUnit] = [
+    # ---- Unit 1: "Meet Claude" foundation lesson (Sprint 24) ---------------
+    # Authored to fill the conceptual gap before unit-2: a learner arriving
+    # at the free track had no shared vocabulary for what "AI" means or
+    # what "Claude" is. Four pages, all complexity=1, using the same four
+    # page types unit-2 introduced. No new schema, no new components.
+    CurriculumUnit(
+        id="unit-1",
+        title="Meet Claude",
+        description="What AI is, what Claude is, and where you find it.",
+        pages=[
+            CurriculumPage(
+                id="u1-context",
+                title="What 'AI' means, in plain words",
+                page_type="context",
+                content=[
+                    "AI is short for artificial intelligence. It means computers that can work with words, the way a person does.",
+                    "You have probably used AI already, without thinking of it that way. The voice that gives directions on a phone is AI. So is the search box that finishes your sentence for you.",
+                    "AI is not magic, and it is not a person. It is a tool. A useful one, but still a tool.",
+                    "This first lesson is just a short introduction. There is nothing to do and nothing to remember. Read at your own pace.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u1-principle",
+                title="Claude is one of many AI helpers",
+                page_type="principle",
+                principle="Claude is an AI helper. The company that makes Claude is called Anthropic.",
+                content=[
+                    "Many companies make AI helpers. Anthropic is one of them. Claude is the name of the helper they make.",
+                    "You may have heard other names — for example, ChatGPT or Gemini. Those are different helpers, made by different companies. They are not Claude.",
+                    "This course is about Claude. Once you are comfortable with Claude, the other helpers work in much the same way.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u1-example",
+                title="What it looks like when you visit Claude",
+                page_type="example",
+                content=[
+                    "Here is what meeting Claude for the first time looks like.",
+                ],
+                example=ExampleBlock(
+                    situation=(
+                        "You open a web browser and go to the address claude.ai. "
+                        "A page opens with a single empty box at the bottom, waiting for you to type. "
+                        'You type: "Hello, Claude. I am learning about you."'
+                    ),
+                    claude_says=(
+                        "Hello, and welcome. I am Claude, an AI assistant made by Anthropic. "
+                        "I am happy to help you learn at whatever pace feels right. "
+                        "If you have a question, or just want to try something, you can type it in the box below."
+                    ),
+                    takeaway=(
+                        "Claude lives on a website. You reach it the same way you reach any "
+                        "other website — by typing the address in your browser."
+                    ),
+                ),
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u1-retrieval",
+                title="Which sentence describes Claude?",
+                page_type="retrieval",
+                content=[
+                    "Read both sentences. Pick the one that matches what you just learned.",
+                    "There is no time limit. Either answer is a fine thing to think about.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt="Which sentence describes Claude best?",
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="Claude is an AI helper made by Anthropic. You reach it on a website.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="Claude is a small robot that lives inside your computer.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "Claude is software, not a robot. The company called Anthropic makes it, "
+                        "and you reach it on a website like claude.ai."
+                    ),
+                ),
+                complexity=1,
+            ),
+        ],
+        max_complexity=1,
+        stability_threshold=1.2,
+    ),
     # ---- Unit 2: full Phase-1 expansion exemplar ----------------------------
     # Four page types (context / principle / example / retrieval). All pages
     # are complexity=1 to respect unit.max_complexity=1, which the legacy

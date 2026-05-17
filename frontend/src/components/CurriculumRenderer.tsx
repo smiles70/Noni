@@ -89,9 +89,12 @@ interface Props {
 type FreeProgress = Omit<Progress, "module"> & { module: 1 | 2 | 3 };
 
 // Canonical free-track order. IDs verified at design time against
-// backend/models/curriculum_units*.py (module 1 reserves unit-1 / does
-// not expose it; the real sequence starts at unit-2).
+// backend/models/curriculum_units*.py. Sprint 24 promoted unit-1 to
+// the head of the sequence as the "Meet Claude" foundation lesson:
+// the AI → Claude → Anthropic conceptual bridge that unit-2 was
+// implicitly assuming.
 const FREE_SEQUENCE: ReadonlyArray<FreeProgress> = [
+  { module: 1, unitId: "unit-1" },
   { module: 1, unitId: "unit-2" },
   { module: 1, unitId: "unit-3" },
   { module: 1, unitId: "unit-4" },

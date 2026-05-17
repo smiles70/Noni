@@ -16,7 +16,15 @@ def client():
 class TestUnitData:
     def test_three_units_present(self):
         ids = {u.id for u in UNITS}
-        assert ids == {"unit-2", "unit-3", "unit-4", "unit-5", "unit-6", "unit-7"}
+        assert ids == {
+            "unit-1",
+            "unit-2",
+            "unit-3",
+            "unit-4",
+            "unit-5",
+            "unit-6",
+            "unit-7",
+        }
 
     def test_each_unit_has_at_least_one_page(self):
         for u in UNITS:
@@ -39,7 +47,7 @@ class TestUnitsRoute:
         r = client.get("/api/curriculum/units")
         assert r.status_code == 200
         body = r.json()
-        assert len(body["units"]) == 6
+        assert len(body["units"]) == 7
         for u in body["units"]:
             for k in (
                 "id",
@@ -72,6 +80,7 @@ class TestUnitsRoute:
         for k in ("unit_id", "title", "stability", "reason"):
             assert k in body
         assert body["unit_id"] in {
+            "unit-1",
             "unit-2",
             "unit-3",
             "unit-4",
@@ -119,6 +128,43 @@ class TestLessonRoute:
     def test_lesson_unknown_unit_404(self, client):
         r = client.get("/api/curriculum/units/unit-999/lesson")
         assert r.status_code == 404
+
+    def test_unit_1_meet_claude_foundation(self, client):
+        """Sprint 24: unit-1 supplies the AI→Claude→Anthropic foundation.
+
+        Pins the four-page shape and the presence of the foundational
+        vocabulary so a future content edit can't silently strip the
+        conceptual bridge that justifies starting the course at unit-1.
+        """
+        r = client.get("/api/curriculum/units/unit-1/lesson")
+        assert r.status_code == 200
+        body = r.json()
+        assert body["module"] == 1
+        assert body["unit_id"] == "unit-1"
+        pages = body["pages"]
+        assert len(pages) == 4
+        assert [p["page_type"] for p in pages] == [
+            "context",
+            "principle",
+            "example",
+            "retrieval",
+        ]
+        # Foundational vocabulary must appear somewhere in the lesson.
+        joined = " ".join(" ".join(p.get("content", [])) for p in pages).lower()
+        assert "ai" in joined or "artificial intelligence" in joined
+        assert "anthropic" in joined or any(
+            "anthropic" in (p.get("principle") or "").lower() for p in pages
+        )
+        # Retrieval page has its block and a correct_id matching a choice.
+        retrieval_page = pages[-1]
+        retrieval = retrieval_page["retrieval"]
+        choice_ids = {c["id"] for c in retrieval["choices"]}
+        assert retrieval["correct_id"] in choice_ids
+        # Example page renders inside a Card; situation/claude_says/takeaway present.
+        example = pages[2]["example"]
+        assert example["situation"]
+        assert example["claude_says"]
+        assert example["takeaway"]
 
     def test_legacy_units_endpoint_still_returns_iscs_single_page(self, client):
         """Regression guard: the legacy single-page route must keep working."""
