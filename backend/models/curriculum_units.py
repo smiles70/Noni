@@ -211,147 +211,408 @@ UNITS: List[CurriculumUnit] = [
         max_complexity=1,
         stability_threshold=1.2,
     ),
+    # ---- Unit 3: re-authored as a four-page lesson (Sprint 23 completion) --
+    # First unit to use the `recap` page_type — the carried-over thread from
+    # the previous lesson. max_complexity=2 preserved so the legacy ISCS path
+    # still has admissible pages.
     CurriculumUnit(
         id="unit-3",
         title="How to Use Claude Safely",
         description="Practice safe, reversible interaction with Claude.",
         pages=[
             CurriculumPage(
-                id="u3-p1",
-                title="Asking for Help",
+                id="u3-recap",
+                title="Where we were",
+                page_type="recap",
                 content=[
-                    "Ask for help using simple language.",
-                    "You can always say no to a suggestion.",
+                    "Last lesson, you met Claude: an AI helper that offers words, and leaves the decisions to you.",
+                    "This lesson is about how to ask Claude for help in a way that keeps things calm and reversible.",
                 ],
                 complexity=1,
             ),
             CurriculumPage(
-                id="u3-p2",
-                title="Reading and Trying Again",
+                id="u3-principle",
+                title="Ask in plain words",
+                page_type="principle",
+                principle="You can ask Claude the same way you would ask a friend.",
                 content=[
-                    "Read suggestions without rushing.",
-                    "Ask Claude to try again if a suggestion is unclear.",
-                    "Confirm before using anything Claude proposes.",
+                    "Claude is built to understand everyday language. There are no special commands to learn.",
+                    "Short, plain sentences work best. If a request is unclear, you can ask again with different words.",
                 ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u3-example",
+                title="A small ask",
+                page_type="example",
+                content=[
+                    "Here is what a plain-words ask might look like.",
+                ],
+                example=ExampleBlock(
+                    situation=(
+                        "You want a short thank-you note for a neighbor who brought in your mail. "
+                        'You type: "Can you help me write a short thank-you to a neighbor who picked up my mail?"'
+                    ),
+                    claude_says=(
+                        "Of course. Here is one short version:\n\n"
+                        '  "Thank you so much for bringing my mail in. It meant a lot."\n\n'
+                        "I can make it warmer, shorter, or more formal if you would like."
+                    ),
+                    takeaway=(
+                        "A plain question got a plain answer, with an open door to change it."
+                    ),
+                ),
                 complexity=2,
+            ),
+            CurriculumPage(
+                id="u3-retrieval",
+                title="Which way of asking works?",
+                page_type="retrieval",
+                content=[
+                    "Read both. Pick the one that fits how Claude expects to be asked.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt="What is the best way to ask Claude for help?",
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="In plain words, the same way you would ask a friend.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="Using a special code or command that only Claude knows.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "Claude was made to understand everyday language. No codes or commands are needed."
+                    ),
+                ),
+                complexity=1,
             ),
         ],
         max_complexity=2,
         stability_threshold=1.0,
     ),
+    # ---- Unit 4: small-steps lesson (max_complexity=3 preserved) -----------
     CurriculumUnit(
         id="unit-4",
         title="Claude-Based Projects",
-        description="Create meaningful, practical results with Claude.",
+        description="Create meaningful, practical results with Claude, one step at a time.",
         pages=[
             CurriculumPage(
-                id="u4-p1",
-                title="A Friendly Note",
-                content=["Write a friendly note to someone you care about."],
+                id="u4-recap",
+                title="What we know so far",
+                page_type="recap",
+                content=[
+                    "You can ask Claude in plain words, and Claude offers something back for you to use, change, or set aside.",
+                    "This lesson is about doing something with that — a small project, taken one step at a time.",
+                ],
                 complexity=1,
             ),
             CurriculumPage(
-                id="u4-p2",
-                title="A Hobby You Enjoy",
+                id="u4-principle",
+                title="One question at a time",
+                page_type="principle",
+                principle="One question at a time. Each answer is a step you can choose to take.",
                 content=[
-                    "Learn about a hobby you enjoy.",
-                    "Ask Claude one question at a time.",
+                    "Asking for everything at once gets a tangled answer.",
+                    "Asking one small question at a time gives you a chance to read, think, and decide before the next step.",
+                    "There is no rush. The project waits for you.",
                 ],
                 complexity=2,
             ),
             CurriculumPage(
-                id="u4-p3",
-                title="A Daily Checklist",
+                id="u4-example",
+                title="A note, one step at a time",
+                page_type="example",
                 content=[
-                    "Create a checklist for daily life.",
-                    "Review and confirm each item before saving.",
-                    "Edit anything that does not feel right.",
+                    "Here is the same small project, broken into steps.",
                 ],
-                complexity=3,
+                example=ExampleBlock(
+                    situation=(
+                        "You want to write a short letter to a grandchild. You start by asking Claude: "
+                        '"What is a friendly way to begin a letter to my grandchild?"'
+                    ),
+                    claude_says=(
+                        "Here is one warm opening:\n\n"
+                        '  "Dear Sam, I have been thinking about you this week, and I wanted to write."\n\n'
+                        "When you are ready, you can tell me what you would like to say next."
+                    ),
+                    takeaway=(
+                        "Claude answered one step. The next step waits until you decide what it should be."
+                    ),
+                ),
+                complexity=2,
+            ),
+            CurriculumPage(
+                id="u4-retrieval",
+                title="Which way of working is steadier?",
+                page_type="retrieval",
+                content=[
+                    "Read both. Pick the one that fits the rule from the principle page.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt="You want to write a letter with Claude. What is the steadier way?",
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="Ask one small question, read the answer, then decide what to ask next.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="Ask for the whole letter, the envelope, and the stamp choice all at once.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "Small steps keep you in control. Each answer is a moment to pause and decide."
+                    ),
+                ),
+                complexity=1,
             ),
         ],
         max_complexity=3,
         stability_threshold=0.8,
     ),
+    # ---- Unit 5: verifying / pacing ---------------------------------------
     CurriculumUnit(
         id="unit-5",
         title="Verifying Claude's Suggestions",
         description="Build the habit of checking what Claude says before acting on it.",
         pages=[
             CurriculumPage(
-                id="u5-p1",
-                title="Read Before You Use",
+                id="u5-recap",
+                title="What we built last lesson",
+                page_type="recap",
                 content=[
-                    "Always read what Claude writes before you use it.",
-                    "Take your time. There is no rush.",
+                    "You learned to take a project one small step at a time, with Claude offering each step and you choosing the next.",
+                    "This lesson is about the moment right after Claude answers: reading carefully before using anything.",
                 ],
                 complexity=1,
             ),
             CurriculumPage(
-                id="u5-p2",
-                title="Compare With What You Know",
+                id="u5-principle",
+                title="Read before you use",
+                page_type="principle",
+                principle="Read what Claude wrote before you use it. There is no rush.",
                 content=[
-                    "Compare Claude's answer to what you already know.",
-                    "If something feels off, set it aside.",
-                    "Ask Claude to explain its reasoning in simple words.",
+                    "Claude can sound very sure, even when it is wrong.",
+                    "Reading the answer first — slowly — is the simplest way to keep mistakes small.",
+                    "If something feels off, you can set it aside. Nothing is lost by waiting.",
                 ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u5-example",
+                title="Spotting something that feels off",
+                page_type="example",
+                content=[
+                    "Sometimes a Claude answer almost works, but one piece feels wrong.",
+                ],
+                example=ExampleBlock(
+                    situation=(
+                        "You ask Claude when a holiday falls this year. Claude answers confidently, "
+                        "but the date is one you do not remember being right."
+                    ),
+                    claude_says=(
+                        "This year, that holiday falls on a Tuesday in the middle of the month."
+                    ),
+                    takeaway=(
+                        "When something feels off, set it aside and check it the way you always have — "
+                        "a calendar, a friend, a familiar source. Claude is one voice, not the final word."
+                    ),
+                ),
                 complexity=2,
+            ),
+            CurriculumPage(
+                id="u5-retrieval",
+                title="Which response keeps you in control?",
+                page_type="retrieval",
+                content=[
+                    "Read both. Pick the one that fits the rule from the principle page.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt="Claude gives you an answer that sounds confident. What now?",
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="Read it through. If something feels off, set it aside and check elsewhere.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="Use it right away — Claude sounded sure, so it must be right.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "Sounding sure is not the same as being right. Reading first keeps the decision yours."
+                    ),
+                ),
+                complexity=1,
             ),
         ],
         max_complexity=2,
         stability_threshold=1.0,
     ),
+    # ---- Unit 6: judgment & ignoring Claude --------------------------------
     CurriculumUnit(
         id="unit-6",
         title="When to Ignore Claude",
-        description="Recognize that your judgment matters more than any AI suggestion.",
+        description="Your judgment matters more than any AI suggestion.",
         pages=[
             CurriculumPage(
-                id="u6-p1",
-                title="Your Judgment Comes First",
+                id="u6-recap",
+                title="What we practiced last lesson",
+                page_type="recap",
                 content=[
-                    "You are the decision-maker.",
-                    "Claude is only a helper.",
+                    "You practiced reading Claude's answers carefully and setting aside anything that felt off.",
+                    "This lesson goes one step further: how to ignore a suggestion entirely, with no regret.",
                 ],
                 complexity=1,
             ),
             CurriculumPage(
-                id="u6-p2",
-                title="Signals to Pause",
+                id="u6-principle",
+                title="Your judgment is the final word",
+                page_type="principle",
+                principle="Claude offers; you decide. Setting Claude aside is always a fine choice.",
                 content=[
-                    "Stop if anything feels rushed or unclear.",
-                    "Claude can be wrong. That is normal.",
-                    "Setting Claude aside is always a valid choice.",
+                    "Claude does not have feelings. Ignoring a suggestion costs nothing.",
+                    "If a suggestion does not sound like you, it probably is not for you.",
+                    "Your way of saying things has value the AI cannot match.",
                 ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u6-example",
+                title="A suggestion you can let go",
+                page_type="example",
+                content=[
+                    "Here is a small moment of saying no to a suggestion.",
+                ],
+                example=ExampleBlock(
+                    situation=(
+                        "You ask Claude to help reply to a friend's email. The draft is fine, but it sounds "
+                        "more formal than how you usually write."
+                    ),
+                    claude_says=(
+                        "Dear Margaret,\n\n"
+                        "Thank you for your kind correspondence. I trust this message finds you in good health.\n\n"
+                        "Warm regards."
+                    ),
+                    takeaway=(
+                        "You can ignore the draft and write it your own way. Saying no to a suggestion "
+                        "is part of using Claude well."
+                    ),
+                ),
                 complexity=2,
+            ),
+            CurriculumPage(
+                id="u6-retrieval",
+                title="Which choice keeps your voice?",
+                page_type="retrieval",
+                content=[
+                    "Read both. Pick the one that fits the rule from the principle page.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt="Claude gives you a draft that does not sound like you. What now?",
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="Set the draft aside and write it the way you would normally.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="Use the draft as-is, because Claude wrote it and must know best.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "Your way of writing has value Claude cannot copy. Ignoring a draft is a fine choice."
+                    ),
+                ),
+                complexity=1,
             ),
         ],
         max_complexity=2,
         stability_threshold=1.0,
     ),
+    # ---- Unit 7: recovery from mistakes ------------------------------------
     CurriculumUnit(
         id="unit-7",
         title="Recovering from a Mistake",
         description="Mistakes are part of learning. Practice making them small and easy to undo.",
         pages=[
             CurriculumPage(
-                id="u7-p1",
-                title="Mistakes Are Normal",
+                id="u7-recap",
+                title="Looking back at the free track",
+                page_type="recap",
                 content=[
-                    "Everyone makes mistakes when learning something new.",
-                    "A mistake is information, not failure.",
+                    "You have learned to ask in plain words, take small steps, read carefully, and ignore what does not fit.",
+                    "This last lesson is about what to do when something goes wrong anyway. Spoiler: it is usually a small thing.",
                 ],
                 complexity=1,
             ),
             CurriculumPage(
-                id="u7-p2",
-                title="Undoing and Stepping Back",
+                id="u7-principle",
+                title="Mistakes are information, not failure",
+                page_type="principle",
+                principle="A mistake is information. It tells you something to do differently next time.",
                 content=[
-                    "Most actions can be undone. Take your time to find the undo step.",
-                    "If something feels wrong, take a break.",
-                    "Come back when you are ready. Nothing is lost by waiting.",
+                    "Everyone makes mistakes when learning something new. That has been true your whole life.",
+                    "Most actions with Claude can be undone, walked back, or simply ignored.",
+                    "Time is on your side. Nothing here has to be solved in a hurry.",
                 ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u7-example",
+                title="Undoing a step that did not fit",
+                page_type="example",
+                content=[
+                    "Here is a small mistake, and what undoing it looks like.",
+                ],
+                example=ExampleBlock(
+                    situation=(
+                        "You used a Claude suggestion in an email and sent it. Reading it back later, "
+                        "the wording does not sound like you. You wish you had changed it first."
+                    ),
+                    claude_says=(
+                        'You can send a short follow-up: "I wanted to add a line in my own words — '
+                        'thank you again, and I meant every word."'
+                    ),
+                    takeaway=(
+                        "Even a sent message can be softened by a second one. Most things can be undone, "
+                        "or at least gently corrected."
+                    ),
+                ),
                 complexity=2,
+            ),
+            CurriculumPage(
+                id="u7-retrieval",
+                title="Which response fits the rule?",
+                page_type="retrieval",
+                content=[
+                    "Read both. Pick the one that matches the rule from the principle page.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt="Something with Claude did not go the way you hoped. What now?",
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="Take a breath, look at the small thing that went wrong, and try a different step.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="Decide you are not cut out for this, and stop.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "Mistakes are part of learning anything new. They are small, and you have time."
+                    ),
+                ),
+                complexity=1,
             ),
         ],
         max_complexity=2,

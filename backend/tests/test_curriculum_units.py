@@ -129,6 +129,39 @@ class TestLessonRoute:
         r = client.get("/api/curriculum/units/unit-999/lesson")
         assert r.status_code == 404
 
+    def test_all_module_1_units_have_four_page_lesson_shape(self, client):
+        """Sprint 23 completion: every module-1 unit (1-7) must now serve
+        a four-page lesson with page_type metadata. Pins:
+          - exactly four pages per lesson
+          - every page declares a page_type (no legacy untyped pages leak)
+          - units 3-7 begin with a recap page (the 'continuity' affordance)
+          - every lesson ends with a retrieval page (recognition check)
+        """
+        unit_ids = [
+            "unit-1",
+            "unit-2",
+            "unit-3",
+            "unit-4",
+            "unit-5",
+            "unit-6",
+            "unit-7",
+        ]
+        for uid in unit_ids:
+            r = client.get(f"/api/curriculum/units/{uid}/lesson")
+            assert r.status_code == 200, f"{uid}: lesson endpoint failed"
+            pages = r.json()["pages"]
+            assert len(pages) == 4, f"{uid}: expected 4 pages, got {len(pages)}"
+            for p in pages:
+                assert "page_type" in p, f"{uid}/{p['id']}: missing page_type"
+            assert (
+                pages[-1]["page_type"] == "retrieval"
+            ), f"{uid}: last page must be retrieval, got {pages[-1]['page_type']}"
+            if uid in {"unit-3", "unit-4", "unit-5", "unit-6", "unit-7"}:
+                assert pages[0]["page_type"] == "recap", (
+                    f"{uid}: first page must be recap (continuity affordance), "
+                    f"got {pages[0]['page_type']}"
+                )
+
     def test_unit_1_meet_claude_foundation(self, client):
         """Sprint 24: unit-1 supplies the AI→Claude→Anthropic foundation.
 
