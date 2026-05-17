@@ -33,11 +33,12 @@ from fastapi import APIRouter, Depends, Header, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session as DbSession
 
+from sqlalchemy.exc import IntegrityError
+
 from backend.api.deps import get_current_account, get_db
 from backend.app.telemetry import record_auth_session_outcome
 from backend.core.config import settings
 from backend.models.accounts import Account
-from backend.services.account_materializer import materialize
 from backend.services.auth_verifier import AuthError, parse_bearer, verify_token
 
 
@@ -108,13 +109,17 @@ def auth_config() -> AuthConfigResponse:
 # ---------------------------------------------------------------------------
 
 
-def _auth_error_response(err: AuthError) -> HTTPException:
-    """Map an AuthError to a 401 (or 409 for collision) with the
-    discriminated envelope `{error:{code,message}}` (B5)."""
-    status_code = status.HTTP_401_UNAUTHORIZED
-    return HTTPException(
-        status_code=status_code,
-        detail={"error": {"code": err.code, "message": err.message}},
+def auth_error(code: str, message: str = "") -> None:
+    """Emit telemetry then raise 401 with the discriminated envelope (B5).
+
+    Always raises HTTPException; never returns. The helper centralises
+    the contract `{error:{code,message}}` so no handler can accidentally
+    return a 401 with a different shape.
+    """
+    record_auth_session_outcome(code)
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail={"error": {"code": code, "message": message or code}},
     )
 
 
@@ -146,66 +151,71 @@ def auth_session(
 ) -> AuthSessionResponse:
     """Resolve the session for a Bearer token. NEVER writes (B4, I-B).
 
-    Verifies the token via `auth_verifier.verify_token` (no DB, no
-    provider Backend API). Then performs a single read against the
-    `accounts` table filtered by `deleted_at IS NULL` (B7, I-E).
+    Merged contract (see `docs/design/login-redesign-2026-05-17.md` §2.4
+    and the FE AuthProvider in `frontend/src/auth/AuthProvider.tsx`):
 
-    Outcome codes (B5):
-      ok.materialized          — row exists and is active.
-      ok.unmaterialized        — token valid but no row yet (FE must
-                                  POST /auth/session/init).
-      ok.deleted_account       — row exists but is soft-deleted; surfaces
-                                  as 401 auth.account_deleted (B7, I-E).
-      auth.*                   — verification failure (B5).
+    STEP 1 — token extraction (B10: parse_bearer never logs the header).
+    STEP 2 — verify_token raises AuthError with a discriminated `code`
+             (B5, C3, B11).
+    STEP 3 — subject resolution. The verifier hashes the provider `sub`
+             into a stable UUID (see auth_verifier._verify_clerk and
+             _verify_mock); we filter on that UUID, NOT the raw `sub`,
+             so existing rows continue to match.
+    STEP 4 — single SELECT, no filter on deleted_at yet (we want to
+             distinguish "no row" from "soft-deleted row").
+    STEP 5 — deleted-account is terminal (B7, I-E): 401 with
+             auth.account_deleted rather than materialized=false (which
+             would invite the FE to POST /init and resurrect the row).
+    STEP 6 — response. materialized=True if a live row exists;
+             materialized=False if no row yet (FE then POSTs /init).
     """
+    # STEP 1: token extraction.
     token = parse_bearer(authorization)
+    if not token:
+        auth_error("auth.no_credential")
+
+    # STEP 2: verify token. AuthError already carries a code from the
+    # closed CODES set in auth_verifier.
     try:
         claims = verify_token(token)
     except AuthError as err:
-        record_auth_session_outcome(err.code)
-        raise _auth_error_response(err) from err
+        auth_error(err.code, err.message)
 
-    # Read-only lookup. Filter out soft-deleted rows.
-    account = (
-        db.query(Account)
-        .filter(
-            Account.auth_user_id == claims.auth_user_id,
-            Account.deleted_at.is_(None),
-        )
-        .one_or_none()
-    )
+    # STEP 3: subject resolution. claims.auth_user_id is the stable UUID
+    # the verifier derives from the provider sub (uuid5).
+    if not claims.auth_user_id:
+        auth_error("auth.subject_missing")
 
-    # If a row exists but is soft-deleted, the deletion is terminal
-    # (B7, I-E): we 401 with auth.account_deleted rather than returning
-    # `materialized=False` (which would let the FE POST /init and
-    # potentially resurrect the row).
-    if account is None:
-        deleted = (
-            db.query(Account.id)
-            .filter(
-                Account.auth_user_id == claims.auth_user_id,
-                Account.deleted_at.isnot(None),
-            )
-            .first()
+    # STEP 4: read-only DB lookup. Single SELECT; deleted_at handled in
+    # STEP 5 so we can distinguish "no row" from "deleted row".
+    try:
+        account = (
+            db.query(Account)
+            .filter(Account.auth_user_id == claims.auth_user_id)
+            .one_or_none()
         )
-        if deleted is not None:
-            record_auth_session_outcome("auth.account_deleted")
-            raise _auth_error_response(AuthError("auth.account_deleted"))
-        record_auth_session_outcome("ok.unmaterialized")
-        # B4: do not write. The frontend will POST /auth/session/init
-        # to materialize.
+    except Exception:
+        auth_error("auth.transient_db_unavailable")
+
+    # STEP 5: deleted-account gate (B7, I-E).
+    if account is not None and account.deleted_at is not None:
+        auth_error("auth.account_deleted")
+
+    # STEP 6: response.
+    if account is not None:
+        record_auth_session_outcome("ok.materialized")
         return AuthSessionResponse(
             subject=str(claims.subject or claims.auth_user_id),
-            materialized=False,
+            materialized=True,
+            account_id=str(account.id),
+            email=account.email,
+            display_name=account.display_name,
         )
 
-    record_auth_session_outcome("ok.materialized")
+    record_auth_session_outcome("ok.unmaterialized")
     return AuthSessionResponse(
         subject=str(claims.subject or claims.auth_user_id),
-        materialized=True,
-        account_id=str(account.id),
-        email=account.email,
-        display_name=account.display_name,
+        materialized=False,
     )
 
 
@@ -223,34 +233,78 @@ def auth_session_init(
     authorization: Optional[str] = Header(default=None),
     db: DbSession = Depends(get_db),
 ) -> AuthSessionInitResponse:
-    """Materialize the account row for a verified subject (B4, T6).
+    """Materialize the account row for a verified subject (B4, T6, B7, B8).
 
-    This is the ONLY endpoint that writes to `accounts`. Idempotent:
-    a no-op INSERT on conflict returns the existing row.
+    The ONLY write path for account creation. Idempotent.
 
-    Failure modes:
-      - Token verification failure → 401 with discriminated `auth.*`.
-      - Materializer raises `auth.account_deleted` → 401 (B7, I-E); the
-        frontend then renders the deleted-account surface and calls
-        /me/recreate to clear `deleted_at` (Stage 3+).
-      - Materializer raises `auth.transient_db_unavailable` → 401; FE
-        treats as transient (R3) and keeps the user signed in.
+    STEP 1 — token extraction (same as /auth/session).
+    STEP 2 — verify_token (same verifier; AuthError carries the code).
+    STEP 3 — subject resolution (UUID, not raw sub — preserves existing
+             rows; avoids the init-loop class).
+    STEP 4 — check existing. If a row exists:
+                 - and is soft-deleted → 401 auth.account_deleted (B7, I-E).
+                 - else return its id (idempotent).
+    STEP 5 — create. The only INSERT path in the auth domain (B4).
+    STEP 6 — race recovery: on IntegrityError, another writer won; re-
+             SELECT and return that row, after applying the same
+             deletion gate (B7). No relink branch (B8, I-D).
     """
+    # STEP 1.
     token = parse_bearer(authorization)
+    if not token:
+        auth_error("auth.no_credential")
+
+    # STEP 2.
     try:
         claims = verify_token(token)
     except AuthError as err:
-        record_auth_session_outcome(err.code)
-        raise _auth_error_response(err) from err
+        auth_error(err.code, err.message)
 
+    # STEP 3.
+    if not claims.auth_user_id:
+        auth_error("auth.subject_missing")
+
+    # STEP 4: check existing.
+    existing = (
+        db.query(Account)
+        .filter(Account.auth_user_id == claims.auth_user_id)
+        .one_or_none()
+    )
+
+    if existing is not None:
+        # B7, I-E: deletion is terminal.
+        if existing.deleted_at is not None:
+            auth_error("auth.account_deleted")
+        record_auth_session_outcome("ok.materialized")
+        return AuthSessionInitResponse(account_id=str(existing.id))
+
+    # STEP 5: create.
     try:
-        account = materialize(db, claims)
-    except AuthError as err:
-        record_auth_session_outcome(err.code)
-        # Materializer's deletion gate raises auth.account_deleted; all
-        # other materializer errors propagate with their own codes.
-        raise _auth_error_response(err) from err
+        account = Account(
+            auth_user_id=claims.auth_user_id,
+            email=claims.email,  # optional (B12)
+            display_name=claims.display_name,
+        )
+        db.add(account)
+        db.commit()
+        db.refresh(account)
+        record_auth_session_outcome("ok.created")
+        return AuthSessionInitResponse(account_id=str(account.id))
 
-    db.commit()
-    record_auth_session_outcome("ok.materialized")
-    return AuthSessionInitResponse(account_id=str(account.id))
+    except IntegrityError:
+        db.rollback()
+
+        # STEP 6: race recovery.
+        existing = (
+            db.query(Account)
+            .filter(Account.auth_user_id == claims.auth_user_id)
+            .one_or_none()
+        )
+        if existing is None:
+            # An IntegrityError without a recoverable row implies a
+            # different constraint failed; surface as transient.
+            auth_error("auth.transient_db_unavailable")
+        if existing.deleted_at is not None:
+            auth_error("auth.account_deleted")
+        record_auth_session_outcome("ok.race_resolved")
+        return AuthSessionInitResponse(account_id=str(existing.id))

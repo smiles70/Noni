@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { applyLargeTextOnBoot } from './largeText';
 import { ClerkProvider } from '@clerk/clerk-react';
-import { ClerkTokenBridge } from './components/ClerkTokenBridge';
+import { AuthProvider } from './auth/AuthProvider';
 
 applyLargeTextOnBoot();
 
@@ -66,15 +66,18 @@ if (provider === 'clerk') {
           for view transitions. Letting Clerk redirect us would race
           our state updates and unmount the SignOut button mid-await. */}
       <ClerkProvider publishableKey={clerkKey}>
-        <ClerkTokenBridge />
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </ClerkProvider>
     </React.StrictMode>,
   );
 } else {
   root.render(
     <React.StrictMode>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </React.StrictMode>,
   );
 }
