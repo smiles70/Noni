@@ -178,6 +178,7 @@ _LANDING_PAGE_ENVELOPE = UIStateEnvelope(
             to_state_id="landing.first_win",
             requires_confirmation=False,
         ),
+        TransitionPermission(to_state_id="curriculum.menu"),
         TransitionPermission(to_state_id="account.signin"),
         TransitionPermission(to_state_id="account.paywall"),
         TransitionPermission(to_state_id="account.settings"),
@@ -255,9 +256,42 @@ _CURRICULUM_UNIT_ENVELOPE = UIStateEnvelope(
             to_state_id="curriculum.unit",
             requires_confirmation=False,
         ),
+        TransitionPermission(to_state_id="curriculum.menu"),
         TransitionPermission(to_state_id="landing.page"),
         TransitionPermission(to_state_id="account.signin"),
         TransitionPermission(to_state_id="account.paywall"),
+        TransitionPermission(to_state_id="account.settings"),
+    ],
+)
+
+
+# Lesson menu / table of contents (S25.1). Read-only listing of every
+# free-track unit grouped by module, plus the optional bridge side
+# lessons. Per ADR 0019 the menu is its own envelope so the renderer
+# never silently inherits the curriculum.unit limits. Density is
+# bounded: at most LIST + a single Continue back to curriculum.unit,
+# so we never need more than 2 primary actions even with NavBar.
+_CURRICULUM_MENU_ENVELOPE = UIStateEnvelope(
+    state_id="curriculum.menu",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.LIST,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=3,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=3,
+    ),
+    transition_permissions=[
+        TransitionPermission(to_state_id="curriculum.unit"),
+        TransitionPermission(to_state_id="landing.page"),
         TransitionPermission(to_state_id="account.settings"),
     ],
 )
@@ -403,6 +437,7 @@ ENVELOPES: dict[str, UIStateEnvelope] = {
     _LANDING_PAGE_ENVELOPE.state_id: _LANDING_PAGE_ENVELOPE,
     _LANDING_FIRST_WIN_ENVELOPE.state_id: _LANDING_FIRST_WIN_ENVELOPE,
     _CURRICULUM_UNIT_ENVELOPE.state_id: _CURRICULUM_UNIT_ENVELOPE,
+    _CURRICULUM_MENU_ENVELOPE.state_id: _CURRICULUM_MENU_ENVELOPE,
     _ACCOUNT_SIGNIN_ENVELOPE.state_id: _ACCOUNT_SIGNIN_ENVELOPE,
     _ACCOUNT_PAYWALL_ENVELOPE.state_id: _ACCOUNT_PAYWALL_ENVELOPE,
     _ACCOUNT_GIFT_REDEEM_ENVELOPE.state_id: _ACCOUNT_GIFT_REDEEM_ENVELOPE,

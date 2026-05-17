@@ -127,6 +127,56 @@ def list_units() -> dict:
     }
 
 
+@router.get("/menu")
+def lesson_menu() -> dict:
+    """Full lesson menu / table of contents (S25.1).
+
+    Returns the entire free-track tree in one roundtrip so the menu UI
+    can render without N module fetches:
+
+      {
+        "modules": [
+          {"id": 1, "title": "...", "units": [{"id", "title", "description"}...]},
+          {"id": 2, "title": "...", "units": [...]},
+          {"id": 3, "title": "...", "units": [...]},
+        ],
+        "bridge_units": [{"id", "title", "description"}...]
+      }
+
+    Authoritative ordering is the order of each list as defined in the
+    units modules. The menu does NOT include Modules 4+ - those are the
+    paid track and are gated by entitlement.
+    """
+
+    def _serialize(u: CurriculumUnit) -> dict:
+        return {
+            "id": u.id,
+            "title": u.title,
+            "description": u.description,
+        }
+
+    return {
+        "modules": [
+            {
+                "id": 1,
+                "title": "Module 1 — Meeting Claude",
+                "units": [_serialize(u) for u in UNITS],
+            },
+            {
+                "id": 2,
+                "title": "Module 2 — Sustained use over time",
+                "units": [_serialize(u) for u in UNITS_MODULE_2],
+            },
+            {
+                "id": 3,
+                "title": "Module 3 — Long-term judgment",
+                "units": [_serialize(u) for u in UNITS_MODULE_3],
+            },
+        ],
+        "bridge_units": [_serialize(u) for u in BRIDGE_UNITS],
+    }
+
+
 @router.get("/bridge-units")
 def list_bridge_units() -> dict:
     """Catalog of optional, menu-only side lessons.

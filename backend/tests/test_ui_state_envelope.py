@@ -293,6 +293,99 @@ def test_curriculum_unit_authorizes_list_and_card():
     assert "Indicator" in components
 
 
+# ---- S25.1: Lesson menu envelope --------------------------------------------
+
+
+def test_curriculum_menu_envelope_resolves():
+    env = get_envelope("curriculum.menu")
+    assert env is not None
+    assert env.state_id == "curriculum.menu"
+
+
+def test_curriculum_menu_envelope_respects_contract_ceilings():
+    env = get_envelope("curriculum.menu")
+    assert env is not None
+    assert env.interaction_limits.max_primary_actions <= 5
+    assert env.interaction_limits.max_irreversible_actions == 0
+    assert env.interaction_limits.max_highlighted_recommendations <= 1
+    assert env.interaction_limits.max_visible_text_levels <= 3
+
+
+def test_curriculum_menu_envelope_only_v1_components():
+    env = get_envelope("curriculum.menu")
+    assert env is not None
+    for c in env.authorized_components:
+        assert c in AuthorizedComponent
+
+
+def test_curriculum_menu_endpoint_returns_200():
+    response = client.get("/api/ui-envelope/curriculum.menu")
+    assert response.status_code == 200
+    assert response.json()["state_id"] == "curriculum.menu"
+
+
+def test_curriculum_menu_can_transition_back_to_curriculum_unit():
+    """Selecting a lesson from the menu must transition into the unit
+    renderer; without this transition the menu is a dead-end."""
+    env = get_envelope("curriculum.menu")
+    assert env is not None
+    target_ids = {t.to_state_id for t in env.transition_permissions}
+    assert "curriculum.unit" in target_ids
+
+
+def test_curriculum_unit_can_open_menu():
+    """The unit renderer must be allowed to navigate up to the menu so
+    learners can browse other lessons without going through landing."""
+    env = get_envelope("curriculum.unit")
+    assert env is not None
+    target_ids = {t.to_state_id for t in env.transition_permissions}
+    assert "curriculum.menu" in target_ids
+
+
+def test_landing_page_can_open_menu():
+    """Landing also offers menu access (signed-out exploration)."""
+    env = get_envelope("landing.page")
+    assert env is not None
+    target_ids = {t.to_state_id for t in env.transition_permissions}
+    assert "curriculum.menu" in target_ids
+
+
+# ---- S25.1: Lesson menu data endpoint ---------------------------------------
+
+
+def test_lesson_menu_endpoint_returns_full_tree():
+    """GET /api/curriculum/menu returns Modules 1-3 + bridge units in
+    one roundtrip so the menu UI does not need N module fetches."""
+    response = client.get("/api/curriculum/menu")
+    assert response.status_code == 200
+    body = response.json()
+
+    assert "modules" in body and "bridge_units" in body
+    module_ids = [m["id"] for m in body["modules"]]
+    assert module_ids == [1, 2, 3], "menu must surface free modules in order"
+
+    # Module 1 has 7 units, Module 2 has 5, Module 3 has 4.
+    counts = {m["id"]: len(m["units"]) for m in body["modules"]}
+    assert counts == {1: 7, 2: 5, 3: 4}
+
+    # Bridge units are the two side lessons from S25.4/S25.5.
+    bridge_ids = {u["id"] for u in body["bridge_units"]}
+    assert bridge_ids == {"bridge-compare", "bridge-where-claude-lives"}
+
+    # Each unit entry is the minimal shape the menu UI needs.
+    for module in body["modules"]:
+        for u in module["units"]:
+            assert set(u.keys()) == {"id", "title", "description"}
+
+
+def test_lesson_menu_does_NOT_expose_paid_modules():
+    """Modules 4+ are paid; they must not leak into the free menu."""
+    body = client.get("/api/curriculum/menu").json()
+    module_ids = [m["id"] for m in body["modules"]]
+    assert 4 not in module_ids
+    assert 5 not in module_ids
+
+
 def test_curriculum_unit_permits_retrieval_density():
     """Pre-answer retrieval = 2 choice Buttons + up to 2 NavBar entries = 4
     primary actions. The envelope must permit at least 4."""
