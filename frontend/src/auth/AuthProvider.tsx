@@ -84,10 +84,38 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
+/**
+ * Notify AuthProvider that the credential source has changed.
+ *
+ * Mock mode writes a Bearer token to localStorage, which React cannot
+ * observe on its own. SignInPage's mock branch fires this event after
+ * setMockToken() so AuthProvider re-evaluates `useCredentialSource()`
+ * and transitions AUTHENTICATING -> READY.
+ *
+ * In Clerk mode, the Clerk SDK's hook state changes are already
+ * observable via useClerkAuth(); this event is harmless if dispatched
+ * but is not required.
+ */
+export function notifyAuthChanged(): void {
+  window.dispatchEvent(new Event("noni:auth-changed"));
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useCredentialSource();
 
   const [state, setState] = useState<any>({ status: "BOOT" });
+  // Bump on `noni:auth-changed` so React re-renders AuthProvider; that
+  // re-runs useCredentialSource(), which re-reads localStorage, which
+  // makes the auth-flow useEffect below see the new isSignedIn value.
+  const [, forceRefresh] = useState(0);
+
+  useEffect(() => {
+    function handle() {
+      forceRefresh((n) => n + 1);
+    }
+    window.addEventListener("noni:auth-changed", handle);
+    return () => window.removeEventListener("noni:auth-changed", handle);
+  }, []);
 
 
   /******************************************************************
@@ -173,6 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setState({
           status: "READY",
           accountId: res.data.account_id,
+          email: res.data.email ?? null,
           displayName: res.data.display_name,
         });
         return;
@@ -189,6 +218,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setState({
         status: "READY",
         accountId: initRes.data.account_id,
+        // /auth/session/init returns account_id only. email arrives on
+        // the next /auth/session call (e.g. next page load); we set it
+        // null here so consumers can render a "—" placeholder.
+        email: null,
       });
 
     } catch (err: any) {

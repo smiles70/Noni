@@ -1,36 +1,32 @@
 /**
  * Authenticated API client (ADR 0024 — Bearer model).
  *
- * Every authenticated HTTP call goes through `apiClient` so the Bearer
- * rule lives in exactly one place. Two modes selected at build time by
- * VITE_AUTH_PROVIDER:
+ * Post-AuthProvider cutover (2026-05-17) this module hosts:
+ *   - The shared `apiClient` axios instance every authenticated call
+ *     goes through (B2 single credential pipeline).
+ *   - A mock-mode interceptor that reads `mock:<email>` from
+ *     localStorage and attaches it as Bearer. Used by both the mock
+ *     SignInPage flow and any test client that writes the token key
+ *     directly.
+ *   - Mock-mode token write/clear helpers (re-exported by `./auth`).
  *
- *   clerk: read the current session token from window.Clerk on each
- *          request. Clerk's SDK auto-refreshes the underlying JWT
- *          (~60s lifetime), so a fresh `session.getToken()` returns a
- *          non-expired token whenever the user is signed in. If
- *          window.Clerk is not yet hydrated we send no header; the
- *          ClerkAuthSync component re-runs whoami() once it loads.
- *   mock:  read "mock:<email>" from localStorage. SignInPage's mock
- *          form writes it via `setMockToken`; sign-out (or deletion)
- *          clears it via `clearMockToken`.
+ * The Clerk-mode Bearer is attached by AuthProvider's single
+ * apiClient.interceptors.request.use(...) inside the React tree, NOT
+ * by this module.
  *
  * Why no `withCredentials`: Bearer tokens are stateless; sending
  * cookies would (a) opt into the credentialed CORS path the backend
  * has explicitly disabled (allow_credentials=False) and (b) re-create
- * the cross-origin cookie footgun we just removed.
+ * the cross-origin cookie footgun we removed in ADR 0024.
  *
- * Why no token-refresh logic here: Clerk's SDK handles refresh.
- * If `getToken()` returns null the user is genuinely signed out —
- * trying to refresh ourselves would be guessing.
+ * Why no token-refresh logic here: Clerk's SDK auto-refreshes; mock
+ * tokens never expire. If `getToken()` (called inside AuthProvider's
+ * interceptor) returns null the user is genuinely signed out, and
+ * AuthProvider's state machine handles the transition.
  */
-import axios, { AxiosHeaders } from "axios";
+import { AxiosHeaders } from "axios";
 import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
-// Note: `getClerkInstance` exists on @clerk/clerk-expo but NOT on
-// @clerk/clerk-react v5. The canonical React pattern for token attach
-// inside axios is a small component that uses the `useAuth()` hook to
-// register a provider function with this module — see
-// ClerkTokenBridge.tsx, which calls `registerClerkTokenProvider` below.
+import axios from "axios";
 
 interface ImportMetaEnvShape {
   VITE_API_BASE_URL?: string;
@@ -69,9 +65,9 @@ export const apiClient: AxiosInstance = axios.create({
 
 /** Attach an Authorization header from an arbitrary token resolver.
  *
- * Shared helper so both the mock-mode interceptor (installed below)
- * and the Clerk-mode interceptor (installed inside ClerkTokenBridge
- * via useAuth) write the header identically.
+ * Shared helper so the mock-mode interceptor (installed below at
+ * module load) and AuthProvider's clerk-mode interceptor (installed
+ * inside the React tree) write the header identically.
  */
 export function attachBearer(
   config: InternalAxiosRequestConfig,
@@ -90,8 +86,8 @@ export function attachBearer(
 
 // Mock-mode interceptor: installed at module load. In Clerk mode this
 // interceptor is a no-op (mock token key never set) and the real
-// Bearer is attached by the interceptor that ClerkTokenBridge
-// installs via useAuth() inside the React tree.
+// Bearer is attached by the single interceptor AuthProvider installs
+// via useAuth() inside the React tree (B2).
 if (AUTH_PROVIDER === "mock") {
   apiClient.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {

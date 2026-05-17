@@ -2,8 +2,8 @@
  * Account settings page (account.settings envelope).
  *
  * Hosts:
- *   - whoami summary (email)
- *   - sign out (reversible)
+ *   - identity summary (email, via useAuth()'s AuthProvider state)
+ *   - sign out (reversible; delegates to AuthProvider.signOut)
  *   - delete account (IRREVERSIBLE; envelope permits exactly 1)
  *
  * Delete uses a ConfirmDialog with the contract-mandated copy
@@ -12,12 +12,8 @@
  * which marks the account for deletion and revokes all sessions.
  */
 import { useEffect, useState } from "react";
-import {
-  clearMockToken,
-  deleteAccount,
-  whoami,
-  type WhoAmIResponse,
-} from "../api/auth";
+import { clearMockToken, deleteAccount } from "../api/auth";
+import { useAuth } from "../auth/AuthProvider";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import {
@@ -64,20 +60,20 @@ export default function AccountSettingsPage({
   onBack,
 }: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
-  const [me, setMe] = useState<WhoAmIResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deletedNotice, setDeletedNotice] = useState(false);
 
+  // B1: identity comes from AuthProvider, not a local whoami() fetch.
+  const ctx = useAuth();
+  const me = ctx?.state?.status === "READY" ? ctx.state : null;
+
   const CONFIRM_COPY = buildConfirmationCopy("your account access");
 
   useEffect(() => {
-    Promise.all([loadEnvelope("account.settings"), whoami()])
-      .then(([env, who]) => {
-        setEnvelope(env);
-        setMe(who);
-      })
+    loadEnvelope("account.settings")
+      .then(setEnvelope)
       .catch(() =>
         setError("This page is paused. Please refresh in a moment."),
       );
@@ -95,8 +91,8 @@ export default function AccountSettingsPage({
     setSubmitting(true);
     try {
       // Mock-mode sign-out is purely client-side: drop the Bearer
-      // token from localStorage and let App.tsx re-run whoami (which
-      // will now 401) on the navigation triggered by onSignedOut.
+      // token from localStorage; AuthProvider's onSignedOut callback
+      // will transition state to SIGNED_OUT and the caller navigates.
       clearMockToken();
       onSignedOut();
     } finally {

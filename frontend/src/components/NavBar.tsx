@@ -13,8 +13,7 @@
  * per state stays unviolated because NavBar contributes zero highlighted
  * recommendations).
  */
-import { useEffect, useState } from "react";
-import { whoami, type WhoAmIResponse } from "../api/auth";
+import { useAuth } from "../auth/AuthProvider";
 import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
 
 interface Props {
@@ -60,26 +59,25 @@ export default function NavBar({
   onAccount,
   onOpenMenu,
 }: Props) {
-  const [me, setMe] = useState<WhoAmIResponse | null>(null);
-  const [loaded, setLoaded] = useState(false);
+  // B1: NavBar reads auth state from AuthProvider, never via its own
+  // whoami() call (T-H2). It also never mounts an interceptor or fetches
+  // /auth/session itself.
+  const ctx = useAuth();
+  const state = ctx?.state;
+  const status = state?.status;
 
-  useEffect(() => {
-    whoami()
-      .then((res) => setMe(res))
-      .catch(() => setMe(null))
-      .finally(() => setLoaded(true));
-  }, []);
-
-  if (!loaded) {
-    // Reserve space so the page does not reflow when whoami resolves.
+  // Loading-equivalent: AuthProvider hasn't finished resolving yet.
+  // Reserve space so the page doesn't reflow on transition.
+  if (status === "BOOT" || status === "AUTHENTICATING" || !status) {
     return <nav style={NAV} aria-hidden="true" />;
   }
 
-  const signedIn = me?.has_active_session === true;
+  const signedIn = status === "READY";
+  const email: string | null = signedIn ? state?.email ?? null : null;
 
   return (
     <nav style={NAV} aria-label="Account">
-      {signedIn && me?.email && <span style={EMAIL}>{me.email}</span>}
+      {signedIn && email && <span style={EMAIL}>{email}</span>}
 
       {!signedIn && onSignIn && (
         <button type="button" style={LINK_BTN} onClick={onSignIn}>

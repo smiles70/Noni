@@ -4,16 +4,16 @@
  * Two providers, selected at build time by VITE_AUTH_PROVIDER (ADR 0024):
  *
  *   - "mock"  -> dev/tests; renders an email form. On submit we write
- *                `mock:<email>` to localStorage via setMockToken; the
- *                next API call carries it as Bearer. No round-trip to
- *                the backend is required at submit time — the upsert
- *                happens lazily on the first authenticated request
- *                (whoami fired by App.tsx after onSignedIn).
+ *                `mock:<email>` to localStorage via setMockToken and
+ *                dispatch `notifyAuthChanged()` so AuthProvider
+ *                re-evaluates and transitions AUTHENTICATING -> READY.
+ *                Account materialisation happens on AuthProvider's
+ *                `/auth/session/init` call, not here.
  *
  *   - "clerk" -> production; renders Clerk's hosted <SignIn /> widget.
- *                Sign-in completion is detected via `useAuth()` inside
- *                a child component (ClerkSignInBranch) so the hook is
- *                only evaluated when ClerkProvider is in the tree.
+ *                Sign-in completion is observed by AuthProvider's
+ *                dependency on useClerkAuth().isSignedIn; this page
+ *                no longer needs its own onSignedIn callback.
  *
  * The RenderGuard envelope is intentionally bypassed in the Clerk
  * branch because the rendered tree is a vendor widget we don't own.
@@ -21,6 +21,7 @@
 import { useEffect, useState } from "react";
 import { SignIn, useAuth } from "@clerk/clerk-react";
 import { setMockToken } from "../api/auth";
+import { notifyAuthChanged } from "../auth/AuthProvider";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import {
@@ -53,20 +54,25 @@ interface Props {
 }
 
 /**
- * Clerk-only sub-component: renders the <SignIn /> widget and watches
- * useAuth() to detect a successful sign-in. When `isSignedIn` flips
- * true (after the user completes Clerk's flow), we call onSignedIn so
- * App.tsx can refresh /auth/whoami and advance the view.
+ * Clerk-only sub-component: renders the <SignIn /> widget.
  *
- * Lives inside SignInPage so it can only mount when AUTH_PROVIDER ===
- * "clerk"; otherwise the useAuth() hook would throw for lack of
+ * AuthProvider already observes useClerkAuth().isSignedIn and drives
+ * the post-signin transition, so this component does NOT invoke
+ * onSignedIn from the Clerk hook. The onSignedIn prop remains in the
+ * type signature for caller backward-compat but is intentionally
+ * unused.
+ *
+ * Lives inside SignInPage so it only mounts when AUTH_PROVIDER ===
+ * "clerk"; otherwise useClerkAuth() would throw for lack of
  * ClerkProvider in the tree.
  */
-function ClerkSignInBranch({ onSignedIn, onCancel }: Props) {
-  const { isLoaded, isSignedIn } = useAuth();
-  useEffect(() => {
-    if (isLoaded && isSignedIn) onSignedIn();
-  }, [isLoaded, isSignedIn, onSignedIn]);
+function ClerkSignInBranch({ onSignedIn: _onSignedIn, onCancel }: Props) {
+  // FE Step-4 cutover: AuthProvider now owns the post-signin transition
+  // via its dependency on useClerkAuth().isSignedIn. The legacy
+  // onSignedIn-from-Clerk callback would race AuthProvider's effect and
+  // is intentionally not invoked. The prop remains in the type signature
+  // for backward compatibility while callers migrate.
+  useAuth();
   return (
     <main style={PAGE} data-component="ClerkSignIn">
       <h1 style={H1}>Sign in</h1>
@@ -125,9 +131,14 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
     setError(null);
     try {
       // Mock provider: persist the bearer token so the apiClient picks
-      // it up on the very next request. The account row is upserted
-      // lazily by /auth/whoami when App.tsx refreshes after onSignedIn.
+      // it up on the very next request. AuthProvider's resolveSession()
+      // will materialise the account row via /auth/session/init.
       setMockToken(email.trim());
+      // FE Step-4 cutover: localStorage isn't observable by React, so
+      // notify AuthProvider that the credential source changed. This
+      // triggers a re-render -> useCredentialSource() re-evaluates ->
+      // auth-flow effect transitions AUTHENTICATING -> READY.
+      notifyAuthChanged();
       onSignedIn();
     } catch {
       setError("We could not sign you in. Please try again.");

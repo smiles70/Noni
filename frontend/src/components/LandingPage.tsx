@@ -36,7 +36,7 @@ interface Props {
    *  CTA becomes 'Continue learning →' and the secondary becomes 'Sign
    *  out'; the 'Set up my account / Log in' pair is hidden. */
   signedIn?: boolean;
-  /** Called after a successful sign-out so App.tsx can refresh whoami
+  /** Called after a successful sign-out so AuthProvider's state can transition
    *  and re-render the signed-out landing surface. */
   onSignOut?: () => void | Promise<void>;
 }
@@ -278,10 +278,11 @@ export default function LandingPage({
           </div>
 
           {/* NavBar surfaces signed-in entries (Upgrade / Your account).
-              Signed-out users see no extra entries here. The `key`
-              forces a remount when auth state flips so NavBar's internal
-              whoami() fetch re-runs — otherwise the cached email + nav
-              entries would persist for a frame after sign-out. */}
+              Signed-out users see no extra entries here. NavBar reads
+              AuthProvider state via useAuth() so a re-render on auth
+              transition is sufficient; the `key` is retained as a belt-
+              and-braces remount guard against any cached local state
+              surviving a sign-out frame. */}
           <NavBar
             key={signedIn ? "nav-signed-in" : "nav-signed-out"}
             onContinuePaid={onContinuePaid}

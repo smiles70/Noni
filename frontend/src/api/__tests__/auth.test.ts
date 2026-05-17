@@ -1,13 +1,13 @@
 /**
  * Unit tests for `api/auth.ts` (ADR 0024 — Bearer model).
  *
- * The auth client is thin but its 401-on-whoami swallow behaviour is
- * load-bearing for App.tsx (which renders signed-out on null) and must
- * not regress.
- *
  * Post-migration there is no signIn or signOut to test: those are gone
- * from the API surface. We test:
- *   - whoami: 200 -> body, 401 -> null, other -> rethrow
+ * from the API surface. FE step-4 cutover (2026-05-17) further removed
+ * whoami() — auth state now flows exclusively from AuthProvider, so
+ * the whoami unit test moved with it (deleted, not rehomed: there is
+ * no replacement function at this layer by design).
+ *
+ * What remains here:
  *   - deleteAccount / cancelDeletion path
  *   - mock token helpers write/clear localStorage at the agreed key
  *
@@ -46,7 +46,6 @@ import {
   clearMockToken,
   deleteAccount,
   setMockToken,
-  whoami,
 } from "../auth";
 
 // Stub localStorage globally for this test file. Vitest's default
@@ -72,44 +71,6 @@ afterEach(() => {
   mockGet.mockReset();
   mockPost.mockReset();
   isAxiosError.mockReset();
-});
-
-describe("whoami", () => {
-  it("returns the body on 200", async () => {
-    mockGet.mockResolvedValueOnce({
-      data: {
-        account_id: "acc-1",
-        email: "alice@example.test",
-        has_active_session: true,
-      },
-    });
-    const res = await whoami();
-    expect(mockGet).toHaveBeenCalledWith("/auth/whoami");
-    expect(res?.account_id).toBe("acc-1");
-  });
-
-  it("returns null on 401 (signed-out path is a normal state, not an error)", async () => {
-    const err = Object.assign(new Error("unauthorized"), {
-      response: { status: 401 },
-      isAxiosError: true,
-    });
-    mockGet.mockRejectedValueOnce(err);
-    isAxiosError.mockReturnValueOnce(true);
-
-    const res = await whoami();
-    expect(res).toBeNull();
-  });
-
-  it("re-throws non-401 errors", async () => {
-    const err = Object.assign(new Error("boom"), {
-      response: { status: 500 },
-      isAxiosError: true,
-    });
-    mockGet.mockRejectedValueOnce(err);
-    isAxiosError.mockReturnValueOnce(true);
-
-    await expect(whoami()).rejects.toThrow(/boom/);
-  });
 });
 
 describe("account deletion", () => {
