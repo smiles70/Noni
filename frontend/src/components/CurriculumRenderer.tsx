@@ -38,7 +38,7 @@
  * the page index within the unit. Stale or unknown positions fall
  * back to the first unit / first page.
  */
-import { CSSProperties, useEffect, useMemo, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import {
   loadFreeLesson,
   recordRetrievalChoice,
@@ -144,7 +144,8 @@ const INDICATOR: CSSProperties = {
 
 const ACTIONS: CSSProperties = {
   display: "flex",
-  justifyContent: "flex-end",
+  justifyContent: "space-between",
+  alignItems: "center",
   marginTop: SPACING.lg,
   gap: SPACING.sm,
 };
@@ -159,6 +160,24 @@ const CONTINUE_BTN: CSSProperties = {
   fontWeight: 600,
   cursor: "pointer",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
+};
+
+// S23.2 Previous button: reversible navigation, non-highlighted so it does
+// not compete with the single primary recommendation (Continue). Per
+// CONTRACT §I.F the primary-action ceiling stays ≤5 — worst case here is
+// NavBar(2) + Continue(1) + Previous(1) = 4. Reversible by definition so
+// it cannot be the irreversible action.
+const PREVIOUS_BTN: CSSProperties = {
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.sm}px ${SPACING.md}px`,
+  backgroundColor: COLORS.surface,
+  color: COLORS.textPrimary,
+  border: `1px solid ${COLORS.disabled}`,
+  borderRadius: RADIUS.sm,
+  fontWeight: 500,
+  cursor: "pointer",
+  transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
+  fontFamily: TYPOGRAPHY.fontFamily,
 };
 
 const ERROR_DETAIL: CSSProperties = {
@@ -281,6 +300,12 @@ export default function CurriculumRenderer({
   const [retrievalAnswered, setRetrievalAnswered] = useState<string | null>(
     null,
   );
+  // S23.2: one-shot flag set by handlePrevious when reversing across a
+  // unit boundary. Held in a ref (not state) so it does not appear in
+  // the lesson-load effect's dependency array — if it did, toggling it
+  // would re-trigger the fetch. The flag is consumed (read + reset)
+  // exactly once when the previous unit's lesson resolves.
+  const pendingBackNavRef = useRef(false);
 
   // Envelope: load once. Cancelled flag covers React 18 StrictMode
   // double-invoke in development.
@@ -314,11 +339,22 @@ export default function CurriculumRenderer({
       .then((l) => {
         if (cancelled) return;
         setLesson(l);
+        // S23.2: cross-unit Previous lands us on the previous unit's
+        // LAST page. We read-and-clear the ref here so the flag is
+        // consumed exactly once per back-nav.
+        const wasBackNav = pendingBackNavRef.current;
+        pendingBackNavRef.current = false;
         // Clamp pageIdx to the loaded lesson; persisted values from a
         // previous deploy can legitimately point past the new end.
         setPageIdx((current) => {
-          const safe =
-            current >= 0 && current < l.pages.length ? current : 0;
+          let safe: number;
+          if (wasBackNav) {
+            safe = l.pages.length - 1;
+          } else if (current < 0 || current >= l.pages.length) {
+            safe = 0;
+          } else {
+            safe = current;
+          }
           writeProgress({ module, unitId, pageIdx: safe });
           return safe;
         });
@@ -354,6 +390,22 @@ export default function CurriculumRenderer({
     }
     setPageIdx(0);
     setIdx((i) => i + 1);
+  };
+
+  // S23.2: reversible counterpart to handleContinue. Walks back through
+  // the current unit's pages, then across to the previous unit's last
+  // page once pageIdx hits 0. At idx=0 + pageIdx=0 the button is not
+  // rendered (canGoPrevious=false), so this handler is unreachable.
+  const handlePrevious = () => {
+    if (!lesson) return;
+    if (pageIdx > 0) {
+      setPageIdx((p) => p - 1);
+      return;
+    }
+    if (idx > 0) {
+      pendingBackNavRef.current = true;
+      setIdx((i) => i - 1);
+    }
   };
 
   const handleChoice = (chosenId: string) => {
@@ -401,6 +453,11 @@ export default function CurriculumRenderer({
     (page.page_type ?? "principle") === "retrieval" && !!page.retrieval;
   const showChoices = isRetrievalPage && retrievalAnswered === null;
   const showContinue = !showChoices;
+  // Previous button shares the showContinue gate — during retrieval
+  // pre-answer (the only state without Continue) the choice buttons are
+  // the sole primary actions. The learner regains Previous after picking,
+  // or can use the NavBar to leave the lesson entirely.
+  const canGoPrevious = (idx > 0 || pageIdx > 0) && showContinue;
   const continueLabel =
     isLastUnit && isLastPage ? "Continue to paid modules →" : "Continue →";
 
@@ -425,6 +482,7 @@ export default function CurriculumRenderer({
   const primaryActionCount =
     NAVBAR_PRIMARY_ACTIONS +
     (showContinue ? 1 : 0) +
+    (canGoPrevious ? 1 : 0) +
     contribution.primaryActionsFromBody;
 
   // Continue is the single highlighted recommendation. Choice buttons
@@ -477,6 +535,21 @@ export default function CurriculumRenderer({
         ) : null}
         {showContinue ? (
           <div style={ACTIONS}>
+            {canGoPrevious ? (
+              <button
+                type="button"
+                onClick={handlePrevious}
+                style={PREVIOUS_BTN}
+                aria-label="Go to previous page"
+                data-component="Button"
+              >
+                ← Previous
+              </button>
+            ) : (
+              // Empty span keeps the flex space-between layout stable
+              // so Continue stays right-aligned on the first page.
+              <span />
+            )}
             <button
               type="button"
               onClick={handleContinue}

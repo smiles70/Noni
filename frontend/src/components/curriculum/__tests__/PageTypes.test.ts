@@ -201,6 +201,48 @@ describe("curriculum page-type proposals are envelope-compliant", () => {
     expect(evaluateProposal(proposal, curriculumUnitEnvelope)).toEqual([]);
   });
 
+  it("S23.2: Previous + Continue both visible (mid-unit principle worst case)", () => {
+    // Simulates a mid-unit, mid-lesson principle page where both
+    // Previous and Continue are rendered. Renderer accounting:
+    // NavBar(2) + Continue(1) + Previous(1) = 4 primary actions.
+    // Tripwire ensures this stays under the 5-action ceiling and
+    // produces zero envelope violations.
+    const p = makePage({
+      page_type: "principle",
+      principle: "Claude offers words.",
+    });
+    const base = buildFullProposal(p, null);
+    const withPrevious: RenderProposal = {
+      ...base,
+      primaryActionCount: base.primaryActionCount + 1,
+    };
+    expect(withPrevious.primaryActionCount).toBe(4);
+    expect(evaluateProposal(withPrevious, curriculumUnitEnvelope)).toEqual([]);
+  });
+
+  it("S23.2: Previous NOT shown during retrieval pre-answer", () => {
+    // Per S23.2 design, the Previous button shares the showContinue
+    // gate. During retrieval pre-answer (showContinue=false) neither
+    // Previous nor Continue is rendered; only the choice buttons are
+    // primary actions. So the worst-case primary action count for
+    // retrieval pre-answer is unchanged from pre-S23.2 (= 4 incl. NavBar).
+    const p = makePage({
+      page_type: "retrieval",
+      retrieval: {
+        prompt: "p",
+        choices: [
+          { id: "a", text: "A" },
+          { id: "b", text: "B" },
+        ],
+        correct_id: "a",
+        explanation: "e",
+      },
+    });
+    const proposal = buildFullProposal(p, null);
+    expect(proposal.primaryActionCount).toBe(4);
+    expect(evaluateProposal(proposal, curriculumUnitEnvelope)).toEqual([]);
+  });
+
   it("retrieval page — post-answer (Continue + feedback Card)", () => {
     const p = makePage({
       page_type: "retrieval",
