@@ -21,7 +21,7 @@ def main():
     print("=" * 50)
     print("Noni Bootstrap")
     print("=" * 50)
-    
+
     check_python_version()
     print("Environment ready")
 
