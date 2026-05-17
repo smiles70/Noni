@@ -19,7 +19,8 @@ export interface ApprovedUIState {
 }
 
 export async function loadWhatIsAI(): Promise<ApprovedUIState> {
-  const res = await axios.get<ApprovedUIState>(
+  // Public free-preview endpoint; raw axios is intentional.
+  const res = await axios.get<ApprovedUIState>( // noqa: raw-axios-allowed
     `${API_BASE}/api/curriculum/what-is-ai`
   );
   return res.data;

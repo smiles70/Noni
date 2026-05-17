@@ -23,3 +23,44 @@ repos:
       - id: check-yaml
       - id: check-added-large-files
         args: [--maxkb=500]
+
+  # Local guardrails. Each script encodes a regression we have already
+  # paid for once. Scripts scan the repo themselves, so pass_filenames
+  # is false (pre-commit still triggers them only when a matching file
+  # is staged, but the script reasons over the whole tree).
+  - repo: local
+    hooks:
+      - id: no-sqlalchemy-one
+        name: Prevent SQLAlchemy .one() crashes
+        entry: python scripts/check_no_one.py
+        language: system
+        pass_filenames: false
+        files: ^backend/.*\.py$
+
+      - id: jwt-config-check
+        name: Ensure JWT decode disables aud verification
+        entry: python scripts/check_jwt_decode.py
+        language: system
+        pass_filenames: false
+        files: ^backend/.*\.py$
+
+      - id: axios-usage-check
+        name: Prevent raw axios usage outside apiClient
+        entry: node scripts/check_axios.js
+        language: system
+        pass_filenames: false
+        files: ^frontend/src/.*\.(ts|tsx|js|jsx)$
+
+      - id: auth-header-check
+        name: Ensure backend Authorization Bearer handling exists
+        entry: python scripts/check_auth_header.py
+        language: system
+        pass_filenames: false
+        files: ^backend/.*\.py$
+
+      - id: dependency-check
+        name: Ensure cryptography dependency is pinned
+        entry: python scripts/check_dependencies.py
+        language: system
+        pass_filenames: false
+        files: ^requirements.*\.txt$

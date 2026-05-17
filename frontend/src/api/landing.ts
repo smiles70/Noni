@@ -40,6 +40,7 @@ export interface LandingPageContent {
 }
 
 export async function loadLandingPage(): Promise<LandingPageContent> {
-  const res = await axios.get<LandingPageContent>(`${API_BASE}/api/landing/page`);
+  // Landing page is intentionally public; no Bearer token required.
+  const res = await axios.get<LandingPageContent>(`${API_BASE}/api/landing/page`); // noqa: raw-axios-allowed
   return res.data;
 }

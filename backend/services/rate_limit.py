@@ -71,7 +71,11 @@ def check_and_increment(db: DbSession, limit: RateLimit, identifier: str) -> boo
             return True
         except IntegrityError:
             db.rollback()
-            row = db.query(RateLimitCounter).filter(RateLimitCounter.key == key).one()
+            # Re-fetch after the unique-constraint violation we just caught:
+            # the row MUST exist now (another tx created it). .one_or_none()
+            # would silently mask a real invariant break.
+            q = db.query(RateLimitCounter).filter(RateLimitCounter.key == key)
+            row = q.one()  # noqa: db-one-allowed
 
     if row.count >= limit.max_per_window:
         return False

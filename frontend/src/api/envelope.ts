@@ -11,7 +11,9 @@ import type { UIStateEnvelope } from "../design/envelope";
 const API_BASE = "http://127.0.0.1:8000";
 
 export async function loadEnvelope(stateId: string): Promise<UIStateEnvelope> {
-  const res = await axios.get<UIStateEnvelope>(
+  // TODO: migrate to apiClient once the envelope endpoint is consistently
+  // auth-gated; for now this is a public read.
+  const res = await axios.get<UIStateEnvelope>( // noqa: raw-axios-allowed
     `${API_BASE}/api/ui-envelope/${stateId}`,
   );
   return res.data;
