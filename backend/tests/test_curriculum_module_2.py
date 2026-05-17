@@ -63,6 +63,48 @@ def test_module_2_content_no_urgency_language():
             assert w not in page, f"{w!r} in {unit_id}"
 
 
+def test_module_2_lesson_endpoint_returns_four_page_shape():
+    """S25.2: every Module 2 unit now serves a four-page lesson
+    (recap / principle / example / retrieval), mirroring Module 1.
+    Pins the structural invariants so a future content edit cannot
+    silently drop a page type or reorder the lesson.
+    """
+    for unit_id in EXPECTED_IDS:
+        r = client.get(f"/api/curriculum/module-2/units/{unit_id}/lesson")
+        assert r.status_code == 200, f"{unit_id}: /lesson endpoint failed"
+        body = r.json()
+        assert body["module"] == 2
+        assert body["unit_id"] == unit_id
+        pages = body["pages"]
+        assert len(pages) == 4, f"{unit_id}: expected 4 pages, got {len(pages)}"
+        assert (
+            pages[0]["page_type"] == "recap"
+        ), f"{unit_id}: first page must be recap, got {pages[0]['page_type']}"
+        assert (
+            pages[-1]["page_type"] == "retrieval"
+        ), f"{unit_id}: last page must be retrieval, got {pages[-1]['page_type']}"
+
+
+def test_module_2_lesson_pages_have_no_urgency_language():
+    """S25.2: extend the existing urgency-language check to walk every
+    page in every lesson (not just the ISCS-selected one)."""
+    forbidden = ["hurry", "urgent", "limited time", "act now", "expires", "only today"]
+    for unit_id in EXPECTED_IDS:
+        body = client.get(f"/api/curriculum/module-2/units/{unit_id}/lesson").json()
+        for page in body["pages"]:
+            haystack = (
+                " ".join(page.get("content", []))
+                + " "
+                + (page.get("principle") or "")
+                + " "
+                + str(page.get("example") or "")
+                + " "
+                + str(page.get("retrieval") or "")
+            ).lower()
+            for w in forbidden:
+                assert w not in haystack, f"{w!r} in {unit_id}/{page['id']}"
+
+
 def test_module_2_decision_recorded_with_audit_columns():
     client.get("/api/curriculum/module-2/units/module2-unit-1")
     rows = client.get("/api/telemetry/export").json()["events"]
