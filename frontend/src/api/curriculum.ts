@@ -194,3 +194,31 @@ export async function recordRetrievalChoice(
      *  learner is not. */
   }
 }
+
+// ---- Lesson menu (S25.1) ---------------------------------------------------
+//
+// Single-roundtrip table of contents for the free track. Modules 4+ are
+// paid and intentionally absent from the payload; do not infer their
+// presence from the menu UI.
+
+export interface MenuUnit {
+  id: string;
+  title: string;
+  description: string;
+}
+
+export interface MenuModule {
+  id: 1 | 2 | 3;
+  title: string;
+  units: MenuUnit[];
+}
+
+export interface CurriculumMenu {
+  modules: MenuModule[];
+  bridge_units: MenuUnit[];
+}
+
+export async function loadCurriculumMenu(): Promise<CurriculumMenu> {
+  const res = await apiClient.get<CurriculumMenu>("/api/curriculum/menu");
+  return res.data;
+}

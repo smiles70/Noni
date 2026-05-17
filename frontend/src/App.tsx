@@ -11,6 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import LandingPage from "./components/LandingPage";
 import CurriculumRenderer from "./components/CurriculumRenderer";
+import CurriculumMenu from "./components/CurriculumMenu";
 import SignInPage from "./components/SignInPage";
 import PaywallPage from "./components/PaywallPage";
 import GiftRedeemPage from "./components/GiftRedeemPage";
@@ -28,6 +29,7 @@ const AUTH_PROVIDER =
 type View =
   | "landing"
   | "curriculum"
+  | "menu"
   | "signin"
   | "paywall"
   | "gift_redeem"
@@ -87,6 +89,11 @@ const App: React.FC = () => {
   const goSignIn = () => setView("signin");
   const goPaywall = () => requireAuth("paywall");
   const goAccount = () => requireAuth("account");
+  // Menu is intentionally public: a visitor may browse the syllabus
+  // before signing up. The unit renderer (curriculum view) is still
+  // gated, so following Continue from the menu still routes through
+  // requireAuth via goCurriculum.
+  const goMenu = () => setView("menu");
 
   // Successful sign-in: forward to the intent (e.g. curriculum) the
   // user had before being bounced. Falls back to curriculum so a
@@ -163,6 +170,17 @@ const App: React.FC = () => {
           <CurriculumRenderer
             onSignIn={goSignIn}
             onContinueGated={goPaywall}
+            onAccount={goAccount}
+            onOpenMenu={goMenu}
+          />
+        );
+        break;
+      case "menu":
+        body = (
+          <CurriculumMenu
+            onContinue={goCurriculum}
+            onSignIn={goSignIn}
+            onContinuePaid={goPaywall}
             onAccount={goAccount}
           />
         );

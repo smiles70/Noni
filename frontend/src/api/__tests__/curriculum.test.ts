@@ -34,6 +34,7 @@ vi.mock("axios", () => ({
 }));
 
 import {
+  loadCurriculumMenu,
   loadFreeLesson,
   loadFreeUnit,
   loadPaidUnit,
@@ -351,5 +352,44 @@ describe("recordRetrievalChoice", () => {
         correct: false,
       }),
     ).resolves.toBeUndefined();
+  });
+});
+
+describe("loadCurriculumMenu (S25.1)", () => {
+  it("GETs /api/curriculum/menu and returns the typed tree", async () => {
+    mockGet.mockResolvedValueOnce({
+      status: 200,
+      data: {
+        modules: [
+          {
+            id: 1,
+            title: "Module 1 — Meeting Claude",
+            units: [
+              { id: "unit-1", title: "Meet Claude", description: "..." },
+            ],
+          },
+          {
+            id: 2,
+            title: "Module 2 — Sustained use over time",
+            units: [],
+          },
+          { id: 3, title: "Module 3 — Long-term judgment", units: [] },
+        ],
+        bridge_units: [
+          {
+            id: "bridge-compare",
+            title: "How Claude compares",
+            description: "...",
+          },
+        ],
+      },
+    });
+
+    const menu = await loadCurriculumMenu();
+
+    expect(mockGet).toHaveBeenCalledWith("/api/curriculum/menu");
+    expect(menu.modules.map((m) => m.id)).toEqual([1, 2, 3]);
+    expect(menu.bridge_units).toHaveLength(1);
+    expect(menu.bridge_units[0].id).toBe("bridge-compare");
   });
 });

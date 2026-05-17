@@ -21,6 +21,10 @@ interface Props {
   onSignIn?: () => void;
   onContinuePaid?: () => void;
   onAccount?: () => void;
+  /** S25.1: open the lesson menu / table of contents. Optional so
+   *  callers whose envelope cannot accommodate an extra primary action
+   *  (e.g. LandingPage) can omit it. */
+  onOpenMenu?: () => void;
 }
 
 const NAV: React.CSSProperties = {
@@ -54,6 +58,7 @@ export default function NavBar({
   onSignIn,
   onContinuePaid,
   onAccount,
+  onOpenMenu,
 }: Props) {
   const [me, setMe] = useState<WhoAmIResponse | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -91,6 +96,12 @@ export default function NavBar({
       {signedIn && onAccount && (
         <button type="button" style={LINK_BTN} onClick={onAccount}>
           Your account
+        </button>
+      )}
+
+      {onOpenMenu && (
+        <button type="button" style={LINK_BTN} onClick={onOpenMenu}>
+          Lessons
         </button>
       )}
     </nav>

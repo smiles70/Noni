@@ -76,6 +76,9 @@ import {
 
 interface Props {
   onSignIn?: () => void;
+  /** S25.1: open the lesson menu / table of contents. Wired from
+   *  App.tsx; surfaces in NavBar as a "Lessons" entry. */
+  onOpenMenu?: () => void;
   /** Invoked when Continue is pressed on the final free unit. App.tsx
    *  routes this to setView("paywall"). The same handler is wired to
    *  NavBar's Upgrade button so the navigation target is consistent
@@ -275,6 +278,7 @@ function renderPageBody(
 
 export default function CurriculumRenderer({
   onSignIn,
+  onOpenMenu,
   onContinueGated,
   onAccount,
 }: Props) {
@@ -431,6 +435,7 @@ export default function CurriculumRenderer({
       onSignIn={onSignIn}
       onContinuePaid={onContinueGated}
       onAccount={onAccount}
+      onOpenMenu={onOpenMenu}
     />
   );
 
@@ -466,10 +471,12 @@ export default function CurriculumRenderer({
 
   // ---- Proposal accounting -------------------------------------------------
   //
-  // NavBar contribution: up to 2 primary actions when signed in
-  // (Upgrade + Account). We use 2 as the worst case so the proposal
-  // is valid regardless of session state.
-  const NAVBAR_PRIMARY_ACTIONS = 2;
+  // NavBar contribution: up to 3 primary actions when signed in with
+  // the menu enabled (Upgrade + Account + Lessons). We use the worst
+  // case so the proposal is valid regardless of session state.
+  // Pre-answer retrieval: 3 NavBar + 2 choice Buttons = 5 (envelope ceiling).
+  // Other pages:           3 NavBar + Continue + Previous = 5 (also ceiling).
+  const NAVBAR_PRIMARY_ACTIONS = onOpenMenu ? 3 : 2;
   const contribution = buildPageProposalContribution(
     page,
     retrievalAnswered,
