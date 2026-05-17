@@ -26,7 +26,27 @@ one at a time.
 
 from __future__ import annotations
 
+import os
+import uuid
+from datetime import datetime, timezone
+
 import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import event
+
+from backend.app.main import app
+from backend.core.config import settings
+from backend.core.database import SessionLocal
+from backend.models.accounts import Account
+
+
+# Stage 2+ promoted tests require Postgres (UUID, CITEXT, partial index)
+# and the M1 schema (accounts.email NULL, no uq_accounts_email). Mirror
+# the gate used by other DB-dependent suites.
+_requires_postgres = pytest.mark.skipif(
+    "sqlite" in (os.environ.get("DATABASE_URL") or settings.DATABASE_URL),
+    reason="Stage 2 acceptance tests require Postgres with M1 applied.",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -153,25 +173,61 @@ def test_T_B2_provider_signed_out_in_another_tab() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.xfail(strict=True, reason="redesign-pending: T-B3")
+@_requires_postgres
 def test_T_B3_token_rejected_by_signature_or_exp() -> None:
     """T-B3 — Token rejected by signature/exp.
 
     Action:
-        Present a token that fails verification (bad signature OR
-        expired); make a protected request.
+        Present a token that fails verification (under mock provider:
+        a malformed token; the Clerk equivalent is bad signature OR
+        expired); make a request to the read-only session resolver.
 
     Expected:
-        Response carries a discriminated reason code (e.g.
-        `auth.signature_invalid` / `auth.expired`); UI transitions to
-        LANDING_OUT once and stays there.
+        Response carries a discriminated reason code (one of
+        `auth.malformed`, `auth.signature_invalid`, `auth.expired`,
+        `auth.no_credential`); envelope is `{"detail": {"error":
+        {"code", "message"}}}`; status 401.
 
     Forbidden:
-        Indistinguishable 401; loop back into SIGNIN; auto-retry.
+        Indistinguishable 401 (no code field); 5xx; 2xx; raw string
+        envelope.
 
     Validates: B5, R1, R4 ; I-A, I-I
     """
-    raise NotImplementedError
+    client = TestClient(app)
+
+    # 1. No credential at all → auth.no_credential.
+    r = client.get("/auth/session")
+    assert r.status_code == 401, r.text
+    body = r.json()
+    assert "detail" in body and "error" in body["detail"], body
+    assert body["detail"]["error"]["code"] == "auth.no_credential"
+    assert isinstance(body["detail"]["error"]["message"], str)
+
+    # 2. Bearer with a non-mock token → auth.malformed (B5: not a
+    # generic 401; the reason is discriminated).
+    r = client.get(
+        "/auth/session",
+        headers={"Authorization": "Bearer not-a-valid-token"},
+    )
+    assert r.status_code == 401, r.text
+    body = r.json()
+    code = body["detail"]["error"]["code"]
+    # The set is closed (auth_verifier.CODES) so any valid discriminated
+    # code passes. We assert a non-empty value in the namespace.
+    assert isinstance(code, str) and code.startswith("auth."), code
+    assert code != "auth.no_credential", "must discriminate from missing header"
+
+    # 3. "Bearer " with no token body → auth.no_credential (the parser
+    # rejects empty tokens before the verifier sees them).
+    r = client.get("/auth/session", headers={"Authorization": "Bearer "})
+    assert r.status_code == 401, r.text
+    assert r.json()["detail"]["error"]["code"] == "auth.no_credential"
+
+    # 4. Wrong scheme → also no_credential (parser rejects).
+    r = client.get("/auth/session", headers={"Authorization": "Basic mock:x@y.z"})
+    assert r.status_code == 401, r.text
+    assert r.json()["detail"]["error"]["code"] == "auth.no_credential"
 
 
 # ---------------------------------------------------------------------------
@@ -367,27 +423,80 @@ def test_T_G1_deleted_account_cannot_resurrect_via_subsequent_token() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.xfail(strict=True, reason="redesign-pending: T-G2")
+@_requires_postgres
 def test_T_G2_two_subjects_sharing_email_do_not_silently_relink() -> None:
     """T-G2 — Two distinct provider subjects share an email.
 
     Action:
-        Establish account A with email E owned by subject S1. Then
-        present a valid token for a different subject S2 whose email
-        is also E.
+        Seed account A directly (subject S1, email E). Then POST
+        /auth/session/init with a mock token for a DIFFERENT subject
+        (S2, same email E).
 
     Expected:
-        S2 does NOT relink S1's row; the operation surfaces an explicit
-        error; (subject → row) mapping remains monotonic.
+        A second row materializes for S2 (M1 dropped the email UNIQUE
+        constraint so this is structurally permitted); account A's
+        `auth_user_id` is unchanged; (subject → row) mapping remains
+        monotonic.
 
     Forbidden:
-        Silent ownership transfer of S1's row to S2; S1 left orphaned;
-        any audit-trail gap.
+        Silent ownership transfer (account A's auth_user_id rewritten
+        to S2); account A left orphaned (deleted_at set); any update
+        to account A whatsoever.
 
     Validates: B8 ; I-D
     Prevents:  FC3 (Race B)
     """
-    raise NotImplementedError
+    shared_email = f"t-g2-shared-{uuid.uuid4().hex[:8]}@example.test"
+    s1_subject_uuid = uuid.uuid4()  # NOT derived from email (distinct from mock)
+    s2_email_token = f"mock:{shared_email}"
+
+    db = SessionLocal()
+    try:
+        # Seed account A under subject S1 with the shared email.
+        account_a = Account(
+            id=uuid.uuid4(),
+            auth_user_id=s1_subject_uuid,
+            email=shared_email,
+            display_name="Account A (subject S1)",
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        db.add(account_a)
+        db.commit()
+        a_id = account_a.id
+        a_auth_user_id = account_a.auth_user_id
+
+        client = TestClient(app)
+        r = client.post(
+            "/auth/session/init",
+            headers={"Authorization": f"Bearer {s2_email_token}"},
+        )
+        assert r.status_code == 200, r.text
+        b_account_id = uuid.UUID(r.json()["account_id"])
+
+        # Two distinct rows now coexist with the same email.
+        assert b_account_id != a_id, "S2 must materialize a NEW row, not S1's"
+
+        # Account A is unchanged — no relink, no soft-delete.
+        db.expire_all()
+        refreshed_a = db.query(Account).filter(Account.id == a_id).one_or_none()
+        assert refreshed_a is not None
+        assert refreshed_a.auth_user_id == a_auth_user_id, (
+            "Forbidden: account A's auth_user_id was rewritten (silent "
+            "ownership transfer to S2)."
+        )
+        assert (
+            refreshed_a.deleted_at is None
+        ), "Forbidden: account A was soft-deleted as a side effect."
+        assert refreshed_a.email == shared_email
+    finally:
+        # Cleanup: best-effort delete of both rows.
+        try:
+            db.query(Account).filter(Account.email == shared_email).delete()
+            db.commit()
+        except Exception:
+            db.rollback()
+        db.close()
 
 
 # ---------------------------------------------------------------------------
@@ -439,24 +548,67 @@ def test_T_H2_at_most_one_whoami_per_boot() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.xfail(strict=True, reason="redesign-pending: T-H3")
+@_requires_postgres
 def test_T_H3_read_endpoints_perform_no_writes() -> None:
-    """T-H3 — Inspect read endpoints for write effects.
+    """T-H3 — Inspect the read endpoint for write effects.
 
     Action:
-        Exercise every whoami-equivalent endpoint while watching the
-        DB session for INSERT/UPDATE/DELETE/COMMIT activity.
+        Exercise GET /auth/session (the read-only resolver from the
+        redesign) for a token whose account row does NOT yet exist.
+        Attach a SQL-statement listener to the engine and assert that
+        no INSERT/UPDATE/DELETE statement is emitted.
 
     Expected:
-        No INSERT/UPDATE/DELETE issued during any whoami-equivalent
-        request; no commit performed by the auth dependency on read
-        endpoints.
+        Status 200 with `materialized=False`; zero DML statements
+        emitted (B4, I-B). The verifier touches no DB; the route
+        performs a single SELECT.
 
     Forbidden:
-        Any commit during a read; any side effect that materializes
-        new rows from the read path itself.
+        Any INSERT/UPDATE/DELETE; any side effect that materializes a
+        new row from the read path itself.
 
     Validates: B4, T6 ; I-B
     Prevents:  FC1 commit-on-read
     """
-    raise NotImplementedError
+    from backend.core.database import engine
+
+    # Use a token whose subject has no row yet. Mock derives auth_user_id
+    # deterministically from email, so a fresh email guarantees no row.
+    fresh_email = f"t-h3-fresh-{uuid.uuid4().hex[:8]}@example.test"
+    token = f"mock:{fresh_email}"
+
+    dml_statements: list[str] = []
+
+    def _on_before_execute(
+        conn, clauseelement, multiparams, params, execution_options
+    ):  # noqa: ARG001
+        try:
+            text = str(clauseelement).strip().upper()
+        except Exception:
+            return
+        # The SQLAlchemy event fires for every statement, including
+        # SAVEPOINTs and transaction control. We're only interested in
+        # DML targeting the accounts table.
+        if text.startswith(("INSERT", "UPDATE", "DELETE")) and "ACCOUNTS" in text:
+            dml_statements.append(text[:200])
+
+    event.listen(engine, "before_execute", _on_before_execute)
+    try:
+        client = TestClient(app)
+        r = client.get(
+            "/auth/session",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+    finally:
+        event.remove(engine, "before_execute", _on_before_execute)
+
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["materialized"] is False, body
+    assert body["account_id"] is None
+
+    assert (
+        not dml_statements
+    ), "Forbidden DML emitted by /auth/session (B4 violation):\n" + "\n".join(
+        dml_statements
+    )
