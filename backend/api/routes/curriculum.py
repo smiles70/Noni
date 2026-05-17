@@ -17,7 +17,12 @@ from backend.api.deps import require_entitlement
 from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.stability_metric import compute_stability
 from backend.core.interface_control.state_selector import select_ui_state
-from backend.models.curriculum_units import UNITS, CurriculumUnit, get_unit
+from backend.models.curriculum_units import (
+    BRIDGE_UNITS,
+    UNITS,
+    CurriculumUnit,
+    get_unit,
+)
 from backend.services import telemetry as telemetry_service
 from backend.models.curriculum_units_module_2 import (
     UNITS_MODULE_2,
@@ -118,6 +123,29 @@ def list_units() -> dict:
                 "stability_threshold": u.stability_threshold,
             }
             for u in UNITS
+        ]
+    }
+
+
+@router.get("/bridge-units")
+def list_bridge_units() -> dict:
+    """Catalog of optional, menu-only side lessons.
+
+    These units are deliberately separate from /units (the linear free
+    sequence): they are not part of /next-unit's walk and not in the
+    main catalog. The lesson-menu UI (S25.1) consumes this list to show
+    them in a "side lessons" section.
+    """
+    return {
+        "units": [
+            {
+                "id": u.id,
+                "title": u.title,
+                "description": u.description,
+                "max_complexity": u.max_complexity,
+                "stability_threshold": u.stability_threshold,
+            }
+            for u in BRIDGE_UNITS
         ]
     }
 

@@ -621,9 +621,197 @@ UNITS: List[CurriculumUnit] = [
 ]
 
 
+# ===== Bridge units (S25.4 + S25.5) =====================================
+# Optional, menu-only side lessons. Held in a SEPARATE list so:
+#   - they never appear in /api/curriculum/next-unit's linear walk,
+#   - they never appear in /api/curriculum/units (the main catalog),
+#   - get_unit() still finds them, so the existing /units/{id}/lesson
+#     endpoint serves them with no other changes.
+#
+# Authoring constraint: keep factual claims minimal and verifiable. These
+# lessons describe other companies' products and Anthropic's own product
+# surface; over-specific claims age badly.
+
+BRIDGE_UNITS: List[CurriculumUnit] = [
+    CurriculumUnit(
+        id="bridge-compare",
+        title="How Claude compares to other AI helpers",
+        description="An optional side lesson if you have heard of ChatGPT or Gemini.",
+        pages=[
+            CurriculumPage(
+                id="bc-context",
+                title="Why this side lesson exists",
+                page_type="context",
+                content=[
+                    "This is an optional lesson. Open it if you have heard the names ChatGPT or Gemini and wonder how they relate to Claude.",
+                    "It is short. It will not change anything else in the course.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="bc-principle",
+                title="Three helpers, the same family",
+                page_type="principle",
+                principle="Claude, ChatGPT, and Gemini are three AI helpers made by three different companies. They work in similar ways.",
+                content=[
+                    "Claude is made by Anthropic. ChatGPT is made by OpenAI. Gemini is made by Google.",
+                    'They are all what people call "large language model" assistants. They take in your words and produce words in reply.',
+                    "What you learn here about Claude — that it is a tool, that you decide, that confident voices are not always right — carries over to the others.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="bc-example",
+                title="The same question, three places",
+                page_type="example",
+                content=[
+                    "Here is the same question, asked of all three.",
+                ],
+                example=ExampleBlock(
+                    situation=(
+                        'You ask each helper: "Could you give me a short list of '
+                        'ideas for a quiet weekend?"'
+                    ),
+                    claude_says=(
+                        "All three would answer with a short list of ideas. The "
+                        "lists would not be identical, but they would have the "
+                        "same shape: a few suggestions, no pressure, room for you "
+                        "to choose."
+                    ),
+                    takeaway=(
+                        "The product names are different. The shape of the help is "
+                        "much the same. The same rule applies: you decide what is "
+                        "useful."
+                    ),
+                ),
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="bc-retrieval",
+                title="Which is true about other AI helpers?",
+                page_type="retrieval",
+                content=[
+                    "Read both. Pick the one that fits this lesson.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt="What is true about ChatGPT and Gemini, compared to Claude?",
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="They are similar tools made by different companies. The same rules of judgment apply.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="They are completely different things, and what you learn about Claude does not apply to them.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "All three are AI helpers in the same family. The names differ, the principles do not."
+                    ),
+                ),
+                complexity=1,
+            ),
+        ],
+        max_complexity=1,
+        stability_threshold=0.9,
+    ),
+    CurriculumUnit(
+        id="bridge-where-claude-lives",
+        title="Where Claude lives in real life",
+        description="A short, practical side lesson about claude.ai and your privacy.",
+        pages=[
+            CurriculumPage(
+                id="bwcl-context",
+                title="The practical side",
+                page_type="context",
+                content=[
+                    "This side lesson is about the practical questions: where Claude actually lives, what it costs to start, and who can see your conversations.",
+                    "It will not take long.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="bwcl-principle",
+                title="A web page, a free start, a private account",
+                page_type="principle",
+                principle="Claude lives on a web page called claude.ai. There is a free way to begin. Your conversations are tied to your account.",
+                content=[
+                    "You reach Claude by typing claude.ai into your web browser. There is nothing to install.",
+                    "Anthropic, the company that makes Claude, offers a free tier so you can begin without paying.",
+                    "When you sign in, your past conversations are saved in your account so you can find them again. They are tied to your sign-in.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="bwcl-example",
+                title="What signing in for the first time looks like",
+                page_type="example",
+                content=[
+                    "Here is what most people see the first time they visit.",
+                ],
+                example=ExampleBlock(
+                    situation=(
+                        "You type claude.ai into your browser. The page shows a "
+                        "sign-in box. You can use an email address you already have."
+                    ),
+                    claude_says=(
+                        "Welcome. Once you are signed in, you will see a writing "
+                        "box. Type whatever you would like to ask, and I will reply. "
+                        "Your past conversations will be saved on the left."
+                    ),
+                    takeaway=(
+                        "There is nothing to download. The page is the whole tool. "
+                        "Your account holds your history; it is not shared."
+                    ),
+                ),
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="bwcl-retrieval",
+                title="Who can see your saved conversations?",
+                page_type="retrieval",
+                content=[
+                    "Read both. Pick the one that matches the principle from this lesson.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt="When you are signed in to claude.ai, who sees the conversations you have saved?",
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="They are tied to your account. They are not shared with other users.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="Everyone who visits claude.ai can read them.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "Your conversations belong to your sign-in. Other users do not see them."
+                    ),
+                ),
+                complexity=1,
+            ),
+        ],
+        max_complexity=1,
+        stability_threshold=0.9,
+    ),
+]
+
+
 def get_unit(unit_id: str) -> Optional[CurriculumUnit]:
-    """Lookup helper. Returns None if unit_id is unknown."""
+    """Lookup helper. Returns None if unit_id is unknown.
+
+    Searches the linear UNITS catalog first, then BRIDGE_UNITS. This
+    means /units/{id}/lesson can serve bridge units with no other
+    changes, while /next-unit and /units (catalog) still see only the
+    linear sequence.
+    """
     for u in UNITS:
+        if u.id == unit_id:
+            return u
+    for u in BRIDGE_UNITS:
         if u.id == unit_id:
             return u
     return None

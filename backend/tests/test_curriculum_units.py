@@ -129,6 +129,44 @@ class TestLessonRoute:
         r = client.get("/api/curriculum/units/unit-999/lesson")
         assert r.status_code == 404
 
+    # ---- S25.4 / S25.5: bridge units (menu-only side lessons) ----------
+    def test_bridge_units_catalog_lists_two_side_lessons(self, client):
+        r = client.get("/api/curriculum/bridge-units")
+        assert r.status_code == 200
+        ids = {u["id"] for u in r.json()["units"]}
+        assert ids == {"bridge-compare", "bridge-where-claude-lives"}
+
+    def test_bridge_units_NOT_in_linear_catalog(self, client):
+        """Bridge units must never appear in the main /units catalog,
+        otherwise they leak into the linear free sequence."""
+        r = client.get("/api/curriculum/units")
+        ids = {u["id"] for u in r.json()["units"]}
+        assert "bridge-compare" not in ids
+        assert "bridge-where-claude-lives" not in ids
+
+    def test_bridge_units_NOT_in_next_unit_walk(self, client):
+        """A bridge unit must never be the recommendation from /next-unit."""
+        r = client.get("/api/curriculum/next-unit")
+        assert r.json()["unit_id"] not in {
+            "bridge-compare",
+            "bridge-where-claude-lives",
+        }
+
+    def test_bridge_units_serve_four_page_lessons(self, client):
+        for uid in ("bridge-compare", "bridge-where-claude-lives"):
+            r = client.get(f"/api/curriculum/units/{uid}/lesson")
+            assert r.status_code == 200, f"{uid}: lesson endpoint failed"
+            pages = r.json()["pages"]
+            assert len(pages) == 4, f"{uid}: expected 4 pages"
+            assert (
+                pages[0]["page_type"] == "context"
+            ), f"{uid}: bridge units open with 'context', not 'recap'"
+            assert pages[-1]["page_type"] == "retrieval"
+            for p in pages:
+                assert (
+                    p["complexity"] == 1
+                ), f"{uid}/{p['id']}: bridge units cap complexity at 1"
+
     def test_all_module_1_units_have_four_page_lesson_shape(self, client):
         """Sprint 23 completion: every module-1 unit (1-7) must now serve
         a four-page lesson with page_type metadata. Pins:
