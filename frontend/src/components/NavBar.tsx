@@ -73,11 +73,14 @@ export default function NavBar({
   }
 
   const signedIn = status === "READY";
-  const email: string | null = signedIn ? state?.email ?? null : null;
+  // Display identity = best available human-readable label.
+  const identity: string | null = signedIn
+    ? state?.displayName ?? state?.email ?? null
+    : null;
 
   return (
     <nav style={NAV} aria-label="Account">
-      {signedIn && email && <span style={EMAIL}>{email}</span>}
+      {signedIn && identity && <span style={EMAIL}>{identity}</span>}
 
       {!signedIn && onSignIn && (
         <button type="button" style={LINK_BTN} onClick={onSignIn}>
