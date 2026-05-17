@@ -59,6 +59,47 @@ def test_module_3_content_no_urgency_language():
             assert w not in page, f"{w!r} in {unit_id}"
 
 
+def test_module_3_lesson_endpoint_returns_four_page_shape():
+    """S25.3: every Module 3 unit serves a four-page lesson
+    (recap / principle / example / retrieval). All pages held at
+    complexity=1 to respect each unit's max_complexity=1 ceiling.
+    """
+    for unit_id in EXPECTED_IDS:
+        r = client.get(f"/api/curriculum/module-3/units/{unit_id}/lesson")
+        assert r.status_code == 200, f"{unit_id}: /lesson endpoint failed"
+        body = r.json()
+        assert body["module"] == 3
+        assert body["unit_id"] == unit_id
+        pages = body["pages"]
+        assert len(pages) == 4, f"{unit_id}: expected 4 pages, got {len(pages)}"
+        assert pages[0]["page_type"] == "recap"
+        assert pages[-1]["page_type"] == "retrieval"
+        for p in pages:
+            assert p["complexity"] == 1, (
+                f"{unit_id}/{p['id']}: Module 3 caps complexity at 1, "
+                f"got {p['complexity']}"
+            )
+
+
+def test_module_3_lesson_pages_have_no_urgency_language():
+    """S25.3: walk every page in every Module 3 lesson for urgency words."""
+    forbidden = ["hurry", "urgent", "limited time", "act now", "expires", "only today"]
+    for unit_id in EXPECTED_IDS:
+        body = client.get(f"/api/curriculum/module-3/units/{unit_id}/lesson").json()
+        for page in body["pages"]:
+            haystack = (
+                " ".join(page.get("content", []))
+                + " "
+                + (page.get("principle") or "")
+                + " "
+                + str(page.get("example") or "")
+                + " "
+                + str(page.get("retrieval") or "")
+            ).lower()
+            for w in forbidden:
+                assert w not in haystack, f"{w!r} in {unit_id}/{page['id']}"
+
+
 def test_module_3_decision_recorded_with_audit_columns():
     client.get("/api/curriculum/module-3/units/module3-unit-1")
     rows = client.get("/api/telemetry/export").json()["events"]
