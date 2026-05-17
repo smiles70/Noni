@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.app.telemetry import TelemetryMiddleware
 from backend.core.config import settings
 from backend.core.database import run_migrations
 from backend.api.routes.curriculum import router as curriculum_router
@@ -42,6 +43,11 @@ _cors_origins = (
     if settings.CORS_ORIGINS
     else ["http://localhost:5173", "http://127.0.0.1:5173"]
 )
+# Stage 0 telemetry (E10). Must run for every request to provide the
+# observability baseline that Stage 1+ work is gated on. Added BEFORE
+# CORSMiddleware so it observes the request even when CORS rejects it.
+app.add_middleware(TelemetryMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
