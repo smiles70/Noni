@@ -75,7 +75,7 @@ def check_and_increment(db: DbSession, limit: RateLimit, identifier: str) -> boo
             # the row MUST exist now (another tx created it). .one_or_none()
             # would silently mask a real invariant break.
             q = db.query(RateLimitCounter).filter(RateLimitCounter.key == key)
-            row = q.one()  # noqa: db-one-allowed
+            row = q.one()  # db-one-allowed
 
     if row.count >= limit.max_per_window:
         return False

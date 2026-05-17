@@ -6,7 +6,7 @@ by an explicit None check, or `.first()` for cases where None is fine.
 
 Scope:
   - Production code under `backend/` except `backend/tests/`.
-  - Lines carrying the marker `# noqa: db-one-allowed` are skipped
+  - Lines carrying the marker `# db-one-allowed` are skipped
     (use this for rare cases where `.one()` is deliberately invariant-
     protecting, e.g. re-fetch after IntegrityError where existence is
     guaranteed by the DB constraint that just fired).
@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 PATTERN = re.compile(r"\.one\(\)")
-ALLOW_MARKER = "# noqa: db-one-allowed"
+ALLOW_MARKER = "# db-one-allowed"
 ROOT = Path("backend")
 EXCLUDE_DIRS = {"tests"}
 

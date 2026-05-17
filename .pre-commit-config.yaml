@@ -64,3 +64,10 @@ repos:
         language: system
         pass_filenames: false
         files: ^requirements.*\.txt$
+
+      - id: envelope-pin
+        name: Ensure envelope changes are paired with test updates
+        entry: python scripts/check_envelope_pinned.py
+        language: system
+        pass_filenames: false
+        files: ^backend/models/ui_state_envelope\.py$
