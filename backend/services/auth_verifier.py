@@ -46,6 +46,16 @@ from backend.core.config import settings
 from backend.services.auth_provider import AuthClaims
 
 logger = logging.getLogger("noni.auth_verifier")
+# Surface verifier failure modes (e.g. clerk_jwks_lookup_failed) under
+# uvicorn's default log config; mirrors the dedicated handler on
+# noni.telemetry. INFO-level so failure reasons appear without raising
+# the bar for everything else.
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
+    logger.addHandler(_handler)
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
 
 
 # Discriminated reason codes. The set is closed: every code that can

@@ -16,6 +16,8 @@ import SignInPage from "./components/SignInPage";
 import PaywallPage from "./components/PaywallPage";
 import GiftRedeemPage from "./components/GiftRedeemPage";
 import AccountSettingsPage from "./components/AccountSettingsPage";
+import AuthPendingBanner from "./components/AuthPendingBanner";
+import AuthBlockedNotice from "./components/AuthBlockedNotice";
 import { useAuth } from "./auth/AuthProvider";
 
 // Step 3 of the FE cutover plan: temporary debug surface that prints
@@ -103,7 +105,13 @@ const App: React.FC = () => {
 
   // Always-mounted debug surface so we can observe AuthProvider state
   // even during BOOT / AUTHENTICATING / REJECTED early returns.
-  const debug = <DebugAuth />;
+  // F1: dev-only — Vite strips this branch from prod bundles via the
+  // `import.meta.env.DEV` constant, so internal state never leaks to
+  // production users.
+  const debug = (import.meta as unknown as { env?: { DEV?: boolean } }).env
+    ?.DEV
+    ? <DebugAuth />
+    : null;
 
   // Global gates: AuthProvider state takes precedence over `view`.
   const status = state?.status;
@@ -118,13 +126,21 @@ const App: React.FC = () => {
     );
   }
   if (status === "REJECTED") {
+    // F6: discriminated, dignified copy per AuthError code; raw codes
+    // never reach the user. onSignIn clears the rejected credential
+    // (-> SIGNED_OUT) and routes to the sign-in page.
+    const handleSignInAgain = async () => {
+      try { await signOut(); } catch { /* idempotent */ }
+      setView("signin");
+    };
     return (
       <>
         {debug}
-        <main role="alert" data-component="AuthRejected">
-          <h1>We could not sign you in.</h1>
-          <p>Code: {state?.errorCode ?? "unknown"}</p>
-          <p>Please try again or contact support.</p>
+        <main data-component="BlockedNotice">
+          <AuthBlockedNotice
+            errorCode={state?.errorCode}
+            onSignIn={handleSignInAgain}
+          />
         </main>
       </>
     );
@@ -220,9 +236,19 @@ const App: React.FC = () => {
       break;
   }
 
+  // F6: TRANSIENT_ERROR surfaces a non-alarming reconnect banner above
+  // the current view. Per I-A, signed-in is sticky on transient backend
+  // failures, so we keep rendering `body` underneath. Retry = full reload
+  // (simple, predictable; AuthProvider re-runs the boot probe).
+  const transientBanner =
+    status === "TRANSIENT_ERROR" ? (
+      <AuthPendingBanner onRetry={() => window.location.reload()} />
+    ) : null;
+
   return (
     <>
       {debug}
+      {transientBanner}
       {body}
     </>
   );

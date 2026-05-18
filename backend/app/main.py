@@ -23,8 +23,31 @@ from backend.api.routes.billing import router as billing_router
 from backend.api.routes.gifts import router as gifts_router
 
 
+def _verify_crypto_dependency() -> None:
+    """F10: fail loud at startup if PyJWT's RS256 support is unavailable.
+
+    PyJWT 2.10.1 (our pin) does not raise an explicit ImportError when
+    `cryptography` is missing; instead RS256 verification silently
+    fails at first request, causing the auth-redirect loop G1 we hit
+    on 2026-05-17. Force the failure at boot so ops sees it before
+    any user does.
+    """
+    if settings.AUTH_PROVIDER.strip().lower() != "clerk":
+        return
+    try:
+        import cryptography  # noqa: F401
+        from jwt.algorithms import RSAAlgorithm  # noqa: F401
+    except ImportError as exc:  # pragma: no cover - boot-time guard
+        raise RuntimeError(
+            "AUTH_PROVIDER=clerk requires `cryptography` for RS256 JWT "
+            "verification. Install it: `pip install cryptography` (or "
+            "`pip install 'pyjwt[crypto]'`). See docs/gotchas.md G1."
+        ) from exc
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _verify_crypto_dependency()
     run_migrations()
     yield
 

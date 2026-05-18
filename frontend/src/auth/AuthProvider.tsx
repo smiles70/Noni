@@ -261,6 +261,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function signOut() {
     await auth.signOut();
     setState({ status: "SIGNED_OUT" });
+    // F8: surface the auth-state change to any listener that uses the
+    // window-event channel (mirrors SignInPage's post-sign-in dispatch).
+    // Idempotent: AuthProvider's own listener short-circuits if state
+    // is already SIGNED_OUT.
+    notifyAuthChanged();
   }
 
 
