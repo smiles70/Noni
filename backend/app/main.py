@@ -6,8 +6,9 @@ System (ISCS). Subsystems emit signals; the ISCS decides UI states.
 """
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from backend.app.telemetry import TelemetryMiddleware
 from backend.core.config import settings
@@ -85,6 +86,40 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(HTTPException)
+async def _http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+    """F11: enforce the documented auth wire envelope `{error:{code,message}}`.
+
+    FastAPI's default behaviour wraps every `HTTPException.detail` in an
+    outer `{"detail": ...}` object. The auth contract (see
+    `backend/api/routes/auth.py::_raise_auth_error` and
+    `docs/design/login-redesign-2026-05-17.md`) specifies the wire shape
+    is `{error:{code,message}}` with no extra wrapper, so the frontend
+    `AuthProvider.handleError` reads `data.error.code` directly.
+
+    Strategy: unwrap `detail` to the top level **only** when it is
+    exactly an auth envelope (the unique sentinel
+    `set(detail.keys()) == {"error"}`). All other shapes — UI envelope
+    ids `{envelope_id: ...}`, plain string details, etc. — fall through
+    to FastAPI's default `{"detail": ...}` shape, preserving every
+    existing client contract (`detail.envelope_id` readers in
+    `frontend/src/api/curriculum.ts` continue to work unchanged).
+    """
+    detail = exc.detail
+    if isinstance(detail, dict) and set(detail.keys()) == {"error"}:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=detail,
+            headers=exc.headers,
+        )
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": detail},
+        headers=exc.headers,
+    )
+
 
 app.include_router(curriculum_router, prefix="/api/curriculum", tags=["curriculum"])
 app.include_router(signals_router, prefix="/api/signals", tags=["signals"])

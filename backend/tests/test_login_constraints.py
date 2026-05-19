@@ -185,8 +185,10 @@ def test_T_B3_token_rejected_by_signature_or_exp() -> None:
     Expected:
         Response carries a discriminated reason code (one of
         `auth.malformed`, `auth.signature_invalid`, `auth.expired`,
-        `auth.no_credential`); envelope is `{"detail": {"error":
-        {"code", "message"}}}`; status 401.
+        `auth.no_credential`); wire envelope is
+        `{"error": {"code", "message"}}` (unwrapped at the top level
+        by the F11 HTTPException handler in `backend/app/main.py`);
+        status 401.
 
     Forbidden:
         Indistinguishable 401 (no code field); 5xx; 2xx; raw string
@@ -200,9 +202,9 @@ def test_T_B3_token_rejected_by_signature_or_exp() -> None:
     r = client.get("/auth/session")
     assert r.status_code == 401, r.text
     body = r.json()
-    assert "detail" in body and "error" in body["detail"], body
-    assert body["detail"]["error"]["code"] == "auth.no_credential"
-    assert isinstance(body["detail"]["error"]["message"], str)
+    assert "error" in body, body
+    assert body["error"]["code"] == "auth.no_credential"
+    assert isinstance(body["error"]["message"], str)
 
     # 2. Bearer with a non-mock token → auth.malformed (B5: not a
     # generic 401; the reason is discriminated).
@@ -212,7 +214,7 @@ def test_T_B3_token_rejected_by_signature_or_exp() -> None:
     )
     assert r.status_code == 401, r.text
     body = r.json()
-    code = body["detail"]["error"]["code"]
+    code = body["error"]["code"]
     # The set is closed (auth_verifier.CODES) so any valid discriminated
     # code passes. We assert a non-empty value in the namespace.
     assert isinstance(code, str) and code.startswith("auth."), code
@@ -222,12 +224,12 @@ def test_T_B3_token_rejected_by_signature_or_exp() -> None:
     # rejects empty tokens before the verifier sees them).
     r = client.get("/auth/session", headers={"Authorization": "Bearer "})
     assert r.status_code == 401, r.text
-    assert r.json()["detail"]["error"]["code"] == "auth.no_credential"
+    assert r.json()["error"]["code"] == "auth.no_credential"
 
     # 4. Wrong scheme → also no_credential (parser rejects).
     r = client.get("/auth/session", headers={"Authorization": "Basic mock:x@y.z"})
     assert r.status_code == 401, r.text
-    assert r.json()["detail"]["error"]["code"] == "auth.no_credential"
+    assert r.json()["error"]["code"] == "auth.no_credential"
 
 
 # ---------------------------------------------------------------------------
