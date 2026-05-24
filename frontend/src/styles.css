@@ -76,21 +76,39 @@ button,
  * overlay (title + Learn more) is absolutely positioned within this
  * frame and remains visually centered regardless of crop.
  */
-/* The source photo is near-square (subject + laptop), so any wide crop
- * either decapitates the subject or hides the laptop. Instead we cap the
- * frame height and let the image render fully (contain) inside a soft
- * neutral letterbox that blends with the page background. The frame is
- * still bounded so the hero never dominates the viewport. */
+/* The source photo is near-square but the hero band is wide. To preserve
+ * the full 1080p image without ugly side bars, we use the "blurred
+ * backdrop" pattern made famous by Apple Music / Spotify / YouTube
+ * fullscreen: the same image is rendered as a blurred, scaled
+ * background filling the band, and the sharp image sits centered on
+ * top via object-fit: contain. The eye reads it as a single composed
+ * scene; nothing is cropped. */
 .noni-hero__frame {
   position: relative;
   width: 100%;
   display: block;
   height: min(56vh, 520px);
-  background: #f4f1ec; /* warm off-white, matches page surface */
   overflow: hidden;
+  isolation: isolate; /* contain z-index of ::before */
+}
+
+.noni-hero__frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/nonisplash.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) saturate(1.05) brightness(0.92);
+  /* blur leaves soft edges; scale slightly so the blurred halo
+   * doesn't reveal the unblurred frame border. */
+  transform: scale(1.12);
+  z-index: 0;
 }
 
 .noni-hero__image {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -99,7 +117,7 @@ button,
 }
 
 @media (max-width: 640px) {
-  /* Phones: shorter still so the auth row sits closer to the fold. */
+  /* Phones: shorter so the auth row sits closer to the fold. */
   .noni-hero__frame {
     height: 40vh;
   }
