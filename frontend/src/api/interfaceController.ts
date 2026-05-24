@@ -3,8 +3,9 @@
  * The frontend ONLY consumes backend-approved UI states.
  */
 import axios from "axios";
+import { API_BASE_URL } from "./client";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = API_BASE_URL;
 
 export interface CurriculumPage {
   id: string;

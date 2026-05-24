@@ -3,8 +3,9 @@
  * Consumes /api/landing/page (landing-page copy, per ADR 0006).
  */
 import axios from "axios";
+import { API_BASE_URL } from "./client";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = API_BASE_URL;
 
 export interface Hero {
   headline: string;

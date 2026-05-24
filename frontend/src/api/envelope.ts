@@ -7,8 +7,9 @@
  */
 import axios from "axios";
 import type { UIStateEnvelope } from "../design/envelope";
+import { API_BASE_URL } from "./client";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = API_BASE_URL;
 
 export async function loadEnvelope(stateId: string): Promise<UIStateEnvelope> {
   // TODO: migrate to apiClient once the envelope endpoint is consistently
