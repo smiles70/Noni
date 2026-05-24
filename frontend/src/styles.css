@@ -66,20 +66,40 @@ button,
   margin-bottom: 48px; /* SPACING.xxl */
 }
 
-/* Image frame fills the full hero band. The image renders at its natural
- * aspect ratio so the *whole* picture is visible (no cropping). The
- * overlay banner is absolutely positioned and centered within this
- * frame. */
+/* Image frame fills the full hero band. The frame controls the visible
+ * size — not the image's intrinsic dimensions — so a near-square source
+ * doesn't dominate the viewport. Sizing follows hero-banner consensus
+ * (NN/g, Smashing, Material 3, web.dev): wide aspect, capped at ~60vh
+ * with a hard pixel ceiling so ultra-tall monitors don't blow up either.
+ *
+ * The image uses object-fit: cover so the frame's aspect wins; the
+ * overlay (title + Learn more) is absolutely positioned within this
+ * frame and remains visually centered regardless of crop.
+ */
 .noni-hero__frame {
   position: relative;
   width: 100%;
   display: block;
+  aspect-ratio: 21 / 9;
+  max-height: min(60vh, 560px);
+  overflow: hidden;
 }
 
 .noni-hero__image {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   display: block;
+}
+
+@media (max-width: 640px) {
+  /* Phones get a slightly taller, less cinematic crop so faces / focal
+   * points stay legible. */
+  .noni-hero__frame {
+    aspect-ratio: 4 / 3;
+    max-height: 50vh;
+  }
 }
 
 /* Overlay — transparent, floats over the photo. White text with a soft
