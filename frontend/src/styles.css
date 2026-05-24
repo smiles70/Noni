@@ -89,7 +89,9 @@ button,
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  /* Subject's face sits in the upper third of the source photo; anchor
+   * the crop to the top so 21:9 framing doesn't decapitate her. */
+  object-position: center top;
   display: block;
 }
 
