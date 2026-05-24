@@ -9,6 +9,6 @@ creation_rules:
   # Matches both the plaintext draft (input to secrets-bootstrap.sh) and
   # the encrypted output. sops looks up creation rules against the input
   # file path during `sops --encrypt`, so the draft path must match too.
-  - path_regex: \.env\.(prod|staging)(\.draft|\.sops\.yaml)$
+  - path_regex: \.env\.(prod|staging)(\.draft|\.sops\.yaml|\.tmp)$
     encrypted_regex: '^(?!#).*$'
     age: age1dlt6m3rm3qtfnywqsxff0rlc0edaj40krzm892zkyvnl4c69t5ess28hg3
