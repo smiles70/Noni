@@ -37,31 +37,45 @@ CF_PAGES_PROJECT="${CLOUDFLARE_PAGES_PROJECT:-noni-web}"
 
 declare -a FLY_KEYS=(
   DATABASE_URL DATABASE_URL_DIRECT
-  SESSION_SECRET SESSION_COOKIE_NAME SESSION_TTL_DAYS
-  SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY
-  SUPABASE_JWT_SECRET SUPABASE_JWT_AUDIENCE SUPABASE_JWT_ISSUER
-  GOOGLE_OAUTH_CLIENT_ID GOOGLE_OAUTH_CLIENT_SECRET
+  SECRET_KEY SESSION_SECRET SESSION_COOKIE_NAME SESSION_TTL_DAYS
+  AUTH_PROVIDER
+  CLERK_JWKS_URL CLERK_ISSUER CLERK_SECRET_KEY
+  FRONTEND_URL CORS_ORIGINS
+  PAYMENT_PROVIDER
   STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET STRIPE_PRICE_ID_MODULES_4_5
   STRIPE_SUCCESS_URL STRIPE_CANCEL_URL
   ENVIRONMENT LOG_LEVEL
 )
 
+# CF Pages build-time env (Vite inlines these into the bundle at build).
+# These are pushed as Pages env vars AND mirrored to GitHub Actions so
+# the GH workflow build step can read them — see GH_KEYS below.
 declare -a CF_PAGES_KEYS=(
-  VITE_API_BASE_URL STRIPE_PUBLISHABLE_KEY
+  VITE_API_BASE_URL VITE_AUTH_PROVIDER VITE_CLERK_PUBLISHABLE_KEY
+  STRIPE_PUBLISHABLE_KEY
 )
 
 declare -a GH_KEYS=(
   FLY_API_TOKEN CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
   SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF
   STRIPE_SECRET_KEY
+  # Build-time frontend env mirrored here so .github/workflows/deploy.yml
+  # can pass them to `npm run build` as VITE_* (Vite inlines at build).
+  VITE_API_BASE_URL VITE_AUTH_PROVIDER VITE_CLERK_PUBLISHABLE_KEY
+  PROD_API_BASE_URL
 )
 
+# Empty values print SKIPPED rather than failing. Some keys (e.g. the
+# Stripe set when PAYMENT_PROVIDER=mock, or GitHub-Actions tokens for a
+# laptop-only deploy) are legitimately absent and would otherwise block
+# the whole sync. The status table still shows them so an operator can
+# spot-check that genuinely-required keys are present.
 push_fly() {
   local key="$1"
   local val="${!key:-}"
   if [[ -z "$val" ]]; then
-    printf '  %-40s | fly                   | MISSING\n' "$key"
-    return 1
+    printf '  %-40s | fly                   | SKIPPED (empty)\n' "$key"
+    return 0
   fi
   flyctl secrets set "$key=$val" --app "$FLY_APP" --stage >/dev/null
   printf '  %-40s | fly                   | OK\n' "$key"
@@ -71,8 +85,8 @@ push_cf_pages() {
   local key="$1"
   local val="${!key:-}"
   if [[ -z "$val" ]]; then
-    printf '  %-40s | cloudflare-pages      | MISSING\n' "$key"
-    return 1
+    printf '  %-40s | cloudflare-pages      | SKIPPED (empty)\n' "$key"
+    return 0
   fi
   printf '%s' "$val" | wrangler pages secret put "$key" --project-name "$CF_PAGES_PROJECT" >/dev/null
   printf '  %-40s | cloudflare-pages      | OK\n' "$key"
@@ -82,8 +96,8 @@ push_gh() {
   local key="$1"
   local val="${!key:-}"
   if [[ -z "$val" ]]; then
-    printf '  %-40s | github-actions        | MISSING\n' "$key"
-    return 1
+    printf '  %-40s | github-actions        | SKIPPED (empty)\n' "$key"
+    return 0
   fi
   printf '%s' "$val" | gh secret set "$key" --body - >/dev/null
   printf '  %-40s | github-actions        | OK\n' "$key"

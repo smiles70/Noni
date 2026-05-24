@@ -16,7 +16,15 @@ require jq
 
 echo "==> GET $API_BASE/health"
 HEALTH="$(curl -fsS "$API_BASE/health")"
-echo "$HEALTH" | jq -e '.status == "ok"' >/dev/null || { echo "FAIL: /health not ok"; exit 1; }
+# backend/app/main.py returns {"status":"healthy", ...}; accept "ok" too
+# for forward-compat if a future ADR canonicalises the shorter token.
+echo "$HEALTH" | jq -e '.status == "healthy" or .status == "ok"' >/dev/null \
+  || { echo "FAIL: /health not healthy"; exit 1; }
+
+echo "==> GET $API_BASE/auth/config"
+AUTH_CFG="$(curl -fsS "$API_BASE/auth/config")"
+echo "$AUTH_CFG" | jq -e '.provider == "clerk" or .provider == "mock"' >/dev/null \
+  || { echo "FAIL: /auth/config provider unrecognised"; exit 1; }
 
 echo "==> GET $API_BASE/api/ui-envelope/landing.intro"
 ENV_JSON="$(curl -fsS "$API_BASE/api/ui-envelope/landing.intro")"

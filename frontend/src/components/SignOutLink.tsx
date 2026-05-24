@@ -1,24 +1,23 @@
 /**
- * SignOutLink — landing-surface sign-out button (ADR 0024).
+ * SignOutLink — landing-surface sign-out button (ADR 0024 / B6).
  *
- * Lives on the signed-in landing page so the user can leave without
- * having to drill into Your Account first. Styled to match the landing
- * page's secondary CTA (SECONDARY_BTN from LandingPage's local style
- * set, mirrored here so we don't cross-import).
+ * Pure delegator: this component owns no provider knowledge, no
+ * credential reads, and no `useClerk()` call. It triggers sign-out
+ * exclusively via AuthProvider's `signOut()` (B6 single sign-out
+ * routine), which in turn drives the Clerk SDK in clerk mode and
+ * clears the mock token in mock mode.
  *
- * Provider handling mirrors SignInPage's pattern:
- *   - Clerk mode: the inner ClerkBranch uses `useClerk().signOut()`.
- *     The hook is only evaluated when ClerkProvider is in the tree,
- *     which is why this lives in a child component.
- *   - Mock mode: clear the localStorage Bearer and notify the parent.
+ * Errors are swallowed (matches ClerkSignOutButton): a transient
+ * provider failure shouldn't trap the user signed in. The leftover
+ * server-side token expires on its own.
  *
- * Errors are swallowed (same pattern as ClerkSignOutButton): a transient
- * Clerk failure shouldn't trap the user signed in. The leftover token
- * expires on its own server-side.
+ * The `onSignedOut` prop is retained for LandingPage back-compat: the
+ * parent passes `signOut` itself, which is redundant but harmless
+ * (AuthProvider.signOut is idempotent). A follow-up cleanup can drop
+ * the prop and stop threading it from App.tsx → LandingPage.
  */
 import { CSSProperties, useState } from "react";
-import { useClerk } from "@clerk/clerk-react";
-import { clearMockToken } from "../api/auth";
+import { useAuth } from "../auth/AuthProvider";
 import {
   COLORS,
   MOTION,
@@ -27,12 +26,10 @@ import {
   TYPOGRAPHY,
 } from "../design/tokens";
 
-const AUTH_PROVIDER =
-  ((import.meta as unknown as { env?: { VITE_AUTH_PROVIDER?: string } }).env
-    ?.VITE_AUTH_PROVIDER ?? "mock");
-
 interface Props {
-  onSignedOut: () => void | Promise<void>;
+  /** Optional hook for the parent (LandingPage back-compat). Fires
+   *  after AuthProvider.signOut() resolves. */
+  onSignedOut?: () => void | Promise<void>;
 }
 
 const BTN: CSSProperties = {
@@ -47,43 +44,32 @@ const BTN: CSSProperties = {
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
 };
 
-function ClerkBranch({ onSignedOut }: Props) {
-  const clerk = useClerk();
+export default function SignOutLink({ onSignedOut }: Props) {
+  const { signOut } = useAuth();
   const [submitting, setSubmitting] = useState(false);
-  const onClick = async () => {
+
+  const handleClick = async () => {
+    if (submitting) return;
     setSubmitting(true);
     try {
-      await clerk.signOut();
+      await signOut();
+      if (onSignedOut) await onSignedOut();
     } catch {
-      /* swallow — let the user out regardless */
+      // swallow intentionally — let the user out regardless
     }
-    await onSignedOut();
+    // Do not reset submitting: this component typically unmounts after
+    // the post-signout state transition; setState on an unmounted
+    // component is a React anti-pattern (matches ClerkSignOutButton).
   };
+
   return (
-    <button type="button" style={BTN} onClick={onClick} disabled={submitting}>
+    <button
+      type="button"
+      style={BTN}
+      onClick={handleClick}
+      disabled={submitting}
+    >
       {submitting ? "Signing you out…" : "Sign out"}
     </button>
-  );
-}
-
-function MockBranch({ onSignedOut }: Props) {
-  const [submitting, setSubmitting] = useState(false);
-  const onClick = async () => {
-    setSubmitting(true);
-    clearMockToken();
-    await onSignedOut();
-  };
-  return (
-    <button type="button" style={BTN} onClick={onClick} disabled={submitting}>
-      {submitting ? "Signing you out…" : "Sign out"}
-    </button>
-  );
-}
-
-export default function SignOutLink(props: Props) {
-  return AUTH_PROVIDER === "clerk" ? (
-    <ClerkBranch {...props} />
-  ) : (
-    <MockBranch {...props} />
   );
 }

@@ -24,8 +24,7 @@
  * interceptor) returns null the user is genuinely signed out, and
  * AuthProvider's state machine handles the transition.
  */
-import { AxiosHeaders } from "axios";
-import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import type { AxiosInstance } from "axios";
 import axios from "axios";
 
 interface ImportMetaEnvShape {
@@ -40,6 +39,9 @@ export const API_BASE_URL: string = (
 ).replace(/\/+$/, "");
 
 const AUTH_PROVIDER = _env.VITE_AUTH_PROVIDER ?? "mock";
+// AUTH_PROVIDER is used only by the boot-time diagnostic console.warn
+// below; the actual provider-switch lives in AuthProvider via
+// useCredentialSource().
 
 // Single source of truth for the mock-mode localStorage key. SignInPage
 // (mock branch), AccountSettingsPage's sign-out, and this client must
@@ -63,44 +65,12 @@ export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
 });
 
-/** Attach an Authorization header from an arbitrary token resolver.
- *
- * Shared helper so the mock-mode interceptor (installed below at
- * module load) and AuthProvider's clerk-mode interceptor (installed
- * inside the React tree) write the header identically.
- */
-export function attachBearer(
-  config: InternalAxiosRequestConfig,
-  token: string,
-): InternalAxiosRequestConfig {
-  if (config.headers instanceof AxiosHeaders) {
-    config.headers.set("Authorization", `Bearer ${token}`);
-  } else {
-    config.headers = new AxiosHeaders({
-      ...(config.headers as Record<string, string> | undefined),
-      Authorization: `Bearer ${token}`,
-    });
-  }
-  return config;
-}
-
-// Mock-mode interceptor: installed at module load. In Clerk mode this
-// interceptor is a no-op (mock token key never set) and the real
-// Bearer is attached by the single interceptor AuthProvider installs
-// via useAuth() inside the React tree (B2).
-if (AUTH_PROVIDER === "mock") {
-  apiClient.interceptors.request.use(
-    async (config: InternalAxiosRequestConfig) => {
-      try {
-        const token = localStorage.getItem(MOCK_TOKEN_KEY);
-        if (token) return attachBearer(config, token);
-      } catch {
-        // no-op
-      }
-      return config;
-    },
-  );
-}
+// Bearer header attachment lives in AuthProvider's single interceptor
+// (B2 single credential pipeline). This module is pure transport: it
+// owns no auth logic, no interceptors, and no token-reading side
+// effects. Mock-mode and Clerk-mode credentials both flow through
+// AuthProvider.tsx's apiClient.interceptors.request.use(...) which
+// calls auth.getToken() (mock = localStorage, clerk = SDK).
 
 /** Mock-mode helpers. No-ops are not provided — callers gate on
  *  AUTH_PROVIDER themselves; using these in Clerk mode would conflict

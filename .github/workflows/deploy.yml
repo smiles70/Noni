@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ready: ${{ steps.check.outputs.ready }}
+      have_supabase: ${{ steps.check.outputs.have_supabase }}
     steps:
       - name: Check whether deploy secrets are present
         id: check
@@ -31,20 +32,32 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: |
+          # Required for any deploy (Fly + Cloudflare Pages).
           missing=()
-          for k in FLY_API_TOKEN CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF; do
+          for k in FLY_API_TOKEN CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
             if [[ -z "${!k}" ]]; then missing+=("$k"); fi
           done
           if [[ ${#missing[@]} -gt 0 ]]; then
-            echo "::notice::Deploy skipped — missing secrets: ${missing[*]}"
+            echo "::notice::Deploy skipped — missing required secrets: ${missing[*]}"
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
+          # Optional Supabase migration step. Skipped when DB is Fly Postgres.
+          if [[ -n "$SUPABASE_ACCESS_TOKEN" && -n "$SUPABASE_PROJECT_REF" ]]; then
+            echo "have_supabase=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "have_supabase=false" >> "$GITHUB_OUTPUT"
+          fi
 
   supabase-db-push:
     needs: preflight
-    if: needs.preflight.outputs.ready == 'true'
+    # Only runs when both Supabase secrets are configured (signalled by
+    # preflight.have_supabase). When the database is Fly Postgres (or
+    # any non-Supabase Postgres) this job is skipped; Alembic owns the
+    # schema and applies on backend boot via the FastAPI lifespan in
+    # backend/app/main.py.
+    if: needs.preflight.outputs.ready == 'true' && needs.preflight.outputs.have_supabase == 'true'
     runs-on: ubuntu-latest
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -60,8 +73,16 @@ jobs:
           supabase db push --include-all
 
   fly-deploy-backend:
+    # `needs` ensures preflight passed; we don't gate on supabase-db-push
+    # because that job is conditionally skipped in non-Supabase deploys.
+    # GitHub treats skipped dependencies as "passed" only with `always()`
+    # or by listing them but not blocking on their result — using
+    # `if: success() || needs.supabase-db-push.result == 'skipped'`.
     needs: [preflight, supabase-db-push]
-    if: needs.preflight.outputs.ready == 'true'
+    if: |
+      always() &&
+      needs.preflight.outputs.ready == 'true' &&
+      (needs.supabase-db-push.result == 'success' || needs.supabase-db-push.result == 'skipped')
     runs-on: ubuntu-latest
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
@@ -88,8 +109,13 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - name: Install + build frontend
         working-directory: frontend
+        # Vite inlines VITE_* env at build time. main.tsx fails fast at
+        # boot if VITE_AUTH_PROVIDER=clerk and the publishable key is
+        # absent, so all three are required for a Clerk-mode prod build.
         env:
-          VITE_API_BASE_URL: ${{ secrets.PROD_API_BASE_URL || 'https://noni-api.fly.dev' }}
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || secrets.PROD_API_BASE_URL || 'https://noni-api.fly.dev' }}
+          VITE_AUTH_PROVIDER: ${{ secrets.VITE_AUTH_PROVIDER || 'clerk' }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
         run: |
           npm ci
           npm run build

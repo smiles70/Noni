@@ -6,6 +6,9 @@
 # on first run. Do not edit by hand after bootstrap.
 
 creation_rules:
-  - path_regex: infra/.env\.(prod|staging)\.sops\.yaml$
+  # Matches both the plaintext draft (input to secrets-bootstrap.sh) and
+  # the encrypted output. sops looks up creation rules against the input
+  # file path during `sops --encrypt`, so the draft path must match too.
+  - path_regex: \.env\.(prod|staging)(\.draft|\.sops\.yaml)$
     encrypted_regex: '^(?!#).*$'
-    age: REPLACE_WITH_AGE_PUBLIC_KEY_FROM_make_secrets-bootstrap
+    age: age1dlt6m3rm3qtfnywqsxff0rlc0edaj40krzm892zkyvnl4c69t5ess28hg3
