@@ -50,98 +50,63 @@ button,
  * banner (title + Learn more), then a row of auth actions (Create
  * account / Log in), then the marketing content column.
  */
-/* The hero band itself breaks out of the centered <main> container so it
- * spans the full viewport. All inner rows then live in a normal flex
- * column and center themselves naturally — no nested break-out tricks. */
+/* Hero stays inside the centered <main> container — no full-bleed band.
+ * Linear/Stripe/Notion pattern: bounded image as a card, headline and
+ * primary CTA as a separate text block beneath. Cleaner than overlaying
+ * text on a photo whose composition we don't control. */
 .noni-hero {
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 32px; /* SPACING.xl */
   margin-bottom: 48px; /* SPACING.xxl */
 }
 
-/* Image frame fills the full hero band. The frame controls the visible
- * size — not the image's intrinsic dimensions — so a near-square source
- * doesn't dominate the viewport. Sizing follows hero-banner consensus
- * (NN/g, Smashing, Material 3, web.dev): wide aspect, capped at ~60vh
- * with a hard pixel ceiling so ultra-tall monitors don't blow up either.
- *
- * The image uses object-fit: cover so the frame's aspect wins; the
- * overlay (title + Learn more) is absolutely positioned within this
- * frame and remains visually centered regardless of crop.
- */
-/* The source photo is near-square but the hero band is wide. To preserve
- * the full 1080p image without ugly side bars, we use the "blurred
- * backdrop" pattern made famous by Apple Music / Spotify / YouTube
- * fullscreen: the same image is rendered as a blurred, scaled
- * background filling the band, and the sharp image sits centered on
- * top via object-fit: contain. The eye reads it as a single composed
- * scene; nothing is cropped. */
+/* Image card: native aspect preserved, capped width and height so the
+ * picture sits comfortably without dominating the viewport. Soft
+ * rounded corners + light shadow lift it off the page. */
 .noni-hero__frame {
   position: relative;
-  width: 100%;
   display: block;
-  height: min(56vh, 520px);
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  border-radius: 16px;
   overflow: hidden;
-  isolation: isolate; /* contain z-index of ::before */
-}
-
-.noni-hero__frame::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("/nonisplash.jpg");
-  background-size: cover;
-  background-position: center;
-  filter: blur(28px) saturate(1.05) brightness(0.92);
-  /* blur leaves soft edges; scale slightly so the blurred halo
-   * doesn't reveal the unblurred frame border. */
-  transform: scale(1.12);
-  z-index: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 .noni-hero__image {
-  position: relative;
-  z-index: 1;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
+  max-height: min(50vh, 480px);
+  object-fit: cover;
   object-position: center;
   display: block;
 }
 
 @media (max-width: 640px) {
-  /* Phones: shorter so the auth row sits closer to the fold. */
   .noni-hero__frame {
-    height: 40vh;
+    max-width: 100%;
+    border-radius: 12px;
+  }
+  .noni-hero__image {
+    max-height: 40vh;
   }
 }
 
-/* Overlay — transparent, floats over the photo. White text with a soft
- * shadow keeps the headline legible against varied parts of the image
- * without needing a card background. */
+/* Headline + ghost button now live below the image as a normal text
+ * block. The element keeps the .noni-hero__overlay class for backward
+ * compatibility with existing JSX, but the styling is no longer an
+ * absolutely-positioned overlay. */
 .noni-hero__overlay {
-  position: absolute;
-  /* Float over the right side of the photo (the laptop area in the
-   * current hero image gives a calmer backdrop than the centre). */
-  top: 50%;
-  right: 6%;
-  left: auto;
-  transform: translateY(-50%);
-  background: transparent;
-  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  text-align: center;
   gap: 16px; /* SPACING.md */
-  text-align: right;
-  max-width: min(440px, 45%);
+  max-width: 640px;
 }
 
 .noni-hero__overlay-title {
@@ -149,29 +114,25 @@ button,
   font-size: 36px;
   line-height: 1.15;
   font-weight: 700;
-  color: #ffffff;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  color: #222222; /* tokens.COLORS.textPrimary */
 }
 
-/* Ghost button used over the photo: transparent fill, white text and
- * border, subtle dark shadow for contrast against light areas of the
- * image. Hover/focus reuses the global focus-visible ring. */
 .noni-hero__overlay-btn {
   display: inline-block;
   font-size: 16px;
   font-weight: 600;
-  padding: 12px 24px; /* SPACING.sm / SPACING.lg */
-  background: rgba(0, 0, 0, 0.25);
-  color: #ffffff;
-  border: 2px solid #ffffff;
-  border-radius: 8px; /* tokens.RADIUS.sm */
+  padding: 12px 24px;
+  background: transparent;
+  color: #4a6fa5; /* tokens.COLORS.accentMutedBlue */
+  border: 2px solid #4a6fa5;
+  border-radius: 8px;
   cursor: pointer;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
-  transition: background-color 200ms ease-out;
+  transition: background-color 200ms ease-out, color 200ms ease-out;
 }
 
 .noni-hero__overlay-btn:hover {
-  background: rgba(0, 0, 0, 0.4);
+  background: #4a6fa5;
+  color: #ffffff;
 }
 
 /* Row directly under the photo: primary CTA + secondary Log in.
@@ -220,29 +181,9 @@ button,
   margin: 0 auto;
 }
 
-/* On narrow viewports the overlay can crowd the image; fall back to a
- * stacked layout where the banner sits beneath the picture. */
 @media (max-width: 640px) {
-  .noni-hero__overlay {
-    position: static;
-    transform: none;
-    right: auto;
-    left: auto;
-    align-items: center;
-    text-align: center;
-    max-width: 90%;
-    margin-top: 16px;
-  }
   .noni-hero__overlay-title {
-    color: #222222; /* tokens.COLORS.textPrimary — image no longer behind it */
-    text-shadow: none;
     font-size: 28px;
-  }
-  .noni-hero__overlay-btn {
-    background: transparent;
-    color: #4a6fa5; /* tokens.COLORS.accentMutedBlue */
-    border-color: #4a6fa5;
-    text-shadow: none;
   }
 }
 

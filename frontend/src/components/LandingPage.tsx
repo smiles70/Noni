@@ -214,18 +214,18 @@ export default function LandingPage({
               alt=""
               loading="eager"
             />
-            <div className="noni-hero__overlay">
-              <h1 id="hero-heading" className="noni-hero__overlay-title">
-                Learn AI on your terms!
-              </h1>
-              <button
-                type="button"
-                onClick={() => setShowHowItWorks(true)}
-                className="noni-hero__overlay-btn"
-              >
-                See how Noni works
-              </button>
-            </div>
+          </div>
+          <div className="noni-hero__overlay">
+            <h1 id="hero-heading" className="noni-hero__overlay-title">
+              Learn AI on your terms!
+            </h1>
+            <button
+              type="button"
+              onClick={() => setShowHowItWorks(true)}
+              className="noni-hero__overlay-btn"
+            >
+              See how Noni works
+            </button>
           </div>
 
           {/* Auth row directly under the photo. The primary label names
