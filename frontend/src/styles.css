@@ -76,31 +76,32 @@ button,
  * overlay (title + Learn more) is absolutely positioned within this
  * frame and remains visually centered regardless of crop.
  */
+/* The source photo is near-square (subject + laptop), so any wide crop
+ * either decapitates the subject or hides the laptop. Instead we cap the
+ * frame height and let the image render fully (contain) inside a soft
+ * neutral letterbox that blends with the page background. The frame is
+ * still bounded so the hero never dominates the viewport. */
 .noni-hero__frame {
   position: relative;
   width: 100%;
   display: block;
-  aspect-ratio: 21 / 9;
-  max-height: min(60vh, 560px);
+  height: min(56vh, 520px);
+  background: #f4f1ec; /* warm off-white, matches page surface */
   overflow: hidden;
 }
 
 .noni-hero__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  /* Subject's face sits in the upper third of the source photo; anchor
-   * the crop to the top so 21:9 framing doesn't decapitate her. */
-  object-position: center top;
+  object-fit: contain;
+  object-position: center;
   display: block;
 }
 
 @media (max-width: 640px) {
-  /* Phones get a slightly taller, less cinematic crop so faces / focal
-   * points stay legible. */
+  /* Phones: shorter still so the auth row sits closer to the fold. */
   .noni-hero__frame {
-    aspect-ratio: 4 / 3;
-    max-height: 50vh;
+    height: 40vh;
   }
 }
 
