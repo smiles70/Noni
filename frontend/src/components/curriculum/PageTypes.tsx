@@ -212,7 +212,7 @@ export function RetrievalPage({
         <div
           style={isCorrect ? CARD_FEEDBACK_CORRECT : CARD_FEEDBACK_INCORRECT}
           data-component="Card"
-          aria-label={isCorrect ? "Correct answer" : "Other answer"}
+          aria-label={isCorrect ? "That fits the rule." : "Take another look."}
           role="status"
           aria-live="polite"
         >

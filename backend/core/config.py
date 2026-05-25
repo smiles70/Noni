@@ -10,12 +10,12 @@ class Settings(BaseSettings):
     DATABASE_URL_DIRECT: str = (
         ""  # non-pooled URL for migrations (defaults to DATABASE_URL)
     )
-    SECRET_KEY: str = "development-secret-key-change-in-production"
+    SECRET_KEY: str = ""
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
 
     # Session / cookie (ADR 0023). Rotate quarterly minimum.
-    SESSION_SECRET: str = "dev-session-secret-change-in-production"
+    SESSION_SECRET: str = ""
     SESSION_COOKIE_NAME: str = "noni_session"
     SESSION_TTL_DAYS: int = 30
 
@@ -55,8 +55,23 @@ class Settings(BaseSettings):
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 7
 
+    # Admin account UUIDs (comma-separated) for telemetry export gating.
+    ADMIN_ACCOUNT_IDS: str = ""
+
     # CORS allowlist (comma-separated origins). Empty -> dev fallback in main.py.
     CORS_ORIGINS: str = ""
+
+    # DB connection pool (ADR 0024 operational policy).
+    # Tune these to your Postgres max_connections. Supabase free=30, pro=60.
+    # Each Gunicorn worker gets its own pool, so total conn = workers * (pool_size + max_overflow).
+    DB_POOL_SIZE: int = 5
+    DB_MAX_OVERFLOW: int = 10
+    DB_POOL_TIMEOUT: int = 10
+    DB_POOL_RECYCLE: int = 3600
+
+    # Gunicorn worker count. Override per-machine via Fly env or docker-compose.
+    # Formula: (2 * CPU cores) + 1. shared-cpu-1x (1 core) -> 3; performance-2x (2 core) -> 5.
+    WEB_CONCURRENCY: int = 1
 
     model_config = SettingsConfigDict(
         env_file=".env", case_sensitive=True, extra="ignore"

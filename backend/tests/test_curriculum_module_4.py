@@ -97,3 +97,53 @@ def test_module_4_decision_recorded_with_audit_columns():
     if isinstance(md, str):
         md = json.loads(md)
     assert "telemetry_requirements" in md
+
+
+def test_module_4_content_has_full_lesson_structure(_bypass_paywall):
+    """P10: every unit must have 4 pages (recap/principle/example/retrieval)
+    with at least one ExampleBlock and one RetrievalBlock."""
+    for unit_id in EXPECTED_IDS:
+        body = client.get(f"/api/curriculum/module-4/units/{unit_id}/lesson").json()
+        pages = body["pages"]
+        assert len(pages) >= 4, f"{unit_id} has only {len(pages)} pages"
+        page_types = {p.get("page_type") for p in pages}
+        assert "recap" in page_types, f"{unit_id} missing recap page"
+        assert "principle" in page_types, f"{unit_id} missing principle page"
+        assert "example" in page_types, f"{unit_id} missing example page"
+        assert "retrieval" in page_types, f"{unit_id} missing retrieval page"
+        assert any(p.get("example") for p in pages), f"{unit_id} missing ExampleBlock"
+        assert any(p.get("retrieval") for p in pages), f"{unit_id} missing RetrievalBlock"
+
+
+def test_module_4_content_preserves_human_authority(_bypass_paywall):
+    """Module 4's defining contract: Skills assist, learner decides."""
+    control_markers = [
+        "review",
+        "stop",
+        "pause",
+        "decide",
+        "judgment",
+        "your rules",
+        "your boundaries",
+        "your thinking",
+        "in control",
+        "you choose",
+        "you can",
+    ]
+    for unit_id in EXPECTED_IDS:
+        body = client.get(f"/api/curriculum/module-4/units/{unit_id}/lesson").json()
+        all_content = []
+        for page in body["pages"]:
+            all_content.extend(page.get("content", []))
+            if page.get("principle"):
+                all_content.append(page["principle"])
+            if page.get("example"):
+                ex = page["example"]
+                all_content.extend([ex.get("situation", ""), ex.get("claude_says", ""), ex.get("takeaway", "")])
+            if page.get("retrieval"):
+                r = page["retrieval"]
+                all_content.extend([r.get("prompt", ""), r.get("explanation", "")])
+        content = " ".join(all_content).lower()
+        assert any(m in content for m in control_markers), (
+            f"{unit_id} missing human-control marker"
+        )

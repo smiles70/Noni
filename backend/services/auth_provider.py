@@ -24,10 +24,9 @@ from dataclasses import dataclass
 from typing import Optional, Protocol
 
 import httpx
-import jwt
-from jwt import InvalidTokenError, PyJWKClient, PyJWKClientError
 
 from backend.core.config import settings
+from backend.services.clerk_verifier import ClerkVerifier
 
 logger = logging.getLogger(__name__)
 
@@ -158,82 +157,17 @@ class ClerkAuthProvider:
         self._jwks_url = jwks_url
         self._issuer = issuer or None
         self._secret_key = secret_key or None
-        # cache_keys=True is the default; we set it explicitly for clarity.
-        self._jwk_client = PyJWKClient(jwks_url, cache_keys=True)
 
     def verify_credential(self, credential: str) -> Optional[AuthClaims]:
-        # B10: previously this function emitted `VERIFY_START`,
-        # `VERIFY_JWKS_OK`, `VERIFY_DECODE_OK sub=...` and friends via
-        # print(). Even though tokens were not echoed verbatim, the
-        # `sub` / `iss` values are PII-adjacent and were leaking into
-        # any process that captured stdout. Removed as part of Stage 2
-        # BE cleanup. Structured `logger.info` lines remain for the
-        # failure branches; they contain only the exception class
-        # name, never the token or any claim value.
+        # Sprint 22 S1: delegated to shared ClerkVerifier.
+        # Fail-closed logging lives in ClerkVerifier.verify().
         if not isinstance(credential, str) or not credential:
             return None
-        try:
-            signing_key = self._jwk_client.get_signing_key_from_jwt(credential)
-        except PyJWKClientError as exc:
-            logger.info("clerk_jwks_lookup_failed: %s", exc.__class__.__name__)
-            return None
-        except Exception as exc:  # network/parse fail — fail closed
-            logger.info("clerk_jwks_unexpected_error: %s", exc.__class__.__name__)
-            return None
-
-        try:
-            decoded = jwt.decode(
-                credential,
-                signing_key.key,
-                algorithms=["RS256"],
-                issuer=self._issuer if self._issuer else None,
-                options={
-                    "require": ["exp", "sub", "iat"],
-                    # Clerk does not always set `aud`; don't require it.
-                    "verify_aud": False,
-                },
-            )
-        except InvalidTokenError as exc:
-            logger.info("clerk_jwt_rejected: %s", exc.__class__.__name__)
-            return None
-
-        sub = decoded.get("sub")
-        if not isinstance(sub, str) or not sub:
-            return None
-
-        # Clerk's `sub` is "user_2abc..." (opaque). We hash it into a
-        # stable UUID so it fits accounts.auth_user_id (UUID column) and
-        # repeated sign-ins for the same Clerk user reuse the same row.
-        auth_user_id = uuid.uuid5(uuid.NAMESPACE_URL, f"clerk:{sub}")
-
-        # Email + display name aren't in Clerk's default session token.
-        # If a custom template happens to include them we'll honour it
-        # to avoid the Backend-API round trip; otherwise we leave them
-        # None and let `fetch_user_profile` fill them in on first sight.
-        email_candidate = (
-            decoded.get("email")
-            or decoded.get("primary_email")
-            or decoded.get("email_address")
+        verifier = ClerkVerifier(
+            jwks_url=self._jwks_url,
+            issuer=self._issuer,
         )
-        email = (
-            email_candidate.strip().lower()
-            if isinstance(email_candidate, str) and email_candidate.strip()
-            else None
-        )
-
-        display_name = decoded.get("name")
-        if not isinstance(display_name, str) or not display_name.strip():
-            first = decoded.get("given_name") or decoded.get("first_name")
-            last = decoded.get("family_name") or decoded.get("last_name")
-            parts = [p for p in (first, last) if isinstance(p, str) and p.strip()]
-            display_name = " ".join(parts) if parts else None
-
-        return AuthClaims(
-            auth_user_id=auth_user_id,
-            email=email,
-            display_name=display_name,
-            subject=sub,
-        )
+        return verifier.verify(credential)
 
     def fetch_user_profile(self, subject: str) -> Optional[UserProfile]:
         """Fetch email + display name from Clerk's Backend API by user_id.

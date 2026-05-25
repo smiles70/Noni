@@ -29,6 +29,7 @@ services:
       # Override host-style URL with docker-network URL.
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-noni}
       CORS_ORIGINS: "http://localhost:8080,http://localhost:5173"
+      WEB_CONCURRENCY: "3"
     ports:
       - "8000:8000"
     depends_on:

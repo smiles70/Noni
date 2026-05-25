@@ -1,25 +1,46 @@
 """Telemetry export.
 
-Provides administrative dump endpoints for the durable telemetry table.
-
-Authentication is intentionally NOT enforced here. This is acceptable
-in development. When auth lands (deferred vendor pass), this router
-must be gated to admin-only callers. See `docs/deferred-decisions.md`.
+Administrative dump endpoints for the durable telemetry table.
+Gated to admin-only callers via ADMIN_ACCOUNT_IDS env var.
 """
 
 import csv
 import io
 import json
+import uuid
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.inspection import inspect as sa_inspect
 from sqlalchemy.orm import Session
 
+from backend.api.deps import get_current_account
+from backend.core.config import settings
 from backend.core.database import get_db
+from backend.models.accounts import Account
 from backend.models.telemetry import TelemetryEvent
+
+_ADMIN_IDS = frozenset(
+    uuid.UUID(h.strip())
+    for h in (settings.ADMIN_ACCOUNT_IDS or "").split(",")
+    if h.strip()
+)
+
+
+def _require_admin(account: Account = Depends(get_current_account)) -> Account:
+    if not _ADMIN_IDS:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="ADMIN_ACCOUNT_IDS is not configured.",
+        )
+    if account.id not in _ADMIN_IDS:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required.",
+        )
+    return account
 
 router = APIRouter()
 
@@ -34,14 +55,14 @@ def _event_to_dict(event: TelemetryEvent) -> Dict[str, Any]:
     return out
 
 
-@router.get("/export")
+@router.get("/export", dependencies=[Depends(_require_admin)])
 def export_telemetry_json(db: Session = Depends(get_db)) -> Dict[str, Any]:
     """Return all telemetry events as JSON."""
     events: List[TelemetryEvent] = list(db.execute(select(TelemetryEvent)).scalars())
     return {"count": len(events), "events": [_event_to_dict(e) for e in events]}
 
 
-@router.get("/export.csv")
+@router.get("/export.csv", dependencies=[Depends(_require_admin)])
 def export_telemetry_csv(db: Session = Depends(get_db)) -> StreamingResponse:
     """Return all telemetry events as CSV."""
     events: List[TelemetryEvent] = list(db.execute(select(TelemetryEvent)).scalars())

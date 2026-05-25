@@ -98,10 +98,15 @@ class AuthConfigResponse(BaseModel):
 
 @router.get("/config", response_model=AuthConfigResponse)
 def auth_config() -> AuthConfigResponse:
-    return AuthConfigResponse(
-        provider=settings.AUTH_PROVIDER.strip().lower(),
-        version=settings.VERSION,
+    # Sprint 22 S7: never echo the raw AUTH_PROVIDER string publicly.
+    # In production we always claim "clerk" regardless of backend config
+    # to avoid information leakage; dev/tests see the real value.
+    provider = (
+        "clerk"
+        if settings.ENVIRONMENT == "production"
+        else settings.AUTH_PROVIDER.strip().lower()
     )
+    return AuthConfigResponse(provider=provider, version=settings.VERSION)
 
 
 # ---------------------------------------------------------------------------

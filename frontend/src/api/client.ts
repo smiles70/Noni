@@ -38,31 +38,30 @@ export const API_BASE_URL: string = (
   _env.VITE_API_BASE_URL ?? "http://localhost:8000"
 ).replace(/\/+$/, "");
 
-const AUTH_PROVIDER = _env.VITE_AUTH_PROVIDER ?? "mock";
-// AUTH_PROVIDER is used only by the boot-time diagnostic console.warn
-// below; the actual provider-switch lives in AuthProvider via
-// useCredentialSource().
+// Auth provider switch lives in AuthProvider.tsx via useCredentialSource().
 
 // Single source of truth for the mock-mode localStorage key. SignInPage
 // (mock branch), AccountSettingsPage's sign-out, and this client must
 // agree; defining the constant here prevents drift.
 export const MOCK_TOKEN_KEY = "noni.mock_token";
 
-// Diagnostic: emit exactly one line at module-load time so we can
-// confirm in the browser console which provider the bundle was built
-// with, without requiring the user to run anything by hand. This is
-// cheap, runs once per page load, and is safe to leave in dev. Remove
-// once the auth flow is stable.
-// eslint-disable-next-line no-console
-console.warn(
-  "[noni.client] build provider:",
-  AUTH_PROVIDER,
-  "api:",
-  API_BASE_URL,
-);
+// Diagnostic removed (Sprint 22 I4): previously leaked auth provider
+// and API base URL to browser console on every page load.
+
+// Sprint 22 S3: propagate request-id for distributed tracing.
+function _generateRequestId(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
+});
+
+apiClient.interceptors.request.use((config) => {
+  if (!config.headers.get("X-Request-ID")) {
+    config.headers.set("X-Request-ID", _generateRequestId());
+  }
+  return config;
 });
 
 // Bearer header attachment lives in AuthProvider's single interceptor

@@ -51,5 +51,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
     CMD curl -fsS http://127.0.0.1:${PORT}/health || exit 1
 
-# Migrations run via lifespan in backend.app.main; uvicorn boots the API.
-CMD ["sh", "-c", "uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT}"]
+# Migrations run via lifespan in backend.app.main; Gunicorn + Uvicorn workers boot the API.
+# WEB_CONCURRENCY drives worker count (set in fly.toml [env] or docker-compose).
+CMD ["sh", "-c", "gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT} backend.app.main:app"]

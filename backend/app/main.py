@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from backend.app.telemetry import TelemetryMiddleware
+from backend.app.telemetry import TelemetryMiddleware, RequestIdMiddleware, metrics_handler
 from backend.core.config import settings
 from backend.core.database import run_migrations
 from backend.api.routes.curriculum import router as curriculum_router
@@ -46,9 +46,34 @@ def _verify_crypto_dependency() -> None:
         ) from exc
 
 
+def _verify_production_secrets() -> None:
+    """Sprint 22 I3: crash on boot if production secrets are weak or blank."""
+    if settings.ENVIRONMENT != "production":
+        return
+    for name, value in (
+        ("SECRET_KEY", settings.SECRET_KEY),
+        ("SESSION_SECRET", settings.SESSION_SECRET),
+    ):
+        if not value:
+            raise RuntimeError(
+                f"{name} is empty. Set a strong random value before deploying."
+            )
+        if len(value) < 32:
+            raise RuntimeError(
+                f"{name} is too short ({len(value)} chars). Must be >= 32."
+            )
+        lower = value.lower()
+        if any(sub in lower for sub in ("dev", "test", "default", "secret")):
+            raise RuntimeError(
+                f"{name} appears to contain a weak/default substring. "
+                "Generate a fresh random value."
+            )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _verify_crypto_dependency()
+    _verify_production_secrets()
     run_migrations()
     yield
 
@@ -67,6 +92,10 @@ _cors_origins = (
     if settings.CORS_ORIGINS
     else ["http://localhost:5173", "http://127.0.0.1:5173"]
 )
+# Sprint 22 S3: Request ID tracing must be outermost so the ID is
+# populated before TelemetryMiddleware observes the request.
+app.add_middleware(RequestIdMiddleware)
+
 # Stage 0 telemetry (E10). Must run for every request to provide the
 # observability baseline that Stage 1+ work is gated on. Added BEFORE
 # CORSMiddleware so it observes the request even when CORS rejects it.
@@ -139,6 +168,11 @@ async def health_check():
         "version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
     }
+
+
+@app.get("/metrics")
+async def metrics():
+    return metrics_handler()
 
 
 @app.get("/")

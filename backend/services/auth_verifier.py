@@ -38,12 +38,12 @@ from jwt import (
     InvalidIssuerError,
     InvalidTokenError,
     MissingRequiredClaimError,
-    PyJWKClient,
     PyJWKClientError,
 )
 
 from backend.core.config import settings
 from backend.services.auth_provider import AuthClaims
+from backend.services.clerk_verifier import ClerkVerifier
 
 logger = logging.getLogger("noni.auth_verifier")
 # Surface verifier failure modes (e.g. clerk_jwks_lookup_failed) under
@@ -154,108 +154,37 @@ def _verify_mock(token: str) -> AuthClaims:
 # ---------------------------------------------------------------------------
 # Clerk provider verification (production).
 #
-# Inlined from the existing ClerkAuthProvider.verify_credential so each
-# JWT/JWKS failure mode can be mapped to a distinct code. The legacy
-# fail-closed-to-None method is preserved unchanged in auth_provider.py
-# for the /auth/whoami path until the frontend cuts over.
+# Sprint 22 S1: delegated to shared ClerkVerifier. Discriminated error
+# mapping is preserved here; the shared class raises raw jwt exceptions.
 # ---------------------------------------------------------------------------
 
 
-_clerk_jwk_client: Optional[PyJWKClient] = None
-
-
-def _get_clerk_jwk_client() -> PyJWKClient:
-    global _clerk_jwk_client
-    if _clerk_jwk_client is None:
-        jwks_url = settings.CLERK_JWKS_URL
-        if not jwks_url:
-            # Misconfiguration — surface as transient so the FE shows a
-            # banner rather than evicting the user. Ops will see the
-            # log line and fix the config; user is not blamed.
-            raise AuthError("auth.transient_verifier_unavailable")
-        _clerk_jwk_client = PyJWKClient(jwks_url, cache_keys=True)
-    return _clerk_jwk_client
-
-
 def _verify_clerk(token: str) -> AuthClaims:
+    jwks_url = settings.CLERK_JWKS_URL
+    if not jwks_url:
+        raise AuthError("auth.transient_verifier_unavailable")
+    verifier = ClerkVerifier(
+        jwks_url=jwks_url,
+        issuer=settings.CLERK_ISSUER or None,
+    )
     try:
-        client = _get_clerk_jwk_client()
-        signing_key = client.get_signing_key_from_jwt(token)
-    except AuthError:
-        raise
+        return verifier.verify_strict(token)
     except PyJWKClientError as exc:
-        # JWKS network failure or kid-not-found. Both are recoverable
-        # from the user's perspective; the FE keeps the session and
-        # shows a transient banner.
         logger.info("clerk_jwks_lookup_failed: %s", exc.__class__.__name__)
         raise AuthError("auth.transient_verifier_unavailable") from exc
-    except Exception as exc:  # noqa: BLE001 - fail closed
-        logger.info("clerk_jwks_unexpected: %s", exc.__class__.__name__)
-        raise AuthError("auth.transient_verifier_unavailable") from exc
-
-    issuer = settings.CLERK_ISSUER or None
-    try:
-        decoded = jwt.decode(
-            token,
-            signing_key.key,
-            algorithms=["RS256"],
-            issuer=issuer,
-            options={
-                "require": ["exp", "sub", "iat"],
-                "verify_aud": False,
-            },
-        )
     except ExpiredSignatureError as exc:
         raise AuthError("auth.expired") from exc
     except InvalidIssuerError as exc:
         raise AuthError("auth.issuer_mismatch") from exc
     except MissingRequiredClaimError as exc:
-        # `exp`/`iat`/`sub` missing — treat absent sub as subject_missing,
-        # absent timestamp claims as malformed (they should never reach
-        # here from a real Clerk token).
         if getattr(exc, "claim", None) == "sub":
             raise AuthError("auth.subject_missing") from exc
         raise AuthError("auth.malformed") from exc
     except InvalidTokenError as exc:
-        # Catch-all for the JWT library — signature failure, bad header,
-        # unsupported alg, etc. We map to signature_invalid because
-        # that's the most common case and the FE handling is the same
-        # for any non-recoverable token error.
         raise AuthError("auth.signature_invalid") from exc
-
-    sub = decoded.get("sub")
-    if not isinstance(sub, str) or not sub:
-        raise AuthError("auth.subject_missing")
-
-    auth_user_id = uuid.uuid5(uuid.NAMESPACE_URL, f"clerk:{sub}")
-
-    # Optional metadata. Email is best-effort: if present in a custom
-    # session template we honour it; otherwise we leave it None and the
-    # off-path ProviderProfileFetcher (Stage 3) will fill it later.
-    email_candidate = (
-        decoded.get("email")
-        or decoded.get("primary_email")
-        or decoded.get("email_address")
-    )
-    email = (
-        email_candidate.strip().lower()
-        if isinstance(email_candidate, str) and email_candidate.strip()
-        else None
-    )
-
-    display_name = decoded.get("name")
-    if not isinstance(display_name, str) or not display_name.strip():
-        first = decoded.get("given_name") or decoded.get("first_name")
-        last = decoded.get("family_name") or decoded.get("last_name")
-        parts = [p for p in (first, last) if isinstance(p, str) and p.strip()]
-        display_name = " ".join(parts) if parts else None
-
-    return AuthClaims(
-        auth_user_id=auth_user_id,
-        email=email,
-        display_name=display_name,
-        subject=sub,
-    )
+    except Exception as exc:  # noqa: BLE001
+        logger.info("clerk_jwks_unexpected: %s", exc.__class__.__name__)
+        raise AuthError("auth.transient_verifier_unavailable") from exc
 
 
 # ---------------------------------------------------------------------------

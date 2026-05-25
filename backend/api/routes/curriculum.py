@@ -10,10 +10,13 @@ with promoted audit columns (request_path, stability, selected_state_id,
 decision_reason, max_complexity).
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import require_entitlement
+from backend.core.database import get_db
+from backend.services.rate_limit import RateLimit, client_ip, enforce
 from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.stability_metric import compute_stability
 from backend.core.interface_control.state_selector import select_ui_state
@@ -52,6 +55,10 @@ PAID_BUNDLE_CODE = "modules_4_5"
 # when their focus is content/behavior, not entitlement enforcement.
 paid_bundle_dep = require_entitlement(PAID_BUNDLE_CODE)
 
+LIMIT_CURRICULUM_PER_IP = RateLimit(
+    action="curriculum", max_per_window=120, window_seconds=60
+)
+
 
 def _current_stability() -> float:
     """Read current stability without injecting external signal.
@@ -74,7 +81,12 @@ def _selected_id(approved) -> str:
 
 
 @router.get("/what-is-ai")
-def what_is_ai() -> dict:
+def what_is_ai(
+    request: Request,
+    db: DbSession = Depends(get_db),
+) -> dict:
+    enforce(db, LIMIT_CURRICULUM_PER_IP, client_ip(request))
+    db.commit()
     telemetry = [0.2, 0.2, 0.3]
     _, cov = estimator.update(telemetry)
     stability = compute_stability(cov)
@@ -111,7 +123,12 @@ def what_is_ai() -> dict:
 
 
 @router.get("/units")
-def list_units() -> dict:
+def list_units(
+    request: Request,
+    db: DbSession = Depends(get_db),
+) -> dict:
+    enforce(db, LIMIT_CURRICULUM_PER_IP, client_ip(request))
+    db.commit()
     """Catalog of available curriculum units (no page-level content)."""
     return {
         "units": [
@@ -128,7 +145,12 @@ def list_units() -> dict:
 
 
 @router.get("/menu")
-def lesson_menu() -> dict:
+def lesson_menu(
+    request: Request,
+    db: DbSession = Depends(get_db),
+) -> dict:
+    enforce(db, LIMIT_CURRICULUM_PER_IP, client_ip(request))
+    db.commit()
     """Full lesson menu / table of contents (S25.1).
 
     Returns the entire free-track tree in one roundtrip so the menu UI
@@ -178,7 +200,12 @@ def lesson_menu() -> dict:
 
 
 @router.get("/bridge-units")
-def list_bridge_units() -> dict:
+def list_bridge_units(
+    request: Request,
+    db: DbSession = Depends(get_db),
+) -> dict:
+    enforce(db, LIMIT_CURRICULUM_PER_IP, client_ip(request))
+    db.commit()
     """Catalog of optional, menu-only side lessons.
 
     These units are deliberately separate from /units (the linear free
@@ -280,7 +307,12 @@ def next_unit() -> dict:
 
 
 @router.get("/module-2/units")
-def list_module_2_units() -> dict:
+def list_module_2_units(
+    request: Request,
+    db: DbSession = Depends(get_db),
+) -> dict:
+    enforce(db, LIMIT_CURRICULUM_PER_IP, client_ip(request))
+    db.commit()
     """Catalog of Module 2 curriculum units (no page-level content)."""
     return {
         "module": 2,
@@ -386,7 +418,12 @@ def next_module_2_unit() -> dict:
 
 
 @router.get("/module-3/units")
-def list_module_3_units() -> dict:
+def list_module_3_units(
+    request: Request,
+    db: DbSession = Depends(get_db),
+) -> dict:
+    enforce(db, LIMIT_CURRICULUM_PER_IP, client_ip(request))
+    db.commit()
     return {
         "module": 3,
         "units": [
@@ -597,7 +634,12 @@ def next_module_4_unit() -> dict:
 
 
 @router.get("/module-5/units")
-def list_module_5_units() -> dict:
+def list_module_5_units(
+    request: Request,
+    db: DbSession = Depends(get_db),
+) -> dict:
+    enforce(db, LIMIT_CURRICULUM_PER_IP, client_ip(request))
+    db.commit()
     return {
         "module": 5,
         "units": [

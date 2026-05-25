@@ -20,9 +20,14 @@ from backend.services.payment_provider import (
     WebhookVerificationError,
     get_payment_provider,
 )
+from backend.services.rate_limit import RateLimit, client_ip, enforce
 from backend.services.webhook_handler import process_event
 
 router = APIRouter()
+
+LIMIT_WEBHOOK_PER_IP = RateLimit(
+    action="webhook", max_per_window=10, window_seconds=60
+)
 
 
 # ---------- Models ----------
@@ -128,6 +133,9 @@ async def stripe_webhook(
     request: Request,
     db: DbSession = Depends(get_db),
 ):
+    enforce(db, LIMIT_WEBHOOK_PER_IP, client_ip(request))
+    db.commit()
+
     raw_body = await request.body()
     signature = request.headers.get("stripe-signature")
 
