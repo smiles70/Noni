@@ -75,6 +75,16 @@ export interface PaywallSignal {
   product_code: string;
 }
 
+/** Thrown by paid loaders when the backend returns 402. The renderer
+ *  core catches this and routes to the paywall view instead of the
+ *  generic error banner. */
+export class PaywallError extends Error {
+  constructor(public readonly signal: PaywallSignal) {
+    super("Payment required.");
+    this.name = "PaywallError";
+  }
+}
+
 export type LoadUnitResult =
   | { kind: "ok"; unit: ApprovedUnit }
   | { kind: "paywall"; signal: PaywallSignal }

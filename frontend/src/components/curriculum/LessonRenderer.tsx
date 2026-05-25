@@ -26,8 +26,10 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import {
   recordRetrievalChoice,
+  PaywallError,
   type CurriculumPage,
   type LessonResponse,
+  type PaywallSignal,
 } from "../../api/curriculum";
 import { loadEnvelope } from "../../api/envelope";
 import {
@@ -75,6 +77,9 @@ export interface LessonRendererProps {
   onSignIn?: () => void;
   onOpenMenu?: () => void;
   onAccount?: () => void;
+  /** Called when a paid lesson load returns 402. The parent should
+   *  switch to the paywall view. Only used by the paid track. */
+  onPaywall?: (signal: PaywallSignal) => void;
   /** Optional Continue-button label override. Default matches the
    *  pre-extraction free-track behaviour. */
   getContinueLabel?: (isLastUnit: boolean, isLastPage: boolean) => string;
@@ -246,6 +251,7 @@ export default function LessonRenderer({
   onSignIn,
   onOpenMenu,
   onAccount,
+  onPaywall,
   getContinueLabel = (isLastUnit, isLastPage) =>
     isLastUnit && isLastPage
       ? "Continue to paid modules →"
@@ -323,6 +329,10 @@ export default function LessonRenderer({
       })
       .catch((e: unknown) => {
         if (cancelled) return;
+        if (e instanceof PaywallError && onPaywall) {
+          onPaywall(e.signal);
+          return;
+        }
         setError(e instanceof Error ? e.message : "Failed to load lesson");
       });
     return () => {
