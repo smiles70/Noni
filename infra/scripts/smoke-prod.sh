@@ -37,4 +37,10 @@ if [[ "$MODE" == "live" ]]; then
 fi
 
 echo ""
+echo "==> Login scenario smoke (S4 rejection taxonomy + CORS + SLA)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash "$SCRIPT_DIR/smoke-login.sh" "$API_BASE" \
+  || { echo "FAIL: login scenarios"; exit 1; }
+
+echo ""
 echo "OK. Smoke test passed ($MODE)."
