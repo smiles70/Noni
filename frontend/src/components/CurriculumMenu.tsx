@@ -1,11 +1,11 @@
 /**
  * CurriculumMenu — read-only lesson syllabus (S25.1).
  *
- * Renders the full free-track table of contents (Modules 1-3 + bridge
- * side lessons) so a learner can preview what they will encounter
- * without committing to a sign-in or to a particular lesson. Modules
- * 4+ are paid and intentionally never appear here; do not infer their
- * existence from this menu.
+ * Renders the full course table of contents (Modules 1-5, with M4-M5
+ * shown as gated entries) so a learner can preview what they will
+ * encounter without committing to a sign-in or to a particular lesson.
+ * Paid units are non-interactive and carry a muted-amber lock indicator
+ * per CONTRACT I.A.
  *
  * Per ADR 0019 and CONTRACT Section IV:
  *   - Resolves its envelope from `/api/ui-envelope/curriculum.menu`.
@@ -89,6 +89,12 @@ const UNIT_DESCRIPTION: CSSProperties = {
   fontSize: TYPOGRAPHY.bodySizePx,
 };
 
+const LOCK_INDICATOR: CSSProperties = {
+  color: COLORS.accentMutedAmber,
+  fontSize: TYPOGRAPHY.bodySizePx,
+  fontWeight: 600,
+};
+
 const CONTINUE_BUTTON: CSSProperties = {
   background: COLORS.accentMutedBlue,
   color: COLORS.surface,
@@ -156,8 +162,9 @@ export default function CurriculumMenu(props: Props) {
 
   // NavBar contribution: up to 2 (Upgrade + Account) when signed in.
   // Continue is the single highlighted recommendation.
+  // Paid modules add Indicator (lock status) but no new primary actions.
   const proposal: RenderProposal = {
-    components: ["Heading", "Body", "Button", "Card", "List"],
+    components: ["Heading", "Body", "Button", "Card", "List", "Indicator"],
     primaryActionCount: 2 /* NavBar worst-case */ + 1 /* Continue */,
     irreversibleActionCount: 0,
     highlightedRecommendationCount: 1,
@@ -167,6 +174,7 @@ export default function CurriculumMenu(props: Props) {
       COLORS.surface,
       COLORS.textPrimary,
       COLORS.accentMutedBlue,
+      COLORS.accentMutedAmber,
       COLORS.disabled,
     ],
     spacingPxUsed: [SPACING.xs, SPACING.sm, SPACING.md, SPACING.lg, SPACING.xl],
@@ -189,9 +197,9 @@ export default function CurriculumMenu(props: Props) {
           Lessons
         </h1>
         <p style={INTRO} data-component="Body">
-          Here is the full free course at a glance. There are three modules,
-          plus a couple of optional side lessons. You can browse them now, or
-          jump straight in.
+          Here is the full course at a glance. Modules 1–3 are free.
+          Modules 4–5 are available after a one-time purchase.
+          You can browse them now, or jump straight in.
         </p>
 
         {menu.modules.map((mod) => (
@@ -225,6 +233,133 @@ export default function CurriculumMenu(props: Props) {
             </ul>
           </section>
         ) : null}
+
+        {/* Paid modules — surfaced as gated, non-interactive entries. */}
+        <section style={SECTION} data-component="Card">
+          <h2 style={MODULE_TITLE} data-component="Heading">
+            Module 4 — Building Claude Skills
+          </h2>
+          <ul style={UNIT_LIST} data-component="List">
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>What a Claude Skill Is</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Understanding Skills as named, reusable instructions.
+              </span>
+            </li>
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>When a Skill Is Useful</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Learning when a Skill helps more than repeating instructions.
+              </span>
+            </li>
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>Creating Your First Skill</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Building a simple Skill with Claude&apos;s help.
+              </span>
+            </li>
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>Naming and Describing a Skill</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Making Skills clear, readable, and trustworthy.
+              </span>
+            </li>
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>Testing and Refining a Skill</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Checking that a Skill behaves the way you expect.
+              </span>
+            </li>
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>Trusting a Skill Over Time</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Using Skills confidently while staying in control.
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <section style={SECTION} data-component="Card">
+          <h2 style={MODULE_TITLE} data-component="Heading">
+            Module 5 — Composing Agents
+          </h2>
+          <ul style={UNIT_LIST} data-component="List">
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>What an Agent Is (Built from Skills)</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Understanding agents as structured roles made from Skills.
+              </span>
+            </li>
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>Designing an Agent&apos;s Job</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Defining what an agent should do — and what it should not do.
+              </span>
+            </li>
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>Building an Agent Step by Step</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Creating an agent by combining Skills carefully.
+              </span>
+            </li>
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>Using an Agent Safely</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Working with agents while staying in control.
+              </span>
+            </li>
+            <li style={UNIT_ITEM}>
+              <span style={LOCK_INDICATOR} data-component="Indicator">
+                Locked —{" "}
+              </span>
+              <strong>Staying the Authority</strong>
+              <span style={UNIT_DESCRIPTION}>
+                {" "}
+                — Reinforcing dignity, judgment, and control when using agents.
+              </span>
+            </li>
+          </ul>
+        </section>
 
         <button
           type="button"
