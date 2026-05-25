@@ -77,6 +77,10 @@ export interface LessonRendererProps {
   onSignIn?: () => void;
   onOpenMenu?: () => void;
   onAccount?: () => void;
+  /** NavBar "Upgrade" button. Only provided by the free track; the
+   *  paid track omits it so the learner does not see an Upgrade button
+   *  while already inside paid content. */
+  onContinuePaid?: () => void;
   /** Called when a paid lesson load returns 402. The parent should
    *  switch to the paywall view. Only used by the paid track. */
   onPaywall?: (signal: PaywallSignal) => void;
@@ -251,6 +255,7 @@ export default function LessonRenderer({
   onSignIn,
   onOpenMenu,
   onAccount,
+  onContinuePaid,
   onPaywall,
   getContinueLabel = (isLastUnit, isLastPage) =>
     isLastUnit && isLastPage
@@ -392,7 +397,7 @@ export default function LessonRenderer({
   const nav = (
     <NavBar
       onSignIn={onSignIn}
-      onContinuePaid={onSequenceComplete}
+      onContinuePaid={onContinuePaid}
       onAccount={onAccount}
       onOpenMenu={onOpenMenu}
     />

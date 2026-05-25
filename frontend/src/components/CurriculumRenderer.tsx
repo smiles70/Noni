@@ -51,6 +51,7 @@ export default function CurriculumRenderer({
         loadFreeLesson(module as 1 | 2 | 3, unitId)
       }
       onSequenceComplete={onContinueGated}
+      onContinuePaid={onContinueGated}
       onSignIn={onSignIn}
       onOpenMenu={onOpenMenu}
       onAccount={onAccount}
