@@ -16,9 +16,8 @@ from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import require_entitlement
 from backend.core.database import get_db
-from backend.services.rate_limit import RateLimit, client_ip, enforce
-from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.stability_metric import compute_stability
+from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.state_selector import select_ui_state
 from backend.models.curriculum_units import (
     BRIDGE_UNITS,
@@ -26,7 +25,6 @@ from backend.models.curriculum_units import (
     CurriculumUnit,
     get_unit,
 )
-from backend.services import telemetry as telemetry_service
 from backend.models.curriculum_units_module_2 import (
     UNITS_MODULE_2,
     get_module_2_unit,
@@ -43,6 +41,8 @@ from backend.models.curriculum_units_module_5 import (
     UNITS_MODULE_5,
     get_module_5_unit,
 )
+from backend.services import telemetry as telemetry_service
+from backend.services.rate_limit import RateLimit, client_ip, enforce
 
 router = APIRouter()
 estimator = InterfaceStateEstimator()

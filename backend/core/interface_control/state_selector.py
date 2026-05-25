@@ -1,6 +1,6 @@
 """ISCS - State selector. Sole UI complexity decision point."""
 
-from typing import List, Dict
+from typing import Dict, List
 
 
 def select_ui_state(

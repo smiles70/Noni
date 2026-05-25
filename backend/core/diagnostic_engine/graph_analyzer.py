@@ -1,6 +1,7 @@
 """Diagnostic engine - emits graph insight signals only."""
 
-from typing import List, Dict
+from typing import Dict, List
+
 from backend.models.agent import ProgramGraph
 
 

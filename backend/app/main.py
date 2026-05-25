@@ -6,22 +6,27 @@ System (ISCS). Subsystems emit signals; the ISCS decides UI states.
 """
 
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from backend.app.telemetry import TelemetryMiddleware, RequestIdMiddleware, metrics_handler
-from backend.core.config import settings
-from backend.core.database import run_migrations
+from backend.api.routes.account import router as account_router
+from backend.api.routes.auth import router as auth_router
+from backend.api.routes.billing import router as billing_router
 from backend.api.routes.curriculum import router as curriculum_router
-from backend.api.routes.signals import router as signals_router
+from backend.api.routes.gifts import router as gifts_router
 from backend.api.routes.landing import router as landing_router
+from backend.api.routes.signals import router as signals_router
 from backend.api.routes.telemetry_export import router as telemetry_export_router
 from backend.api.routes.ui_envelope import router as ui_envelope_router
-from backend.api.routes.auth import router as auth_router
-from backend.api.routes.account import router as account_router
-from backend.api.routes.billing import router as billing_router
-from backend.api.routes.gifts import router as gifts_router
+from backend.app.telemetry import (
+    RequestIdMiddleware,
+    TelemetryMiddleware,
+    metrics_handler,
+)
+from backend.core.config import settings
+from backend.core.database import run_migrations
 
 
 def _verify_crypto_dependency() -> None:

@@ -39,7 +39,6 @@ from backend.core.config import settings
 from backend.core.database import SessionLocal
 from backend.models.accounts import Account
 
-
 # Stage 2+ promoted tests require Postgres (UUID, CITEXT, partial index)
 # and the M1 schema (accounts.email NULL, no uq_accounts_email). Mirror
 # the gate used by other DB-dependent suites.

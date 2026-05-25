@@ -5,7 +5,7 @@ Per ARCHITECTURE.md rule 9: audit-grade durability.
 Sprint 10 (ADR 0009) added the audit kwargs for ISCS decision capture.
 """
 
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 from backend.core.database import SessionLocal
 from backend.models.telemetry import TelemetryEvent

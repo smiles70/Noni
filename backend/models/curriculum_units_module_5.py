@@ -28,7 +28,6 @@ running Agents end-to-end remains vendor-blocked (auth + API integration).
 
 from typing import Optional
 
-
 from backend.models.curriculum_units import (
     CurriculumPage,
     ExampleBlock,
@@ -37,13 +36,13 @@ from backend.models.curriculum_units import (
     TelemetryGatedUnit,
 )
 
-
 Module5Unit = TelemetryGatedUnit
 
 
 # ---------------------------------------------------------------------------
 # Helper: single-choice retrieval used by every unit in this module
 # ---------------------------------------------------------------------------
+
 
 def _retrieval(
     page_id: str,

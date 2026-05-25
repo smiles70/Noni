@@ -10,6 +10,7 @@ later "Copy & Visual Design" sprint and must not be set in this module.
 """
 
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 

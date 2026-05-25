@@ -10,10 +10,10 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
 from backend.api.deps import get_current_account
+from backend.core.geragogy_engine.cognitive_model import GeragogySignalModel
 from backend.models.accounts import Account
 from backend.models.user import UserAction
 from backend.services.telemetry import record
-from backend.core.geragogy_engine.cognitive_model import GeragogySignalModel
 
 router = APIRouter()
 model = GeragogySignalModel()

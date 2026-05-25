@@ -10,6 +10,7 @@ This is a pure data contract. No behavior lives here.
 
 from enum import Enum
 from typing import List
+
 from pydantic import BaseModel, ConfigDict, Field
 
 

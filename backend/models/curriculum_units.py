@@ -5,6 +5,7 @@ canonical ISCS (`backend.core.interface_control.state_selector`).
 """
 
 from typing import Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 from backend.models.curriculum import (

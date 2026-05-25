@@ -20,7 +20,6 @@ from backend.models.curriculum_units import (
     TelemetryGatedUnit,
 )
 
-
 Module2Unit = TelemetryGatedUnit
 
 

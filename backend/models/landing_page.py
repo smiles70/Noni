@@ -5,6 +5,7 @@ frontend clients have a validated, documented contract.
 """
 
 from typing import List
+
 from pydantic import BaseModel
 
 

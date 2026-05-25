@@ -8,7 +8,8 @@ See ADR 0009.
 """
 
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, DateTime, JSON, Float
+
+from sqlalchemy import JSON, Column, DateTime, Float, Integer, String
 
 from backend.core.database import Base
 

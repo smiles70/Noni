@@ -18,8 +18,8 @@ Why structured blocks instead of free-form `content`:
 """
 
 from typing import List, Literal, Optional
-from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 PageType = Literal["recap", "context", "principle", "example", "retrieval"]
 

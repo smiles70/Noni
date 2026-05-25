@@ -231,8 +231,8 @@ def test_smoke_gift_flow_grants_only_recipient(client, DbSession):
     purchase_id = _checkout(client, is_gift=True)
 
     # Set a known token on the purchase so we can simulate delivery.
-    from backend.services.gifts import hash_token
     from backend.models.billing import Purchase
+    from backend.services.gifts import hash_token
 
     raw_token = "smoke-a10-gift-token"
     with DbSession() as db:

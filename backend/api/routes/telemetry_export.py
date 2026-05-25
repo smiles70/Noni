@@ -42,6 +42,7 @@ def _require_admin(account: Account = Depends(get_current_account)) -> Account:
         )
     return account
 
+
 router = APIRouter()
 
 

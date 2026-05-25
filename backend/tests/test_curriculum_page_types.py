@@ -24,7 +24,6 @@ from backend.models.curriculum import (
     RetrievalChoice,
 )
 
-
 # ---- Backward compatibility -------------------------------------------------
 
 

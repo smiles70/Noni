@@ -37,7 +37,6 @@ from backend.models.billing import (
 )
 from backend.models.learning import EstimatorState, Progress, Unit
 
-
 pytestmark = pytest.mark.skipif(
     "sqlite" in (os.environ.get("DATABASE_URL") or settings.DATABASE_URL),
     reason="A2 schema requires Postgres (UUID, CITEXT, INET, partial indexes).",

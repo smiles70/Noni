@@ -25,9 +25,7 @@ from backend.services.webhook_handler import process_event
 
 router = APIRouter()
 
-LIMIT_WEBHOOK_PER_IP = RateLimit(
-    action="webhook", max_per_window=10, window_seconds=60
-)
+LIMIT_WEBHOOK_PER_IP = RateLimit(action="webhook", max_per_window=10, window_seconds=60)
 
 
 # ---------- Models ----------

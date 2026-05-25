@@ -61,9 +61,9 @@ def _assert_lesson_shape(body: dict, expected_module: int, expected_unit: str):
     assert body["module"] == expected_module
     assert body["unit_id"] == expected_unit
     assert "unit_title" in body and body["unit_title"]
-    assert isinstance(body["pages"], list) and body["pages"], (
-        "lesson must return at least one page"
-    )
+    assert (
+        isinstance(body["pages"], list) and body["pages"]
+    ), "lesson must return at least one page"
     assert "stability" in body
     # Pages stay within the unit's max_complexity ceiling.
     for p in body["pages"]:
@@ -110,9 +110,9 @@ def test_paid_lessons_have_no_urgency_language(bypass_paywall):
                     + str(page.get("retrieval") or "")
                 ).lower()
                 for w in forbidden:
-                    assert w not in haystack, (
-                        f"{w!r} in module-{module}/{unit_id}/{page['id']}"
-                    )
+                    assert (
+                        w not in haystack
+                    ), f"{w!r} in module-{module}/{unit_id}/{page['id']}"
 
 
 def test_module_4_lesson_unknown_unit_returns_404(bypass_paywall):

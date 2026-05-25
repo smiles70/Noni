@@ -1,6 +1,7 @@
 """Geragogy signal model. Emits mastery/strain/load; does NOT control UI."""
 
 import numpy as np
+
 from backend.models.user import UserAction
 
 

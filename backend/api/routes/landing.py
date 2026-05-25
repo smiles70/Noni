@@ -11,9 +11,9 @@ These are deliberately separate artifacts. See ADR 0006.
 from fastapi import APIRouter, HTTPException
 
 from backend.content.landing_page import LANDING_PAGE_CONTENT
+from backend.content.signup_first_win import SIGNUP_FIRST_WIN_CONTENT
 from backend.models.landing import LANDING_STEPS, get_step
 from backend.models.landing_page import LandingPageContent
-from backend.content.signup_first_win import SIGNUP_FIRST_WIN_CONTENT
 from backend.models.signup_first_win import SignupFirstWinContent
 
 router = APIRouter()

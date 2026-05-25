@@ -31,16 +31,14 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from pydantic import BaseModel
-from sqlalchemy.orm import Session as DbSession
-
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_current_account, get_db
 from backend.app.telemetry import record_auth_session_outcome
 from backend.core.config import settings
 from backend.models.accounts import Account
 from backend.services.auth_verifier import AuthError, parse_bearer, verify_token
-
 
 router = APIRouter()
 

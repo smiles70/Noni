@@ -24,7 +24,6 @@ from backend.models.ui_state_envelope import (
     get_envelope,
 )
 
-
 # Router is registered in backend/app/main.py under /api/ui-envelope.
 client = TestClient(app)
 

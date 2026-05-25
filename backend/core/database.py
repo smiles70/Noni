@@ -4,9 +4,10 @@ Per ARCHITECTURE.md rule 9 (Auditability): all persistent state
 flows through this single configured engine.
 """
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from typing import Generator
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 from backend.core.config import settings
 

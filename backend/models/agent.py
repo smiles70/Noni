@@ -1,6 +1,7 @@
 """ProgramGraph data for diagnostic signals."""
 
 from typing import List
+
 from pydantic import BaseModel
 
 

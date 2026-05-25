@@ -10,8 +10,8 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.app.main import app
 from backend.api.routes.curriculum import paid_bundle_dep
+from backend.app.main import app
 from backend.models.curriculum_units_module_4 import UNITS_MODULE_4
 
 
@@ -112,7 +112,9 @@ def test_module_4_content_has_full_lesson_structure(_bypass_paywall):
         assert "example" in page_types, f"{unit_id} missing example page"
         assert "retrieval" in page_types, f"{unit_id} missing retrieval page"
         assert any(p.get("example") for p in pages), f"{unit_id} missing ExampleBlock"
-        assert any(p.get("retrieval") for p in pages), f"{unit_id} missing RetrievalBlock"
+        assert any(
+            p.get("retrieval") for p in pages
+        ), f"{unit_id} missing RetrievalBlock"
 
 
 def test_module_4_content_preserves_human_authority(_bypass_paywall):
@@ -139,11 +141,17 @@ def test_module_4_content_preserves_human_authority(_bypass_paywall):
                 all_content.append(page["principle"])
             if page.get("example"):
                 ex = page["example"]
-                all_content.extend([ex.get("situation", ""), ex.get("claude_says", ""), ex.get("takeaway", "")])
+                all_content.extend(
+                    [
+                        ex.get("situation", ""),
+                        ex.get("claude_says", ""),
+                        ex.get("takeaway", ""),
+                    ]
+                )
             if page.get("retrieval"):
                 r = page["retrieval"]
                 all_content.extend([r.get("prompt", ""), r.get("explanation", "")])
         content = " ".join(all_content).lower()
-        assert any(m in content for m in control_markers), (
-            f"{unit_id} missing human-control marker"
-        )
+        assert any(
+            m in content for m in control_markers
+        ), f"{unit_id} missing human-control marker"

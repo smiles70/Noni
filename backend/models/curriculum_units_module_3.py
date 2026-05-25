@@ -12,7 +12,6 @@ Norman (2013), Fisk et al. (2009), Wiener (1948). See ADR 0016.
 
 from typing import Optional
 
-
 from backend.models.curriculum import (
     ExampleBlock,
     RetrievalBlock,
@@ -22,7 +21,6 @@ from backend.models.curriculum_units import (
     CurriculumPage,
     TelemetryGatedUnit,
 )
-
 
 Module3Unit = TelemetryGatedUnit
 

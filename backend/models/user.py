@@ -1,6 +1,7 @@
 """UserAction signal model. Data only; does not control UI."""
 
-from typing import Optional, Literal
+from typing import Literal, Optional
+
 from pydantic import BaseModel
 
 ActionType = Literal[

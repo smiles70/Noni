@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.stability_metric import compute_stability
+from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.state_selector import select_ui_state
 
 
