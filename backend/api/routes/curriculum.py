@@ -671,7 +671,12 @@ def get_module_5_unit_page(
 
 
 def _build_lesson_payload(module: int, unit: CurriculumUnit, request_path: str) -> dict:
-    """Construct the lesson response for a free-track unit.
+    """Construct the lesson response for a curriculum unit.
+
+    Used by both the free track (M1-M3) and the paid bundle (M4-M5;
+    Sprint "paid modules" P1). The entitlement gate is enforced by the
+    route, not here — once a unit has been fetched the payload shape is
+    identical so the frontend renderer can be track-agnostic.
 
     Pages are returned in author order, filtered to those at or below
     the unit's `max_complexity`. The complexity filter is identical to
@@ -749,6 +754,46 @@ def get_lesson_module_3(unit_id: str) -> dict:
     )
 
 
+# ===== Paid /lesson endpoints (Sprint "paid modules" P1) ================
+# These mirror the free /lesson endpoints exactly, gated by the same
+# `paid_bundle_dep` entitlement check that protects /units/{id}. The
+# 402 paywall handshake is delegated to the dependency so the lesson
+# route body sees only authorised callers; non-entitled requests never
+# reach _build_lesson_payload and never produce a telemetry row.
+
+
+@router.get("/module-4/units/{unit_id}/lesson")
+def get_lesson_module_4(
+    unit_id: str,
+    _account=Depends(paid_bundle_dep),
+) -> dict:
+    """Module 4 lesson endpoint (paid). 402 if no entitlement."""
+    unit = get_module_4_unit(unit_id)
+    if unit is None:
+        raise HTTPException(
+            status_code=404, detail=f"Module 4 unit {unit_id} not found"
+        )
+    return _build_lesson_payload(
+        4, unit, f"/api/curriculum/module-4/units/{unit.id}/lesson"
+    )
+
+
+@router.get("/module-5/units/{unit_id}/lesson")
+def get_lesson_module_5(
+    unit_id: str,
+    _account=Depends(paid_bundle_dep),
+) -> dict:
+    """Module 5 lesson endpoint (paid). 402 if no entitlement."""
+    unit = get_module_5_unit(unit_id)
+    if unit is None:
+        raise HTTPException(
+            status_code=404, detail=f"Module 5 unit {unit_id} not found"
+        )
+    return _build_lesson_payload(
+        5, unit, f"/api/curriculum/module-5/units/{unit.id}/lesson"
+    )
+
+
 class RetrievalChoiceBody(BaseModel):
     """Body schema for the retrieval-choice telemetry endpoint.
 
@@ -761,7 +806,13 @@ class RetrievalChoiceBody(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    module: int = Field(..., ge=1, le=3)
+    # Widened from le=3 to le=5 in Sprint "paid modules" P2 so paid-track
+    # retrieval pages can record their choices through the same endpoint.
+    # Entitlement is not re-checked here: a learner who reached a paid
+    # retrieval page must already have passed the gate to load the lesson,
+    # and a forged module=4 from a non-entitled caller only writes an audit
+    # row (no content leak). Audit reconciliation can flag the anomaly.
+    module: int = Field(..., ge=1, le=5)
     unit_id: str = Field(..., min_length=1)
     page_id: str = Field(..., min_length=1)
     chosen_id: str = Field(..., min_length=1)

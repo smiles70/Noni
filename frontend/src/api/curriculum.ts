@@ -133,25 +133,38 @@ export async function loadFreeUnit(
   return { ...res.data, module };
 }
 
-// ---- /lesson loader (Curriculum-expansion Phase 1) ------------------------
+// ---- /lesson loader (Curriculum-expansion Phase 1; extended P3) -----------
 //
 // `loadFreeLesson` fetches the full ordered page list for a unit. The
 // renderer walks these pages locally; ISCS already gated which pages are
 // in the response (by complexity ≤ unit.max_complexity), so the frontend
 // does no selection — only sequencing.
+//
+// Sprint "paid modules" P3 widens `LessonResponse.module` from `1|2|3`
+// to `1|2|3|4|5` so the same shape can carry paid lessons. The free
+// loader keeps a narrowed return type (`LessonResponse & {module:1|2|3}`)
+// so existing callers do not see a widened module they cannot handle.
+// Paid lessons use `loadPaidLesson` which mirrors `loadPaidUnit`'s
+// discriminated 200/402/error result.
 
 export interface LessonResponse {
-  module: 1 | 2 | 3;
+  module: 1 | 2 | 3 | 4 | 5;
   unit_id: string;
   unit_title: string;
   pages: CurriculumPage[];
   stability: number;
 }
 
+/** Result discriminator for paid lesson loads. Mirrors `LoadUnitResult`. */
+export type LoadLessonResult =
+  | { kind: "ok"; lesson: LessonResponse & { module: 4 | 5 } }
+  | { kind: "paywall"; signal: PaywallSignal }
+  | { kind: "error"; message: string };
+
 export async function loadFreeLesson(
   module: 1 | 2 | 3,
   unitId: string,
-): Promise<LessonResponse> {
+): Promise<LessonResponse & { module: 1 | 2 | 3 }> {
   const path =
     module === 1
       ? `/api/curriculum/units/${unitId}/lesson`
@@ -169,10 +182,63 @@ export async function loadFreeLesson(
   return { ...res.data, module };
 }
 
+/**
+ * Load a paid-track lesson (modules 4 or 5; Sprint "paid modules" P3).
+ *
+ * Like `loadPaidUnit`, this returns a discriminated result so the
+ * renderer can route a 402 to the paywall view without throwing. The
+ * 402 detail envelope is the same one `loadPaidUnit` already handles.
+ */
+export async function loadPaidLesson(
+  module: 4 | 5,
+  unitId: string,
+): Promise<LoadLessonResult> {
+  try {
+    const res = await apiClient.get(
+      `/api/curriculum/module-${module}/units/${unitId}/lesson`,
+      {
+        // Don't throw on 402 — paywall is a successful negotiation,
+        // not an error.
+        validateStatus: (s) => (s >= 200 && s < 300) || s === 402,
+      },
+    );
+    if (res.status === 402) {
+      const detail = (res.data as { detail?: PaywallSignal })?.detail;
+      if (
+        detail &&
+        (detail.envelope_id === "billing.signin_or_purchase_required" ||
+          detail.envelope_id === "billing.purchase_required") &&
+        typeof detail.product_code === "string"
+      ) {
+        return { kind: "paywall", signal: detail };
+      }
+      return { kind: "error", message: "Payment required." };
+    }
+    const body = res.data as {
+      module: number;
+      unit_id: string;
+      unit_title: string;
+      pages: CurriculumPage[];
+      stability: number;
+    };
+    // Narrow `module` to the called value; backend echoes it but the
+    // caller is the source of truth on which track this is.
+    return {
+      kind: "ok",
+      lesson: { ...body, module },
+    };
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Failed to load lesson.";
+    return { kind: "error", message };
+  }
+}
+
 // ---- Retrieval-choice telemetry --------------------------------------------
 
 export interface RetrievalChoiceRecord {
-  module: 1 | 2 | 3;
+  // Widened in Sprint "paid modules" P3 alongside the backend's
+  // `RetrievalChoiceBody.module: int = Field(ge=1, le=5)`.
+  module: 1 | 2 | 3 | 4 | 5;
   unit_id: string;
   page_id: string;
   chosen_id: string;

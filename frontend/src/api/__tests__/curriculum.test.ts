@@ -37,6 +37,7 @@ import {
   loadCurriculumMenu,
   loadFreeLesson,
   loadFreeUnit,
+  loadPaidLesson,
   loadPaidUnit,
   recordRetrievalChoice,
 } from "../curriculum";
@@ -352,6 +353,112 @@ describe("recordRetrievalChoice", () => {
         correct: false,
       }),
     ).resolves.toBeUndefined();
+  });
+});
+
+// ---- loadPaidLesson (Sprint "paid modules" P3) -----------------------------
+//
+// Same discriminated-result contract as loadPaidUnit, applied to the new
+// /module-{4,5}/units/{id}/lesson endpoints. Mis-classifying any of the
+// four cases (200 / 402 signin-or-purchase / 402 purchase / other) would
+// either leak paid lesson pages or trap signed-in buyers behind a wall
+// they can't escape.
+
+describe("loadPaidLesson", () => {
+  const okBody = {
+    module: 4,
+    unit_id: "module4-unit-1",
+    unit_title: "Skills overview",
+    pages: [
+      { id: "p1", title: "Intro", content: ["hi"], complexity: 1 },
+      { id: "p2", title: "More", content: ["next"], complexity: 1 },
+    ],
+    stability: 0.1,
+  };
+
+  it("hits the paid /lesson path and returns kind=ok with the lesson on 200", async () => {
+    mockGet.mockResolvedValueOnce({ status: 200, data: okBody });
+
+    const res = await loadPaidLesson(4, "module4-unit-1");
+
+    expect(mockGet).toHaveBeenCalledWith(
+      "/api/curriculum/module-4/units/module4-unit-1/lesson",
+      expect.objectContaining({ validateStatus: expect.any(Function) }),
+    );
+    expect(res.kind).toBe("ok");
+    if (res.kind === "ok") {
+      expect(res.lesson.module).toBe(4);
+      expect(res.lesson.pages).toHaveLength(2);
+      expect(res.lesson.unit_title).toBe("Skills overview");
+    }
+  });
+
+  it("uses the module-5 path when module=5", async () => {
+    mockGet.mockResolvedValueOnce({
+      status: 200,
+      data: { ...okBody, module: 5, unit_id: "module5-unit-1" },
+    });
+
+    await loadPaidLesson(5, "module5-unit-1");
+
+    expect(mockGet).toHaveBeenCalledWith(
+      "/api/curriculum/module-5/units/module5-unit-1/lesson",
+      expect.objectContaining({ validateStatus: expect.any(Function) }),
+    );
+  });
+
+  it("returns kind=paywall on 402 signin_or_purchase_required", async () => {
+    mockGet.mockResolvedValueOnce({
+      status: 402,
+      data: {
+        detail: {
+          envelope_id: "billing.signin_or_purchase_required",
+          product_code: "modules_4_5",
+        },
+      },
+    });
+
+    const res = await loadPaidLesson(4, "module4-unit-1");
+    expect(res.kind).toBe("paywall");
+    if (res.kind === "paywall") {
+      expect(res.signal.envelope_id).toBe("billing.signin_or_purchase_required");
+      expect(res.signal.product_code).toBe("modules_4_5");
+    }
+  });
+
+  it("returns kind=paywall on 402 purchase_required", async () => {
+    mockGet.mockResolvedValueOnce({
+      status: 402,
+      data: {
+        detail: {
+          envelope_id: "billing.purchase_required",
+          product_code: "modules_4_5",
+        },
+      },
+    });
+
+    const res = await loadPaidLesson(5, "module5-unit-1");
+    expect(res.kind).toBe("paywall");
+  });
+
+  it("returns kind=error when 402 lacks a recognized envelope_id (fail closed)", async () => {
+    mockGet.mockResolvedValueOnce({
+      status: 402,
+      data: { detail: { envelope_id: "something.unknown" } },
+    });
+
+    const res = await loadPaidLesson(4, "module4-unit-1");
+    expect(res.kind).toBe("error");
+  });
+
+  it("returns kind=error when the request rejects", async () => {
+    mockGet.mockRejectedValueOnce(new Error("network down"));
+
+    const res = await loadPaidLesson(4, "module4-unit-1");
+    expect(res.kind).toBe("error");
+    if (res.kind === "error") {
+      expect(res.message).toMatch(/network down/);
+    }
   });
 });
 
