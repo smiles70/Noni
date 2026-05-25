@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import LandingPage from "./components/LandingPage";
 import CurriculumRenderer from "./components/CurriculumRenderer";
+import PaidLessonRenderer from "./components/PaidLessonRenderer";
 import CurriculumMenu from "./components/CurriculumMenu";
 import SignInPage from "./components/SignInPage";
 import PaywallPage from "./components/PaywallPage";
@@ -19,6 +20,7 @@ import AccountSettingsPage from "./components/AccountSettingsPage";
 import AuthPendingBanner from "./components/AuthPendingBanner";
 import AuthBlockedNotice from "./components/AuthBlockedNotice";
 import { useAuth } from "./auth/AuthProvider";
+import { readProgress } from "./lib/progress";
 
 // Step 3 of the FE cutover plan: temporary debug surface that prints
 // the AuthProvider state in the corner of every page so we can watch
@@ -52,6 +54,7 @@ function DebugAuth() {
 type View =
   | "landing"
   | "curriculum"
+  | "paid_curriculum"
   | "menu"
   | "signin"
   | "paywall"
@@ -63,6 +66,7 @@ type View =
 // hitting these are bounced to "signin" and forwarded after success.
 const GATED_VIEWS: ReadonlySet<View> = new Set<View>([
   "curriculum",
+  "paid_curriculum",
   "paywall",
   "gift_redeem",
   "account",
@@ -99,7 +103,16 @@ const App: React.FC = () => {
       setView("signin");
     }
   };
-  const goCurriculum = () => requireAuth("curriculum");
+  // Cross-track resume: check saved progress and route to the correct
+  // track so a returning learner picks up in M1-3 or M4-5 as appropriate.
+  const goCurriculum = () => {
+    const saved = readProgress();
+    if (saved && (saved.module === 4 || saved.module === 5)) {
+      requireAuth("paid_curriculum");
+    } else {
+      requireAuth("curriculum");
+    }
+  };
   const goPaywall = () => requireAuth("paywall");
   const goAccount = () => requireAuth("account");
 
@@ -200,6 +213,17 @@ const App: React.FC = () => {
       break;
     case "signin":
       body = onSignInPage;
+      break;
+    case "paid_curriculum":
+      body = (
+        <PaidLessonRenderer
+          onSignIn={goSignIn}
+          onPaywall={goPaywall}
+          onAccount={goAccount}
+          onOpenMenu={goMenu}
+          onSequenceComplete={goLanding}
+        />
+      );
       break;
     case "paywall":
       body = (
