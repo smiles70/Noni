@@ -32,7 +32,6 @@ import logging
 import uuid
 from typing import Optional
 
-import jwt
 from jwt import (
     ExpiredSignatureError,
     InvalidIssuerError,

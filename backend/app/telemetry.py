@@ -20,11 +20,15 @@ import logging
 
 import time
 
+import uuid
+
 from typing import Awaitable, Callable
 
 
 
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+
+from pythonjsonlogger import jsonlogger
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -306,10 +310,6 @@ def metrics_handler() -> Response:
         media_type=CONTENT_TYPE_LATEST,
 
     )
-
-
-import uuid
-from pythonjsonlogger import jsonlogger
 
 
 # ---------------------------------------------------------------------------
