@@ -26,7 +26,6 @@ from typing import Optional, Protocol
 import httpx
 
 from backend.core.config import settings
-from backend.services.clerk_verifier import ClerkVerifier
 
 logger = logging.getLogger(__name__)
 
@@ -161,6 +160,10 @@ class ClerkAuthProvider:
     def verify_credential(self, credential: str) -> Optional[AuthClaims]:
         # Sprint 22 S1: delegated to shared ClerkVerifier.
         # Fail-closed logging lives in ClerkVerifier.verify().
+        # Lazy import to break circular dependency:
+        # clerk_verifier imports AuthClaims from this module.
+        from backend.services.clerk_verifier import ClerkVerifier
+
         if not isinstance(credential, str) or not credential:
             return None
         verifier = ClerkVerifier(
