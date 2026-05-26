@@ -47,6 +47,15 @@ def _seed_product(DbSession):
         db.execute(
             text("DELETE FROM processed_webhook_events WHERE event_id LIKE 'evt_a4_%'")
         )
+        # Defence: fixed-window rate-limit counters survive across tests and
+        # can exhaust the 10-per-60s webhook limit in CI. Purge the two
+        # actions this file exercises so every gift/webhook test starts clean.
+        db.execute(
+            text("DELETE FROM rate_limit_counters WHERE key LIKE 'webhook:%'")
+        )
+        db.execute(
+            text("DELETE FROM rate_limit_counters WHERE key LIKE 'gift_claim:%'")
+        )
         db.commit()
         db.add(
             Product(
@@ -353,13 +362,14 @@ def test_gift_double_claim_rejected(client, DbSession):
         p = db.query(Purchase).filter(Purchase.id == uuid.UUID(purchase_id)).one()
         p.gift_claim_token_hash = hash_token(raw_token)
         db.commit()
-    _post_mock_webhook(
+    rw = _post_mock_webhook(
         client,
         event_id="evt_a4_gift_d1",
         event_type="checkout.session.completed",
         purchase_id=purchase_id,
         is_gift=True,
     )
+    assert rw.status_code == 200, rw.text
 
     _signin(client, "a4-r1@example.test")
     r1 = client.post("/api/gifts/claim", json={"token": raw_token})

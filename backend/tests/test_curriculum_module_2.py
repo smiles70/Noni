@@ -1,11 +1,22 @@
 """Sprint 17: Module 2 curriculum (sustained Claude use over time)."""
 
+from fastapi import Depends
 from fastapi.testclient import TestClient
 
+from backend.api.deps import get_current_account
+from backend.api.routes.telemetry_export import _require_admin
 from backend.app.main import app
+from backend.models.accounts import Account
 from backend.models.curriculum_units_module_2 import UNITS_MODULE_2
 
+
+def _mock_require_admin(account: Account = Depends(get_current_account)) -> Account:
+    return account
+
+
+app.dependency_overrides[_require_admin] = _mock_require_admin
 client = TestClient(app)
+client.headers["Authorization"] = "Bearer mock:test@example.com"
 
 EXPECTED_IDS = {
     "module2-unit-1",

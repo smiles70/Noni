@@ -8,16 +8,26 @@ enforcement itself is covered by `test_a10_smoke.py`.
 import json
 
 import pytest
+from fastapi import Depends
 from fastapi.testclient import TestClient
 
+from backend.api.deps import get_current_account
 from backend.api.routes.curriculum import paid_bundle_dep
+from backend.api.routes.telemetry_export import _require_admin
 from backend.app.main import app
+from backend.models.accounts import Account
 from backend.models.curriculum_units_module_5 import UNITS_MODULE_5
+
+
+def _mock_require_admin(account: Account = Depends(get_current_account)) -> Account:
+    return account
 
 
 @pytest.fixture(autouse=True)
 def _bypass_paywall():
     app.dependency_overrides[paid_bundle_dep] = lambda: None
+    app.dependency_overrides[_require_admin] = _mock_require_admin
+    client.headers["Authorization"] = "Bearer mock:test@example.com"
     yield
     app.dependency_overrides.pop(paid_bundle_dep, None)
 
