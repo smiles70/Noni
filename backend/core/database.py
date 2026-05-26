@@ -19,6 +19,11 @@ engine = create_engine(
     pool_timeout=settings.DB_POOL_TIMEOUT,
     pool_recycle=settings.DB_POOL_RECYCLE,
     pool_reset_on_return="rollback",
+    # Sprint 23 M2: fail fast on slow connections and runaway queries
+    connect_args={
+        "connect_timeout": 10,
+        "options": "-c statement_timeout=30000",  # 30 seconds
+    },
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

@@ -20,15 +20,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 
 import { apiClient } from "../api/client";
-
-// Vite injects env at build time but the project's tsconfig does not
-// declare ImportMeta.env; mirror the cast used in api/client.ts so
-// VITE_AUTH_PROVIDER reads typecheck.
-interface ImportMetaEnvShape {
-  VITE_AUTH_PROVIDER?: string;
-}
-const _env: ImportMetaEnvShape =
-  (import.meta as unknown as { env?: ImportMetaEnvShape }).env ?? {};
+import { AUTH_PROVIDER } from "../lib/env";
 
 
 /**********************************************************************
@@ -41,7 +33,7 @@ Prevents mock-mode crash.
 */
 
 function useCredentialSource() {
-  const mode = _env.VITE_AUTH_PROVIDER;
+  const mode = AUTH_PROVIDER;
 
   // ✅ MOCK MODE
   if (mode === "mock") {
@@ -79,6 +71,23 @@ function useCredentialSource() {
  **********************************************************************/
 
 const AuthContext = createContext<any>(null);
+
+interface AuthConfigResponse {
+  provider: string;
+  version: string;
+}
+
+interface AuthSessionResponse {
+  subject: string;
+  materialized: boolean;
+  account_id?: string | null;
+  email?: string | null;
+  display_name?: string | null;
+}
+
+interface AuthSessionInitResponse {
+  account_id: string;
+}
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -146,10 +155,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function checkProvider() {
-      const res = await apiClient.get("/auth/config");
+      const res = await apiClient.get<AuthConfigResponse>("/auth/config");
 
       const backend = res.data.provider;
-      const frontend = _env.VITE_AUTH_PROVIDER;
+      const frontend = AUTH_PROVIDER;
 
       if (backend !== frontend) {
         setState({
@@ -193,7 +202,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!token) return;
 
       // ✅ PASS TOKEN EXPLICITLY (race fix)
-      const res = await apiClient.get("/auth/session", {
+      const res = await apiClient.get<AuthSessionResponse>("/auth/session", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -207,7 +216,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const initRes = await apiClient.post(
+      const initRes = await apiClient.post<AuthSessionInitResponse>(
         "/auth/session/init",
         {},
         {

@@ -21,6 +21,7 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from backend.core.database import Base
 
@@ -83,6 +84,10 @@ class Purchase(Base):
     paid_at = Column(DateTime(timezone=True), nullable=True)
     refunded_at = Column(DateTime(timezone=True), nullable=True)
 
+    buyer = relationship(
+        "Account", foreign_keys=[buyer_account_id], back_populates="purchases"
+    )
+
 
 class Entitlement(Base):
     __tablename__ = "entitlements"
@@ -100,6 +105,16 @@ class Entitlement(Base):
     granted_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     revoked_at = Column(DateTime(timezone=True), nullable=True)
     revocation_reason = Column(String(64), nullable=True)
+
+    account = relationship("Account", back_populates="entitlements")
+
+
+class IdempotencyKey(Base):
+    __tablename__ = "idempotency_keys"
+
+    key = Column(String(128), primary_key=True)
+    outcome_json = Column(String(4096), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
 
 
 class ProcessedWebhookEvent(Base):

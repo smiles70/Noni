@@ -32,7 +32,9 @@ class ClerkVerifier:
     def __init__(self, jwks_url: str, issuer: Optional[str] = None) -> None:
         if not jwks_url:
             raise ValueError("ClerkVerifier requires a JWKS URL")
-        self._jwk_client = PyJWKClient(jwks_url, cache_keys=True)
+        # Sprint 27 Q3: cache_ttl=3600 forces re-fetch every hour so JWKS
+        # rotation is picked up even if the old key remains valid.
+        self._jwk_client = PyJWKClient(jwks_url, cache_keys=True, cache_ttl=3600)
         self._issuer = issuer or None
 
     def verify(self, token: str) -> Optional[AuthClaims]:
@@ -54,8 +56,20 @@ class ClerkVerifier:
 
         Callers (e.g. auth_verifier) catch specific exceptions and map
         them to discriminated AuthError codes.
+
+        Sprint 27 Q3 fix: stale-while-revalidate. If kid not found in cache,
+        force a JWKS refetch and retry once before failing.
         """
-        signing_key = self._jwk_client.get_signing_key_from_jwt(token)
+        try:
+            signing_key = self._jwk_client.get_signing_key_from_jwt(token)
+        except PyJWKClientError:
+            # Force cache refresh and retry once
+            self._jwk_client = PyJWKClient(
+                self._jwk_client.uri,
+                cache_keys=True,
+                cache_ttl=3600,
+            )
+            signing_key = self._jwk_client.get_signing_key_from_jwt(token)
         decoded = jwt.decode(
             token,
             signing_key.key,

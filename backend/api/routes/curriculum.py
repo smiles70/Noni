@@ -10,7 +10,7 @@ with promoted audit columns (request_path, stability, selected_state_id,
 decision_reason, max_complexity).
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session as DbSession
 
@@ -228,7 +228,9 @@ def list_bridge_units(
 
 
 @router.get("/units/{unit_id}")
-def get_unit_page(unit_id: str) -> dict:
+def get_unit_page(
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+) -> dict:
     """Return the ISCS-approved page from the requested unit."""
     unit = get_unit(unit_id)
     if unit is None:
@@ -331,7 +333,9 @@ def list_module_2_units(
 
 
 @router.get("/module-2/units/{unit_id}")
-def get_module_2_unit_page(unit_id: str) -> dict:
+def get_module_2_unit_page(
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+) -> dict:
     """Return the ISCS-approved page from the requested Module 2 unit."""
     unit = get_module_2_unit(unit_id)
     if unit is None:
@@ -441,7 +445,9 @@ def list_module_3_units(
 
 
 @router.get("/module-3/units/{unit_id}")
-def get_module_3_unit_page(unit_id: str) -> dict:
+def get_module_3_unit_page(
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+) -> dict:
     unit = get_module_3_unit(unit_id)
     if unit is None:
         raise HTTPException(
@@ -545,7 +551,7 @@ def list_module_4_units() -> dict:
 
 @router.get("/module-4/units/{unit_id}")
 def get_module_4_unit_page(
-    unit_id: str,
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
     _account=Depends(paid_bundle_dep),
 ) -> dict:
     unit = get_module_4_unit(unit_id)
@@ -658,7 +664,7 @@ def list_module_5_units(
 
 @router.get("/module-5/units/{unit_id}")
 def get_module_5_unit_page(
-    unit_id: str,
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
     _account=Depends(paid_bundle_dep),
 ) -> dict:
     unit = get_module_5_unit(unit_id)
@@ -764,7 +770,9 @@ def _build_lesson_payload(module: int, unit: CurriculumUnit, request_path: str) 
 
 
 @router.get("/units/{unit_id}/lesson")
-def get_lesson_module_1(unit_id: str) -> dict:
+def get_lesson_module_1(
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+) -> dict:
     """Module 1 lesson endpoint — full ordered page list for the unit."""
     unit = get_unit(unit_id)
     if unit is None:
@@ -773,7 +781,9 @@ def get_lesson_module_1(unit_id: str) -> dict:
 
 
 @router.get("/module-2/units/{unit_id}/lesson")
-def get_lesson_module_2(unit_id: str) -> dict:
+def get_lesson_module_2(
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+) -> dict:
     unit = get_module_2_unit(unit_id)
     if unit is None:
         raise HTTPException(
@@ -785,7 +795,9 @@ def get_lesson_module_2(unit_id: str) -> dict:
 
 
 @router.get("/module-3/units/{unit_id}/lesson")
-def get_lesson_module_3(unit_id: str) -> dict:
+def get_lesson_module_3(
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+) -> dict:
     unit = get_module_3_unit(unit_id)
     if unit is None:
         raise HTTPException(
@@ -806,7 +818,7 @@ def get_lesson_module_3(unit_id: str) -> dict:
 
 @router.get("/module-4/units/{unit_id}/lesson")
 def get_lesson_module_4(
-    unit_id: str,
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
     _account=Depends(paid_bundle_dep),
 ) -> dict:
     """Module 4 lesson endpoint (paid). 402 if no entitlement."""
@@ -822,7 +834,7 @@ def get_lesson_module_4(
 
 @router.get("/module-5/units/{unit_id}/lesson")
 def get_lesson_module_5(
-    unit_id: str,
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
     _account=Depends(paid_bundle_dep),
 ) -> dict:
     """Module 5 lesson endpoint (paid). 402 if no entitlement."""

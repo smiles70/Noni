@@ -3,8 +3,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { applyLargeTextOnBoot } from './largeText';
+import { AUTH_PROVIDER, CLERK_PUBLISHABLE_KEY } from './lib/env';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { AuthProvider } from './auth/AuthProvider';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 applyLargeTextOnBoot();
 
@@ -25,8 +27,15 @@ const resetting = ((): boolean => {
   try {
     localStorage.removeItem('noni_progress_v1');
     localStorage.removeItem('noni.mock_token');
-  } catch {
-    /* private mode / quota — proceed to redirect anyway */
+  } catch (e) {
+    // Sprint 28 quick-win: SecurityError (Safari private mode) plus
+    // QuotaExceededError are both non-fatal for the reset flow.
+    if (
+      e instanceof DOMException &&
+      (e.name === 'QuotaExceededError' || e.name === 'SecurityError')
+    ) {
+      /* proceed to redirect anyway */
+    }
   }
   const url = new URL(window.location.href);
   url.searchParams.delete('reset');
@@ -41,11 +50,8 @@ const resetting = ((): boolean => {
 //                tree, SignInPage renders Clerk's <SignIn /> widget.
 // Default is "mock" so a freshly-cloned repo runs without any external
 // signup. Switching to Clerk requires both env vars below.
-const env = (import.meta as unknown as {
-  env?: { VITE_AUTH_PROVIDER?: string; VITE_CLERK_PUBLISHABLE_KEY?: string };
-}).env ?? {};
-const provider = env.VITE_AUTH_PROVIDER ?? 'mock';
-const clerkKey = env.VITE_CLERK_PUBLISHABLE_KEY ?? '';
+const provider = AUTH_PROVIDER;
+const clerkKey = CLERK_PUBLISHABLE_KEY;
 
 if (!resetting) {
 const root = ReactDOM.createRoot(
@@ -61,23 +67,27 @@ if (provider === 'clerk') {
   }
   root.render(
     <React.StrictMode>
-      {/* No `afterSignOutUrl` here: post-signout navigation is owned by
-          App.tsx (handleSignedOut), which is the single source of truth
-          for view transitions. Letting Clerk redirect us would race
-          our state updates and unmount the SignOut button mid-await. */}
-      <ClerkProvider publishableKey={clerkKey}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </ClerkProvider>
+      <ErrorBoundary>
+        {/* No `afterSignOutUrl` here: post-signout navigation is owned by
+            App.tsx (handleSignedOut), which is the single source of truth
+            for view transitions. Letting Clerk redirect us would race
+            our state updates and unmount the SignOut button mid-await. */}
+        <ClerkProvider publishableKey={clerkKey}>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ClerkProvider>
+      </ErrorBoundary>
     </React.StrictMode>,
   );
 } else {
   root.render(
     <React.StrictMode>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </ErrorBoundary>
     </React.StrictMode>,
   );
 }

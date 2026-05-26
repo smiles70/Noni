@@ -17,10 +17,50 @@ vendor SDKs directly.
 from __future__ import annotations
 
 import json
+import logging
 import secrets
 import uuid
 from dataclasses import dataclass
 from typing import Any, Optional, Protocol
+
+logger = logging.getLogger(__name__)
+
+from pybreaker import CircuitBreaker
+from prometheus_client import Counter
+
+# Sprint 27 H3: circuit breaker for Stripe API calls.
+_circuit_state_transitions = Counter(
+    "noni_circuit_breaker_state_transitions_total",
+    "Circuit breaker state transitions",
+    ["service", "from_state", "to_state"],
+)
+
+
+class _StripeCircuitListener:
+    """Prometheus listener for Stripe circuit breaker state changes."""
+
+    def state_change(self, cb, old_state, new_state):
+        _circuit_state_transitions.labels(
+            service="stripe",
+            from_state=old_state.name,
+            to_state=new_state.name,
+        ).inc()
+        logger.warning(
+            "circuit_breaker.state_change",
+            extra={
+                "service": "stripe",
+                "from_state": old_state.name,
+                "to_state": new_state.name,
+            },
+        )
+
+
+STRIPE_CIRCUIT_BREAKER = CircuitBreaker(
+    fail_max=5,
+    reset_timeout=30,
+    expected_exception=(Exception,),  # stripe.error.* is dynamic
+    listeners=[_StripeCircuitListener()],
+)
 
 
 @dataclass(frozen=True)
@@ -148,6 +188,7 @@ class StripePaymentProvider:
         self._stripe = stripe
         self._webhook_secret = settings.STRIPE_WEBHOOK_SECRET
 
+    @STRIPE_CIRCUIT_BREAKER
     def create_checkout_session(
         self,
         *,
@@ -183,6 +224,7 @@ class StripePaymentProvider:
         )
         return CheckoutSession(provider_session_id=session.id, url=session.url)
 
+    @STRIPE_CIRCUIT_BREAKER
     def verify_webhook(
         self, raw_body: bytes, signature_header: Optional[str]
     ) -> WebhookEvent:

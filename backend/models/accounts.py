@@ -66,6 +66,16 @@ class Account(Base):
     learners = relationship(
         "Learner", back_populates="account", cascade="all, delete-orphan"
     )
+    purchases = relationship(
+        "Purchase",
+        foreign_keys="Purchase.buyer_account_id",
+        back_populates="buyer",
+    )
+    entitlements = relationship(
+        "Entitlement",
+        back_populates="account",
+        cascade="all, delete-orphan",
+    )
 
 
 class Learner(Base):

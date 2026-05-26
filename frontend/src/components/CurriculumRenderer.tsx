@@ -10,6 +10,7 @@
  * passes them through.
  */
 import { loadFreeLesson } from "../api/curriculum";
+import { ErrorBoundary } from "./ErrorBoundary";
 import LessonRenderer from "./curriculum/LessonRenderer";
 
 interface Props {
@@ -45,16 +46,18 @@ export default function CurriculumRenderer({
   onAccount,
 }: Props) {
   return (
-    <LessonRenderer
-      sequence={FREE_SEQUENCE}
-      loadLesson={(module, unitId) =>
-        loadFreeLesson(module as 1 | 2 | 3, unitId)
-      }
-      onSequenceComplete={onContinueGated}
-      onContinuePaid={onContinueGated}
-      onSignIn={onSignIn}
-      onOpenMenu={onOpenMenu}
-      onAccount={onAccount}
-    />
+    <ErrorBoundary>
+      <LessonRenderer
+        sequence={FREE_SEQUENCE}
+        loadLesson={(module, unitId) =>
+          loadFreeLesson(module as 1 | 2 | 3, unitId)
+        }
+        onSequenceComplete={onContinueGated}
+        onContinuePaid={onContinueGated}
+        onSignIn={onSignIn}
+        onOpenMenu={onOpenMenu}
+        onAccount={onAccount}
+      />
+    </ErrorBoundary>
   );
 }

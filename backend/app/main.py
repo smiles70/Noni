@@ -5,11 +5,15 @@ All UI state transitions are governed by the Interface State Control
 System (ISCS). Subsystems emit signals; the ISCS decides UI states.
 """
 
+import signal
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.requests import Request as StarletteRequest
+from starlette.responses import Response as StarletteResponse
 
 from backend.api.routes.account import router as account_router
 from backend.api.routes.auth import router as auth_router
@@ -75,12 +79,61 @@ def _verify_production_secrets() -> None:
             )
 
 
+_shutdown_requested = False
+
+
+def _handle_sigterm(signum, frame):
+    """Sprint 23 H6: flag shutdown so uvicorn can finish in-flight requests."""
+    global _shutdown_requested
+    _shutdown_requested = True
+    # Do not call sys.exit here; let uvicorn's own SIGTERM handler
+    # trigger the graceful shutdown. This just provides a hook for
+    # custom cleanup if needed.
+    import logging
+
+    logging.getLogger("noni.lifespan").info(
+        "SIGTERM received; draining in-flight requests."
+    )
+
+
+# Sprint 23 H6: register SIGTERM at MODULE level (main thread).
+# signal.signal must be called from the main thread; placing it here
+# ensures it runs at import time, not inside the async lifespan.
+_original_sigterm_handler = signal.signal(signal.SIGTERM, _handle_sigterm)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _verify_crypto_dependency()
     _verify_production_secrets()
     run_migrations()
-    yield
+    try:
+        yield
+    finally:
+        # Sprint 23 H6: close DB pool to release connections cleanly
+        from backend.core.database import engine
+
+        engine.dispose()
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Sprint 23 H1: inject security headers on every response."""
+
+    async def dispatch(
+        self, request: StarletteRequest, call_next: RequestResponseEndpoint
+    ) -> StarletteResponse:
+        response = await call_next(request)
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+        )
+        if settings.ENVIRONMENT == "production":
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
+        return response
 
 
 app = FastAPI(
@@ -97,6 +150,10 @@ _cors_origins = (
     if settings.CORS_ORIGINS
     else ["http://localhost:5173", "http://127.0.0.1:5173"]
 )
+# Sprint 23 H1: Security headers must be outermost so they are present
+# even on error responses.
+app.add_middleware(SecurityHeadersMiddleware)
+
 # Sprint 22 S3: Request ID tracing must be outermost so the ID is
 # populated before TelemetryMiddleware observes the request.
 app.add_middleware(RequestIdMiddleware)
@@ -155,15 +212,54 @@ async def _http_exception_handler(request: Request, exc: HTTPException) -> JSONR
     )
 
 
-app.include_router(curriculum_router, prefix="/api/curriculum", tags=["curriculum"])
-app.include_router(signals_router, prefix="/api/signals", tags=["signals"])
-app.include_router(landing_router, prefix="/api/landing", tags=["landing"])
-app.include_router(telemetry_export_router, prefix="/api/telemetry", tags=["telemetry"])
-app.include_router(ui_envelope_router, prefix="/api/ui-envelope", tags=["ui-envelope"])
-app.include_router(auth_router, prefix="/auth", tags=["auth"])
-app.include_router(account_router, prefix="/me", tags=["account"])
-app.include_router(billing_router, prefix="/api/billing", tags=["billing"])
-app.include_router(gifts_router, prefix="/api/gifts", tags=["gifts"])
+# Sprint 27 H2: Versioned public API surface under /api/v1/.
+# Legacy /api/* routes preserved as 302 redirects with Deprecation header.
+app.include_router(curriculum_router, prefix="/api/v1/curriculum", tags=["curriculum"])
+app.include_router(signals_router, prefix="/api/v1/signals", tags=["signals"])
+app.include_router(landing_router, prefix="/api/v1/landing", tags=["landing"])
+app.include_router(
+    telemetry_export_router, prefix="/api/v1/telemetry", tags=["telemetry"]
+)
+app.include_router(
+    ui_envelope_router, prefix="/api/v1/ui-envelope", tags=["ui-envelope"]
+)
+app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
+app.include_router(account_router, prefix="/api/v1/me", tags=["account"])
+app.include_router(billing_router, prefix="/api/v1/billing", tags=["billing"])
+app.include_router(gifts_router, prefix="/api/v1/gifts", tags=["gifts"])
+
+_LEGACY_REDIRECTS = {
+    "/api/curriculum": "/api/v1/curriculum",
+    "/api/signals": "/api/v1/signals",
+    "/api/landing": "/api/v1/landing",
+    "/api/telemetry": "/api/v1/telemetry",
+    "/api/ui-envelope": "/api/v1/ui-envelope",
+    "/auth": "/api/v1/auth",
+    "/me": "/api/v1/me",
+    "/api/billing": "/api/v1/billing",
+    "/api/gifts": "/api/v1/gifts",
+}
+
+for old, new in _LEGACY_REDIRECTS.items():
+
+    @app.api_route(
+        old, methods=["GET", "POST", "PUT", "PATCH", "DELETE"], include_in_schema=False
+    )
+    @app.api_route(
+        old + "/{path:path}",
+        methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+        include_in_schema=False,
+    )
+    def _redirect(
+        request: Request, path: str = "", new_path: str = new
+    ) -> RedirectResponse:
+        target = f"{new_path}/{path}" if path else new_path
+        if request.query_params:
+            target = f"{target}?{request.query_params}"
+        resp = RedirectResponse(url=target, status_code=302)
+        resp.headers["Deprecation"] = "true"
+        resp.headers["Sunset"] = "Sun, 01 Dec 2026 00:00:00 GMT"
+        return resp
 
 
 @app.get("/health")

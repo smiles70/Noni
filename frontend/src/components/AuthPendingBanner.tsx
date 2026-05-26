@@ -18,7 +18,7 @@
  * Tag: login-redesign-v1.
  **********************************************************************/
 
-import type { CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
 
 interface Props {
@@ -58,10 +58,30 @@ const RETRY_BTN: CSSProperties = {
   cursor: "pointer",
 };
 
+const RETRY_AFTER_SECONDS = 5;
+
 export default function AuthPendingBanner({ onRetry }: Props) {
+  const [secondsLeft, setSecondsLeft] = useState(RETRY_AFTER_SECONDS);
+
+  useEffect(() => {
+    if (!onRetry) return;
+    if (secondsLeft <= 0) {
+      onRetry();
+      return;
+    }
+    const t = setInterval(() => {
+      setSecondsLeft((s) => s - 1);
+    }, 1000);
+    return () => clearInterval(t);
+  }, [onRetry, secondsLeft]);
+
   return (
     <div role="status" aria-live="polite" style={BANNER}>
-      <p style={TEXT}>Reconnecting your sign-in…</p>
+      <p style={TEXT}>
+        {onRetry
+          ? `Reconnecting your sign-in… retrying in ${secondsLeft}s`
+          : "Reconnecting your sign-in…"}
+      </p>
       {onRetry && (
         <button type="button" onClick={onRetry} style={RETRY_BTN}>
           Try now

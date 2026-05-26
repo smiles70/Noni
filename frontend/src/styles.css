@@ -191,3 +191,40 @@ html,
 body {
   overflow-x: hidden;
 }
+
+/* Sprint 28-D.7: Skip-to-content link.
+ * CONTRACT compliance:
+ *   - Section I.A: palette colors only (textPrimary bg, surface fg).
+ *   - Section II: no spatial movement on focus. The link reveals in
+ *     place via clip-path / size collapse, not position translation.
+ *   - Section I.B: 8px padding (grid-aligned), 8px border-radius.
+ */
+.noni-skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  background: #222222;     /* tokens.COLORS.textPrimary */
+  color: #FAFAF8;          /* tokens.COLORS.surface */
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.noni-skip-link:focus,
+.noni-skip-link:focus-visible {
+  width: auto;
+  height: auto;
+  padding: 8px 16px;       /* tokens.SPACING.sm / .md */
+  clip: auto;
+  white-space: normal;
+  border-radius: 8px;      /* tokens.RADIUS.sm */
+}

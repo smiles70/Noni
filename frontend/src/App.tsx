@@ -7,20 +7,24 @@
  * the additional views are reachable in dev via direct setView calls
  * (e.g. from a debug surface or future settings entry on landing).
  */
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import LandingPage from "./components/LandingPage";
-import CurriculumRenderer from "./components/CurriculumRenderer";
-import PaidLessonRenderer from "./components/PaidLessonRenderer";
-import CurriculumMenu from "./components/CurriculumMenu";
 import SignInPage from "./components/SignInPage";
-import PaywallPage from "./components/PaywallPage";
-import GiftRedeemPage from "./components/GiftRedeemPage";
-import AccountSettingsPage from "./components/AccountSettingsPage";
 import AuthPendingBanner from "./components/AuthPendingBanner";
 import AuthBlockedNotice from "./components/AuthBlockedNotice";
+import LoadingSkeleton from "./components/LoadingSkeleton";
 import { useAuth } from "./auth/AuthProvider";
 import { readProgress } from "./lib/progress";
+import { IS_DEV } from "./lib/env";
+
+// Sprint 28-B.1: lazy-load non-landing views to reduce initial bundle.
+const CurriculumRenderer = lazy(() => import("./components/CurriculumRenderer"));
+const PaidLessonRenderer = lazy(() => import("./components/PaidLessonRenderer"));
+const CurriculumMenu = lazy(() => import("./components/CurriculumMenu"));
+const PaywallPage = lazy(() => import("./components/PaywallPage"));
+const GiftRedeemPage = lazy(() => import("./components/GiftRedeemPage"));
+const AccountSettingsPage = lazy(() => import("./components/AccountSettingsPage"));
 
 // Step 3 of the FE cutover plan: temporary debug surface that prints
 // the AuthProvider state in the corner of every page so we can watch
@@ -76,16 +80,41 @@ const App: React.FC = () => {
   // AuthProvider is the ONLY source of auth truth (FE Step-4 cutover).
   // App.tsx remains the orchestrator of routing + intent (pendingView).
   const { state, signOut } = useAuth();
-  const [view, setView] = useState<View>("landing");
+  // Sprint 28-B.10: restore view from sessionStorage on boot so learners
+  // resume where they left off after refresh.
+  const [view, setView] = useState<View>(() => {
+    try {
+      const saved = sessionStorage.getItem("noni.view");
+      if (saved && (GATED_VIEWS as ReadonlySet<string>).has(saved)) {
+        return saved as View;
+      }
+    } catch {
+      // private mode / quota — silently fall back to landing
+    }
+    return "landing";
+  });
   // Where to land after a successful sign-in (e.g. user clicked "Begin"
   // while signed out -> we remember "curriculum" and forward post-auth).
   const [pendingView, setPendingView] = useState<View | null>(null);
+  // Sprint 28 quick-win: race-condition guard so a flickering isReady
+  // (e.g. Clerk token refresh) cannot consume pendingView twice.
+  const pendingConsumedRef = useRef(false);
+
+  // Persist view changes to sessionStorage.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("noni.view", view);
+    } catch {
+      /* silently ignore quota errors */
+    }
+  }, [view]);
 
   const isReady = state?.status === "READY";
 
   // Resolve pendingView after AuthProvider transitions to READY.
   useEffect(() => {
-    if (isReady && pendingView) {
+    if (isReady && pendingView && !pendingConsumedRef.current) {
+      pendingConsumedRef.current = true;
       setView(pendingView);
       setPendingView(null);
     }
@@ -121,10 +150,7 @@ const App: React.FC = () => {
   // F1: dev-only — Vite strips this branch from prod bundles via the
   // `import.meta.env.DEV` constant, so internal state never leaks to
   // production users.
-  const debug = (import.meta as unknown as { env?: { DEV?: boolean } }).env
-    ?.DEV
-    ? <DebugAuth />
-    : null;
+  const debug = IS_DEV ? <DebugAuth /> : null;
 
   // Global gates: AuthProvider state takes precedence over `view`.
   const status = state?.status;
@@ -177,6 +203,9 @@ const App: React.FC = () => {
     );
   }
 
+  // Sprint 28-B.1 + 28-B.8: loading fallback for lazy-loaded views.
+  const loadFallback = <LoadingSkeleton />;
+
   let body: ReactNode;
   switch (view) {
     case "landing":
@@ -193,22 +222,26 @@ const App: React.FC = () => {
       break;
     case "curriculum":
       body = (
-        <CurriculumRenderer
-          onSignIn={goSignIn}
-          onContinueGated={goPaywall}
-          onAccount={goAccount}
-          onOpenMenu={goMenu}
-        />
+        <Suspense fallback={loadFallback}>
+          <CurriculumRenderer
+            onSignIn={goSignIn}
+            onContinueGated={goPaywall}
+            onAccount={goAccount}
+            onOpenMenu={goMenu}
+          />
+        </Suspense>
       );
       break;
     case "menu":
       body = (
-        <CurriculumMenu
-          onContinue={goCurriculum}
-          onSignIn={goSignIn}
-          onContinuePaid={goPaywall}
-          onAccount={goAccount}
-        />
+        <Suspense fallback={loadFallback}>
+          <CurriculumMenu
+            onContinue={goCurriculum}
+            onSignIn={goSignIn}
+            onContinuePaid={goPaywall}
+            onAccount={goAccount}
+          />
+        </Suspense>
       );
       break;
     case "signin":
@@ -216,39 +249,47 @@ const App: React.FC = () => {
       break;
     case "paid_curriculum":
       body = (
-        <PaidLessonRenderer
-          onSignIn={goSignIn}
-          onPaywall={goPaywall}
-          onAccount={goAccount}
-          onOpenMenu={goMenu}
-          onSequenceComplete={goLanding}
-        />
+        <Suspense fallback={loadFallback}>
+          <PaidLessonRenderer
+            onSignIn={goSignIn}
+            onPaywall={goPaywall}
+            onAccount={goAccount}
+            onOpenMenu={goMenu}
+            onSequenceComplete={goLanding}
+          />
+        </Suspense>
       );
       break;
     case "paywall":
       body = (
-        <PaywallPage
-          productCode="modules_4_5"
-          onRedeemGift={() => setView("gift_redeem")}
-          onBack={goLanding}
-        />
+        <Suspense fallback={loadFallback}>
+          <PaywallPage
+            productCode="modules_4_5"
+            onRedeemGift={() => setView("gift_redeem")}
+            onBack={goLanding}
+          />
+        </Suspense>
       );
       break;
     case "gift_redeem":
       body = (
-        <GiftRedeemPage
-          onClaimed={goCurriculum}
-          onBack={() => setView("paywall")}
-        />
+        <Suspense fallback={loadFallback}>
+          <GiftRedeemPage
+            onClaimed={goCurriculum}
+            onBack={() => setView("paywall")}
+          />
+        </Suspense>
       );
       break;
     case "account":
       body = (
-        <AccountSettingsPage
-          onSignedOut={signOut}
-          onDeleted={goLanding}
-          onBack={goLanding}
-        />
+        <Suspense fallback={loadFallback}>
+          <AccountSettingsPage
+            onSignedOut={signOut}
+            onDeleted={goLanding}
+            onBack={goLanding}
+          />
+        </Suspense>
       );
       break;
     case "oauth_finishing":
@@ -271,9 +312,21 @@ const App: React.FC = () => {
 
   return (
     <>
+      {/* Sprint 28-D.7: skip-to-content link for keyboard users.
+       *  Contract-compliant (CONTRACT Section I.A palette only;
+       *  Section II — no spatial movement on focus). Uses the
+       *  clip-path / size-collapse pattern so the element occupies
+       *  zero visible space when unfocused and reveals in place on
+       *  focus, with no position translation. */}
+      <a
+        href="#main-content"
+        className="noni-skip-link"
+      >
+        Skip to main content
+      </a>
       {debug}
       {transientBanner}
-      {body}
+      <div id="main-content">{body}</div>
     </>
   );
 };

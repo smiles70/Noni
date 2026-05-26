@@ -21,11 +21,18 @@ export const COLORS = {
 
   // Accents (non-urgent)
   accentMutedBlue: "#4A6FA5",
-  accentDesatGreen: "#5A7D6C",
+  // Sprint 28: darkened from #5A7D6C (4.0:1) to meet WCAG 2.1 AA + geragogy
+  // high-contrast requirement (C5, C1, Formosa & Fragoso).
+  accentDesatGreen: "#4A6D5C",
+  // Sprint 28: restricted to decorative/non-text indicators only.
+  // 2.4:1 on background; CONTRACT Section I.E already prohibits
+  // icon-only / color-only meaning. Never used as text on background.
   accentMutedAmber: "#C9A24D",
 
   // Restricted (functional use only)
-  errorConfirm: "#B85C5C",
+  // Sprint 28: darkened from #B85C5C (3.9:1) to meet WCAG 2.1 AA + geragogy
+  // high-contrast requirement (C5, C1, Formosa & Fragoso).
+  errorConfirm: "#A84C4C",
   disabled: "#B0B0B0",
 } as const;
 

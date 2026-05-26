@@ -16,6 +16,8 @@
  * transport will replace the body without changing the public API.
  */
 
+import { logger } from "../lib/logger";
+
 export interface AuthDisagreementContext {
   /** Logical area that observed the disagreement, e.g. "navbar", "body". */
   readonly site: string;
@@ -32,8 +34,7 @@ export interface AuthDisagreementContext {
  * Do NOT include tokens, headers, or PII in the context (B10).
  */
 export function recordAuthDisagreement(ctx: AuthDisagreementContext): void {
-  // eslint-disable-next-line no-console
-  console.warn("[METRIC] signedin_render_disagreement", {
+  logger.warn("[METRIC] signedin_render_disagreement", {
     site: ctx.site,
     observed: ctx.observed,
     authoritative: ctx.authoritative,

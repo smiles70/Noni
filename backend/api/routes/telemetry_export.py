@@ -8,12 +8,13 @@ import csv
 import io
 import json
 import uuid
+from datetime import datetime
 from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from sqlalchemy import select
-from sqlalchemy.inspection import inspect as sa_inspect
 from sqlalchemy.orm import Session
 
 from backend.api.deps import get_current_account
@@ -46,14 +47,41 @@ def _require_admin(account: Account = Depends(get_current_account)) -> Account:
 router = APIRouter()
 
 
+# Sprint 28-C.2: explicit Pydantic model replaces sa_inspect reflection.
+class TelemetryEventOut(BaseModel):
+    id: int
+    time: datetime
+    event: str
+    metadata: Dict[str, Any]
+    request_path: str | None = None
+    stability: float | None = None
+    selected_state_id: str | None = None
+    decision_reason: str | None = None
+    max_complexity: int | None = None
+
+    @classmethod
+    def from_orm(cls, event: TelemetryEvent) -> "TelemetryEventOut":
+        meta = event.event_metadata
+        if isinstance(meta, str):
+            try:
+                meta = json.loads(meta)
+            except (TypeError, ValueError):
+                meta = {}
+        return cls(
+            id=event.id,
+            time=event.time,
+            event=event.event,
+            metadata=meta or {},
+            request_path=event.request_path,
+            stability=event.stability,
+            selected_state_id=event.selected_state_id,
+            decision_reason=event.decision_reason,
+            max_complexity=event.max_complexity,
+        )
+
+
 def _event_to_dict(event: TelemetryEvent) -> Dict[str, Any]:
-    out: Dict[str, Any] = {}
-    for col in sa_inspect(event).mapper.column_attrs:
-        v = getattr(event, col.key)
-        if hasattr(v, "isoformat"):
-            v = v.isoformat()
-        out[col.key] = v
-    return out
+    return TelemetryEventOut.from_orm(event).model_dump(mode="json")
 
 
 @router.get("/export", dependencies=[Depends(_require_admin)])

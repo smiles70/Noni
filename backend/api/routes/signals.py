@@ -4,10 +4,8 @@ Sprint 22 I2: gated to signed-in accounts; raw-dict payload replaced
 with strict Pydantic schema.
 """
 
-from typing import Any
-
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 
 from backend.api.deps import get_current_account
 from backend.core.geragogy_engine.cognitive_model import GeragogySignalModel
@@ -19,11 +17,16 @@ router = APIRouter()
 model = GeragogySignalModel()
 
 
+# Sprint 28-A.9: strict payload schema — only primitive JSON values allowed.
+# Nested objects must be stringified or use explicit sub-models.
+TelemetryPayload = RootModel[dict[str, str | int | float | bool | None]]
+
+
 class TelemetryEventIn(BaseModel):
     """Strict schema for telemetry ingestion. Replaces raw dict."""
 
     type: str = Field(..., min_length=1, max_length=64)
-    payload: dict[str, Any] = Field(default_factory=dict)
+    payload: TelemetryPayload = Field(default_factory=lambda: TelemetryPayload({}))
 
 
 @router.post("/user-action")

@@ -13,6 +13,7 @@ prometheus_client Counter + Histogram. Metrics are exposed on
 from __future__ import annotations
 
 import logging
+import random
 import time
 import uuid
 from typing import Awaitable, Callable
@@ -65,6 +66,19 @@ _request_latency = Histogram(
     "HTTP request latency by path",
     ["path", "status"],
     buckets=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0),
+)
+
+
+_request_count = Counter(
+    "noni_http_requests_total",
+    "Total HTTP requests by path and status",
+    ["path", "status"],
+)
+
+
+_clerk_jwks_rotations = Counter(
+    "clerk_jwks_rotation_events_total",
+    "Clerk JWKS key rotation events detected",
 )
 
 
@@ -164,17 +178,32 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
 
         request_id = getattr(request.state, "request_id", None)
 
-        logger.info(
-            "request.complete",
-            extra={
-                "path": path,
-                "status": status,
-                "latency_ms": int(duration_sec * 1000),
-                "request_id": request_id,
-            },
+        # Sprint 27 #92: log sampling — skip info request logs probabilistically.
+        # Errors (status >= 400) are ALWAYS logged. Only 200s are sampled.
+        from backend.core.config import settings
+
+        status_int = response.status_code
+        is_error = status_int >= 400
+        should_log = (
+            is_error
+            or settings.LOG_SAMPLING_RATE >= 1.0
+            or random.random() < settings.LOG_SAMPLING_RATE
         )
+        if should_log:
+            log_level = logging.WARNING if is_error else logging.INFO
+            logger.log(
+                log_level,
+                "request.complete",
+                extra={
+                    "path": path,
+                    "status": status,
+                    "latency_ms": int(duration_sec * 1000),
+                    "request_id": request_id,
+                },
+            )
 
         _request_latency.labels(path=path, status=status).observe(duration_sec)
+        _request_count.labels(path=path, status=status).inc()
 
         if path.startswith("/auth/session"):
 

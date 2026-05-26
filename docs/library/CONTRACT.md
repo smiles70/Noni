@@ -21,11 +21,11 @@ Permitted colors ONLY:
 
 **Accents (non-urgent)**
 - Muted blue: `#4A6FA5`
-- Desaturated green: `#5A7D6C`
-- Muted amber: `#C9A24D`
+- Desaturated green: `#4A6D5C` (Sprint 28: meets WCAG 2.1 AA + geragogy high-contrast)
+- Muted amber: `#C9A24D` (restricted to decorative / non-text indicators per Section I.E)
 
 **Restricted (functional use only)**
-- Error / confirmation-required: `#B85C5C`
+- Error / confirmation-required: `#A84C4C` (Sprint 28: meets WCAG 2.1 AA + geragogy high-contrast)
 - Disabled: `#B0B0B0`
 
 **Rules**

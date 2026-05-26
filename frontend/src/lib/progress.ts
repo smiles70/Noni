@@ -50,7 +50,12 @@ export function readProgress(): Progress | null {
       };
     }
     return null;
-  } catch {
+  } catch (e) {
+    // Sprint 28 quick-win: SecurityError (Safari private mode) is
+    // non-fatal — treat as no saved progress.
+    if (e instanceof DOMException && e.name === 'SecurityError') {
+      return null;
+    }
     return null;
   }
 }
@@ -63,7 +68,14 @@ export function writeProgress(p: Progress): void {
       pageIdx: typeof p.pageIdx === "number" ? p.pageIdx : 0,
     };
     localStorage.setItem(KEY, JSON.stringify(payload));
-  } catch {
-    /* quota / disabled storage — intentionally swallowed */
+  } catch (e) {
+    // Sprint 28 quick-win: QuotaExceededError and SecurityError are
+    // both non-fatal for progress persistence.
+    if (
+      e instanceof DOMException &&
+      (e.name === 'QuotaExceededError' || e.name === 'SecurityError')
+    ) {
+      /* intentionally swallowed */
+    }
   }
 }

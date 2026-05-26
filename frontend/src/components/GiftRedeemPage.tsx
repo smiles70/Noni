@@ -149,6 +149,8 @@ export default function GiftRedeemPage({ onClaimed, onBack }: Props) {
                 style={FIELD}
                 disabled={submitting}
                 required
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? "gift-token-error" : undefined}
               />
             </div>
             <div style={STACK}>
@@ -165,7 +167,7 @@ export default function GiftRedeemPage({ onClaimed, onBack }: Props) {
               </button>
             </div>
             {error && (
-              <p style={ALERT_TEXT} role="alert">
+              <p id="gift-token-error" style={ALERT_TEXT} role="alert">
                 {error}
               </p>
             )}

@@ -8,7 +8,8 @@
 These are deliberately separate artifacts. See ADR 0006.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Path
+from fastapi.responses import JSONResponse
 
 from backend.content.landing_page import LANDING_PAGE_CONTENT
 from backend.content.signup_first_win import SIGNUP_FIRST_WIN_CONTENT
@@ -20,13 +21,17 @@ router = APIRouter()
 
 
 @router.get("/steps")
-def list_steps() -> dict:
+def list_steps() -> JSONResponse:
     """Return the full ordered set of Golden Flow steps (conceptual model)."""
-    return {"steps": [s.model_dump() for s in LANDING_STEPS]}
+    resp = JSONResponse(content={"steps": [s.model_dump() for s in LANDING_STEPS]})
+    resp.headers["Cache-Control"] = "public, max-age=300"
+    return resp
 
 
 @router.get("/steps/{step_id}")
-def get_step_route(step_id: str) -> dict:
+def get_step_route(
+    step_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
+) -> dict:
     """Return one Golden Flow step by id."""
     step = get_step(step_id)
     if step is None:
@@ -35,9 +40,12 @@ def get_step_route(step_id: str) -> dict:
 
 
 @router.get("/page", response_model=LandingPageContent)
-def get_landing_page() -> LandingPageContent:
+def get_landing_page() -> JSONResponse:
     """Return the user-facing landing-page copy."""
-    return LandingPageContent.model_validate(LANDING_PAGE_CONTENT)
+    content = LandingPageContent.model_validate(LANDING_PAGE_CONTENT)
+    resp = JSONResponse(content=content.model_dump())
+    resp.headers["Cache-Control"] = "public, max-age=300"
+    return resp
 
 
 # ---- Sign-up -> First Safe Win (Golden Flow Steps 4-6) ----

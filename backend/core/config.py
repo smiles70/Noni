@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Noni"
     VERSION: str = "0.1.0"
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/noni"
+    DATABASE_URL: str = ""
     DATABASE_URL_DIRECT: str = (
         ""  # non-pooled URL for migrations (defaults to DATABASE_URL)
     )
@@ -57,6 +57,10 @@ class Settings(BaseSettings):
 
     # Admin account UUIDs (comma-separated) for telemetry export gating.
     ADMIN_ACCOUNT_IDS: str = ""
+
+    # Sprint 27 #92: log sampling rate (0.0–1.0) for info-level request logs.
+    # Errors and warnings are always logged at 100%.
+    LOG_SAMPLING_RATE: float = 1.0
 
     # CORS allowlist (comma-separated origins). Empty -> dev fallback in main.py.
     CORS_ORIGINS: str = ""

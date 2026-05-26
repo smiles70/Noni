@@ -23,6 +23,7 @@ import { SignIn, useAuth } from "@clerk/clerk-react";
 import { setMockToken } from "../api/auth";
 import { notifyAuthChanged } from "../auth/AuthProvider";
 import { loadEnvelope } from "../api/envelope";
+import { AUTH_PROVIDER } from "../lib/env";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import {
   COLORS,
@@ -44,9 +45,7 @@ import {
   STACK,
 } from "./AccountStyles";
 
-const AUTH_PROVIDER =
-  ((import.meta as unknown as { env?: { VITE_AUTH_PROVIDER?: string } }).env
-    ?.VITE_AUTH_PROVIDER ?? "mock");
+// AUTH_PROVIDER imported from lib/env.ts (Sprint 28 quick-win).
 
 interface Props {
   onSignedIn: () => void;
@@ -188,10 +187,14 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
               type="email"
               autoComplete="email"
               required
+              minLength={3}
+              maxLength={254}
               value={email}
               onChange={(ev) => setEmail(ev.target.value)}
               style={FIELD}
               disabled={submitting}
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? "signin-email-error" : undefined}
             />
           </div>
           <div style={STACK}>
@@ -211,7 +214,7 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
             </button>
           </div>
           {error && (
-            <p style={ALERT_TEXT} role="alert">
+            <p id="signin-email-error" style={ALERT_TEXT} role="alert">
               {error}
             </p>
           )}
