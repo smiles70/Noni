@@ -41,6 +41,8 @@ def test_curriculum_what_is_ai(client):
 
 
 def test_signals_user_action(client):
+    # Sprint 22 I2: signals now require auth.
+    client.headers["Authorization"] = "Bearer mock:test@example.com"
     r = client.post(
         "/api/signals/user-action",
         json={"user_id": "test_user", "action_type": "TASK_COMPLETE"},
@@ -52,6 +54,8 @@ def test_signals_user_action(client):
 
 
 def test_signals_user_action_rejects_unknown_type(client):
+    # Sprint 22 I2: signals now require auth.
+    client.headers["Authorization"] = "Bearer mock:test@example.com"
     r = client.post(
         "/api/signals/user-action",
         json={"user_id": "u", "action_type": "NOT_A_REAL_TYPE"},
@@ -60,6 +64,8 @@ def test_signals_user_action_rejects_unknown_type(client):
 
 
 def test_signals_telemetry(client):
+    # Sprint 22 I2: signals now require auth.
+    client.headers["Authorization"] = "Bearer mock:test@example.com"
     r = client.post(
         "/api/signals/telemetry",
         json={"type": "ROUTE_TEST", "x": 1},

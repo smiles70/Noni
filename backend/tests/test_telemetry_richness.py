@@ -1,10 +1,21 @@
 """Sprint 10 / ADR 0009: verify ISCS decisions are captured with promoted audit columns."""
 
+from fastapi import Depends
 from fastapi.testclient import TestClient
 
+from backend.api.deps import get_current_account
+from backend.api.routes.telemetry_export import _require_admin
 from backend.app.main import app
+from backend.models.accounts import Account
 
+
+def _mock_require_admin(account: Account = Depends(get_current_account)) -> Account:
+    return account
+
+
+app.dependency_overrides[_require_admin] = _mock_require_admin
 client = TestClient(app)
+client.headers["Authorization"] = "Bearer mock:test@example.com"
 
 
 def _export() -> list[dict]:
