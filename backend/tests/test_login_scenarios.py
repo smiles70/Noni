@@ -89,12 +89,16 @@ def _unique_email(slug: str) -> str:
 def _envelope_code(response) -> str:
     """Extract the discriminated error code from a 4xx envelope.
 
-    Backend returns either `{"detail": {"error": {"code": ...}}}` (the
-    new `auth_error()` helper) or `{"detail": {"envelope_id": ...}}` (the
-    legacy /auth/whoami path). Tests under Stage-2+ should only see the
-    first shape.
+    Backend returns either `{"error": {"code": ...}}` (the unwrapped
+    auth_error() shape via the custom exception handler) or
+    `{"detail": {"envelope_id": ...}}` (legacy /auth/whoami path).
     """
     body = response.json()
+    # Unwrapped auth envelope: the exception handler strips the detail
+    # wrapper when detail.keys() == {"error"}.
+    if "error" in body and isinstance(body["error"], dict):
+        return body["error"].get("code", "")
+    # Legacy wrapped shapes.
     detail = body.get("detail", {})
     if isinstance(detail, dict):
         if "error" in detail and isinstance(detail["error"], dict):

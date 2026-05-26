@@ -20,7 +20,8 @@ def client():
     with TestClient(app) as c:
         c.headers["Authorization"] = "Bearer mock:test@example.com"
         yield c
-    del app.dependency_overrides[_require_admin]
+    # Do NOT delete the override here — test_telemetry_richness.py sets it
+    # at module import time and shares the same app instance.
 
 
 class TestTelemetryExport:

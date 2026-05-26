@@ -68,9 +68,9 @@ def test_signals_telemetry(client):
     client.headers["Authorization"] = "Bearer mock:test@example.com"
     r = client.post(
         "/api/signals/telemetry",
-        json={"type": "ROUTE_TEST", "x": 1},
+        json={"type": "ROUTE_TEST", "payload": {"x": 1}},
     )
     assert r.status_code == 200
     body = r.json()
     assert body["event"] == "ROUTE_TEST"
-    assert body["metadata"] == {"type": "ROUTE_TEST", "x": 1}
+    assert body["metadata"] == {"x": 1}
