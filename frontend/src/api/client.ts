@@ -33,6 +33,7 @@ type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 interface RequestConfig {
   headers?: Record<string, string>;
   validateStatus?: (status: number) => boolean;
+  retry?: boolean;
 }
 
 interface ApiResponse<T = unknown> {
@@ -43,6 +44,36 @@ interface ApiResponse<T = unknown> {
 }
 
 type InterceptorHandler = (config: RequestConfig) => RequestConfig | Promise<RequestConfig>;
+
+const API_V1_PREFIX = "/api/v1";
+const RETRYABLE_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
+const GET_RETRY_DELAYS_MS = [250, 750];
+
+function _normalizePath(url: string): string {
+  if (url.startsWith("http") || url.startsWith(API_V1_PREFIX)) {
+    return url;
+  }
+  if (url.startsWith("/api/")) {
+    return `${API_V1_PREFIX}${url.slice(4)}`;
+  }
+  if (url.startsWith("/auth/")) {
+    return `${API_V1_PREFIX}${url}`;
+  }
+  if (url === "/auth") {
+    return `${API_V1_PREFIX}/auth`;
+  }
+  if (url.startsWith("/me/")) {
+    return `${API_V1_PREFIX}${url}`;
+  }
+  if (url === "/me") {
+    return `${API_V1_PREFIX}/me`;
+  }
+  return url;
+}
+
+function _sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
 
 class FetchClient {
   private _baseURL: string;
@@ -77,7 +108,10 @@ class FetchClient {
       merged = await handler(merged);
     }
 
-    const fullURL = url.startsWith("http") ? url : `${this._baseURL}${url}`;
+    const normalizedUrl = _normalizePath(url);
+    const fullURL = normalizedUrl.startsWith("http")
+      ? normalizedUrl
+      : `${this._baseURL}${normalizedUrl}`;
     const init: RequestInit = {
       method,
       headers: {
@@ -121,7 +155,7 @@ class FetchClient {
   }
 
   get<T = unknown>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
-    return this._request<T>("GET", url, undefined, config);
+    return this._requestWithRetry<T>("GET", url, undefined, config);
   }
 
   post<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
@@ -138,6 +172,33 @@ class FetchClient {
 
   delete<T = unknown>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
     return this._request<T>("DELETE", url, undefined, config);
+  }
+
+  private async _requestWithRetry<T>(
+    method: HttpMethod,
+    url: string,
+    data?: unknown,
+    config: RequestConfig = {},
+  ): Promise<ApiResponse<T>> {
+    const shouldRetry = method === "GET" && config.retry !== false;
+    if (!shouldRetry) {
+      return this._request<T>(method, url, data, config);
+    }
+
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= GET_RETRY_DELAYS_MS.length; attempt += 1) {
+      try {
+        return await this._request<T>(method, url, data, config);
+      } catch (err) {
+        lastError = err;
+        const status = (err as { response?: ApiResponse<unknown> }).response?.status;
+        if (!status || !RETRYABLE_STATUSES.has(status) || attempt >= GET_RETRY_DELAYS_MS.length) {
+          throw err;
+        }
+        await _sleep(GET_RETRY_DELAYS_MS[attempt]);
+      }
+    }
+    throw lastError;
   }
 }
 
