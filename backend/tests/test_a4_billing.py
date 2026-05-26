@@ -50,9 +50,7 @@ def _seed_product(DbSession):
         # Defence: fixed-window rate-limit counters survive across tests and
         # can exhaust the 10-per-60s webhook limit in CI. Purge the two
         # actions this file exercises so every gift/webhook test starts clean.
-        db.execute(
-            text("DELETE FROM rate_limit_counters WHERE key LIKE 'webhook:%'")
-        )
+        db.execute(text("DELETE FROM rate_limit_counters WHERE key LIKE 'webhook:%'"))
         db.execute(
             text("DELETE FROM rate_limit_counters WHERE key LIKE 'gift_claim:%'")
         )

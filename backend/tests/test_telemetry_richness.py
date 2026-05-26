@@ -72,7 +72,9 @@ def test_next_unit_records_recommendation():
         if r["event"] == "iscs_recommendation"
         and r.get("request_path") == "/api/curriculum/next-unit"
     ]
-    assert matches, "expected at least one iscs_recommendation for /api/curriculum/next-unit"
+    assert (
+        matches
+    ), "expected at least one iscs_recommendation for /api/curriculum/next-unit"
     row = matches[0]  # newest first
     assert row["decision_reason"] == "linear-walk"
     assert row["selected_state_id"] is not None
