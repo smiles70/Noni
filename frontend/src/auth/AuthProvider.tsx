@@ -70,7 +70,25 @@ function useCredentialSource() {
  * ✅ SECTION 3 — AUTH PROVIDER
  **********************************************************************/
 
-const AuthContext = createContext<any>(null);
+type AuthState =
+  | { status: "BOOT" }
+  | { status: "SIGNED_OUT" }
+  | { status: "AUTHENTICATING" }
+  | {
+      status: "READY";
+      accountId: string | null;
+      email: string | null;
+      displayName: string | null;
+    }
+  | { status: "TRANSIENT_ERROR" }
+  | { status: "REJECTED"; errorCode: string };
+
+export interface AuthContextValue {
+  state: AuthState;
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
 
 interface AuthConfigResponse {
   provider: string;
@@ -89,8 +107,12 @@ interface AuthSessionInitResponse {
   account_id: string;
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return ctx;
 }
 
 /**
@@ -112,7 +134,7 @@ export function notifyAuthChanged(): void {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useCredentialSource();
 
-  const [state, setState] = useState<any>({ status: "BOOT" });
+  const [state, setState] = useState<AuthState>({ status: "BOOT" });
   // Bump on `noni:auth-changed` so React re-renders AuthProvider; that
   // re-runs useCredentialSource(), which re-reads localStorage, which
   // makes the auth-flow useEffect below see the new isSignedIn value.
@@ -209,9 +231,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (res.data.materialized) {
         setState({
           status: "READY",
-          accountId: res.data.account_id,
+          accountId: res.data.account_id ?? null,
           email: res.data.email ?? null,
-          displayName: res.data.display_name,
+          displayName: res.data.display_name ?? null,
         });
         return;
       }
@@ -231,9 +253,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // the next /auth/session call (e.g. next page load); we set it
         // null here so consumers can render a "—" placeholder.
         email: null,
+        displayName: null,
       });
 
-    } catch (err: any) {
+    } catch (err) {
       handleError(err);
     }
   }
@@ -243,8 +266,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    * ✅ SECTION 3E — ERROR HANDLING
    ******************************************************************/
 
-  function handleError(err: any) {
-    const code = err?.response?.data?.error?.code;
+  interface ApiErrorResponse {
+    data?: { error?: { code?: string } };
+  }
+
+  function handleError(err: unknown) {
+    const apiErr = err as { response?: ApiErrorResponse } | undefined;
+    const code = apiErr?.response?.data?.error?.code;
 
     if (!code) {
       setState({ status: "TRANSIENT_ERROR" });

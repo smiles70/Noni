@@ -256,32 +256,23 @@ class ClerkAuthProvider:
         except ValueError:
             return None
 
-        primary_id = data.get("primary_email_address_id")
-        addresses = data.get("email_addresses") or []
-        email: Optional[str] = None
-        for entry in addresses:
-            if isinstance(entry, dict) and entry.get("id") == primary_id:
-                value = entry.get("email_address")
-                if isinstance(value, str) and value.strip():
-                    email = value.strip().lower()
-                    break
-        if email is None:
-            for entry in addresses:
-                if not isinstance(entry, dict):
-                    continue
-                value = entry.get("email_address")
-                if isinstance(value, str) and value.strip():
-                    email = value.strip().lower()
-                    break
+        from backend.models.clerk_profile import ClerkUserProfile
+
+        try:
+            profile = ClerkUserProfile.model_validate(data)
+        except Exception:
+            logger.info("clerk_user_lookup_invalid_shape subject=%s", subject)
+            return None
+
+        email = profile.primary_email
         if email is None:
             logger.info("clerk_user_lookup_no_email subject=%s", subject)
             return None
 
-        first = data.get("first_name") or ""
-        last = data.get("last_name") or ""
-        parts = [p for p in (first, last) if isinstance(p, str) and p.strip()]
-        display_name = " ".join(p.strip() for p in parts) if parts else None
-        return UserProfile(email=email, display_name=display_name)
+        return UserProfile(
+            email=email,
+            display_name=profile.display_name,
+        )
 
 
 def get_auth_provider() -> AuthProvider:
