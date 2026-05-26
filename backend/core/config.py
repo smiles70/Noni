@@ -77,6 +77,10 @@ class Settings(BaseSettings):
     # Formula: (2 * CPU cores) + 1. shared-cpu-1x (1 core) -> 3; performance-2x (2 core) -> 5.
     WEB_CONCURRENCY: int = 1
 
+    # Redis-backed rate limiting and Celery broker. Empty keeps local/test
+    # environments on the Postgres fallback limiter.
+    REDIS_URL: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env", case_sensitive=True, extra="ignore"
     )

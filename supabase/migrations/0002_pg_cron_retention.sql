@@ -53,3 +53,25 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     NULL;
 END $$;
+
+DO $$
+BEGIN
+    PERFORM cron.unschedule('noni-webhook-event-retention')
+    WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'noni-webhook-event-retention');
+EXCEPTION WHEN OTHERS THEN
+    NULL;
+END $$;
+
+DO $$
+BEGIN
+    PERFORM cron.schedule(
+        'noni-webhook-event-retention',
+        '35 3 * * *',
+        $cmd$
+            DELETE FROM processed_webhook_events
+            WHERE processed_at < now() - interval '30 days';
+        $cmd$
+    );
+EXCEPTION WHEN OTHERS THEN
+    NULL;
+END $$;

@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from backend.core.config import settings
 from backend.services.rate_limit import (
     RateLimit,
+    _check_redis_token_bucket,
     check_and_increment,
 )
 
@@ -70,3 +71,23 @@ def test_isolation_by_action(DbSession):
         assert check_and_increment(db, a, "ident-E") is False
         assert check_and_increment(db, b, "ident-E") is False
         db.commit()
+
+
+def test_redis_token_bucket_blocks_after_capacity(monkeypatch):
+    class FakeRedis:
+        def __init__(self):
+            self.remaining = 2
+
+        def eval(self, *args):
+            if self.remaining <= 0:
+                return 0
+            self.remaining -= 1
+            return 1
+
+    fake = FakeRedis()
+    monkeypatch.setattr("backend.services.rate_limit._get_redis_client", lambda: fake)
+    limit = RateLimit(action="t_redis", max_per_window=2, window_seconds=60)
+
+    assert _check_redis_token_bucket(limit, "ident-R") is True
+    assert _check_redis_token_bucket(limit, "ident-R") is True
+    assert _check_redis_token_bucket(limit, "ident-R") is False
