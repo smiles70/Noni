@@ -51,6 +51,15 @@ def run_migrations() -> None:
 
     Replaces the previous Base.metadata.create_all() approach.
     See ADR 0005 for rationale.
+
+    Note: Alembic operates via a synchronous DBAPI driver (psycopg2)
+    because DDL operations (CREATE TABLE, ALTER COLUMN, etc.) are
+    inherently synchronous I/O.  SQLAlchemy's async extension does
+    not support DDL execution, and Alembic's own cookbook confirms
+    that migrations should run through a sync engine even when the
+    application uses asyncpg for request handling.  Do NOT switch
+    this to create_async_engine() or asyncpg — migrations will fail.
+    Ref: https://alembic.sqlalchemy.org/en/latest/cookbook.html#using-asyncio-with-alembic
     """
     from alembic import command
     from alembic.config import Config
