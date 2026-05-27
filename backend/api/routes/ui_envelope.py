@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.get("/{state_id}", response_model=UIStateEnvelope)
 def get_ui_envelope(
-    state_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
+    state_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_.-]+$"),
 ) -> JSONResponse:
     """Return the authoritative envelope for a UI state.
 
