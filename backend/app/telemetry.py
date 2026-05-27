@@ -98,7 +98,10 @@ def record_auth_session_outcome(code: str, latency_ms: int | None = None) -> Non
 
         _auth_latency.observe(latency_ms / 1000.0)
 
-    logger.info("auth.session.outcome", extra={"code": code, "latency_ms": latency_ms})
+    try:
+        logger.info("auth.session.outcome", extra={"code": code, "latency_ms": latency_ms})
+    except Exception:
+        pass
 
 
 def record_materialize_attempt(result: str) -> None:
@@ -106,7 +109,10 @@ def record_materialize_attempt(result: str) -> None:
 
     _account_materialize_attempts.labels(result=result).inc()
 
-    logger.info("account.materialize.attempt", extra={"result": result})
+    try:
+        logger.info("account.materialize.attempt", extra={"result": result})
+    except Exception:
+        pass
 
 
 def record_email_collision() -> None:
@@ -114,7 +120,10 @@ def record_email_collision() -> None:
 
     _email_collisions.inc()
 
-    logger.warning("account.email_collision_observed")
+    try:
+        logger.warning("account.email_collision_observed")
+    except Exception:
+        pass
 
 
 def snapshot() -> dict[str, dict[str, int] | list[int]]:
@@ -191,16 +200,21 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
         )
         if should_log:
             log_level = logging.WARNING if is_error else logging.INFO
-            logger.log(
-                log_level,
-                "request.complete",
-                extra={
-                    "path": path,
-                    "status": status,
-                    "latency_ms": int(duration_sec * 1000),
-                    "request_id": request_id,
-                },
-            )
+            try:
+                logger.log(
+                    log_level,
+                    "request.complete",
+                    extra={
+                        "path": path,
+                        "status": status,
+                        "latency_ms": int(duration_sec * 1000),
+                        "request_id": request_id,
+                    },
+                )
+            except Exception:
+                # Defensive: malformed logging config (e.g. pythonjsonlogger
+                # KeyError on missing rename field) must not fail the request.
+                pass
 
         _request_latency.labels(path=path, status=status).observe(duration_sec)
         _request_count.labels(path=path, status=status).inc()
