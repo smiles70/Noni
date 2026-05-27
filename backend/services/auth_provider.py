@@ -25,34 +25,24 @@ from typing import Optional, Protocol
 
 import httpx
 from pybreaker import CircuitBreaker
-from prometheus_client import Counter
 
+from backend.app.circuit_breaker_metrics import record_circuit_transition
 from backend.core.config import settings
-
-# Sprint 27 H3: shared circuit breaker for all Clerk Backend API calls.
-# fail_max=5, reset_timeout=30s. Open state causes 503 degraded response.
-_circuit_state_transitions = Counter(
-    "noni_circuit_breaker_state_transitions_total",
-    "Circuit breaker state transitions",
-    ["service", "from_state", "to_state"],
-)
 
 
 class _ClerkCircuitListener:
     """Prometheus listener for Clerk circuit breaker state changes."""
 
     def state_change(self, cb, old_state, new_state):
-        _circuit_state_transitions.labels(
-            service="clerk",
-            from_state=old_state.name,
-            to_state=new_state.name,
-        ).inc()
+        from_state = old_state.name if old_state else "unknown"
+        to_state = new_state.name
+        record_circuit_transition("clerk", from_state, to_state)
         logger.warning(
             "circuit_breaker.state_change",
             extra={
                 "service": "clerk",
-                "from_state": old_state.name,
-                "to_state": new_state.name,
+                "from_state": from_state,
+                "to_state": to_state,
             },
         )
 
@@ -62,7 +52,6 @@ logger = logging.getLogger(__name__)
 CLERK_CIRCUIT_BREAKER = CircuitBreaker(
     fail_max=5,
     reset_timeout=30,
-    expected_exception=(httpx.HTTPError,),
     listeners=[_ClerkCircuitListener()],
 )
 
