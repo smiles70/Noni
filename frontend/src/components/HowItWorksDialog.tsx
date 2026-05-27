@@ -23,6 +23,8 @@ import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
 interface Props {
   content: LandingPageContent;
   onClose: () => void;
+  /** Called when the user clicks "Continue to my account" after reading. */
+  onBegin?: () => void;
 }
 
 // ---- Tokenized styles ------------------------------------------------------
@@ -122,7 +124,7 @@ function paragraphs(text: string) {
 
 // ---- Component -------------------------------------------------------------
 
-export default function HowItWorksDialog({ content, onClose }: Props) {
+export default function HowItWorksDialog({ content, onClose, onBegin }: Props) {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Focus the close button when the dialog opens — ensures keyboard users
@@ -216,9 +218,22 @@ export default function HowItWorksDialog({ content, onClose }: Props) {
         </div>
 
         <footer style={FOOTER}>
-          <button type="button" onClick={onClose} style={FOOTER_BTN}>
-            Got it
-          </button>
+          {onBegin ? (
+            <button
+              type="button"
+              onClick={() => {
+                onBegin();
+                onClose();
+              }}
+              style={FOOTER_BTN}
+            >
+              Continue to my account — free
+            </button>
+          ) : (
+            <button type="button" onClick={onClose} style={FOOTER_BTN}>
+              Got it
+            </button>
+          )}
         </footer>
       </div>
     </div>

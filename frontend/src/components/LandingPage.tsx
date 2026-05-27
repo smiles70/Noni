@@ -127,10 +127,9 @@ export default function LandingPage({
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Whether the long-form "How Noni works" dialog is open. Closed by
-  // default; opens when the visitor clicks the overlay button on the
-  // hero. Closing returns focus to the trigger via the browser's default
-  // (we don't currently snapshot a return target — the trigger sits
-  // immediately under the dialog backdrop and is easy to find).
+  // default; opens when the visitor clicks the primary CTA
+  // ("Set up my account — free") on the auth row. Closing returns focus
+  // to the trigger via the browser's default.
   const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   useEffect(() => {
@@ -158,14 +157,14 @@ export default function LandingPage({
 
   // The proposal RenderGuard validates against the envelope. Counts
   // reflect what the landing page actually renders now: hero image,
-  // headline, overlay "See how Noni works" button, primary "Set up my
-  // account" button, secondary "Log in" button, plus up to 2 NavBar
-  // entries when signed in. Long-form copy lives in HowItWorksDialog,
-  // which is rendered outside the guarded subtree.
+  // headline, primary "Set up my account" button, secondary "Log in"
+  // button, plus up to 2 NavBar entries when signed in. Long-form copy
+  // lives in HowItWorksDialog, which is rendered outside the guarded
+  // subtree.
   const proposal: RenderProposal = {
     components: ["Heading", "Body", "Button"],
-    // overlay CTA + primary CTA + secondary CTA + up to 2 NavBar entries.
-    primaryActionCount: 5,
+    // primary CTA + secondary CTA + up to 2 NavBar entries.
+    primaryActionCount: 4,
     irreversibleActionCount: 0,
     highlightedRecommendationCount: 1, // primary CTA only
     visibleTextLevels: 2, // h1 + body (note + button labels)
@@ -219,13 +218,6 @@ export default function LandingPage({
             <h1 id="hero-heading" className="noni-hero__overlay-title">
               Learn AI on your terms!
             </h1>
-            <button
-              type="button"
-              onClick={() => setShowHowItWorks(true)}
-              className="noni-hero__overlay-btn"
-            >
-              See how Noni works
-            </button>
           </div>
 
           {/* Auth row directly under the photo. The primary label names
@@ -255,7 +247,7 @@ export default function LandingPage({
                 <div className="noni-hero__primary-cta">
                   <button
                     type="button"
-                    onClick={onBegin}
+                    onClick={() => setShowHowItWorks(true)}
                     style={PRIMARY_BTN}
                   >
                     Set up my account — free
@@ -290,16 +282,16 @@ export default function LandingPage({
           />
         </section>
 
-        {/* Long-form marketing copy used to live here as a scrollable
-            reading column. It now lives in HowItWorksDialog (rendered
-            below, outside the RenderGuard) so the landing surface stays
-            a single calm hero with two clear actions. */}
+        {/* The "How Noni works" explanation is now the mandatory first
+            step for new users before they reach the auth wall. The
+            dialog is rendered outside the RenderGuard boundary. */}
       </main>
     </RenderGuard>
     {showHowItWorks && (
       <HowItWorksDialog
         content={content}
         onClose={() => setShowHowItWorks(false)}
+        onBegin={onBegin}
       />
     )}
     </>
