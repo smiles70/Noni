@@ -34,7 +34,7 @@ class ClerkVerifier:
             raise ValueError("ClerkVerifier requires a JWKS URL")
         # Sprint 27 Q3: cache_ttl=3600 forces re-fetch every hour so JWKS
         # rotation is picked up even if the old key remains valid.
-        self._jwk_client = PyJWKClient(jwks_url, cache_keys=True, cache_ttl=3600)
+        self._jwk_client = PyJWKClient(jwks_url, cache_keys=True, lifespan=3600)
         self._issuer = issuer or None
 
     def verify(self, token: str) -> Optional[AuthClaims]:
@@ -67,7 +67,7 @@ class ClerkVerifier:
             self._jwk_client = PyJWKClient(
                 self._jwk_client.uri,
                 cache_keys=True,
-                cache_ttl=3600,
+                lifespan=3600,
             )
             signing_key = self._jwk_client.get_signing_key_from_jwt(token)
         decoded = jwt.decode(
