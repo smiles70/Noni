@@ -31,12 +31,14 @@ def list_steps() -> JSONResponse:
 @router.get("/steps/{step_id}")
 def get_step_route(
     step_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
-) -> dict:
+) -> JSONResponse:
     """Return one Golden Flow step by id."""
     step = get_step(step_id)
     if step is None:
         raise HTTPException(status_code=404, detail=f"Step {step_id} not found")
-    return step.model_dump()
+    resp = JSONResponse(content=step.model_dump())
+    resp.headers["Cache-Control"] = "public, max-age=300"
+    return resp
 
 
 @router.get("/page", response_model=LandingPageContent)
@@ -51,11 +53,14 @@ def get_landing_page() -> JSONResponse:
 # ---- Sign-up -> First Safe Win (Golden Flow Steps 4-6) ----
 
 
-@router.get("/first-win", response_model=SignupFirstWinContent)
-def get_first_win() -> SignupFirstWinContent:
+@router.get("/first-win")
+def get_first_win() -> JSONResponse:
     """Return the typed Sign-up -> First Safe Win content (Steps 4-6).
 
     Pure read endpoint. Side-effect free. The frontend renders this
     passively; no client-side state derivation.
     """
-    return SignupFirstWinContent(**SIGNUP_FIRST_WIN_CONTENT)
+    content = SignupFirstWinContent(**SIGNUP_FIRST_WIN_CONTENT)
+    resp = JSONResponse(content=content.model_dump())
+    resp.headers["Cache-Control"] = "public, max-age=300"
+    return resp

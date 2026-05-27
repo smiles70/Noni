@@ -87,3 +87,9 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def validate_settings() -> None:
+    """Runtime validation only (NOT import-time) prevents breaking pytest, CLI, migrations."""
+    if not settings.DATABASE_URL:
+        raise RuntimeError("DATABASE_URL must be set via environment variables")

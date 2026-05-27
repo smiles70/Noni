@@ -34,6 +34,7 @@ interface RequestConfig {
   headers?: Record<string, string>;
   validateStatus?: (status: number) => boolean;
   retry?: boolean;
+  timeout?: number;
 }
 
 interface ApiResponse<T = unknown> {
@@ -78,9 +79,11 @@ function _sleep(ms: number): Promise<void> {
 class FetchClient {
   private _baseURL: string;
   private _requestInterceptors: InterceptorHandler[] = [];
+  private _defaultTimeout: number;
 
-  constructor(baseURL: string) {
+  constructor(baseURL: string, defaultTimeout: number = 15000) {
     this._baseURL = baseURL;
+    this._defaultTimeout = defaultTimeout;
   }
 
   get interceptors() {
@@ -112,6 +115,11 @@ class FetchClient {
     const fullURL = normalizedUrl.startsWith("http")
       ? normalizedUrl
       : `${this._baseURL}${normalizedUrl}`;
+
+    const controller = new AbortController();
+    const timeoutMs = merged.timeout ?? this._defaultTimeout;
+    const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
     const init: RequestInit = {
       method,
       headers: {
@@ -119,12 +127,30 @@ class FetchClient {
         "X-Request-ID": _generateRequestId(),
         ...merged.headers,
       },
+      signal: controller.signal,
     };
     if (data !== undefined) {
       init.body = JSON.stringify(data);
     }
 
-    const response = await fetch(fullURL, init);
+    let response: Response;
+    try {
+      response = await fetch(fullURL, init);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        const timeoutErr = new Error(`Request timeout after ${timeoutMs}ms`);
+        (timeoutErr as unknown as { response?: ApiResponse<unknown> }).response = {
+          data: null,
+          status: 0,
+          statusText: "timeout",
+          headers: new Headers(),
+        };
+        throw timeoutErr;
+      }
+      throw err;
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
     const isOk = merged.validateStatus ? merged.validateStatus(response.status) : response.ok;
 
     let parsed: unknown;

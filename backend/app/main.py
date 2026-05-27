@@ -29,7 +29,7 @@ from backend.app.telemetry import (
     TelemetryMiddleware,
     metrics_handler,
 )
-from backend.core.config import settings
+from backend.core.config import settings, validate_settings
 from backend.core.database import run_migrations
 
 
@@ -104,6 +104,7 @@ _original_sigterm_handler = signal.signal(signal.SIGTERM, _handle_sigterm)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    validate_settings()
     _verify_crypto_dependency()
     _verify_production_secrets()
     run_migrations()
@@ -125,6 +126,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"

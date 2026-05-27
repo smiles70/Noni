@@ -23,10 +23,10 @@ import uuid
 from dataclasses import dataclass
 from typing import Any, Optional, Protocol
 
-logger = logging.getLogger(__name__)
-
 from pybreaker import CircuitBreaker
 from prometheus_client import Counter
+
+logger = logging.getLogger(__name__)
 
 # Sprint 27 H3: circuit breaker for Stripe API calls.
 _circuit_state_transitions = Counter(
@@ -236,10 +236,29 @@ class StripePaymentProvider:
             )
         except Exception as e:
             raise WebhookVerificationError(str(e)) from e
+
+        # Runtime schema validation: guard against Stripe API drift
+        from backend.models.stripe_event import StripeEvent
+
+        try:
+            stripe_event = StripeEvent.model_validate(
+                {
+                    "id": event["id"],
+                    "object": event.get("object", "event"),
+                    "api_version": event.get("api_version"),
+                    "type": event["type"],
+                    "data": event.get("data", {}),
+                }
+            )
+        except Exception as exc:
+            raise WebhookVerificationError(
+                f"stripe payload validation failed: {exc}"
+            ) from exc
+
         return WebhookEvent(
-            event_id=event["id"],
-            event_type=event["type"],
-            payload=event["data"]["object"],
+            event_id=stripe_event.id,
+            event_type=stripe_event.type,
+            payload=stripe_event.data.get("object", {}),
         )
 
 
