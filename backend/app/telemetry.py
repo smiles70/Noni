@@ -250,7 +250,7 @@ def metrics_handler() -> Response:
 def _setup_json_logging() -> None:
     handler = logging.StreamHandler()
     formatter = jsonlogger.JsonFormatter(
-        "%(timestamp)s %(level)s %(name)s %(message)s %(request_id)s %(path)s %(status)s %(latency_ms)s",
+        "%(asctime)s %(levelname)s %(name)s %(message)s %(request_id)s %(path)s %(status)s %(latency_ms)s",
         rename_fields={
             "levelname": "level",
             "asctime": "timestamp",
