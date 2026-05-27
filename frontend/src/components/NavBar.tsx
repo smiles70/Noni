@@ -15,6 +15,7 @@
  */
 import { useAuth } from "../auth/AuthProvider";
 import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import { GeragogySafeTap } from "./GeragogySafeTap";
 
 interface Props {
   onSignIn?: () => void;
@@ -83,27 +84,35 @@ export default function NavBar({
       {signedIn && identity && <span style={EMAIL}>{identity}</span>}
 
       {!signedIn && onSignIn && (
-        <button type="button" style={LINK_BTN} onClick={onSignIn}>
-          Sign in
-        </button>
+        <GeragogySafeTap>
+          <button type="button" style={LINK_BTN} onClick={onSignIn}>
+            Sign in
+          </button>
+        </GeragogySafeTap>
       )}
 
       {signedIn && onContinuePaid && (
-        <button type="button" style={LINK_BTN} onClick={onContinuePaid}>
-          Upgrade — Modules 4 & 5
-        </button>
+        <GeragogySafeTap>
+          <button type="button" style={LINK_BTN} onClick={onContinuePaid}>
+            Upgrade — Modules 4 & 5
+          </button>
+        </GeragogySafeTap>
       )}
 
       {signedIn && onAccount && (
-        <button type="button" style={LINK_BTN} onClick={onAccount}>
-          Your account
-        </button>
+        <GeragogySafeTap>
+          <button type="button" style={LINK_BTN} onClick={onAccount}>
+            Your account
+          </button>
+        </GeragogySafeTap>
       )}
 
       {onOpenMenu && (
-        <button type="button" style={LINK_BTN} onClick={onOpenMenu}>
-          Lessons
-        </button>
+        <GeragogySafeTap>
+          <button type="button" style={LINK_BTN} onClick={onOpenMenu}>
+            Lessons
+          </button>
+        </GeragogySafeTap>
       )}
     </nav>
   );

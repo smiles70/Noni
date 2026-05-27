@@ -17,6 +17,8 @@ import LoadingSkeleton from "./components/LoadingSkeleton";
 import { useAuth } from "./auth/AuthProvider";
 import { readProgress } from "./lib/progress";
 import { IS_DEV } from "./lib/env";
+import { ViewportProvider } from "./context/ViewportContext";
+import { ResponsiveContainer } from "./components/ResponsiveContainer";
 
 // Sprint 28-B.1: lazy-load non-landing views to reduce initial bundle.
 const CurriculumRenderer = lazy(() => import("./components/CurriculumRenderer"));
@@ -311,23 +313,27 @@ const App: React.FC = () => {
     ) : null;
 
   return (
-    <>
-      {/* Sprint 28-D.7: skip-to-content link for keyboard users.
-       *  Contract-compliant (CONTRACT Section I.A palette only;
-       *  Section II — no spatial movement on focus). Uses the
-       *  clip-path / size-collapse pattern so the element occupies
-       *  zero visible space when unfocused and reveals in place on
-       *  focus, with no position translation. */}
-      <a
-        href="#main-content"
-        className="noni-skip-link"
-      >
-        Skip to main content
-      </a>
-      {debug}
-      {transientBanner}
-      <div id="main-content">{body}</div>
-    </>
+    <ViewportProvider>
+      <ResponsiveContainer>
+        <>
+          {/* Sprint 28-D.7: skip-to-content link for keyboard users.
+           *  Contract-compliant (CONTRACT Section I.A palette only;
+           *  Section II — no spatial movement on focus). Uses the
+           *  clip-path / size-collapse pattern so the element occupies
+           *  zero visible space when unfocused and reveals in place on
+           *  focus, with no position translation. */}
+          <a
+            href="#main-content"
+            className="noni-skip-link"
+          >
+            Skip to main content
+          </a>
+          {debug}
+          {transientBanner}
+          <div id="main-content">{body}</div>
+        </>
+      </ResponsiveContainer>
+    </ViewportProvider>
   );
 };
 
