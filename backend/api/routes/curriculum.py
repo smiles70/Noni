@@ -25,6 +25,10 @@ from backend.models.curriculum_units import (
     CurriculumUnit,
     get_unit,
 )
+from backend.models.curriculum_units_module_0 import (
+    UNITS_MODULE_0,
+    get_module_0_unit,
+)
 from backend.models.curriculum_units_module_2 import (
     UNITS_MODULE_2,
     get_module_2_unit,
@@ -180,6 +184,11 @@ def lesson_menu(
     return {
         "modules": [
             {
+                "id": 0,
+                "title": "Module 0 — Introduction to AI",
+                "units": [_serialize(u) for u in UNITS_MODULE_0],
+            },
+            {
                 "id": 1,
                 "title": "Module 1 — Meeting Claude",
                 "units": [_serialize(u) for u in UNITS],
@@ -301,6 +310,93 @@ def next_unit() -> dict:
         "stability": stability,
         "reason": "system-level recommendation (no per-learner state yet)",
     }
+
+
+# ===== Module 0: Plain-language primer on AI =====
+# Sits before Module 1. Same architectural pattern as M1 (no telemetry
+# gating — primer is intentionally ungated). Uses plain CurriculumUnit,
+# not TelemetryGatedUnit.
+
+
+@router.get("/module-0/units")
+def list_module_0_units(
+    request: Request,
+    db: DbSession = Depends(get_db),
+) -> dict:
+    enforce(db, LIMIT_CURRICULUM_PER_IP, client_ip(request))
+    db.commit()
+    """Catalog of Module 0 curriculum units (no page-level content)."""
+    return {
+        "module": 0,
+        "units": [
+            {
+                "id": u.id,
+                "title": u.title,
+                "description": u.description,
+                "max_complexity": u.max_complexity,
+                "stability_threshold": u.stability_threshold,
+            }
+            for u in UNITS_MODULE_0
+        ],
+    }
+
+
+@router.get("/module-0/units/{unit_id}")
+def get_module_0_unit_page(
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+) -> dict:
+    """Return the ISCS-approved page from the requested Module 0 unit."""
+    unit = get_module_0_unit(unit_id)
+    if unit is None:
+        raise HTTPException(
+            status_code=404, detail=f"Module 0 unit {unit_id} not found"
+        )
+
+    stability = _current_stability()
+    candidates = [
+        p.model_dump() for p in unit.pages if p.complexity <= unit.max_complexity
+    ]
+    if not candidates:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Module 0 unit {unit_id} has no pages within its max_complexity",
+        )
+    approved = select_ui_state(candidates, stability)
+    telemetry_service.record(
+        "iscs_decision",
+        metadata={
+            "module": 0,
+            "unit_id": unit.id,
+            "candidate_ids": [c["id"] for c in candidates],
+        },
+        request_path=f"/api/curriculum/module-0/units/{unit.id}",
+        stability=stability,
+        selected_state_id=_selected_id(approved),
+        decision_reason="approved",
+        max_complexity=unit.max_complexity,
+    )
+    return {
+        "module": 0,
+        "unit_id": unit.id,
+        "unit_title": unit.title,
+        "ui_state": approved,
+        "stability": stability,
+    }
+
+
+@router.get("/module-0/units/{unit_id}/lesson")
+def get_lesson_module_0(
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+) -> dict:
+    """Module 0 lesson endpoint — full ordered page list for the unit."""
+    unit = get_module_0_unit(unit_id)
+    if unit is None:
+        raise HTTPException(
+            status_code=404, detail=f"Module 0 unit {unit_id} not found"
+        )
+    return _build_lesson_payload(
+        0, unit, f"/api/curriculum/module-0/units/{unit.id}/lesson"
+    )
 
 
 # ===== Module 2: Sustained, real-world use of Claude over time =====
@@ -866,7 +962,9 @@ class RetrievalChoiceBody(BaseModel):
     # retrieval page must already have passed the gate to load the lesson,
     # and a forged module=4 from a non-entitled caller only writes an audit
     # row (no content leak). Audit reconciliation can flag the anomaly.
-    module: int = Field(..., ge=1, le=5)
+    # Lower bound widened from ge=1 to ge=0 so Module 0 (primer) retrievals
+    # share the same telemetry endpoint as every other module.
+    module: int = Field(..., ge=0, le=5)
     unit_id: str = Field(..., min_length=1)
     page_id: str = Field(..., min_length=1)
     chosen_id: str = Field(..., min_length=1)

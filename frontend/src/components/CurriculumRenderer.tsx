@@ -21,6 +21,12 @@ interface Props {
 }
 
 const FREE_SEQUENCE = [
+  { module: 0, unitId: "module0-unit-1" },
+  { module: 0, unitId: "module0-unit-2" },
+  { module: 0, unitId: "module0-unit-3" },
+  { module: 0, unitId: "module0-unit-4" },
+  { module: 0, unitId: "module0-unit-5" },
+  { module: 0, unitId: "module0-unit-6" },
   { module: 1, unitId: "unit-1" },
   { module: 1, unitId: "unit-2" },
   { module: 1, unitId: "unit-3" },
@@ -50,7 +56,7 @@ export default function CurriculumRenderer({
       <LessonRenderer
         sequence={FREE_SEQUENCE}
         loadLesson={(module, unitId) =>
-          loadFreeLesson(module as 1 | 2 | 3, unitId)
+          loadFreeLesson(module as 0 | 1 | 2 | 3, unitId)
         }
         onSequenceComplete={onContinueGated}
         onContinuePaid={onContinueGated}

@@ -328,7 +328,7 @@ export default function LessonRenderer({
           } else {
             safe = current;
           }
-          writeProgress({ module: module as 1 | 2 | 3 | 4 | 5, unitId, pageIdx: safe });
+          writeProgress({ module: module as 0 | 1 | 2 | 3 | 4 | 5, unitId, pageIdx: safe });
           return safe;
         });
       })
@@ -349,7 +349,7 @@ export default function LessonRenderer({
   useEffect(() => {
     if (!lesson) return;
     const { unitId } = sequence[idx];
-    writeProgress({ module: sequence[idx].module as 1 | 2 | 3 | 4 | 5, unitId, pageIdx });
+    writeProgress({ module: sequence[idx].module as 0 | 1 | 2 | 3 | 4 | 5, unitId, pageIdx });
     setRetrievalAnswered(null);
   }, [pageIdx, idx, lesson]);
 
@@ -386,7 +386,7 @@ export default function LessonRenderer({
     setRetrievalAnswered(chosenId);
     const { module, unitId } = sequence[idx];
     void recordRetrievalChoice({
-      module: module as 1 | 2 | 3 | 4 | 5,
+      module: module as 0 | 1 | 2 | 3 | 4 | 5,
       unit_id: unitId,
       page_id: page.id,
       chosen_id: chosenId,

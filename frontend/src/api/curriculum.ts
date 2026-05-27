@@ -132,7 +132,7 @@ export async function loadPaidUnit(
  * We synthesize `module` on the way out so callers always see it.
  */
 export async function loadFreeUnit(
-  module: 1 | 2 | 3,
+  module: 0 | 1 | 2 | 3,
   unitId: string,
 ): Promise<ApprovedUnit> {
   const path =
@@ -158,7 +158,7 @@ export async function loadFreeUnit(
 // discriminated 200/402/error result.
 
 export interface LessonResponse {
-  module: 1 | 2 | 3 | 4 | 5;
+  module: 0 | 1 | 2 | 3 | 4 | 5;
   unit_id: string;
   unit_title: string;
   pages: CurriculumPage[];
@@ -172,9 +172,9 @@ export type LoadLessonResult =
   | { kind: "error"; message: string };
 
 export async function loadFreeLesson(
-  module: 1 | 2 | 3,
+  module: 0 | 1 | 2 | 3,
   unitId: string,
-): Promise<LessonResponse & { module: 1 | 2 | 3 }> {
+): Promise<LessonResponse & { module: 0 | 1 | 2 | 3 }> {
   const path =
     module === 1
       ? `/api/curriculum/units/${unitId}/lesson`
@@ -248,7 +248,8 @@ export async function loadPaidLesson(
 export interface RetrievalChoiceRecord {
   // Widened in Sprint "paid modules" P3 alongside the backend's
   // `RetrievalChoiceBody.module: int = Field(ge=1, le=5)`.
-  module: 1 | 2 | 3 | 4 | 5;
+  // Further widened to include 0 when Module 0 (primer) shipped.
+  module: 0 | 1 | 2 | 3 | 4 | 5;
   unit_id: string;
   page_id: string;
   chosen_id: string;
@@ -284,7 +285,7 @@ export interface MenuUnit {
 }
 
 export interface MenuModule {
-  id: 1 | 2 | 3;
+  id: 0 | 1 | 2 | 3;
   title: string;
   units: MenuUnit[];
 }

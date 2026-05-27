@@ -13,7 +13,7 @@
 const KEY = "noni_progress_v1";
 
 export interface Progress {
-  module: 1 | 2 | 3 | 4 | 5;
+  module: 0 | 1 | 2 | 3 | 4 | 5;
   unitId: string;
   /** Page index within the current unit's lesson (0-based).
    *
@@ -34,7 +34,7 @@ export function readProgress(): Progress | null {
       typeof parsed.unitId === "string" &&
       parsed.unitId.length > 0 &&
       typeof parsed.module === "number" &&
-      parsed.module >= 1 &&
+      parsed.module >= 0 &&
       parsed.module <= 5
     ) {
       const pageIdx =
