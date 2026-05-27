@@ -30,7 +30,6 @@ from backend.app.telemetry import (
     metrics_handler,
 )
 from backend.core.config import settings, validate_settings
-from backend.core.database import run_migrations
 
 
 def _verify_crypto_dependency() -> None:
@@ -107,7 +106,9 @@ async def lifespan(app: FastAPI):
     validate_settings()
     _verify_crypto_dependency()
     _verify_production_secrets()
-    run_migrations()
+    # Migrations run via fly.toml deploy.release_command before
+    # any web workers boot. Calling alembic here would cause
+    # concurrent upgrades when gunicorn spawns multiple workers.
     try:
         yield
     finally:

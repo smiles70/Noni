@@ -17,6 +17,9 @@ kill_timeout = "25s"
 [build]
   dockerfile = "Dockerfile"
 
+[deploy]
+  release_command = "alembic upgrade head"
+
 [env]
   PORT = "8000"
   PYTHONUNBUFFERED = "1"
