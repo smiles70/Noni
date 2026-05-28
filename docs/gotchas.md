@@ -13,6 +13,116 @@ classes of failure that:
 
 ---
 
+## G2 — Login loop: `KeyError: 'levelname'` masks `TypeError` in `PyJWKClient`
+
+**First observed:** 2026-05-27, during Module 0 curriculum implementation.
+**Cost:** ~4 hours of production downtime.
+
+### Symptom
+
+- Frontend login loop: user signs in, backend returns `500`, frontend retries indefinitely.
+- `/api/v1/auth/session` returns `500` with Bearer token, `401` without token.
+- Log shows `KeyError: 'levelname'` with traceback through `starlette/middleware/errors.py`.
+- After fixing the `KeyError`, login still fails with a new `TypeError` in `ClerkVerifier.__init__`.
+
+### Root cause (two interlocking bugs)
+
+**Bug 1 — `JsonFormatter` `rename_fields` crash:**
+
+`backend/app/telemetry.py:252-258` configured `pythonjsonlogger.JsonFormatter` with:
+```python
+fmt="%(timestamp)s %(level)s %(name)s ...",
+rename_fields={"levelname": "level", "asctime": "timestamp"}
+```
+
+`python-json-logger` parses `_required_fields` from the `fmt` string. Because the string used the *renamed* field names (`timestamp`, `level`) instead of the *original* names (`asctime`, `levelname`), those original keys were never populated in the formatter's internal dict. When `_perform_rename_log_fields()` executed `log_record["level"] = log_record["levelname"]`, it raised `KeyError: 'levelname'`.
+
+This crash happened inside `Handler.emit()` → `Formatter.format()`, so `try/except` around `logger.log()` could NOT catch it. The exception propagated through Python's logging machinery, bypassed all FastAPI exception handlers, and was caught by Starlette's outermost `ServerErrorMiddleware`, which returned `PlainTextResponse("Internal Server Error", status_code=500)`.
+
+**Bug 2 — `PyJWKClient` non-existent `cache_ttl` parameter:**
+
+`backend/services/clerk_verifier.py:37` used:
+```python
+self._jwk_client = PyJWKClient(jwks_url, cache_keys=True, cache_ttl=3600)
+```
+
+PyJWT 2.10.1's `PyJWKClient` accepts `lifespan`, NOT `cache_ttl`. This raised `TypeError: PyJWKClient.__init__() got an unexpected keyword argument 'cache_ttl'`.
+
+**Why both appeared simultaneously:**
+
+Login was working before Module 0. Adding `curriculum_units_module_0.py` invalidated the Docker `COPY backend ./backend` layer, forcing a full rebuild. This exposed the `cache_ttl` code that had been added in a previous session but was never in a fresh image. The `JsonFormatter` bug was introduced by telemetry changes in the same deploy cycle.
+
+The `KeyError` masked the `TypeError`: the formatter crashed BEFORE the request ever reached `ClerkVerifier.__init__()`, so the `cache_ttl` bug was invisible until the formatter was fixed.
+
+### Confirmation procedure
+
+```bash
+# Check for KeyError in logs
+/home/kim/.fly/bin/flyctl logs --app noni-api --no-tail | grep "KeyError: 'levelname'"
+
+# Check for PyJWKClient TypeError in logs  
+/home/kim/.fly/bin/flyctl logs --app noni-api --no-tail | grep "unexpected keyword argument 'cache_ttl'"
+
+# Local reproduction:
+python -c "
+from pythonjsonlogger import jsonlogger
+import logging
+fmt = '%(timestamp)s %(level)s %(message)s'
+rename = {'levelname': 'level', 'asctime': 'timestamp'}
+handler = logging.StreamHandler()
+handler.setFormatter(jsonlogger.JsonFormatter(fmt, rename_fields=rename))
+logger = logging.getLogger('test')
+logger.addHandler(handler)
+logger.info('test')  # Will raise KeyError: 'levelname'
+"
+
+python -c "
+from jwt import PyJWKClient
+PyJWKClient('https://example.com/.well-known/jwks.json', cache_keys=True, cache_ttl=3600)
+# Will raise TypeError: unexpected keyword argument 'cache_ttl'
+"
+```
+
+### Fix
+
+**For Bug 1 (JsonFormatter):**
+
+Change `backend/app/telemetry.py:252-253` to use **original** field names in `fmt`:
+```python
+"%(asctime)s %(levelname)s %(name)s %(message)s %(request_id)s %(path)s %(status)s %(latency_ms)s"
+```
+
+`rename_fields` then safely renames `levelname` → `level` and `asctime` → `timestamp` because both original keys exist in the formatter's dict.
+
+**For Bug 2 (PyJWKClient):**
+
+Change `backend/services/clerk_verifier.py:37` and `:70`:
+```python
+self._jwk_client = PyJWKClient(jwks_url, cache_keys=True, lifespan=3600)
+```
+
+`lifespan` is the correct parameter name in PyJWT 2.10.1.
+
+### Recommended runtime guards
+
+1. **Never use renamed fields in `fmt` string:** The `fmt` string must reference the *original* `LogRecord` attribute names (`levelname`, `asctime`). `rename_fields` operates AFTER the dict is populated.
+
+2. **Verify PyJWKClient parameters against installed version:** Before adding JWKS configuration, run:
+   ```bash
+   python -c "import inspect; from jwt import PyJWKClient; print(inspect.signature(PyJWKClient.__init__))"
+   ```
+
+3. **Test auth path after ANY backend change:** Even "unrelated" changes (curriculum, telemetry) can invalidate Docker cache and expose latent bugs.
+
+### Cross-references
+
+- `backend/app/telemetry.py:250-265` (`_setup_json_logging`)
+- `backend/services/clerk_verifier.py:32-72` (`ClerkVerifier.__init__` and retry block)
+- [python-json-logger source code](https://github.com/madzak/python-json-logger/blob/master/src/pythonjsonlogger/jsonlogger.py) — `_perform_rename_log_fields` direct dict access
+- [PyJWT PyJWKClient docs](https://pyjwt.readthedocs.io/en/latest/usage.html) — `lifespan` parameter
+
+---
+
 ## G1 — Missing `cryptography` extra silently breaks Clerk auth (RS256)
 
 **First observed:** earlier in Sprint 22 (recorded informally).
