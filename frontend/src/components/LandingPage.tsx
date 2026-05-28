@@ -158,13 +158,13 @@ export default function LandingPage({
   // The proposal RenderGuard validates against the envelope. Counts
   // reflect what the landing page actually renders now: hero image,
   // headline, primary "Set up my account" button, secondary "Log in"
-  // button, plus up to 2 NavBar entries when signed in. Long-form copy
-  // lives in HowItWorksDialog, which is rendered outside the guarded
-  // subtree.
+  // button, help mailto link, plus up to 2 NavBar entries when signed
+  // in. Long-form copy lives in HowItWorksDialog, which is rendered
+  // outside the guarded subtree.
   const proposal: RenderProposal = {
     components: ["Heading", "Body", "Button"],
-    // primary CTA + secondary CTA + up to 2 NavBar entries.
-    primaryActionCount: 4,
+    // primary CTA + secondary CTA + help link + up to 2 NavBar entries.
+    primaryActionCount: 5,
     irreversibleActionCount: 0,
     highlightedRecommendationCount: 1, // primary CTA only
     visibleTextLevels: 2, // h1 + body (note + button labels)
@@ -216,7 +216,7 @@ export default function LandingPage({
           </div>
           <div className="noni-hero__overlay">
             <h1 id="hero-heading" className="noni-hero__overlay-title">
-              Learn AI on your terms!
+              How to learn AI — at your own pace.
             </h1>
           </div>
 
@@ -268,6 +268,24 @@ export default function LandingPage({
               </>
             )}
           </div>
+
+          <p style={{ marginTop: SPACING.md, fontSize: TYPOGRAPHY.bodySizePx }}>
+            Questions? We are here to help:{" "}
+            <a href="mailto:hello@mynaani.com" style={{ color: COLORS.accentMutedBlue }}>
+              hello@mynaani.com
+            </a>
+          </p>
+
+          <p
+            style={{
+              marginTop: SPACING.sm,
+              fontSize: TYPOGRAPHY.bodySizePx,
+              color: COLORS.disabled,
+            }}
+          >
+            Patent-pending curriculum and interface designed specifically for
+            adult learners.
+          </p>
 
           {/* NavBar surfaces signed-in entries (Upgrade / Your account).
               Signed-out users see no extra entries here. NavBar reads
