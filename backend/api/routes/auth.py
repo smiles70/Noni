@@ -5,9 +5,6 @@ migration; this module's current shape).
 
 Endpoints:
 
-  Legacy (preserved until the frontend cuts over to /auth/session):
-    GET  /auth/whoami           current account or 401 (legacy envelope).
-
   Redesign (Stage 2 — login-redesign-v1):
     GET  /auth/config           provider parity probe (B3, T4).
     GET  /auth/session          pure-read session resolver (B4, B5, T6).
@@ -15,10 +12,7 @@ Endpoints:
                                 (B4, T6, B8, I-D, I-E).
 
 The redesigned endpoints use the discriminated 401 envelope
-`{"error": {"code": "<auth.*>", "message": "..."}}` per B5. The legacy
-`/whoami` endpoint keeps its existing `{"detail": {"envelope_id":
-"auth.signed_out"}}` shape so the current frontend keeps working until
-its <AuthProvider> migration lands.
+`{"error": {"code": "<auth.*>", "message": "..."}}` per B5.
 
 Removed in ADR 0024 (still gone, with regression tests):
 - POST /auth/callback
@@ -34,48 +28,13 @@ from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session as DbSession
 
-from backend.api.deps import get_current_account, get_db
+from backend.api.deps import get_db
 from backend.app.telemetry import record_auth_session_outcome
 from backend.core.config import settings
 from backend.models.accounts import Account
 from backend.services.auth_verifier import AuthError, parse_bearer, verify_token
 
 router = APIRouter()
-
-
-# ---------------------------------------------------------------------------
-# Legacy: GET /auth/whoami — unchanged for FE compatibility.
-# ---------------------------------------------------------------------------
-
-
-class WhoAmIResponse(BaseModel):
-    """Shape returned by /auth/whoami.
-
-    `has_active_session` is preserved as the frontend's compatibility
-    field — in the Bearer model a successful response by definition
-    means "active". A 401 (no/invalid token) returns no body, and the
-    frontend treats that as signed-out.
-    """
-
-    account_id: str
-    # Email may be missing in pathological provider states (e.g. an
-    # account row predating the Clerk migration). Treat as nullable on
-    # the wire so we don't 500 instead of returning a usable response.
-    email: Optional[str] = None
-    display_name: Optional[str] = None
-    has_active_session: bool = True
-
-
-@router.get("/whoami", response_model=WhoAmIResponse)
-def auth_whoami(
-    account: Account = Depends(get_current_account),
-) -> WhoAmIResponse:
-    return WhoAmIResponse(
-        account_id=str(account.id),
-        email=account.email,
-        display_name=account.display_name,
-        has_active_session=True,
-    )
 
 
 # ---------------------------------------------------------------------------

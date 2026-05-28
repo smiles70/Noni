@@ -1,8 +1,9 @@
 """Sprint A3 — authentication integration tests (Bearer model, ADR 0024).
 
 Covers:
-  - happy-path: Bearer mock:<email> upserts an account, /auth/whoami 200
-  - missing Authorization header -> 401 auth.signed_out
+  - happy-path: Bearer mock:<email> materializes via /auth/session/init,
+    then /auth/session reads back the account
+  - missing Authorization header -> 401 auth.no_credential
   - malformed Authorization (wrong scheme, no token) -> 401
   - invalid mock credential body -> 401
   - sign-out is purely client-side (drop the header) -> next call is 401
@@ -19,6 +20,8 @@ What changed from the cookie/session era:
     with at the transport layer. JWT signature tampering for the Clerk
     provider is covered separately under the Clerk provider unit
     tests.
+  - /auth/whoami removed (Safe Yellow sprint): tests now use the
+    redesigned /auth/session + /auth/session/init flow.
 """
 
 from __future__ import annotations
@@ -53,55 +56,65 @@ def _bearer(email: str) -> dict:
     return {"Authorization": f"Bearer mock:{email}"}
 
 
-def test_whoami_with_bearer_creates_and_returns_account(client):
-    r = client.get("/auth/whoami", headers=_bearer("a3-new@example.test"))
+def test_session_with_bearer_materializes_then_reads(client):
+    # STEP 1: materialize the account (POST /auth/session/init).
+    r_init = client.post(
+        "/api/v1/auth/session/init",
+        headers=_bearer("a3-new@example.test"),
+    )
+    assert r_init.status_code == 200, r_init.text
+    # STEP 2: read back the materialized account (GET /auth/session).
+    r = client.get("/api/v1/auth/session", headers=_bearer("a3-new@example.test"))
     assert r.status_code == 200, r.text
     body = r.json()
+    assert body["materialized"] is True
     assert body["email"] == "a3-new@example.test"
-    assert body["has_active_session"] is True
     # No Set-Cookie in the Bearer model.
     assert settings.SESSION_COOKIE_NAME not in r.cookies
 
 
-def test_whoami_without_header_returns_401(client):
-    r = client.get("/auth/whoami")
+def test_session_without_header_returns_401(client):
+    r = client.get("/api/v1/auth/session")
     assert r.status_code == 401
-    assert r.json()["detail"]["envelope_id"] == "auth.signed_out"
+    assert r.json()["error"]["code"] == "auth.no_credential"
 
 
-def test_whoami_with_malformed_header_returns_401(client):
+def test_session_with_malformed_header_returns_401(client):
     # Wrong scheme.
-    r1 = client.get("/auth/whoami", headers={"Authorization": "Basic mock:x@y.z"})
+    r1 = client.get("/api/v1/auth/session", headers={"Authorization": "Basic mock:x@y.z"})
     assert r1.status_code == 401
     # Bearer but no token.
-    r2 = client.get("/auth/whoami", headers={"Authorization": "Bearer "})
+    r2 = client.get("/api/v1/auth/session", headers={"Authorization": "Bearer "})
     assert r2.status_code == 401
     # Just the word "Bearer" with nothing else.
-    r3 = client.get("/auth/whoami", headers={"Authorization": "Bearer"})
+    r3 = client.get("/api/v1/auth/session", headers={"Authorization": "Bearer"})
     assert r3.status_code == 401
 
 
-def test_whoami_with_invalid_credential_returns_401(client):
-    r = client.get("/auth/whoami", headers={"Authorization": "Bearer not-a-mock-token"})
+def test_session_with_invalid_credential_returns_401(client):
+    r = client.get("/api/v1/auth/session", headers={"Authorization": "Bearer not-a-mock-token"})
     assert r.status_code == 401
-    assert r.json()["detail"]["envelope_id"] == "auth.signed_out"
+    assert r.json()["error"]["code"] == "auth.malformed"
 
 
 def test_dropping_header_signs_out(client):
     """Bearer model: 'sign out' on the server == 'stop sending the token'."""
     headers = _bearer("a3-signout@example.test")
-    r1 = client.get("/auth/whoami", headers=headers)
+    # Materialize first.
+    client.post("/api/v1/auth/session/init", headers=headers)
+    r1 = client.get("/api/v1/auth/session", headers=headers)
     assert r1.status_code == 200
     # Same client, no header on the next call -> looks signed-out.
-    r2 = client.get("/auth/whoami")
+    r2 = client.get("/api/v1/auth/session")
     assert r2.status_code == 401
 
 
 def test_repeat_signin_for_same_email_reuses_account(client):
     headers = _bearer("a3-repeat@example.test")
-    r1 = client.get("/auth/whoami", headers=headers)
+    # Idempotent materialization: two POSTs return the same account_id.
+    r1 = client.post("/api/v1/auth/session/init", headers=headers)
     id1 = r1.json()["account_id"]
-    r2 = client.get("/auth/whoami", headers=headers)
+    r2 = client.post("/api/v1/auth/session/init", headers=headers)
     id2 = r2.json()["account_id"]
     assert id1 == id2, "auth_user_id is deterministic from email in mock provider"
 

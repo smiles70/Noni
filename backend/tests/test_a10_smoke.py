@@ -96,11 +96,14 @@ def _signin(client: TestClient, email: str) -> str:
     """Attach a mock Bearer header to the client (ADR 0024).
 
     The Bearer is read by `get_optional_account` on the next request;
-    the account row is upserted lazily. We hit /auth/whoami here so
-    the caller can return the account_id for cross-account assertions.
+    the account row is materialized via /auth/session/init. We then
+    read /auth/session to return the account_id for cross-account
+    assertions.
     """
     client.headers["Authorization"] = f"Bearer mock:{email}"
-    r = client.get("/auth/whoami")
+    init = client.post("/api/v1/auth/session/init")
+    assert init.status_code == 200, init.text
+    r = client.get("/api/v1/auth/session")
     assert r.status_code == 200, r.text
     return r.json()["account_id"]
 

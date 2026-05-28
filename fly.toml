@@ -1,9 +1,9 @@
 # Noni backend — Fly.io configuration.
 #
 # Built from the repo-root Dockerfile (multi-stage Python 3.12 + FastAPI).
-# Migrations run inside the FastAPI lifespan (backend/app/main.py), so we
-# do NOT use a separate `release_command` — booting the app applies any
-# pending Alembic revisions before serving traffic.
+# Migrations run via [deploy] release_command BEFORE any web workers boot.
+# NEVER run alembic inside lifespan — Gunicorn multi-worker = deadlock on
+# alembic_version table lock. See docs/gotchas.md G2.
 #
 # Secrets (DATABASE_URL, CLERK_*, SESSION_SECRET, etc.) are pushed via
 # `make secrets-sync` (see infra/scripts/secrets-sync.sh) and never live

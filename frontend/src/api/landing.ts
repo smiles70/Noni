@@ -2,7 +2,6 @@
  * Landing page API client.
  * Consumes /api/landing/page (landing-page copy, per ADR 0006).
  */
-import axios from "axios";
 import { API_BASE_URL } from "./client";
 
 const API_BASE = API_BASE_URL;
@@ -42,6 +41,9 @@ export interface LandingPageContent {
 
 export async function loadLandingPage(): Promise<LandingPageContent> {
   // Landing page is intentionally public; no Bearer token required.
-  const res = await axios.get<LandingPageContent>(`${API_BASE}/api/landing/page`); // noqa: raw-axios-allowed
-  return res.data;
+  const res = await fetch(`${API_BASE}/api/landing/page`);
+  if (!res.ok) {
+    throw new Error(`Landing page load failed: ${res.status}`);
+  }
+  return res.json() as Promise<LandingPageContent>;
 }

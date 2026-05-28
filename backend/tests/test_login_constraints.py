@@ -552,9 +552,9 @@ def test_T_H1_no_credential_prefix_in_logs(capsys, caplog) -> None:
 
     # Capture at root so any logger.* call lands in caplog.
     with caplog.at_level(logging.DEBUG, logger=""):
-        r1 = client.get("/auth/whoami", headers=headers)
-        r2 = client.get("/auth/session", headers=headers)
-        r3 = client.post("/auth/session/init", headers=headers)
+        r1 = client.get("/api/v1/auth/session", headers=headers)
+        r2 = client.get("/api/v1/auth/session", headers=headers)
+        r3 = client.post("/api/v1/auth/session/init", headers=headers)
 
     assert r1.status_code == 200, r1.text
     assert r2.status_code == 200, r2.text

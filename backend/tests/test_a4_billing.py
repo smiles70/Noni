@@ -78,12 +78,14 @@ def client():
 def _signin(client: TestClient, email: str) -> str:
     """ADR 0024: 'sign in' = attach Bearer header to the client.
 
-    No /auth/callback. The first authenticated request upserts the
-    account row; we fetch /auth/whoami so the caller can return the
-    account_id (some tests use it for FK assertions).
+    No /auth/callback. The first authenticated request materializes
+    the account row via /auth/session/init; we then read /auth/session
+    to return the account_id (some tests use it for FK assertions).
     """
     client.headers["Authorization"] = f"Bearer mock:{email}"
-    r = client.get("/auth/whoami")
+    init = client.post("/api/v1/auth/session/init")
+    assert init.status_code == 200, init.text
+    r = client.get("/api/v1/auth/session")
     assert r.status_code == 200, r.text
     return r.json()["account_id"]
 

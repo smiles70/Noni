@@ -21,6 +21,7 @@ import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 
 import { apiClient } from "../api/client";
 import { AUTH_PROVIDER } from "../lib/env";
+import { useAuthParity } from "./useAuthParity";
 
 
 /**********************************************************************
@@ -89,11 +90,6 @@ export interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-
-interface AuthConfigResponse {
-  provider: string;
-  version: string;
-}
 
 interface AuthSessionResponse {
   subject: string;
@@ -172,26 +168,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   /******************************************************************
-   * ✅ SECTION 3B — PROVIDER PARITY (FIXED)
+   * ✅ SECTION 3B — PROVIDER PARITY (EXTRACTED TO useAuthParity)
    ******************************************************************/
 
-  useEffect(() => {
-    async function checkProvider() {
-      const res = await apiClient.get<AuthConfigResponse>("/auth/config");
-
-      const backend = res.data.provider;
-      const frontend = AUTH_PROVIDER;
-
-      if (backend !== frontend) {
-        setState({
-          status: "REJECTED",
-          errorCode: "fatal.provider_mismatch",
-        });
-      }
-    }
-
-    checkProvider();
-  }, []);
+  useAuthParity(setState);
 
 
   /******************************************************************

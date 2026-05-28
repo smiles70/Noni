@@ -60,26 +60,48 @@ const root = ReactDOM.createRoot(
 
 if (provider === 'clerk') {
   if (!clerkKey) {
-    // Fail loud at boot rather than crashing inside Clerk later.
-    throw new Error(
-      'VITE_AUTH_PROVIDER=clerk requires VITE_CLERK_PUBLISHABLE_KEY to be set at build time.',
+    // Sprint "Fix Red": graceful error instead of hard-throw (P11).
+    // Geragogy-safe: calm, actionable message. No exclamation marks.
+    root.render(
+      <div style={{
+        padding: '24px',
+        fontFamily: 'Inter, system-ui, sans-serif',
+        color: '#222222',
+        backgroundColor: '#F4F4F2',
+        maxWidth: '480px',
+        margin: '48px auto',
+        lineHeight: 1.6,
+      }}>
+        <h1 style={{ fontSize: '19px', marginBottom: '16px' }}>
+          Configuration needed
+        </h1>
+        <p style={{ fontSize: '16px', marginBottom: '16px' }}>
+          This build is configured for Clerk authentication, but the
+          publishable key is missing. You can continue in mock mode
+          or provide the key.
+        </p>
+        <p style={{ fontSize: '16px', color: '#4A6FA5' }}>
+          To use mock mode: set VITE_AUTH_PROVIDER=mock
+        </p>
+      </div>,
+    );
+  } else {
+    root.render(
+      <React.StrictMode>
+        <ErrorBoundary>
+          {/* No `afterSignOutUrl` here: post-signout navigation is owned by
+              App.tsx (handleSignedOut), which is the single source of truth
+              for view transitions. Letting Clerk redirect us would race
+              our state updates and unmount the SignOut button mid-await. */}
+          <ClerkProvider publishableKey={clerkKey}>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </ClerkProvider>
+        </ErrorBoundary>
+      </React.StrictMode>,
     );
   }
-  root.render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        {/* No `afterSignOutUrl` here: post-signout navigation is owned by
-            App.tsx (handleSignedOut), which is the single source of truth
-            for view transitions. Letting Clerk redirect us would race
-            our state updates and unmount the SignOut button mid-await. */}
-        <ClerkProvider publishableKey={clerkKey}>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </ClerkProvider>
-      </ErrorBoundary>
-    </React.StrictMode>,
-  );
 } else {
   root.render(
     <React.StrictMode>
