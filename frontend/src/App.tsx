@@ -15,7 +15,7 @@ import AuthPendingBanner from "./components/AuthPendingBanner";
 import AuthBlockedNotice from "./components/AuthBlockedNotice";
 import LoadingSkeleton from "./components/LoadingSkeleton";
 import { useAuth } from "./auth/AuthProvider";
-import { readProgress } from "./lib/progress";
+import { readProgress, writeProgress } from "./lib/progress";
 import { IS_DEV } from "./lib/env";
 import { ViewportProvider } from "./context/ViewportContext";
 import { ResponsiveContainer } from "./components/ResponsiveContainer";
@@ -146,6 +146,10 @@ const App: React.FC = () => {
   };
   const goPaywall = () => requireAuth("paywall");
   const goAccount = () => requireAuth("account");
+  const handleSelectUnit = (module: number, unitId: string) => {
+    writeProgress({ module: module as 0 | 1 | 2 | 3 | 4 | 5, unitId, pageIdx: 0 });
+    goCurriculum();
+  };
 
   // Always-mounted debug surface so we can observe AuthProvider state
   // even during BOOT / AUTHENTICATING / REJECTED early returns.
@@ -242,6 +246,7 @@ const App: React.FC = () => {
             onSignIn={goSignIn}
             onContinuePaid={goPaywall}
             onAccount={goAccount}
+            onSelectUnit={handleSelectUnit}
           />
         </Suspense>
       );

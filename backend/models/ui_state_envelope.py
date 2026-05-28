@@ -281,6 +281,7 @@ _CURRICULUM_MENU_ENVELOPE = UIStateEnvelope(
         AuthorizedComponent.CARD,
         AuthorizedComponent.LIST,
         AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.INDICATOR,
         AuthorizedComponent.PENDING_BANNER,
         AuthorizedComponent.BLOCKED_NOTICE,
     ],

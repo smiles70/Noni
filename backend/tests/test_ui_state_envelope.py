@@ -353,7 +353,7 @@ def test_landing_page_can_open_menu():
 
 
 def test_lesson_menu_endpoint_returns_full_tree():
-    """GET /api/curriculum/menu returns Modules 1-3 + bridge units in
+    """GET /api/curriculum/menu returns Modules 0-3 + bridge units in
     one roundtrip so the menu UI does not need N module fetches."""
     response = client.get("/api/curriculum/menu")
     assert response.status_code == 200
@@ -361,11 +361,11 @@ def test_lesson_menu_endpoint_returns_full_tree():
 
     assert "modules" in body and "bridge_units" in body
     module_ids = [m["id"] for m in body["modules"]]
-    assert module_ids == [1, 2, 3], "menu must surface free modules in order"
+    assert module_ids == [0, 1, 2, 3], "menu must surface free modules in order"
 
-    # Module 1 has 7 units, Module 2 has 5, Module 3 has 4.
+    # Module 0 has 6 units, Module 1 has 7, Module 2 has 5, Module 3 has 4.
     counts = {m["id"]: len(m["units"]) for m in body["modules"]}
-    assert counts == {1: 7, 2: 5, 3: 4}
+    assert counts == {0: 6, 1: 7, 2: 5, 3: 4}
 
     # Bridge units are the two side lessons from S25.4/S25.5.
     bridge_ids = {u["id"] for u in body["bridge_units"]}

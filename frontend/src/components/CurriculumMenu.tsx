@@ -35,6 +35,8 @@ interface Props {
   onSignIn?: () => void;
   onContinuePaid?: () => void;
   onAccount?: () => void;
+  /** Jump to a specific unit (Module 0–3 free track). */
+  onSelectUnit?: (module: number, unitId: string) => void;
 }
 
 const PAGE: CSSProperties = {
@@ -84,6 +86,21 @@ const UNIT_ITEM: CSSProperties = {
   marginBottom: SPACING.xs,
 };
 
+const UNIT_BUTTON: CSSProperties = {
+  fontSize: TYPOGRAPHY.bodySizePx,
+  fontFamily: TYPOGRAPHY.fontFamily,
+  lineHeight: TYPOGRAPHY.bodyLineHeight,
+  padding: `${SPACING.sm}px ${SPACING.md}px`,
+  backgroundColor: COLORS.surface,
+  color: COLORS.accentMutedBlue,
+  border: `2px solid ${COLORS.accentMutedBlue}`,
+  borderRadius: RADIUS.sm,
+  cursor: "pointer",
+  textAlign: "left",
+  width: "100%",
+  marginBottom: SPACING.xs,
+};
+
 const UNIT_DESCRIPTION: CSSProperties = {
   color: COLORS.disabled,
   fontSize: TYPOGRAPHY.bodySizePx,
@@ -108,7 +125,7 @@ const CONTINUE_BUTTON: CSSProperties = {
 };
 
 export default function CurriculumMenu(props: Props) {
-  const { onContinue, onSignIn, onContinuePaid, onAccount } = props;
+  const { onContinue, onSignIn, onContinuePaid, onAccount, onSelectUnit } = props;
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [menu, setMenu] = useState<CurriculumMenu | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -197,9 +214,9 @@ export default function CurriculumMenu(props: Props) {
           Lessons
         </h1>
         <p style={INTRO} data-component="Body">
-          Here is the full course at a glance. Modules 1–3 are free.
+          Here is the full course at a glance. Modules 0–3 are free.
           Modules 4–5 are available after a one-time purchase.
-          You can browse them now, or jump straight in.
+          Tap any free lesson to jump straight to it.
         </p>
 
         {menu.modules.map((mod) => (
@@ -210,8 +227,21 @@ export default function CurriculumMenu(props: Props) {
             <ul style={UNIT_LIST} data-component="List">
               {mod.units.map((u) => (
                 <li key={u.id} style={UNIT_ITEM}>
-                  <strong>{u.title}</strong>
-                  <span style={UNIT_DESCRIPTION}> — {u.description}</span>
+                  {onSelectUnit ? (
+                    <button
+                      type="button"
+                      style={UNIT_BUTTON}
+                      onClick={() => onSelectUnit(mod.id, u.id)}
+                    >
+                      <strong>{u.title}</strong>
+                      <span style={UNIT_DESCRIPTION}> — {u.description}</span>
+                    </button>
+                  ) : (
+                    <>
+                      <strong>{u.title}</strong>
+                      <span style={UNIT_DESCRIPTION}> — {u.description}</span>
+                    </>
+                  )}
                 </li>
               ))}
             </ul>
