@@ -1,9 +1,9 @@
 # Noni Production Readiness Audit — 100-Point Threat Model
 
-**Date:** 2026-05-25  
-**Auditor:** Adversarial Principal Security Engineer  
-**Scope:** Full-stack FastAPI + React/Vite SaaS (Post-Sprint 22)  
-**Baseline:** `docs/audits/enterprise-security-threat-model-2026-05-25.md`  
+**Date:** 2026-05-25
+**Auditor:** Adversarial Principal Security Engineer
+**Scope:** Full-stack FastAPI + React/Vite SaaS (Post-Sprint 22)
+**Baseline:** `docs/audits/enterprise-security-threat-model-2026-05-25.md`
 
 ---
 
@@ -20,10 +20,10 @@ Post-Sprint 22, Noni has closed its most egregious security holes and graduated 
 | Authentication & Authorization | **PROTECTED** | B+ | 1 |
 | Input Validation & Injection Defense | **PROTECTED** | A- | 0 |
 | Client-Side Security | **HARDENED** | B+ | 1 |
-| Infrastructure & Deployment | **PARTIAL** | C+ | 4 |
+| Infrastructure & Deployment | **PARTIAL** | C+ | 7 |
 | Observability & Telemetry | **OPERATIONAL** | B | 2 |
-| Operational Resilience | **FRAGILE** | C | 5 |
-| **OVERALL** | **HARDENED BETA** | **C+ / 59%** | **13** |
+| Operational Resilience | **FRAGILE** | C | 8 |
+| **OVERALL** | **HARDENED BETA** | **C+ / 56%** | **16** |
 
 ---
 
@@ -116,6 +116,21 @@ Post-Sprint 22, Noni has closed its most egregious security holes and graduated 
 - **Risk:** Clerk SDK init failure or unexpected API shape crashes React tree to a white screen.
 - **Fix:** Add top-level `ErrorBoundary` with human-friendly fallback UI.
 
+**M7. NO BUILD-TIME ENVIRONMENT VARIABLE VALIDATION** (Criteria #76, incident 2026-05-28)
+- **Location:** `frontend/src/lib/env.ts`, `frontend/package.json`
+- **Risk:** `vite build` silently bakes in `localhost:8000` as the API base URL when `VITE_API_BASE_URL` is unset. Deployed frontend calls a non-existent local server, rendering the site unusable. Discovered during 2026-05-28 help center deploy.
+- **Fix:** Add `build:prod` script that fails if `VITE_API_BASE_URL` is empty; create `frontend/.env.production` with production URL.
+
+**M8. NO BUNDLE VERIFICATION BEFORE DEPLOY** (Criteria #76, incident 2026-05-28)
+- **Location:** `.github/workflows/deploy.yml`, manual deploy process
+- **Risk:** Broken bundles (localhost URLs, missing chunks, wrong API version) are deployed without automated detection. The 2026-05-28 incident required manual browser inspection to diagnose.
+- **Fix:** Add CI step: `grep -r "localhost:8000" dist/ && exit 1` after build, before deploy.
+
+**M9. NO STAGING FRONTEND ENVIRONMENT** (Criteria #76)
+- **Location:** Cloudflare Pages deploy pipeline
+- **Risk:** Frontend deploys go straight to production. No smoke-test URL exists to verify the bundle before it serves live traffic. The 2026-05-28 fix required a hot-redeploy after production was already broken.
+- **Fix:** Deploy to a staging Pages project first; run automated smoke tests against it; promote to production only on pass.
+
 ---
 
 ## PART II: TECHNICAL GAP ANALYSIS MATRIX
@@ -132,6 +147,9 @@ Post-Sprint 22, Noni has closed its most egregious security holes and graduated 
 | **#78 Webhook Replay** | Rate-limited only | Event ID dedup 24h TTL | **Medium** — double-charge |
 | **#71/99 CI Security** | Lint + type-check | SAST + secret scan + dep audit | **Medium** — supply chain leak |
 | **#39 Error Boundaries** | Not verified | React ErrorBoundary + fallback | **Medium** — user abandonment |
+| **#76 Build Env Validation** | No check | `build:prod` fails on missing `VITE_API_BASE_URL` | **Medium** — site unusable after deploy |
+| **#76 Bundle Verification** | No check | `grep localhost dist/` in CI pre-deploy | **Medium** — broken bundle serves live traffic |
+| **#76 Staging Frontend** | None | Staging Pages project + smoke tests | **Medium** — production-only deploy path |
 | **#17 Rate Limiting** | DB-backed fixed window | Token-bucket with Redis | **Low** — burst at window edge |
 | **#55 Third-Party Timeouts** | 5s Clerk timeout | 5s + circuit breaker + backoff | **Low** — transient failure amp |
 | **#65 External 429 Handling** | No handling | Parse Retry-After + queue | **Low** — API rate limit violation |
@@ -172,6 +190,9 @@ If production still has the old `development-secret-key-change-in-production` va
 - [ ] **Q6:** Verify Fly secrets do not contain old hard-coded defaults
 - [ ] **M3:** Add Stripe webhook event ID deduplication (24h TTL)
 - [ ] **Q4:** Check `sessions` table size; drop if unused
+- [ ] **M7:** Add `build:prod` script + `frontend/.env.production` to prevent localhost API URL in deployed bundles
+- [ ] **M8:** Add bundle verification CI step (`grep localhost dist/`) before deploy
+- [ ] **M9:** Create staging Pages project for frontend smoke-testing before production promotion
 
 ### Short-Term Hardening (Next 1–2 Weeks)
 - [ ] **H3:** Add circuit breaker on Clerk Backend API and Stripe API calls

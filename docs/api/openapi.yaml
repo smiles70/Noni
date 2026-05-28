@@ -1,0 +1,227 @@
+openapi: 3.0.3
+info:
+  title: Noni API
+  description: Geragogy-compliant learning platform API
+  version: 1.0.0
+  contact:
+    name: Noni Engineering
+servers:
+  - url: https://noni-api.fly.dev/api/v1
+    description: Production
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: "healthy" }
+
+  /ui-envelope/{state_id}:
+    get:
+      summary: Get UI state envelope
+      parameters:
+        - name: state_id
+          in: path
+          required: true
+          schema: { type: string, maxLength: 64, pattern: "^[a-zA-Z0-9_.-]+$" }
+      responses:
+        "200":
+          description: Envelope found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UIStateEnvelope"
+        "404":
+          description: State undefined
+
+  /landing/page:
+    get:
+      summary: Landing page content
+      responses:
+        "200":
+          description: Landing page copy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LandingPageContent"
+
+  /curriculum/{module}/{unit_id}:
+    get:
+      summary: Curriculum unit content
+      parameters:
+        - name: module
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: unit_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Unit content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LessonResponse"
+
+  /auth/config:
+    get:
+      summary: Auth provider probe
+      responses:
+        "200":
+          description: Provider config
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  provider: { type: string, example: "clerk" }
+
+  /auth/session:
+    get:
+      summary: Session resolver
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Session active
+        "401":
+          description: No valid session
+
+  /billing/checkout:
+    post:
+      summary: Create checkout session
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_code: { type: string }
+                is_gift: { type: boolean, default: false }
+      responses:
+        "200":
+          description: Checkout URL created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  purchase_id: { type: string }
+                  checkout_url: { type: string }
+                  provider_session_id: { type: string }
+
+  /billing/webhook:
+    post:
+      summary: Stripe webhook
+      responses:
+        "200":
+          description: Webhook processed
+
+  /billing/health:
+    get:
+      summary: Billing health
+      responses:
+        "200":
+          description: Billing system status
+
+  /gifts/preview:
+    post:
+      summary: Preview gift token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token: { type: string }
+      responses:
+        "200":
+          description: Gift preview
+
+  /gifts/claim:
+    post:
+      summary: Claim gift token
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token: { type: string }
+      responses:
+        "200":
+          description: Gift claimed
+
+  /me:
+    get:
+      summary: Account settings
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Account data
+
+  /me/delete:
+    post:
+      summary: Request account deletion
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Deletion scheduled
+
+  /me/delete/cancel:
+    post:
+      summary: Cancel deletion request
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Deletion cancelled
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UIStateEnvelope:
+      type: object
+      properties:
+        state_id: { type: string }
+        authorized_components: { type: array, items: { type: string } }
+        interaction_limits: { type: object }
+        layout_constraints: { type: object }
+        transition_permissions: { type: array }
+    LandingPageContent:
+      type: object
+      properties:
+        hero: { type: object }
+        introduction: { type: object }
+        what_noni_does: { type: object }
+        how_it_feels: { type: object }
+        trust_and_safety: { type: object }
+        call_to_action: { type: object }
+        closing: { type: object }
+    LessonResponse:
+      type: object
+      properties:
+        unit_id: { type: string }
+        module: { type: integer }
+        pages: { type: array }

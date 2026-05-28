@@ -141,6 +141,17 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
   - `backend/services/rate_limit.py` — fixed-window counter, FastAPI `enforce` helper, predefined limits
   - `backend/tests/test_a7_rate_limit.py` — 4 tests (allow/block, identifier and action isolation)
 - Main app router registration: `/auth`, `/me`
+- **Help Center Sprint — COMPLETED 2026-05-28**
+  - `frontend/src/components/HelpPage.tsx` — four geragogy-compliant help articles
+  - New `/help` route and `View = "help"` in `App.tsx`
+  - Navigation links wired from `LandingPage`, `NavBar`, `CurriculumRenderer`, `PaidLessonRenderer`, `CurriculumMenu`, `PaywallPage`, `GiftRedeemPage`, `AccountSettingsPage`
+  - All user-facing text uses "mynaani" per geragogy contract
+- **Deployment Incident — 2026-05-28**
+  - Frontend deployed with `localhost:8000` as API base URL (missing `VITE_API_BASE_URL` at build time)
+  - Production site showed "This page is paused" error
+  - **Root cause:** Vite inlines `import.meta.env.VITE_API_BASE_URL` at build time; default fallback `localhost:8000` was baked into bundle
+  - **Fix:** Created `frontend/.env.production` with `VITE_API_BASE_URL=https://noni-api.fly.dev`; rebuild + redeploy
+  - **Prevention:** Bundle verification step added to deployment checklist (grep for `localhost:8000` before deploy)
 
 ## Out of Scope (deferred)
 

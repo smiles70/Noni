@@ -224,3 +224,77 @@ This fails the process at startup instead of letting it serve broken
   when a venv goes out of sync with `requirements.txt`.
 
 ---
+
+## G3 — Frontend deployed with `localhost` API base URL
+
+**First observed:** 2026-05-28, during help center deployment.
+**Cost:** Production site down, user-facing "This page is paused" error, reputational damage.
+
+### Symptom
+
+- Deployed frontend shows "This page is paused." immediately after loading.
+- Browser devtools Network tab shows failed requests to `http://localhost:8000/api/...`
+- The backend (`noni-api.fly.dev`) is healthy and responding normally.
+- The failure is invisible until a user loads the deployed site; local dev works fine.
+
+### Root cause
+
+`frontend/src/lib/env.ts` defines:
+```typescript
+export const API_BASE_URL: string = (
+  _env.VITE_API_BASE_URL ?? "http://localhost:8000"
+).replace(/\/+$/, "");
+```
+
+Vite inlines environment variables at **build time**. If `VITE_API_BASE_URL` is not present in the shell environment during `vite build`, the default `http://localhost:8000` is baked into the bundle. Every deployed user then tries to call their own localhost, which fails.
+
+The build command was:
+```bash
+./node_modules/.bin/tsc -b && ./node_modules/.bin/vite build
+```
+
+The `VITE_API_BASE_URL=https://noni-api.fly.dev` prefix was missing.
+
+### Confirmation procedure
+
+```bash
+# After build, before deploy, grep the bundle for localhost:
+grep -r "localhost:8000" dist/
+# Any match = G3. The bundle must be rebuilt.
+
+# Or check the deployed site:
+curl -s https://<deployed-frontend-url>/ | grep -o 'localhost:8000' | head -1
+```
+
+### Fix
+
+Rebuild with the environment variable set via `.env.production` (most reliable for WSL):
+```bash
+cd frontend
+printf "VITE_API_BASE_URL=https://noni-api.fly.dev\n" > .env.production
+./node_modules/.bin/tsc -b && ./node_modules/.bin/vite build
+```
+
+Then redeploy the `dist/` directory.
+
+### Recommended runtime guards
+
+1. **Never run `vite build` without `VITE_API_BASE_URL` in production builds.** Add a pre-build check to `frontend/package.json` scripts:
+   ```json
+   "build:prod": "test -n \"$VITE_API_BASE_URL\" && tsc -b && vite build"
+   ```
+
+2. **Verify bundle after build, before deploy.** Add a CI step:
+   ```bash
+   if grep -r "localhost:8000" dist/; then echo "FAIL: localhost in bundle"; exit 1; fi
+   ```
+
+3. **Prefer `.env.production` over shell env vars for WSL builds.** WSL command quoting is unreliable for env var propagation through `wsl.exe bash -lc`.
+
+### Cross-references
+
+- `frontend/src/lib/env.ts:13-15` (`API_BASE_URL` default)
+- `docs/staging-deploy.md:66` (`VITE_API_BASE_URL` mentioned as required)
+- `frontend/package.json:8` (build scripts)
+
+---
