@@ -39,6 +39,7 @@ interface Props {
   /** Called after a successful sign-out so AuthProvider's state can transition
    *  and re-render the signed-out landing surface. */
   onSignOut?: () => void | Promise<void>;
+  onHelp?: () => void;
 }
 
 // ---- Tokenized style objects -----------------------------------------------
@@ -122,6 +123,7 @@ export default function LandingPage({
   onAccount,
   signedIn,
   onSignOut,
+  onHelp,
 }: Props) {
   const [content, setContent] = useState<LandingPageContent | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
@@ -276,6 +278,27 @@ export default function LandingPage({
             </a>
           </p>
 
+          {onHelp && (
+            <p style={{ marginTop: SPACING.sm, fontSize: TYPOGRAPHY.bodySizePx }}>
+              <button
+                type="button"
+                onClick={onHelp}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  color: COLORS.accentMutedBlue,
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  fontSize: TYPOGRAPHY.bodySizePx,
+                  fontFamily: TYPOGRAPHY.fontFamily,
+                }}
+              >
+                Help and common questions
+              </button>
+            </p>
+          )}
+
           <p
             style={{
               marginTop: SPACING.sm,
@@ -297,6 +320,7 @@ export default function LandingPage({
             key={signedIn ? "nav-signed-in" : "nav-signed-out"}
             onContinuePaid={onContinuePaid}
             onAccount={onAccount}
+            onHelp={onHelp}
           />
         </section>
 

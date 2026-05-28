@@ -87,6 +87,7 @@ export interface LessonRendererProps {
   /** Optional Continue-button label override. Default matches the
    *  pre-extraction free-track behaviour. */
   getContinueLabel?: (isLastUnit: boolean, isLastPage: boolean) => string;
+  onHelp?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -257,6 +258,7 @@ export default function LessonRenderer({
   onAccount,
   onContinuePaid,
   onPaywall,
+  onHelp,
   getContinueLabel = (isLastUnit, isLastPage) =>
     isLastUnit && isLastPage
       ? "Continue to paid modules →"
@@ -400,6 +402,7 @@ export default function LessonRenderer({
       onContinuePaid={onContinuePaid}
       onAccount={onAccount}
       onOpenMenu={onOpenMenu}
+      onHelp={onHelp}
     />
   );
 

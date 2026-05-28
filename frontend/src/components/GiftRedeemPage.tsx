@@ -19,6 +19,7 @@ import {
   MOTION,
   RADIUS,
   SPACING,
+  TYPOGRAPHY,
 } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
@@ -40,11 +41,12 @@ import {
 interface Props {
   onClaimed: () => void;
   onBack: () => void;
+  onHelp?: () => void;
 }
 
 type Phase = "enter" | "preview_ok" | "claimed";
 
-export default function GiftRedeemPage({ onClaimed, onBack }: Props) {
+export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [token, setToken] = useState("");
   const [productCode, setProductCode] = useState<string | null>(null);
@@ -222,6 +224,26 @@ export default function GiftRedeemPage({ onClaimed, onBack }: Props) {
               Continue
             </button>
           </section>
+        )}
+        {onHelp && (
+          <p style={{ marginTop: SPACING.md }}>
+            <button
+              type="button"
+              onClick={onHelp}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                color: COLORS.accentMutedBlue,
+                textDecoration: "underline",
+                cursor: "pointer",
+                fontSize: TYPOGRAPHY.bodySizePx,
+                fontFamily: TYPOGRAPHY.fontFamily,
+              }}
+            >
+              Questions about gift tokens
+            </button>
+          </p>
         )}
       </main>
     </RenderGuard>

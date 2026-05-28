@@ -37,6 +37,7 @@ interface Props {
   onAccount?: () => void;
   /** Jump to a specific unit (Module 0–3 free track). */
   onSelectUnit?: (module: number, unitId: string) => void;
+  onHelp?: () => void;
 }
 
 const PAGE: CSSProperties = {
@@ -125,7 +126,7 @@ const CONTINUE_BUTTON: CSSProperties = {
 };
 
 export default function CurriculumMenu(props: Props) {
-  const { onContinue, onSignIn, onContinuePaid, onAccount, onSelectUnit } = props;
+  const { onContinue, onSignIn, onContinuePaid, onAccount, onSelectUnit, onHelp } = props;
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [menu, setMenu] = useState<CurriculumMenu | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -209,6 +210,7 @@ export default function CurriculumMenu(props: Props) {
           onSignIn={onSignIn}
           onContinuePaid={onContinuePaid}
           onAccount={onAccount}
+          onHelp={onHelp}
         />
         <h1 style={HEADING} data-component="Heading">
           Lessons

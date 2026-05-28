@@ -27,6 +27,7 @@ const CurriculumMenu = lazy(() => import("./components/CurriculumMenu"));
 const PaywallPage = lazy(() => import("./components/PaywallPage"));
 const GiftRedeemPage = lazy(() => import("./components/GiftRedeemPage"));
 const AccountSettingsPage = lazy(() => import("./components/AccountSettingsPage"));
+const HelpPage = lazy(() => import("./components/HelpPage"));
 
 // Step 3 of the FE cutover plan: temporary debug surface that prints
 // the AuthProvider state in the corner of every page so we can watch
@@ -66,6 +67,7 @@ type View =
   | "paywall"
   | "gift_redeem"
   | "account"
+  | "help"
   | "oauth_finishing";
 
 // Views that require an authenticated session. Unauthenticated users
@@ -125,6 +127,7 @@ const App: React.FC = () => {
   const goLanding = () => setView("landing");
   const goSignIn = () => setView("signin");
   const goMenu = () => setView("menu");
+  const goHelp = () => setView("help");
   // Gate: signed-out callers are routed through sign-in and forwarded.
   const requireAuth = (target: View) => {
     if (isReady) {
@@ -223,6 +226,7 @@ const App: React.FC = () => {
           onAccount={goAccount}
           signedIn={isReady}
           onSignOut={signOut}
+          onHelp={goHelp}
         />
       );
       break;
@@ -234,6 +238,7 @@ const App: React.FC = () => {
             onContinueGated={goPaywall}
             onAccount={goAccount}
             onOpenMenu={goMenu}
+            onHelp={goHelp}
           />
         </Suspense>
       );
@@ -247,6 +252,7 @@ const App: React.FC = () => {
             onContinuePaid={goPaywall}
             onAccount={goAccount}
             onSelectUnit={handleSelectUnit}
+            onHelp={goHelp}
           />
         </Suspense>
       );
@@ -263,6 +269,7 @@ const App: React.FC = () => {
             onAccount={goAccount}
             onOpenMenu={goMenu}
             onSequenceComplete={goLanding}
+            onHelp={goHelp}
           />
         </Suspense>
       );
@@ -274,6 +281,7 @@ const App: React.FC = () => {
             productCode="modules_4_5"
             onRedeemGift={() => setView("gift_redeem")}
             onBack={goLanding}
+            onHelp={goHelp}
           />
         </Suspense>
       );
@@ -284,6 +292,7 @@ const App: React.FC = () => {
           <GiftRedeemPage
             onClaimed={goCurriculum}
             onBack={() => setView("paywall")}
+            onHelp={goHelp}
           />
         </Suspense>
       );
@@ -295,7 +304,15 @@ const App: React.FC = () => {
             onSignedOut={signOut}
             onDeleted={goLanding}
             onBack={goLanding}
+            onHelp={goHelp}
           />
+        </Suspense>
+      );
+      break;
+    case "help":
+      body = (
+        <Suspense fallback={loadFallback}>
+          <HelpPage onBack={goLanding} />
         </Suspense>
       );
       break;

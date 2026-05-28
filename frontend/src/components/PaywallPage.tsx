@@ -20,6 +20,7 @@ import {
   MOTION,
   RADIUS,
   SPACING,
+  TYPOGRAPHY,
 } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
@@ -39,12 +40,14 @@ interface Props {
   productCode: string;
   onRedeemGift: () => void;
   onBack: () => void;
+  onHelp?: () => void;
 }
 
 export default function PaywallPage({
   productCode,
   onRedeemGift,
   onBack,
+  onHelp,
 }: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -173,6 +176,27 @@ export default function PaywallPage({
         >
           Go back
         </button>
+
+        {onHelp && (
+          <p style={{ marginTop: SPACING.md }}>
+            <button
+              type="button"
+              onClick={onHelp}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                color: COLORS.accentMutedBlue,
+                textDecoration: "underline",
+                cursor: "pointer",
+                fontSize: TYPOGRAPHY.bodySizePx,
+                fontFamily: TYPOGRAPHY.fontFamily,
+              }}
+            >
+              Questions about buying or gifting
+            </button>
+          </p>
+        )}
       </main>
     </RenderGuard>
   );

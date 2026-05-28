@@ -22,6 +22,7 @@ import {
   MOTION,
   RADIUS,
   SPACING,
+  TYPOGRAPHY,
 } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
@@ -52,12 +53,14 @@ interface Props {
   onSignedOut: () => void;
   onDeleted: () => void;
   onBack: () => void;
+  onHelp?: () => void;
 }
 
 export default function AccountSettingsPage({
   onSignedOut,
   onDeleted,
   onBack,
+  onHelp,
 }: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -240,6 +243,27 @@ export default function AccountSettingsPage({
         >
           Go back
         </button>
+
+        {onHelp && (
+          <p style={{ marginTop: SPACING.md }}>
+            <button
+              type="button"
+              onClick={onHelp}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                color: COLORS.accentMutedBlue,
+                textDecoration: "underline",
+                cursor: "pointer",
+                fontSize: TYPOGRAPHY.bodySizePx,
+                fontFamily: TYPOGRAPHY.fontFamily,
+              }}
+            >
+              Account help
+            </button>
+          </p>
+        )}
       </main>
     </RenderGuard>
   );

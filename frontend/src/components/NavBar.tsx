@@ -25,6 +25,7 @@ interface Props {
    *  callers whose envelope cannot accommodate an extra primary action
    *  (e.g. LandingPage) can omit it. */
   onOpenMenu?: () => void;
+  onHelp?: () => void;
 }
 
 const NAV: React.CSSProperties = {
@@ -59,6 +60,7 @@ export default function NavBar({
   onContinuePaid,
   onAccount,
   onOpenMenu,
+  onHelp,
 }: Props) {
   // B1: NavBar reads auth state from AuthProvider, never via its own
   // whoami() call (T-H2). It also never mounts an interceptor or fetches
@@ -111,6 +113,14 @@ export default function NavBar({
         <GeragogySafeTap>
           <button type="button" style={LINK_BTN} onClick={onOpenMenu}>
             Lessons
+          </button>
+        </GeragogySafeTap>
+      )}
+
+      {onHelp && (
+        <GeragogySafeTap>
+          <button type="button" style={LINK_BTN} onClick={onHelp}>
+            Help
           </button>
         </GeragogySafeTap>
       )}
