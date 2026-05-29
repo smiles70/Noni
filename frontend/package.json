@@ -11,7 +11,8 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install --with-deps",
-    "bundle-size": "node scripts/check-bundle-size.mjs"
+    "bundle-size": "node scripts/check-bundle-size.mjs",
+    "lint:timers": "node -e \"const{execSync}=require('child_process');try{const out=execSync('grep -rn window\\\\.setTimeout src/ --include=*.ts --include=*.tsx',{encoding:'utf8',stdio:['pipe','pipe','ignore']});if(out.trim()){console.error('ERROR: window.setTimeout found in shared code:');console.error(out);process.exit(1);}}catch(e){if(e.status===1&&(!e.stdout||e.stdout==='')){console.log('Timer lint: PASS');process.exit(0);}else{console.error('Timer lint error:',e.message);process.exit(1);}}console.log('Timer lint: PASS');\""
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.32.0",

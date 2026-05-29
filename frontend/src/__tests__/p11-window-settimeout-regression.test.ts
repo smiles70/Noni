@@ -14,10 +14,10 @@ describe("P11/P23 regression guard", () => {
   });
 
   it("source uses globalThis not window for timers", () => {
-    expect(clientSource).toMatch(/globalThis\.setTimeout/);
-    expect(clientSource).toMatch(/globalThis\.clearTimeout/);
-    expect(clientSource).not.toMatch(/window\.setTimeout/);
-    expect(clientSource).not.toMatch(/window\.clearTimeout/);
+    expect(clientSource).toMatch(/globalThis\.setTimeout\s*\(/);
+    expect(clientSource).toMatch(/globalThis\.clearTimeout\s*\(/);
+    expect(clientSource).not.toMatch(/window\.setTimeout\s*\(/);
+    expect(clientSource).not.toMatch(/window\.clearTimeout\s*\(/);
   });
 
   it("globalThis.setTimeout works with vitest fake timers", () => {
