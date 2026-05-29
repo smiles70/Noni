@@ -152,8 +152,13 @@ app = FastAPI(
 _cors_origins = (
     [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
     if settings.CORS_ORIGINS
-    else ["http://localhost:5173", "http://127.0.0.1:5173"]
+    else [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://noni-web.pages.dev",
+    ]
 )
+_cors_origin_regex = r"https://.*\.noni-web\.pages\.dev"
 # Sprint 23 H1: Security headers must be outermost so they are present
 # even on error responses.
 app.add_middleware(SecurityHeadersMiddleware)
@@ -170,6 +175,7 @@ app.add_middleware(TelemetryMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
+    allow_origin_regex=_cors_origin_regex,
     # ADR 0024: stateless Bearer auth. We do not read or write cookies
     # on cross-origin requests, so `allow_credentials=False` is correct
     # AND has a useful side effect: with credentials disabled the CORS
