@@ -143,7 +143,11 @@ BLOCKER 2: NO FRONTEND ERROR REPORTING
 -- Fix: Sentry (free tier handles 5,000 events per month -- more than enough for Noni's current scale)
 -- Effort: Low
 
-CLOSE BOTH = +22 POINTS -> 543/720
+RECENTLY CLOSED:
+-- Build pipeline: `tokens.test.ts` TypeScript error fixed. `npm run build` and `npm run type-check` now pass cleanly from root. Added root `package.json` with npm workspaces for consistent command execution.
+-- Timer regression guard: `lint:timers` script added to catch `window.setTimeout` in shared code before it reaches production.
+
+CLOSE BOTH BLOCKERS = +22 POINTS -> 543/720
 Still Stage 4, but the last critical reds are gone. Noni becomes a "clean" Series A story with a clear path to B.
 
 ========================================
