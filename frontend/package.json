@@ -16,7 +16,8 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.32.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",

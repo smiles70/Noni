@@ -7,13 +7,14 @@
  * the additional views are reachable in dev via direct setView calls
  * (e.g. from a debug surface or future settings entry on landing).
  */
-import { Suspense, lazy, useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { Suspense, lazy, useEffect } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import LandingPage from "./components/LandingPage";
 import SignInPage from "./components/SignInPage";
 import AuthPendingBanner from "./components/AuthPendingBanner";
 import AuthBlockedNotice from "./components/AuthBlockedNotice";
 import LoadingSkeleton from "./components/LoadingSkeleton";
+import RequireAuth from "./components/RequireAuth";
 import { useAuth } from "./auth/AuthProvider";
 import { readProgress, writeProgress } from "./lib/progress";
 import { IS_DEV } from "./lib/env";
@@ -58,97 +59,66 @@ function DebugAuth() {
   );
 }
 
-type View =
-  | "landing"
-  | "curriculum"
-  | "paid_curriculum"
-  | "menu"
-  | "signin"
-  | "paywall"
-  | "gift_redeem"
-  | "account"
-  | "help"
-  | "oauth_finishing";
-
-// Views that require an authenticated session. Unauthenticated users
-// hitting these are bounced to "signin" and forwarded after success.
-const GATED_VIEWS: ReadonlySet<View> = new Set<View>([
-  "curriculum",
-  "paid_curriculum",
-  "paywall",
-  "gift_redeem",
-  "account",
-]);
-
 const App: React.FC = () => {
   // AuthProvider is the ONLY source of auth truth (FE Step-4 cutover).
-  // App.tsx remains the orchestrator of routing + intent (pendingView).
-  const { state, signOut } = useAuth();
-  // Sprint 28-B.10: restore view from sessionStorage on boot so learners
-  // resume where they left off after refresh.
-  const [view, setView] = useState<View>(() => {
-    try {
-      const saved = sessionStorage.getItem("noni.view");
-      if (saved && (GATED_VIEWS as ReadonlySet<string>).has(saved)) {
-        return saved as View;
-      }
-    } catch {
-      // private mode / quota — silently fall back to landing
-    }
-    return "landing";
-  });
-  // Where to land after a successful sign-in (e.g. user clicked "Begin"
-  // while signed out -> we remember "curriculum" and forward post-auth).
-  const [pendingView, setPendingView] = useState<View | null>(null);
-  // Sprint 28 quick-win: race-condition guard so a flickering isReady
-  // (e.g. Clerk token refresh) cannot consume pendingView twice.
-  const pendingConsumedRef = useRef(false);
-
-  // Persist view changes to sessionStorage.
-  useEffect(() => {
-    try {
-      sessionStorage.setItem("noni.view", view);
-    } catch {
-      /* silently ignore quota errors */
-    }
-  }, [view]);
+  // App.tsx now orchestrates routes via React Router v6 (Series A Step 1).
+  const { state, signOut: rawSignOut } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const isReady = state?.status === "READY";
 
-  // Resolve pendingView after AuthProvider transitions to READY.
-  useEffect(() => {
-    if (isReady && pendingView && !pendingConsumedRef.current) {
-      pendingConsumedRef.current = true;
-      setView(pendingView);
-      setPendingView(null);
-    }
-  }, [isReady, pendingView]);
+  // Series A Step 1: after explicit sign-out, redirect to landing so
+  // the user is not left on a gated route in SIGNED_OUT state.
+  const signOut = async () => {
+    await rawSignOut();
+    navigate("/", { replace: true });
+  };
 
-  const goLanding = () => setView("landing");
-  const goSignIn = () => setView("signin");
-  const goMenu = () => setView("menu");
-  const goHelp = () => setView("help");
-  // Gate: signed-out callers are routed through sign-in and forwarded.
-  const requireAuth = (target: View) => {
+  // Series A Step 1: redirect after auth succeeds. If the URL has a
+  // ?redirect= param (set by RequireAuth), forward the user there.
+  // If the user signed in directly at /signin with no redirect, send
+  // them to /curriculum as the natural post-auth destination.
+  useEffect(() => {
     if (isReady) {
-      setView(target);
+      const params = new URLSearchParams(location.search);
+      const redirect = params.get("redirect");
+      if (redirect) {
+        navigate(redirect, { replace: true });
+      } else if (location.pathname === "/signin") {
+        navigate("/curriculum", { replace: true });
+      }
+    }
+  }, [isReady, location.search, location.pathname, navigate]);
+
+  const goLanding = () => navigate("/");
+  const goSignIn = () => navigate("/signin");
+  const goMenu = () => navigate("/menu");
+  const goHelp = () => navigate("/help");
+
+  // Gate: signed-out callers are routed through /signin with a redirect.
+  const requireAuth = (path: string) => {
+    if (isReady) {
+      navigate(path);
     } else {
-      setPendingView(target);
-      setView("signin");
+      navigate(`/signin?redirect=${encodeURIComponent(path)}`);
     }
   };
+
   // Cross-track resume: check saved progress and route to the correct
   // track so a returning learner picks up in M1-3 or M4-5 as appropriate.
   const goCurriculum = () => {
     const saved = readProgress();
-    if (saved && (saved.module === 4 || saved.module === 5)) {
-      requireAuth("paid_curriculum");
-    } else {
-      requireAuth("curriculum");
-    }
+    const target =
+      saved && (saved.module === 4 || saved.module === 5)
+        ? "/paid-curriculum"
+        : "/curriculum";
+    requireAuth(target);
   };
-  const goPaywall = () => requireAuth("paywall");
-  const goAccount = () => requireAuth("account");
+
+  const goPaywall = () => requireAuth("/paywall");
+  const goAccount = () => requireAuth("/account");
+
   const handleSelectUnit = (module: number, unitId: string) => {
     writeProgress({ module: module as 0 | 1 | 2 | 3 | 4 | 5, unitId, pageIdx: 0 });
     goCurriculum();
@@ -156,12 +126,9 @@ const App: React.FC = () => {
 
   // Always-mounted debug surface so we can observe AuthProvider state
   // even during BOOT / AUTHENTICATING / REJECTED early returns.
-  // F1: dev-only — Vite strips this branch from prod bundles via the
-  // `import.meta.env.DEV` constant, so internal state never leaks to
-  // production users.
   const debug = IS_DEV ? <DebugAuth /> : null;
 
-  // Global gates: AuthProvider state takes precedence over `view`.
+  // Global gates: AuthProvider state takes precedence over routes.
   const status = state?.status;
   if (status === "BOOT" || status === "AUTHENTICATING") {
     return (
@@ -173,13 +140,15 @@ const App: React.FC = () => {
       </>
     );
   }
+
   if (status === "REJECTED") {
-    // F6: discriminated, dignified copy per AuthError code; raw codes
-    // never reach the user. onSignIn clears the rejected credential
-    // (-> SIGNED_OUT) and routes to the sign-in page.
     const handleSignInAgain = async () => {
-      try { await signOut(); } catch { /* idempotent */ }
-      setView("signin");
+      try {
+        await rawSignOut();
+      } catch {
+        /* idempotent */
+      }
+      navigate("/signin");
     };
     return (
       <>
@@ -194,141 +163,16 @@ const App: React.FC = () => {
     );
   }
 
-  // SIGNED_OUT + TRANSIENT_ERROR + READY all reach the view switch.
-  // Public views (landing, menu, signin) render in any state.
-  // Gated views (curriculum, paywall, gift_redeem, account) render only
-  // when state.status === "READY"; otherwise we show SignInPage so the
-  // user can sign in and pendingView forwards them once READY fires.
+  // Sprint 28-B.1 + 28-B.8: loading fallback for lazy-loaded views.
+  const loadFallback = <LoadingSkeleton />;
+
   const onSignInPage = (
     <SignInPage onSignedIn={() => {}} onCancel={goLanding} />
   );
 
-  if (!isReady && GATED_VIEWS.has(view)) {
-    return (
-      <>
-        {debug}
-        {onSignInPage}
-      </>
-    );
-  }
-
-  // Sprint 28-B.1 + 28-B.8: loading fallback for lazy-loaded views.
-  const loadFallback = <LoadingSkeleton />;
-
-  let body: ReactNode;
-  switch (view) {
-    case "landing":
-      body = (
-        <LandingPage
-          onBegin={goCurriculum}
-          onSignIn={goSignIn}
-          onContinuePaid={goPaywall}
-          onAccount={goAccount}
-          signedIn={isReady}
-          onSignOut={signOut}
-          onHelp={goHelp}
-        />
-      );
-      break;
-    case "curriculum":
-      body = (
-        <Suspense fallback={loadFallback}>
-          <CurriculumRenderer
-            onSignIn={goSignIn}
-            onContinueGated={goPaywall}
-            onAccount={goAccount}
-            onOpenMenu={goMenu}
-            onHelp={goHelp}
-          />
-        </Suspense>
-      );
-      break;
-    case "menu":
-      body = (
-        <Suspense fallback={loadFallback}>
-          <CurriculumMenu
-            onContinue={goCurriculum}
-            onSignIn={goSignIn}
-            onContinuePaid={goPaywall}
-            onAccount={goAccount}
-            onSelectUnit={handleSelectUnit}
-            onHelp={goHelp}
-          />
-        </Suspense>
-      );
-      break;
-    case "signin":
-      body = onSignInPage;
-      break;
-    case "paid_curriculum":
-      body = (
-        <Suspense fallback={loadFallback}>
-          <PaidLessonRenderer
-            onSignIn={goSignIn}
-            onPaywall={goPaywall}
-            onAccount={goAccount}
-            onOpenMenu={goMenu}
-            onSequenceComplete={goLanding}
-            onHelp={goHelp}
-          />
-        </Suspense>
-      );
-      break;
-    case "paywall":
-      body = (
-        <Suspense fallback={loadFallback}>
-          <PaywallPage
-            productCode="modules_4_5"
-            onRedeemGift={() => setView("gift_redeem")}
-            onBack={goLanding}
-            onHelp={goHelp}
-          />
-        </Suspense>
-      );
-      break;
-    case "gift_redeem":
-      body = (
-        <Suspense fallback={loadFallback}>
-          <GiftRedeemPage
-            onClaimed={goCurriculum}
-            onBack={() => setView("paywall")}
-            onHelp={goHelp}
-          />
-        </Suspense>
-      );
-      break;
-    case "account":
-      body = (
-        <Suspense fallback={loadFallback}>
-          <AccountSettingsPage
-            onSignedOut={signOut}
-            onDeleted={goLanding}
-            onBack={goLanding}
-            onHelp={goHelp}
-          />
-        </Suspense>
-      );
-      break;
-    case "help":
-      body = (
-        <Suspense fallback={loadFallback}>
-          <HelpPage onBack={goLanding} />
-        </Suspense>
-      );
-      break;
-    case "oauth_finishing":
-      body = (
-        <main aria-live="polite" data-component="PendingBanner">
-          <p>One moment — finishing sign in.</p>
-        </main>
-      );
-      break;
-  }
-
   // F6: TRANSIENT_ERROR surfaces a non-alarming reconnect banner above
-  // the current view. Per I-A, signed-in is sticky on transient backend
-  // failures, so we keep rendering `body` underneath. Retry = full reload
-  // (simple, predictable; AuthProvider re-runs the boot probe).
+  // the current route. Per I-A, signed-in is sticky on transient backend
+  // failures, so we keep rendering routes underneath.
   const transientBanner =
     status === "TRANSIENT_ERROR" ? (
       <AuthPendingBanner onRetry={() => window.location.reload()} />
@@ -338,21 +182,140 @@ const App: React.FC = () => {
     <ViewportProvider>
       <ResponsiveContainer>
         <>
-          {/* Sprint 28-D.7: skip-to-content link for keyboard users.
-           *  Contract-compliant (CONTRACT Section I.A palette only;
-           *  Section II — no spatial movement on focus). Uses the
-           *  clip-path / size-collapse pattern so the element occupies
-           *  zero visible space when unfocused and reveals in place on
-           *  focus, with no position translation. */}
-          <a
-            href="#main-content"
-            className="noni-skip-link"
-          >
+          <a href="#main-content" className="noni-skip-link">
             Skip to main content
           </a>
           {debug}
           {transientBanner}
-          <div id="main-content">{body}</div>
+          <div id="main-content">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <LandingPage
+                    onBegin={goCurriculum}
+                    onSignIn={goSignIn}
+                    onContinuePaid={goPaywall}
+                    onAccount={goAccount}
+                    signedIn={isReady}
+                    onSignOut={signOut}
+                    onHelp={goHelp}
+                  />
+                }
+              />
+              <Route path="/signin" element={onSignInPage} />
+              <Route
+                path="/help"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <HelpPage onBack={goLanding} />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/curriculum"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <CurriculumRenderer
+                        onSignIn={goSignIn}
+                        onContinueGated={goPaywall}
+                        onAccount={goAccount}
+                        onOpenMenu={goMenu}
+                        onHelp={goHelp}
+                      />
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/paid-curriculum"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <PaidLessonRenderer
+                        onSignIn={goSignIn}
+                        onPaywall={goPaywall}
+                        onAccount={goAccount}
+                        onOpenMenu={goMenu}
+                        onSequenceComplete={goLanding}
+                        onHelp={goHelp}
+                      />
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/menu"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <CurriculumMenu
+                        onContinue={goCurriculum}
+                        onSignIn={goSignIn}
+                        onContinuePaid={goPaywall}
+                        onAccount={goAccount}
+                        onSelectUnit={handleSelectUnit}
+                        onHelp={goHelp}
+                      />
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/paywall"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <PaywallPage
+                        productCode="modules_4_5"
+                        onRedeemGift={() => navigate("/gift-redeem")}
+                        onBack={goLanding}
+                        onHelp={goHelp}
+                      />
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/gift-redeem"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <GiftRedeemPage
+                        onClaimed={goCurriculum}
+                        onBack={() => navigate("/paywall")}
+                        onHelp={goHelp}
+                      />
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/account"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <AccountSettingsPage
+                        onSignedOut={signOut}
+                        onDeleted={goLanding}
+                        onBack={goLanding}
+                        onHelp={goHelp}
+                      />
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/auth/callback"
+                element={
+                  <main aria-live="polite" data-component="PendingBanner">
+                    <p>One moment — finishing sign in.</p>
+                  </main>
+                }
+              />
+            </Routes>
+          </div>
         </>
       </ResponsiveContainer>
     </ViewportProvider>

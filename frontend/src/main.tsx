@@ -1,6 +1,7 @@
 import './styles.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { applyLargeTextOnBoot } from './largeText';
 import { AUTH_PROVIDER, CLERK_PUBLISHABLE_KEY } from './lib/env';
@@ -89,15 +90,17 @@ if (provider === 'clerk') {
     root.render(
       <React.StrictMode>
         <ErrorBoundary>
-          {/* No `afterSignOutUrl` here: post-signout navigation is owned by
-              App.tsx (handleSignedOut), which is the single source of truth
-              for view transitions. Letting Clerk redirect us would race
-              our state updates and unmount the SignOut button mid-await. */}
-          <ClerkProvider publishableKey={clerkKey}>
-            <AuthProvider>
-              <App />
-            </AuthProvider>
-          </ClerkProvider>
+          <BrowserRouter>
+            {/* No `afterSignOutUrl` here: post-signout navigation is owned by
+                App.tsx, which is the single source of truth for view
+                transitions. Letting Clerk redirect us would race our state
+                updates and unmount the SignOut button mid-await. */}
+            <ClerkProvider publishableKey={clerkKey}>
+              <AuthProvider>
+                <App />
+              </AuthProvider>
+            </ClerkProvider>
+          </BrowserRouter>
         </ErrorBoundary>
       </React.StrictMode>,
     );
@@ -106,9 +109,11 @@ if (provider === 'clerk') {
   root.render(
     <React.StrictMode>
       <ErrorBoundary>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </BrowserRouter>
       </ErrorBoundary>
     </React.StrictMode>,
   );
