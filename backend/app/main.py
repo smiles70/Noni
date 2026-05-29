@@ -23,6 +23,7 @@ from backend.api.routes.gifts import router as gifts_router
 from backend.api.routes.landing import router as landing_router
 from backend.api.routes.signals import router as signals_router
 from backend.api.routes.telemetry_export import router as telemetry_export_router
+from backend.api.routes.telemetry_summary import router as telemetry_summary_router
 from backend.api.routes.ui_envelope import router as ui_envelope_router
 from backend.app.telemetry import (
     RequestIdMiddleware,
@@ -222,6 +223,9 @@ app.include_router(signals_router, prefix="/api/v1/signals", tags=["signals"])
 app.include_router(landing_router, prefix="/api/v1/landing", tags=["landing"])
 app.include_router(
     telemetry_export_router, prefix="/api/v1/telemetry", tags=["telemetry"]
+)
+app.include_router(
+    telemetry_summary_router, prefix="/api/v1", tags=["telemetry"]
 )
 app.include_router(
     ui_envelope_router, prefix="/api/v1/ui-envelope", tags=["ui-envelope"]

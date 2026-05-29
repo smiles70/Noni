@@ -8,6 +8,10 @@
 # Secrets (DATABASE_URL, CLERK_*, SESSION_SECRET, etc.) are pushed via
 # `make secrets-sync` (see infra/scripts/secrets-sync.sh) and never live
 # in this file.
+#
+# Sprint '2nd Safe Yellow' P20: single-region deployment (iad).
+# Multi-region requires read replicas + regional write guards.
+# Roadmap: docs/ops/multi-region-plan.md (post-MVP).
 
 app = "noni-api"
 primary_region = "iad"

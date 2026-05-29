@@ -271,45 +271,51 @@ def test_mock_verifier_constants_parity():
     """
     Real enforcement (correct target): verify _verify_mock (auth_verifier)
     and MockAuthProvider (auth_provider) use the SAME constants.
-    Divergence = silent auth failure in tests.
+
+    Sprint '2nd Safe Yellow' P13: constants moved to shared mock_parser.py.
+    Both modules must import from that single source.
     """
+    mock_parser_path = Path("backend/services/mock_parser.py")
     auth_provider_path = Path("backend/services/auth_provider.py")
     auth_verifier_path = Path("backend/services/auth_verifier.py")
 
-    if not auth_provider_path.exists() or not auth_verifier_path.exists():
+    if not all(p.exists() for p in (mock_parser_path, auth_provider_path, auth_verifier_path)):
         pytest.skip("Required files not present")
 
+    mock_parser_text = mock_parser_path.read_text(encoding="utf-8")
     auth_provider_text = auth_provider_path.read_text(encoding="utf-8")
     auth_verifier_text = auth_verifier_path.read_text(encoding="utf-8")
 
-    # Extract UUID from auth_provider.py
-    ap_uuid_match = re.search(
-        r'NAMESPACE\s*=\s*uuid\.UUID\("([^"]+)"\)',
-        auth_provider_text,
+    # Single source of truth lives in mock_parser.py
+    mp_uuid_match = re.search(
+        r'MOCK_NAMESPACE\s*=\s*uuid\.UUID\("([^"]+)"\)',
+        mock_parser_text,
     )
-    # Extract UUID from auth_verifier.py
-    av_uuid_match = re.search(
-        r'_MOCK_NAMESPACE\s*=\s*uuid\.UUID\("([^"]+)"\)',
-        auth_verifier_text,
+    assert mp_uuid_match, "MOCK_NAMESPACE not found in mock_parser.py"
+    expected_uuid = mp_uuid_match.group(1)
+
+    mp_prefix_match = re.search(
+        r'MOCK_PREFIX\s*=\s*"([^"]+)"',
+        mock_parser_text,
+    )
+    assert mp_prefix_match, "MOCK_PREFIX not found in mock_parser.py"
+    expected_prefix = mp_prefix_match.group(1)
+
+    # Both consumers must import from the shared module
+    assert "from backend.services.mock_parser import" in auth_provider_text, (
+        "auth_provider.py must import mock constants from mock_parser.py"
+    )
+    assert "from backend.services.mock_parser import" in auth_verifier_text, (
+        "auth_verifier.py must import mock constants from mock_parser.py"
     )
 
-    if ap_uuid_match and av_uuid_match:
-        assert ap_uuid_match.group(1) == av_uuid_match.group(1), (
-            "Mock namespace UUID mismatch between auth_provider.py and auth_verifier.py. "
-            f"auth_provider: {ap_uuid_match.group(1)}, "
-            f"auth_verifier: {av_uuid_match.group(1)}"
-        )
-
-    # Extract prefix
-    ap_prefix_match = re.search(r'PREFIX\s*=\s*"([^"]+)"', auth_provider_text)
-    av_prefix_match = re.search(r'_MOCK_PREFIX\s*=\s*"([^"]+)"', auth_verifier_text)
-
-    if ap_prefix_match and av_prefix_match:
-        assert ap_prefix_match.group(1) == av_prefix_match.group(1), (
-            "Mock prefix mismatch between auth_provider.py and auth_verifier.py. "
-            f"auth_provider: {ap_prefix_match.group(1)}, "
-            f"auth_verifier: {av_prefix_match.group(1)}"
-        )
+    # Optional: verify legacy inline constants were removed
+    assert "uuid.UUID(\"00000000-0000-0000-0000-000000000001\")" not in auth_provider_text, (
+        "auth_provider.py should not duplicate the mock namespace UUID"
+    )
+    assert "uuid.UUID(\"00000000-0000-0000-0000-000000000001\")" not in auth_verifier_text, (
+        "auth_verifier.py should not duplicate the mock namespace UUID"
+    )
 
 
 # =============================================================================

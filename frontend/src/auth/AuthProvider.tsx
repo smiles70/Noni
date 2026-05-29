@@ -22,6 +22,7 @@ import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import { apiClient } from "../api/client";
 import { AUTH_PROVIDER } from "../lib/env";
 import { useAuthParity } from "./useAuthParity";
+import { useAuthSession, type AuthState } from "./useAuthSession";
 
 
 /**********************************************************************
@@ -71,37 +72,12 @@ function useCredentialSource() {
  * ✅ SECTION 3 — AUTH PROVIDER
  **********************************************************************/
 
-type AuthState =
-  | { status: "BOOT" }
-  | { status: "SIGNED_OUT" }
-  | { status: "AUTHENTICATING" }
-  | {
-      status: "READY";
-      accountId: string | null;
-      email: string | null;
-      displayName: string | null;
-    }
-  | { status: "TRANSIENT_ERROR" }
-  | { status: "REJECTED"; errorCode: string };
-
 export interface AuthContextValue {
   state: AuthState;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-
-interface AuthSessionResponse {
-  subject: string;
-  materialized: boolean;
-  account_id?: string | null;
-  email?: string | null;
-  display_name?: string | null;
-}
-
-interface AuthSessionInitResponse {
-  account_id: string;
-}
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
@@ -175,104 +151,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   /******************************************************************
-   * ✅ SECTION 3C — AUTH FLOW
+   * ✅ SECTION 3C — AUTH FLOW (EXTRACTED TO useAuthSession)
+   * Sprint '2nd Safe Yellow' P17: session resolution moved to hook.
    ******************************************************************/
 
-  useEffect(() => {
-    if (!auth.isLoaded) return;
-
-    if (!auth.isSignedIn) {
-      setState({ status: "SIGNED_OUT" });
-      return;
-    }
-
-    setState({ status: "AUTHENTICATING" });
-
-    resolveSession();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth.isLoaded, auth.isSignedIn]);
+  useAuthSession(auth, setState);
 
 
   /******************************************************************
-   * ✅ SECTION 3D — RESOLVE SESSION (FIXED RACE)
-   ******************************************************************/
-
-  async function resolveSession() {
-    try {
-      const token = await auth.getToken();
-
-      if (!token) return;
-
-      // ✅ PASS TOKEN EXPLICITLY (race fix)
-      const res = await apiClient.get<AuthSessionResponse>("/auth/session", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (res.data.materialized) {
-        setState({
-          status: "READY",
-          accountId: res.data.account_id ?? null,
-          email: res.data.email ?? null,
-          displayName: res.data.display_name ?? null,
-        });
-        return;
-      }
-
-      const initRes = await apiClient.post<AuthSessionInitResponse>(
-        "/auth/session/init",
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setState({
-        status: "READY",
-        accountId: initRes.data.account_id,
-        // /auth/session/init returns account_id only. email arrives on
-        // the next /auth/session call (e.g. next page load); we set it
-        // null here so consumers can render a "—" placeholder.
-        email: null,
-        displayName: null,
-      });
-
-    } catch (err) {
-      handleError(err);
-    }
-  }
-
-
-  /******************************************************************
-   * ✅ SECTION 3E — ERROR HANDLING
-   ******************************************************************/
-
-  interface ApiErrorResponse {
-    data?: { error?: { code?: string } };
-  }
-
-  function handleError(err: unknown) {
-    const apiErr = err as { response?: ApiErrorResponse } | undefined;
-    const code = apiErr?.response?.data?.error?.code;
-
-    if (!code) {
-      setState({ status: "TRANSIENT_ERROR" });
-      return;
-    }
-
-    if (code.startsWith("auth.transient")) {
-      setState({ status: "TRANSIENT_ERROR" });
-      return;
-    }
-
-    setState({
-      status: "REJECTED",
-      errorCode: code,
-    });
-  }
-
-
-  /******************************************************************
-   * ✅ SECTION 3F — SIGN OUT
+   * ✅ SECTION 3D — SIGN OUT
    ******************************************************************/
 
   async function signOut() {

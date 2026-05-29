@@ -28,6 +28,7 @@ from pybreaker import CircuitBreaker
 
 from backend.app.circuit_breaker_metrics import record_circuit_transition
 from backend.core.config import settings
+from backend.services.mock_parser import MOCK_NAMESPACE, MOCK_PREFIX, parse_mock_token
 
 
 class _ClerkCircuitListener:
@@ -111,16 +112,16 @@ class MockAuthProvider:
     Dev / test only. The auth_user_id is deterministically derived from
     the email so repeated logins for the same email reuse the same
     `accounts.auth_user_id`, mirroring real provider behavior.
+
+    Sprint '2nd Safe Yellow' P13: parsing delegated to shared mock_parser.
     """
 
-    NAMESPACE = uuid.UUID("00000000-0000-0000-0000-000000000001")
-    PREFIX = "mock:"
+    NAMESPACE = MOCK_NAMESPACE
+    PREFIX = MOCK_PREFIX
 
     def verify_credential(self, credential: str) -> Optional[AuthClaims]:
-        if not isinstance(credential, str) or not credential.startswith(self.PREFIX):
-            return None
-        email = credential[len(self.PREFIX) :].strip().lower()
-        if not email or "@" not in email:
+        email = parse_mock_token(credential)
+        if email is None:
             return None
         return AuthClaims(
             auth_user_id=uuid.uuid5(self.NAMESPACE, email),

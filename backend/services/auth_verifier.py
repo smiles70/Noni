@@ -43,6 +43,7 @@ from jwt import (
 from backend.core.config import settings
 from backend.services.auth_provider import AuthClaims
 from backend.services.clerk_verifier import ClerkVerifier
+from backend.services.mock_parser import MOCK_NAMESPACE, parse_mock_token
 
 logger = logging.getLogger("noni.auth_verifier")
 # Surface verifier failure modes (e.g. clerk_jwks_lookup_failed) under
@@ -129,21 +130,16 @@ def parse_bearer(authorization: Optional[str]) -> Optional[str]:
 
 # ---------------------------------------------------------------------------
 # Mock provider verification (dev/tests).
+# Sprint '2nd Safe Yellow' P13: delegated to shared mock_parser.
 # ---------------------------------------------------------------------------
 
 
-_MOCK_NAMESPACE = uuid.UUID("00000000-0000-0000-0000-000000000001")
-_MOCK_PREFIX = "mock:"
-
-
 def _verify_mock(token: str) -> AuthClaims:
-    if not token.startswith(_MOCK_PREFIX):
-        raise AuthError("auth.malformed")
-    email = token[len(_MOCK_PREFIX) :].strip().lower()
-    if not email or "@" not in email:
+    email = parse_mock_token(token)
+    if email is None:
         raise AuthError("auth.malformed")
     return AuthClaims(
-        auth_user_id=uuid.uuid5(_MOCK_NAMESPACE, email),
+        auth_user_id=uuid.uuid5(MOCK_NAMESPACE, email),
         email=email,
         display_name=None,
         subject=email,

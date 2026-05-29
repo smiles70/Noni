@@ -93,3 +93,9 @@ def validate_settings() -> None:
     """Runtime validation only (NOT import-time) prevents breaking pytest, CLI, migrations."""
     if not settings.DATABASE_URL:
         raise RuntimeError("DATABASE_URL must be set via environment variables")
+
+    # Sprint '2nd Safe Yellow' P1: non-breaking secret rotation visibility.
+    from backend.core.secret_rotation import warn_if_secret_old
+
+    for name in ("SECRET_KEY", "SESSION_SECRET", "CLERK_SECRET_KEY", "STRIPE_SECRET_KEY"):
+        warn_if_secret_old(name, max_age_sec=60 * 60 * 24 * 90)

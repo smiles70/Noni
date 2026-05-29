@@ -125,7 +125,7 @@ def test_legacy_curriculum_redirects_to_v1_with_302(client: TestClient):
     assert "Sunset" in res.headers
 
 
-def test_legacy_auth_redirects_to_v1_with_302(client: TestClient):
+def test_legacy_whoami_returns_404(client: TestClient):
+    """Sprint '2nd Safe Yellow': /auth/whoami fully removed per ADR 0024."""
     res = client.get("/auth/whoami", follow_redirects=False)
-    assert res.status_code == 302
-    assert "/api/v1/auth" in res.headers["location"]
+    assert res.status_code == 404
