@@ -73,7 +73,7 @@ function _normalizePath(url: string): string {
 }
 
 function _sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
+  return new Promise((resolve) => globalThis.setTimeout(resolve, ms));
 }
 
 class FetchClient {
@@ -118,7 +118,7 @@ class FetchClient {
 
     const controller = new AbortController();
     const timeoutMs = merged.timeout ?? this._defaultTimeout;
-    const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+    const timeoutId = globalThis.setTimeout(() => controller.abort(), timeoutMs);
 
     const init: RequestInit = {
       method,
@@ -149,7 +149,7 @@ class FetchClient {
       }
       throw err;
     } finally {
-      window.clearTimeout(timeoutId);
+      globalThis.clearTimeout(timeoutId);
     }
     const isOk = merged.validateStatus ? merged.validateStatus(response.status) : response.ok;
 
