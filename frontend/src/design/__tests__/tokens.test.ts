@@ -25,7 +25,7 @@ import {
 
 describe("COLORS", () => {
   it("contains only permitted hex values", () => {
-    for (const [name, hex] of Object.entries(COLORS)) {
+    for (const [_name, hex] of Object.entries(COLORS)) {
       expect(hex).toMatch(/^#[0-9A-Fa-f]{6}$/);
     }
   });

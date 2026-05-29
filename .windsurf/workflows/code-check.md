@@ -127,6 +127,16 @@ description: Enterprise-grade code change discipline — research, blueprint, 14
 
 ---
 
+## Pre-Command Safety Checklist (BEFORE every `run_command`)
+
+**Rule:** If a command must run from a specific directory, you MUST use the `Cwd` parameter.
+
+1. Does this command need a specific working directory? (e.g., `frontend/`, `backend/`)
+2. If YES → set `Cwd` parameter explicitly. **Never use `cd` in the command string.**
+3. If NO → command runs from project root (where `package.json` or `pyproject.toml` lives).
+4. **Never use PowerShell `&&` chaining** — it fails with parser error. Use `Cwd` + separate commands instead.
+5. **Never use `cd` as part of the command** — `cd frontend && npm run build` is forbidden. Use `Cwd: ".../frontend"` instead.
+
 ## Forbidden Actions (Never Do These)
 
 - Never implement without explicit user approval at Gate 8.
@@ -137,3 +147,4 @@ description: Enterprise-grade code change discipline — research, blueprint, 14
 - Never leave real timers running in tests (use `vi.useFakeTimers()` + `vi.useRealTimers()`).
 - Never use `window.*` in shared/isomorphic code (use `globalThis`).
 - Never run `flyctl deploy` without dependency verification (check requirements.txt).
+- Never run `npm`/`python` commands from the wrong directory — always verify `Cwd`.

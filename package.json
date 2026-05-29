@@ -1,0 +1,14 @@
+{
+  "name": "noni-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "type-check": "npm run type-check --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
+    "test:unit": "npm run test:unit --workspace=frontend",
+    "lint:timers": "npm run lint:timers --workspace=frontend"
+  }
+}
