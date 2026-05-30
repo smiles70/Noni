@@ -43,7 +43,8 @@ export function useAuthSession(
     isSignedIn: boolean | undefined;
     getToken: () => Promise<string | null>;
   },
-  setState: React.Dispatch<React.SetStateAction<AuthState>>
+  setState: React.Dispatch<React.SetStateAction<AuthState>>,
+  retryNonce?: number,
 ) {
   useEffect(() => {
     if (!auth.isLoaded) return;
@@ -56,7 +57,6 @@ export function useAuthSession(
     setState({ status: "AUTHENTICATING" });
 
     resolveSession();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
 
     async function resolveSession() {
       try {
@@ -115,5 +115,5 @@ export function useAuthSession(
         errorCode: code,
       });
     }
-  }, [auth.isLoaded, auth.isSignedIn]);
+  }, [auth.isLoaded, auth.isSignedIn, retryNonce]);
 }

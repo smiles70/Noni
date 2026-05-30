@@ -74,4 +74,21 @@ describe("AuthProvider — mock mode", () => {
     expect(localStorage.getItem("noni.mock_token")).toBeNull();
     root.unmount();
   });
+
+  it("exposes retryAuth in context", () => {
+    const captured: { current: AuthContextValue | null } = { current: null };
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    root.render(
+      createElement(
+        AuthProvider,
+        {
+          children: createElement(CaptureAuth, { ref: captured }),
+        }
+      )
+    );
+    if (!captured.current) throw new Error("captured was null");
+    expect(typeof captured.current.retryAuth).toBe("function");
+    root.unmount();
+  });
 });

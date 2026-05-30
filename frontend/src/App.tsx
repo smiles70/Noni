@@ -62,11 +62,23 @@ function DebugAuth() {
 const App: React.FC = () => {
   // AuthProvider is the ONLY source of auth truth (FE Step-4 cutover).
   // App.tsx now orchestrates routes via React Router v6 (Series A Step 1).
-  const { state, signOut: rawSignOut } = useAuth();
+  const { state, signOut: rawSignOut, retryAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const isReady = state?.status === "READY";
+
+  // Clear transient-error retry counter when auth succeeds so future
+  // transient errors get their full retry budget (not "Please refresh").
+  useEffect(() => {
+    if (isReady) {
+      try {
+        sessionStorage.removeItem("noni.auth_banner_retries");
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [isReady]);
 
   // Series A Step 1: after explicit sign-out, redirect to landing so
   // the user is not left on a gated route in SIGNED_OUT state.
@@ -175,7 +187,7 @@ const App: React.FC = () => {
   // failures, so we keep rendering routes underneath.
   const transientBanner =
     status === "TRANSIENT_ERROR" ? (
-      <AuthPendingBanner onRetry={() => window.location.reload()} />
+      <AuthPendingBanner onRetry={retryAuth} />
     ) : null;
 
   return (

@@ -58,14 +58,38 @@ const RETRY_BTN: CSSProperties = {
   cursor: "pointer",
 };
 
-const RETRY_AFTER_SECONDS = 5;
+const RETRY_AFTER_SECONDS = 15;
+const MAX_AUTO_RETRIES = 3;
+const RETRY_STORAGE_KEY = "noni.auth_banner_retries";
+
+function getRetryCount(): number {
+  try {
+    const raw = sessionStorage.getItem(RETRY_STORAGE_KEY);
+    return raw ? parseInt(raw, 10) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function incrementRetryCount(): void {
+  try {
+    const count = getRetryCount() + 1;
+    sessionStorage.setItem(RETRY_STORAGE_KEY, String(count));
+  } catch {
+    /* ignore */
+  }
+}
 
 export default function AuthPendingBanner({ onRetry }: Props) {
   const [secondsLeft, setSecondsLeft] = useState(RETRY_AFTER_SECONDS);
+  const [retryCount, setRetryCount] = useState(getRetryCount);
+  const exhausted = retryCount >= MAX_AUTO_RETRIES;
 
   useEffect(() => {
-    if (!onRetry) return;
+    if (!onRetry || exhausted) return;
     if (secondsLeft <= 0) {
+      incrementRetryCount();
+      setRetryCount(getRetryCount());
       onRetry();
       return;
     }
@@ -73,16 +97,18 @@ export default function AuthPendingBanner({ onRetry }: Props) {
       setSecondsLeft((s) => s - 1);
     }, 1000);
     return () => clearInterval(t);
-  }, [onRetry, secondsLeft]);
+  }, [onRetry, secondsLeft, exhausted]);
 
   return (
     <div role="status" aria-live="polite" style={BANNER}>
       <p style={TEXT}>
-        {onRetry
-          ? `Reconnecting your sign-in… retrying in ${secondsLeft}s`
-          : "Reconnecting your sign-in…"}
+        {exhausted
+          ? "Still having trouble connecting. Please refresh the page to try again."
+          : onRetry
+            ? `Reconnecting your sign-in… retrying in ${secondsLeft}s`
+            : "Reconnecting your sign-in…"}
       </p>
-      {onRetry && (
+      {onRetry && !exhausted && (
         <button type="button" onClick={onRetry} style={RETRY_BTN}>
           Try now
         </button>

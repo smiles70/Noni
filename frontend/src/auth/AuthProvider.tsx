@@ -16,7 +16,7 @@
  * Tag: login-redesign-v1.
  **********************************************************************/
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 
 import { apiClient } from "../api/client";
@@ -75,6 +75,7 @@ function useCredentialSource() {
 export interface AuthContextValue {
   state: AuthState;
   signOut: () => Promise<void>;
+  retryAuth: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -111,6 +112,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // re-runs useCredentialSource(), which re-reads localStorage, which
   // makes the auth-flow useEffect below see the new isSignedIn value.
   const [, forceRefresh] = useState(0);
+  // Monotonic nonce incremented by retryAuth() to re-trigger session
+  // resolution without page reload. Never reset — avoids extra effect
+  // re-runs on READY (see ADR 0024 §4.2).
+  const [retryNonce, setRetryNonce] = useState(0);
+  const retryAuth = useCallback(() => setRetryNonce((n) => n + 1), []);
 
   useEffect(() => {
     function handle() {
@@ -155,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    * Sprint '2nd Safe Yellow' P17: session resolution moved to hook.
    ******************************************************************/
 
-  useAuthSession(auth, setState);
+  useAuthSession(auth, setState, retryNonce);
 
 
   /******************************************************************
@@ -174,7 +180,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <AuthContext.Provider value={{ state, signOut }}>
+    <AuthContext.Provider value={{ state, signOut, retryAuth }}>
       {children}
     </AuthContext.Provider>
   );
