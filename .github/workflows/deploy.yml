@@ -93,7 +93,7 @@ jobs:
         run: flyctl deploy --remote-only
 
   cloudflare-pages-deploy:
-    needs: [preflight]  # AUTO-FIX
+    needs: [preflight]  # AUTO-FIXED  # AUTO-FIX
     if: needs.preflight.outputs.ready == 'true'
     runs-on: ubuntu-latest
     env:
