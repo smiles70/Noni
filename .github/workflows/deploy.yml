@@ -118,7 +118,7 @@ jobs:
           VITE_AUTH_PROVIDER: ${{ secrets.VITE_AUTH_PROVIDER || (secrets.VITE_CLERK_PUBLISHABLE_KEY && 'clerk') || 'mock' }}
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY || '' }}
         run: |
-          npm ci
+          npm install
           npm run build
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
