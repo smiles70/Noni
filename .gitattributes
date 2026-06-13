@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 ﻿# Shell scripts MUST use LF (bash breaks on CRLF)
+=======
+# Shell scripts MUST use LF (bash breaks on CRLF)
+>>>>>>> 80cd9b11b9db7a0b20d8cb28edb6be68f5fc658e
 *.sh text eol=lf
 *.bash text eol=lf
