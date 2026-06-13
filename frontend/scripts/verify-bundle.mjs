@@ -49,6 +49,7 @@ const forbiddenPatterns = [
 ];
 
 let hasErrors = false;
+let prodUrlFound = false;
 
 for (const file of jsFiles) {
   const filePath = join(assetsDir, file);
@@ -69,15 +70,20 @@ for (const file of jsFiles) {
     }
   }
   
-  // Verify production API URL is present (for production builds)
-  const isCI = env.CI === 'true' || env.GITHUB_ACTIONS === 'true';
-  if (isCI && !content.includes(PROD_API_URL)) {
-    console.error(`\nâŒ BUNDLE VERIFICATION FAILED`);
-    console.error(`   File: ${file}`);
-    console.error(`   Production API URL (${PROD_API_URL}) not found in bundle.`);
-    console.error('   This may indicate VITE_API_BASE_URL was not set correctly.');
-    hasErrors = true;
+  if (content.includes(PROD_API_URL)) {
+    prodUrlFound = true;
   }
+}
+
+// Verify production API URL is present in at least one chunk (production builds).
+// In a code-split app, only chunks that consume API_BASE_URL contain the URL;
+// route chunks that never call the API will not, which is expected.
+const isCI = env.CI === 'true' || env.GITHUB_ACTIONS === 'true';
+if (isCI && !prodUrlFound) {
+  console.error(`\nâŒ BUNDLE VERIFICATION FAILED`);
+  console.error(`   Production API URL (${PROD_API_URL}) not found in any bundle chunk.`);
+  console.error('   This may indicate VITE_API_BASE_URL was not set correctly at build time.');
+  hasErrors = true;
 }
 
 if (hasErrors) {

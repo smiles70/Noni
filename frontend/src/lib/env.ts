@@ -1,14 +1,5 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-  VITE_API_BASE_URL?: string;
-  VITE_AUTH_PROVIDER?: string;
-  VITE_CLERK_PUBLISHABLE_KEY?: string;
-  VITE_LOG_LEVEL?: string;
-  DEV?: boolean;
-  PROD?: boolean;
-}
-
 export const API_BASE_URL: string = (
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000"
 ).replace(/\/+$/, "");
