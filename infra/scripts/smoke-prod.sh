@@ -23,8 +23,12 @@ echo "$HEALTH" | jq -e '.status == "healthy" or .status == "ok"' >/dev/null \
 
 echo "==> GET $API_BASE/auth/config"
 AUTH_CFG="$(curl -fsS "$API_BASE/auth/config")"
-echo "$AUTH_CFG" | jq -e '.provider == "clerk" or .provider == "mock"' >/dev/null \
-  || { echo "FAIL: /auth/config provider unrecognised"; exit 1; }
+if ! echo "$AUTH_CFG" | jq -e '.provider == "clerk" or .provider == "mock"' >/dev/null; then
+  echo "FAIL: /auth/config provider unrecognised"
+  echo "  HTTP status: $(curl -s -o /dev/null -w '%{http_code}' "$API_BASE/auth/config")"
+  echo "  Raw body: $AUTH_CFG"
+  exit 1
+fi
 
 echo "==> GET $API_BASE/api/ui-envelope/landing.intro"
 ENV_JSON="$(curl -fsS "$API_BASE/api/ui-envelope/landing.intro")"
