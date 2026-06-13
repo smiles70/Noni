@@ -70,7 +70,7 @@ http_call() {
   local tmp; tmp="$(mktemp)"
   local out
   out="$(
-    curl -sS -o "$tmp" \
+    curl -sSL -o "$tmp" \
       -w '%{http_code} %{time_total}' \
       -X "$method" "$API_BASE$path" "$@"
   )"
