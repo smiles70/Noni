@@ -1,5 +1,5 @@
 /**********************************************************************
- * AuthProvider — single source of auth state for the SPA.
+ * AuthProvider â€” single source of auth state for the SPA.
  *
  * Constraints anchored:
  *   B1   single auth-state owner (this component).
@@ -12,7 +12,7 @@
  *   I-A  signed-in is sticky on transient backend failures.
  *   I-G  no two components hold contradicting auth state.
  *
- * See docs/design/login-redesign-2026-05-17.md §2.1, §3.1.
+ * See docs/design/login-redesign-2026-05-17.md Â§2.1, Â§3.1.
  * Tag: login-redesign-v1.
  **********************************************************************/
 
@@ -26,7 +26,7 @@ import { useAuthSession, type AuthState } from "./useAuthSession";
 
 
 /**********************************************************************
- * ✅ SECTION 1 — CREDENTIAL SOURCE (CLERK + MOCK)
+ * âœ… SECTION 1 â€” CREDENTIAL SOURCE (CLERK + MOCK)
  **********************************************************************/
 
 /*
@@ -37,8 +37,14 @@ Prevents mock-mode crash.
 function useCredentialSource() {
   const mode = AUTH_PROVIDER;
 
-  // ✅ MOCK MODE
-  if (mode === "mock") {
+  // âœ… MOCK MODE (default / fail-safe)
+  // Mirror main.tsx exactly: it mounts <ClerkProvider> ONLY when
+  // provider === "clerk". Any other value (including a malformed one)
+  // gets the mock tree with NO ClerkProvider. So the Clerk code path
+  // below must run ONLY for an exact "clerk" match â€” otherwise we'd call
+  // useClerkAuth() with no provider in the tree and crash. Failing safe
+  // to mock keeps the two predicates in lockstep.
+  if (mode !== "clerk") {
     return {
       isLoaded: true,
       isSignedIn: !!localStorage.getItem("noni.mock_token"),
@@ -49,7 +55,7 @@ function useCredentialSource() {
     };
   }
 
-  // ✅ CLERK MODE
+  // âœ… CLERK MODE
   const clerk = useClerkAuth();
 
   return {
@@ -62,14 +68,14 @@ function useCredentialSource() {
 
 
 /**********************************************************************
- * ✅ SECTION 2 — IMPORT API CLIENT (CRITICAL FIX)
+ * âœ… SECTION 2 â€” IMPORT API CLIENT (CRITICAL FIX)
  **********************************************************************/
 
 // (apiClient is imported at the top of this file.)
 
 
 /**********************************************************************
- * ✅ SECTION 3 — AUTH PROVIDER
+ * âœ… SECTION 3 â€” AUTH PROVIDER
  **********************************************************************/
 
 export interface AuthContextValue {
@@ -113,8 +119,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // makes the auth-flow useEffect below see the new isSignedIn value.
   const [, forceRefresh] = useState(0);
   // Monotonic nonce incremented by retryAuth() to re-trigger session
-  // resolution without page reload. Never reset — avoids extra effect
-  // re-runs on READY (see ADR 0024 §4.2).
+  // resolution without page reload. Never reset â€” avoids extra effect
+  // re-runs on READY (see ADR 0024 Â§4.2).
   const [retryNonce, setRetryNonce] = useState(0);
   const retryAuth = useCallback(() => setRetryNonce((n) => n + 1), []);
 
@@ -128,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   /******************************************************************
-   * ✅ SECTION 3A — SINGLE INTERCEPTOR (FIXED)
+   * âœ… SECTION 3A â€” SINGLE INTERCEPTOR (FIXED)
    ******************************************************************/
 
   useEffect(() => {
@@ -150,14 +156,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   /******************************************************************
-   * ✅ SECTION 3B — PROVIDER PARITY (EXTRACTED TO useAuthParity)
+   * âœ… SECTION 3B â€” PROVIDER PARITY (EXTRACTED TO useAuthParity)
    ******************************************************************/
 
   useAuthParity(setState);
 
 
   /******************************************************************
-   * ✅ SECTION 3C — AUTH FLOW (EXTRACTED TO useAuthSession)
+   * âœ… SECTION 3C â€” AUTH FLOW (EXTRACTED TO useAuthSession)
    * Sprint '2nd Safe Yellow' P17: session resolution moved to hook.
    ******************************************************************/
 
@@ -165,7 +171,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   /******************************************************************
-   * ✅ SECTION 3D — SIGN OUT
+   * âœ… SECTION 3D â€” SIGN OUT
    ******************************************************************/
 
   async function signOut() {
