@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "prebuild": "node scripts/verify-build-env.mjs",
+    "build": "npm run prebuild && tsc -b && vite build",
+    "postbuild": "node scripts/verify-bundle.mjs",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "test:unit": "vitest run",
