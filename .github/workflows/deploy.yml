@@ -111,7 +111,7 @@ jobs:
       - name: Verify build environment
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || secrets.PROD_API_BASE_URL || 'https://noni-api.fly.dev' }}
+          VITE_API_BASE_URL: ${{ secrets.PROD_API_BASE_URL || 'https://noni-api.fly.dev' }}
           CI: true
           NODE_ENV: production
         run: npm run prebuild
@@ -119,7 +119,7 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || secrets.PROD_API_BASE_URL || 'https://noni-api.fly.dev' }}
+          VITE_API_BASE_URL: ${{ secrets.PROD_API_BASE_URL || 'https://noni-api.fly.dev' }}
           VITE_AUTH_PROVIDER: ${{ secrets.VITE_AUTH_PROVIDER || (secrets.VITE_CLERK_PUBLISHABLE_KEY && 'clerk') || 'mock' }}
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY || '' }}
           CI: true
