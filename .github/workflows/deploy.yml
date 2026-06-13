@@ -159,5 +159,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Smoke-test production endpoints
         env:
-          PROD_API_BASE_URL: ${{ secrets.PROD_API_BASE_URL || 'https://noni-api.fly.dev' }}
+          # Pinned: the PROD_API_BASE_URL secret is malformed (invalid port ->
+          # `curl: (3) URL rejected: Port number...`). The smoke target is a
+          # public, fixed URL; the backend is verified healthy here.
+          PROD_API_BASE_URL: 'https://noni-api.fly.dev'
         run: bash infra/scripts/smoke-prod.sh
