@@ -125,7 +125,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy frontend/dist --project-name=${{ env.CLOUDFLARE_PAGES_PROJECT }} --branch=main
+          projectName: noni-web
+          directory: frontend/dist
+          branch: main
 
   smoke:
     needs: [preflight, cloudflare-pages-deploy]
