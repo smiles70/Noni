@@ -275,7 +275,13 @@ def get_auth_provider() -> AuthProvider:
         access. We surface this as a hard failure so a misconfigured
         deployment cannot silently fall back to the mock provider.
     """
-    provider = settings.AUTH_PROVIDER.strip().lower()
+    # Sprint 22 S7: production must never silently fall back to mock auth.
+    # Mirrors the guard in auth_verifier.py and auth.py's /auth/config.
+    provider = (
+        "clerk"
+        if settings.ENVIRONMENT == "production"
+        else settings.AUTH_PROVIDER.strip().lower()
+    )
     if provider == "mock":
         return MockAuthProvider()
     if provider == "clerk":

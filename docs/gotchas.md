@@ -277,19 +277,32 @@ printf "VITE_API_BASE_URL=https://noni-api.fly.dev\n" > .env.production
 
 Then redeploy the `dist/` directory.
 
-### Recommended runtime guards
+### Implemented Runtime Guards (2026-06-11)
 
-1. **Never run `vite build` without `VITE_API_BASE_URL` in production builds.** Add a pre-build check to `frontend/package.json` scripts:
-   ```json
-   "build:prod": "test -n \"$VITE_API_BASE_URL\" && tsc -b && vite build"
-   ```
+The following guards have been **implemented** to prevent G3 recurrence:
 
-2. **Verify bundle after build, before deploy.** Add a CI step:
-   ```bash
-   if grep -r "localhost:8000" dist/; then echo "FAIL: localhost in bundle"; exit 1; fi
-   ```
+1. **Pre-build Environment Verification** (`frontend/scripts/verify-build-env.mjs`):
+   - Runs automatically before `npm run build`
+   - Fails the build if `VITE_API_BASE_URL` is not set
+   - Fails the build if URL contains `localhost` or `127.0.0.1`
+   - Fails the build if URL doesn't use HTTPS
+   - Called via: `npm run prebuild` (runs automatically)
 
-3. **Prefer `.env.production` over shell env vars for WSL builds.** WSL command quoting is unreliable for env var propagation through `wsl.exe bash -lc`.
+2. **Post-build Bundle Verification** (`frontend/scripts/verify-bundle.mjs`):
+   - Runs automatically after `npm run build`
+   - Scans all JS files in `dist/assets/` for forbidden patterns
+   - Fails if `localhost:8000` or `127.0.0.1:8000` found in bundle
+   - Verifies production API URL is present in CI builds
+   - Called via: `npm run postbuild` (runs automatically)
+
+3. **CI/CD Pipeline Integration** (`.github/workflows/deploy.yml`):
+   - Added explicit "Verify build environment" step
+   - Added "Verify bundle (G3 guard)" step before deployment
+   - Build will fail before deploying if guards detect localhost
+
+### Legacy Recommended Guards
+
+4. **Prefer `.env.production` over shell env vars for WSL builds.** WSL command quoting is unreliable for env var propagation through `wsl.exe bash -lc`.
 
 ### Cross-references
 

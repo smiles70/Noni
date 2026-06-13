@@ -201,7 +201,14 @@ def verify_token(token: Optional[str]) -> AuthClaims:
     """
     if token is None or not token:
         raise AuthError("auth.no_credential")
-    provider = settings.AUTH_PROVIDER.strip().lower()
+    # Sprint 22 S7: production must never silently fall back to mock auth.
+    # The /auth/config endpoint already enforces this; the verifier must
+    # match exactly so the two never desync (recovery 2026-06-13).
+    provider = (
+        "clerk"
+        if settings.ENVIRONMENT == "production"
+        else settings.AUTH_PROVIDER.strip().lower()
+    )
     if provider == "mock":
         return _verify_mock(token)
     if provider == "clerk":

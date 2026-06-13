@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # infra/scripts/smoke-login.sh
 #
 # End-to-end login smoke against a deployed Noni backend. Runs the
@@ -70,7 +70,7 @@ http_call() {
   local tmp; tmp="$(mktemp)"
   local out
   out="$(
-    curl -sS -o "$tmp" \
+    curl -sSL -o "$tmp" \
       -w '%{http_code} %{time_total}' \
       -X "$method" "$API_BASE$path" "$@"
   )"
@@ -171,9 +171,9 @@ http_call GET /health
 assert_status 200 "health endpoint reachable"
 assert_sla "health under SLA"
 
-http_call GET /auth/config
-assert_status 200 "/auth/config reachable"
-assert_sla "/auth/config under SLA"
+http_call GET /api/v1/auth/config
+assert_status 200 "/api/v1/auth/config reachable"
+assert_sla "/api/v1/auth/config under SLA"
 PROVIDER="$(echo "$BODY" | jq -r '.provider // empty')"
 note "deployed AUTH_PROVIDER=$PROVIDER"
 

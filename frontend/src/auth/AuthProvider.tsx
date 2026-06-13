@@ -37,8 +37,14 @@ Prevents mock-mode crash.
 function useCredentialSource() {
   const mode = AUTH_PROVIDER;
 
-  // ✅ MOCK MODE
-  if (mode === "mock") {
+  // ✅ MOCK MODE (default / fail-safe)
+  // Mirror main.tsx exactly: it mounts <ClerkProvider> ONLY when
+  // provider === "clerk". Any other value (including a malformed one)
+  // gets the mock tree with NO ClerkProvider. So the Clerk code path
+  // below must run ONLY for an exact "clerk" match — otherwise we'd call
+  // useClerkAuth() with no provider in the tree and crash. Failing safe
+  // to mock keeps the two predicates in lockstep.
+  if (mode !== "clerk") {
     return {
       isLoaded: true,
       isSignedIn: !!localStorage.getItem("noni.mock_token"),

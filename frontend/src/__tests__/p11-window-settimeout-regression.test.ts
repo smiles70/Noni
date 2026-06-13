@@ -5,7 +5,7 @@
  * undefined. globalThis is the ECMAScript standard universal global.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-// @ts-expect-error Vite raw import not in TypeScript declarations
+// @ts-ignore Vite raw import not in TypeScript declarations
 import clientSource from "../api/client.ts?raw";
 
 describe("P11/P23 regression guard", () => {
