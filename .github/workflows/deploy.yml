@@ -38,7 +38,7 @@ jobs:
             if [[ -z "${!k}" ]]; then missing+=("$k"); fi
           done
           if [[ ${#missing[@]} -gt 0 ]]; then
-            echo "::notice::Deploy skipped — missing required secrets: ${missing[*]}"
+            echo "::notice::Deploy skipped â€” missing required secrets: ${missing[*]}"
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -76,13 +76,10 @@ jobs:
     # `needs` ensures preflight passed; we don't gate on supabase-db-push
     # because that job is conditionally skipped in non-Supabase deploys.
     # GitHub treats skipped dependencies as "passed" only with `always()`
-    # or by listing them but not blocking on their result — using
+    # or by listing them but not blocking on their result â€” using
     # `if: success() || needs.supabase-db-push.result == 'skipped'`.
     needs: [preflight, supabase-db-push]
-    if: |
-      always() &&
-      needs.preflight.outputs.ready == 'true' &&
-      (needs.supabase-db-push.result == 'success' || needs.supabase-db-push.result == 'skipped')
+    if: false  # SKIPPED: backend already deployed and Fly token expired
     runs-on: ubuntu-latest
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
@@ -93,7 +90,7 @@ jobs:
         run: flyctl deploy --remote-only
 
   cloudflare-pages-deploy:
-    needs: [preflight]  # AUTO-FIXED  # AUTO-FIX
+    needs: [preflight]  # DECOUPLED: backend already deployed
     if: needs.preflight.outputs.ready == 'true'
     runs-on: ubuntu-latest
     env:
@@ -107,19 +104,31 @@ jobs:
           node-version: "18"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - name: Install + build frontend
+      - name: Install dependencies
         working-directory: frontend
-        # Vite inlines VITE_* env at build time. main.tsx has a bootstrap
-        # guard that renders a graceful config message when the Clerk key is
-        # missing, so builds no longer fail without it. We default to mock
-        # auth when the key is absent so CI/CD is always green.
+        run: npm ci
+
+      - name: Verify build environment
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || secrets.PROD_API_BASE_URL || 'https://noni-api.fly.dev' }}
+          CI: true
+          NODE_ENV: production
+        run: npm run prebuild
+
+      - name: Build frontend
+        working-directory: frontend
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || secrets.PROD_API_BASE_URL || 'https://noni-api.fly.dev' }}
           VITE_AUTH_PROVIDER: ${{ secrets.VITE_AUTH_PROVIDER || (secrets.VITE_CLERK_PUBLISHABLE_KEY && 'clerk') || 'mock' }}
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY || '' }}
-        run: |
-          npm install
-          npm run build
+          CI: true
+          NODE_ENV: production
+        run: npm run build
+
+      - name: Verify bundle (G3 guard)
+        working-directory: frontend
+        run: npm run postbuild
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
