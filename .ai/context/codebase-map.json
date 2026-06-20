@@ -1,0 +1,242 @@
+{
+  "generated_at": "2026-06-20T14:49:00-04:00",
+  "generator": "Codebase Context Agent v4",
+  "project": "noni",
+  "version": "0.1.0",
+  "max_staleness_sessions": 10,
+  "sessions_since_full_rebuild": 0,
+  "backend": {
+    "framework": "FastAPI",
+    "python_version": ">=3.11",
+    "entry_point": "backend/app/main.py",
+    " routers": [
+      {
+        "path": "/api/v1/curriculum",
+        "module": "backend.api.routes.curriculum",
+        "tags": ["curriculum"],
+        "legacy_redirect": "/api/curriculum"
+      },
+      {
+        "path": "/api/v1/signals",
+        "module": "backend.api.routes.signals",
+        "tags": ["signals"],
+        "legacy_redirect": "/api/signals"
+      },
+      {
+        "path": "/api/v1/landing",
+        "module": "backend.api.routes.landing",
+        "tags": ["landing"],
+        "legacy_redirect": "/api/landing"
+      },
+      {
+        "path": "/api/v1/telemetry",
+        "module": "backend.api.routes.telemetry_export",
+        "tags": ["telemetry"],
+        "legacy_redirect": "/api/telemetry"
+      },
+      {
+        "path": "/api/v1/ui-envelope",
+        "module": "backend.api.routes.ui_envelope",
+        "tags": ["ui-envelope"],
+        "legacy_redirect": "/api/ui-envelope"
+      },
+      {
+        "path": "/api/v1/auth",
+        "module": "backend.api.routes.auth",
+        "tags": ["auth"],
+        "legacy_redirect": "/auth"
+      },
+      {
+        "path": "/api/v1/me",
+        "module": "backend.api.routes.account",
+        "tags": ["account"],
+        "legacy_redirect": "/me"
+      },
+      {
+        "path": "/api/v1/billing",
+        "module": "backend.api.routes.billing",
+        "tags": ["billing"],
+        "legacy_redirect": "/api/billing"
+      },
+      {
+        "path": "/api/v1/gifts",
+        "module": "backend.api.routes.gifts",
+        "tags": ["gifts"],
+        "legacy_redirect": "/api/gifts"
+      }
+    ],
+    "middleware_stack": [
+      "SecurityHeadersMiddleware (outermost)",
+      "RequestIdMiddleware",
+      "TelemetryMiddleware",
+      "CORSMiddleware"
+    ],
+    "services": {
+      "auth_provider": {
+        "file": "backend/services/auth_provider.py",
+        "role": "Identity provider abstraction (Mock + Clerk)",
+        "dependencies": ["backend.core.config", "backend.services.mock_parser", "httpx", "pybreaker"],
+        "exports": ["AuthClaims", "UserProfile", "AuthProvider", "get_auth_provider", "CLERK_CIRCUIT_BREAKER"]
+      },
+      "auth_verifier": {
+        "file": "backend/services/auth_verifier.py",
+        "role": "JWT verification (Clerk RS256 + mock fallback)",
+        "dependencies": ["backend.services.auth_provider"],
+        "exports": ["_verify_clerk", "_verify_mock", "verify", "verify_strict"]
+      },
+      "clerk_verifier": {
+        "file": "backend/services/clerk_verifier.py",
+        "role": "Clerk-specific JWT verification with JWKS caching",
+        "dependencies": ["backend.core.config", "jwt", "PyJWKClient"],
+        "exports": ["ClerkVerifier"]
+      },
+      "entitlements": {
+        "file": "backend/services/entitlements.py",
+        "role": "Product access gating",
+        "dependencies": ["backend.models.billing"],
+        "exports": ["has_active"]
+      },
+      "payment_provider": {
+        "file": "backend/services/payment_provider.py",
+        "role": "Stripe checkout + webhook handling",
+        "dependencies": ["backend.core.config", "stripe"],
+        "exports": ["PaymentProvider", "StripePaymentProvider", "MockPaymentProvider"]
+      },
+      "sessions": {
+        "file": "backend/services/sessions.py",
+        "role": "Session management (legacy, unused post-ADR-0024)",
+        "dependencies": [],
+        "exports": []
+      },
+      "telemetry": {
+        "file": "backend/services/telemetry.py",
+        "role": "Prometheus metrics + structured logging",
+        "dependencies": ["backend.core.config"],
+        "exports": ["TelemetryMiddleware", "metrics_handler"]
+      }
+    },
+    "models": {
+      "accounts": {
+        "file": "backend/models/accounts.py",
+        "role": "User account entity",
+        "key_fields": ["auth_user_id", "email", "display_name"]
+      },
+      "billing": {
+        "file": "backend/models/billing.py",
+        "role": "Grants, idempotency keys, checkout state",
+        "key_fields": ["account_id", "product_code", "status", "idempotency_key"]
+      },
+      "curriculum": {
+        "file": "backend/models/curriculum.py",
+        "role": "Curriculum structure + metadata"
+      },
+      "curriculum_units": {
+        "file": "backend/models/curriculum_units.py",
+        "role": "Individual lesson content (largest model file, ~39KB)"
+      },
+      "ui_state_envelope": {
+        "file": "backend/models/ui_state_envelope.py",
+        "role": "ISCS state machine envelopes",
+        "size_bytes": 16299
+      }
+    },
+    "dependencies": {
+      "core": ["fastapi>=0.100.0", "uvicorn[standard]>=0.23.0", "pydantic>=2.0.0", "pydantic-settings>=2.0.0"],
+      "database": ["sqlalchemy>=2.0.0", "psycopg2-binary>=2.9.0", "alembic"],
+      "cache": ["redis>=5.0.0"],
+      "auth": ["pyjwt[crypto]", "httpx", "pybreaker"],
+      "payments": ["stripe"],
+      "config": ["python-dotenv>=1.0.0"]
+    }
+  },
+  "frontend": {
+    "framework": "React 18 + Vite + TypeScript (strict)",
+    "router": "React Router v6",
+    "entry_point": "frontend/src/main.tsx",
+    "routes": [
+      { "path": "/", "component": "LandingPage", "lazy": false },
+      { "path": "/signin", "component": "SignInPage", "lazy": false },
+      { "path": "/help", "component": "HelpPage", "lazy": true },
+      { "path": "/curriculum", "component": "CurriculumRenderer", "lazy": true, "auth_required": true },
+      { "path": "/paid-curriculum", "component": "PaidLessonRenderer", "lazy": true, "auth_required": true },
+      { "path": "/menu", "component": "CurriculumMenu", "lazy": true, "auth_required": true },
+      { "path": "/paywall", "component": "PaywallPage", "lazy": true },
+      { "path": "/gift-redeem", "component": "GiftRedeemPage", "lazy": true },
+      { "path": "/account", "component": "AccountSettingsPage", "lazy": true, "auth_required": true },
+      { "path": "/auth/callback", "component": "AuthCallbackHandler", "lazy": false }
+    ],
+    "auth_stack": [
+      "@clerk/clerk-react (ClerkAuthProvider)",
+      "frontend/src/auth/AuthProvider.tsx (Noni auth state machine)",
+      "frontend/src/auth/useAuthSession.ts (session resolution hook)",
+      "frontend/src/auth/useAuthParity.ts (FE/BE parity check)"
+    ],
+    "api_client": {
+      "file": "frontend/src/api/client.ts",
+      "role": "Native fetch wrapper with interceptors, retry logic, request ID",
+      "note": "axios removed; globalThis.setTimeout for isomorphic compatibility"
+    },
+    "components": {
+      "auth": ["AuthBlockedNotice.tsx", "AuthPendingBanner.tsx", "RequireAuth.tsx", "SignInPage.tsx", "ClerkSignOutButton.tsx"],
+      "curriculum": ["CurriculumRenderer.tsx", "CurriculumMenu.tsx", "PaidLessonRenderer.tsx"],
+      "commerce": ["PaywallPage.tsx", "GiftRedeemPage.tsx"],
+      "account": ["AccountSettingsPage.tsx"],
+      "layout": ["NavBar.tsx", "ResponsiveContainer.tsx", "ResponsiveGrid.tsx", "ResponsiveStack.tsx"],
+      "design_system": ["LoadingSkeleton.tsx", "EmptyState.tsx", "GeragogySafeTap.tsx"],
+      "debug": ["DebugAuth (runtime IS_DEV gated, geragogy violation: neon green #0f0)"]
+    },
+    "dependencies": {
+      "production": ["@clerk/clerk-react", "react", "react-dom", "react-router-dom"],
+      "dev": ["@playwright/test", "axe-playwright", "typescript", "vite", "vitest"]
+    }
+  },
+  "cross_cutting": {
+    "auth_model": {
+      "adr": ["0023", "0024"],
+      "pattern": "Stateless Bearer JWT (Clerk RS256 / mock)",
+      "notes": "sessions table unused post-migration; cookie/CSRF eliminated"
+    },
+    "state_machine": {
+      "backend": "ISCS (Interface State Control System)",
+      "frontend": "AuthProvider status: BOOT -> AUTHENTICATING -> READY | REJECTED | TRANSIENT_ERROR"
+    },
+    "telemetry": {
+      "backend": "/metrics (Prometheus), /api/v1/admin/telemetry/summary (JSON)",
+      "frontend": "X-Request-ID header, no Sentry (RED gap)"
+    }
+  },
+  "symbol_index": {
+    "get_db": "backend/api/deps.py:41",
+    "get_optional_account": "backend/api/deps.py:159",
+    "get_current_account": "backend/api/deps.py:187",
+    "require_entitlement": "backend/api/deps.py:199",
+    "AuthClaims": "backend/services/auth_provider.py:61",
+    "AuthProvider": "backend/services/auth_provider.py",
+    "CLERK_CIRCUIT_BREAKER": "backend/services/auth_provider.py:53",
+    "Settings": "backend/core/config.py:6",
+    "validate_settings": "backend/core/config.py:92",
+    "SecurityHeadersMiddleware": "backend/app/main.py:122",
+    "RequestIdMiddleware": "backend/app/telemetry.py",
+    "TelemetryMiddleware": "backend/app/telemetry.py",
+    "useAuth": "frontend/src/auth/AuthProvider.tsx",
+    "useAuthSession": "frontend/src/auth/useAuthSession.ts",
+    "apiClient": "frontend/src/api/client.ts",
+    "DebugAuth": "frontend/src/App.tsx:37"
+  },
+  "last_touched": {
+    "backend/app/main.py": { "session": "onboarding-v4", "reason": "Full rebuild" },
+    "backend/api/deps.py": { "session": "onboarding-v4", "reason": "Full rebuild" },
+    "backend/services/auth_provider.py": { "session": "onboarding-v4", "reason": "Full rebuild" },
+    "frontend/src/App.tsx": { "session": "onboarding-v4", "reason": "Full rebuild" },
+    "frontend/src/api/client.ts": { "session": "onboarding-v4", "reason": "Full rebuild" },
+    "ARCHITECTURE.md": { "session": "pre-existing", "reason": "Reference document" }
+  },
+  "module_boundaries": {
+    "backend.api.routes": "No cross-imports between route modules; shared deps via backend.api.deps",
+    "backend.services": "Services may import models and core.config; no route imports",
+    "backend.models": "Pure SQLAlchemy; no service or route imports",
+    "frontend.src.api": "HTTP layer only; no component imports",
+    "frontend.src.auth": "Auth state machine; imports api/client.ts",
+    "frontend.src.components": "UI only; imports auth hooks and api wrappers"
+  }
+}
