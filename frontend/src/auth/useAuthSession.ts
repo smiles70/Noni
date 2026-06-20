@@ -97,8 +97,20 @@ export function useAuthSession(
     }
 
     function handleError(err: unknown) {
-      const apiErr = err as { response?: ApiErrorResponse } | undefined;
+      const apiErr = err as
+        | { response?: ApiErrorResponse & { status?: number } }
+        | undefined;
+      const status = apiErr?.response?.status;
       const code = apiErr?.response?.data?.error?.code;
+
+      // 401 Unauthorized is definitive — the token was rejected by the
+      // backend. Retrying with the same token can never succeed, so we
+      // transition to SIGNED_OUT rather than TRANSIENT_ERROR to prevent
+      // an infinite retry loop (see ADR 0024 §B5).
+      if (status === 401) {
+        setState({ status: "SIGNED_OUT" });
+        return;
+      }
 
       if (!code) {
         setState({ status: "TRANSIENT_ERROR" });

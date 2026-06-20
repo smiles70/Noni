@@ -51,3 +51,36 @@
 
 ### Verification Pending
 - Frontend unit tests (`vitest`) require `npm install` to run; command queued.
+
+---
+
+## Session: 2026-06-20 (Deep Diagnosis — 401 Loop)
+
+### Root Cause
+`useAuthSession.ts` `handleError` parsed the 401 response body as `data.error.code`, but FastAPI's `HTTPException` wraps `detail` in a `{"detail": ...}` envelope. The actual body is `{"detail": {"error": {"code": "auth.no_credential"}}}`. Because `data.error` is undefined, `code` was always undefined for 401s, causing **all 401 responses to be misclassified as `TRANSIENT_ERROR`**. The `AuthPendingBanner` then auto-retried every 15s with the same expired token — an infinite loop.
+
+### Fix Applied
+- `frontend/src/auth/useAuthSession.ts`: Added explicit `status === 401` guard in `handleError` that transitions to `SIGNED_OUT` before body parsing. 401 is semantically definitive (retrying with the same token can never succeed).
+- `frontend/src/auth/__tests__/AuthProvider.test.tsx`: Fixed pre-existing test infrastructure bugs (incomplete env mock, React `ref` reserved prop, missing `fetch` mock). Added regression test: `transitions to SIGNED_OUT on 401 from /auth/session`.
+
+### Files Modified
+| File | Change |
+|---|---|
+| `frontend/src/auth/useAuthSession.ts` | 401 → `SIGNED_OUT` guard in `handleError` |
+| `frontend/src/auth/__tests__/AuthProvider.test.tsx` | Complete rewrite: env mock, fetch mock, async assertions, 401 regression test |
+
+### Verification
+- `AuthProvider.test.tsx`: 4/4 pass
+- `tsc --noEmit`: pass
+- Full vitest suite: 111/135 pass (24 pre-existing failures in curriculum/billing/auth tests, unrelated to this change)
+
+### Drift Resolved
+| Previous Drift | Status |
+|---|---|
+| P13: `TRANSIENT_ERROR` reload loop on expired/invalid token | 🟢 FIXED — 401 now maps to `SIGNED_OUT`, breaking the retry cycle |
+
+### New Drift Detected
+| Category | Documented | Live Reality | Drift Type | Severity |
+|---|---|---|---|---|
+| `useCredentialSource` | Should return stable references | Returns new object every render (no `useMemo`) | Performance / subtle bug | Low |
+| `AuthProvider.test.tsx` | Was passing (assumed) | Could not even load due to incomplete env mock + `ref` prop bug | Test infrastructure gap | Medium |

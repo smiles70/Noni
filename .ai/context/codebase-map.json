@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-20T14:49:00-04:00",
+  "generated_at": "2026-06-20T17:20:00-04:00",
   "generator": "Codebase Context Agent v4",
   "project": "noni",
   "version": "0.1.0",
@@ -229,6 +229,8 @@
     "backend/services/auth_provider.py": { "session": "onboarding-v4", "reason": "Full rebuild" },
     "frontend/src/App.tsx": { "session": "onboarding-v4", "reason": "Full rebuild" },
     "frontend/src/api/client.ts": { "session": "onboarding-v4", "reason": "Full rebuild" },
+    "frontend/src/auth/useAuthSession.ts": { "session": "2026-06-20-401-loop", "reason": "401 -> SIGNED_OUT guard to break infinite retry loop" },
+    "frontend/src/auth/__tests__/AuthProvider.test.tsx": { "session": "2026-06-20-401-loop", "reason": "Fixed test infrastructure + added 401 regression test" },
     "ARCHITECTURE.md": { "session": "pre-existing", "reason": "Reference document" }
   },
   "module_boundaries": {
