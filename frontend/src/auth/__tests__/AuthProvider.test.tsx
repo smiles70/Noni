@@ -155,6 +155,9 @@ describe("AuthProvider — mock mode", () => {
       expect(captured.current.state.status).toBe("SIGNED_OUT");
     });
 
+    // signOut is invoked on 401 so the credential source stays in sync.
+    expect(localStorage.getItem("noni.mock_token")).toBeNull();
+
     globalThis.fetch = originalFetch;
     root.unmount();
   });

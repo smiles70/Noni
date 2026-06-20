@@ -84,3 +84,35 @@
 |---|---|---|---|---|
 | `useCredentialSource` | Should return stable references | Returns new object every render (no `useMemo`) | Performance / subtle bug | Low |
 | `AuthProvider.test.tsx` | Was passing (assumed) | Could not even load due to incomplete env mock + `ref` prop bug | Test infrastructure gap | Medium |
+
+---
+
+## Session: 2026-06-20 (Follow-up — Clerk Desync Loop)
+
+### Root Cause
+The initial 401 → `SIGNED_OUT` fix was correct for stopping the `TRANSIENT_ERROR` retry loop, but incomplete: it did **not** clear the Clerk session. When the backend rejected the Clerk token with 401, AuthProvider said `SIGNED_OUT`, but Clerk's SDK still reported `isSignedIn: true`. Clerk's `<SignIn routing="virtual" fallbackRedirectUrl="/" />` widget auto-redirected already-signed-in users to `/`. The landing page showed "Log in" (because our state was `SIGNED_OUT`), the user clicked it, Clerk redirected back to `/` — an endless login loop.
+
+Additionally, the frontend parsed 401 response bodies as `data.error.code`, but FastAPI's `HTTPException` wraps errors in `data.detail.error.code`. The `deps.py` 401s use `data.detail.envelope_id`. Both shapes were unreadable, so error codes were always `undefined` for 401s.
+
+### Fix Applied
+- `frontend/src/auth/useAuthSession.ts`:
+  - `handleError` is now `async`; it calls `auth.signOut?.()` before transitioning to `SIGNED_OUT` on 401. This clears Clerk's session (or the mock token) so the credential source stays in sync with the state machine.
+  - Body parsing now tries `data.error.code`, then `data.detail.error.code`, then `data.detail.envelope_id` to handle both `auth.py` and `deps.py` 401 shapes.
+  - `ApiErrorResponse` type updated to reflect the FastAPI `detail` wrapper.
+  - `auth` parameter type now includes optional `signOut`.
+- `frontend/src/auth/__tests__/AuthProvider.test.tsx`: Updated 401 regression test to assert that the mock token is cleared (verifying `signOut` is invoked).
+
+### Verification
+- `AuthProvider.test.tsx`: 4/4 pass
+- `tsc --noEmit`: pass
+
+### Drift Resolved
+| Previous Drift | Status |
+|---|---|
+| P14: Clicking login causes endless reload loop | 🟢 FIXED — 401 now clears Clerk session before SIGNED_OUT, preventing auto-redirect desync |
+
+### New Drift Detected
+| Category | Documented | Live Reality | Drift Type | Severity |
+|---|---|---|---|---|
+| 401 envelope contract | Frontend expects `data.error.code` | Backend sends `data.detail.error.code` (auth.py) or `data.detail.envelope_id` (deps.py) | Contract violation — all 401 codes unreadable | High |
+| Clerk dev key in prod | Production deployment | Deployed app uses Clerk development publishable key | Security / operational risk | High |

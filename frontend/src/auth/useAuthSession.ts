@@ -34,7 +34,13 @@ interface AuthSessionInitResponse {
 }
 
 interface ApiErrorResponse {
-  data?: { error?: { code?: string } };
+  data?: {
+    error?: { code?: string };
+    detail?: {
+      error?: { code?: string };
+      envelope_id?: string;
+    };
+  };
 }
 
 export function useAuthSession(
@@ -42,6 +48,7 @@ export function useAuthSession(
     isLoaded: boolean;
     isSignedIn: boolean | undefined;
     getToken: () => Promise<string | null>;
+    signOut?: () => Promise<void>;
   },
   setState: React.Dispatch<React.SetStateAction<AuthState>>,
   retryNonce?: number,
@@ -92,22 +99,34 @@ export function useAuthSession(
           displayName: null,
         });
       } catch (err) {
-        handleError(err);
+        await handleError(err);
       }
     }
 
-    function handleError(err: unknown) {
+    async function handleError(err: unknown) {
       const apiErr = err as
         | { response?: ApiErrorResponse & { status?: number } }
         | undefined;
       const status = apiErr?.response?.status;
-      const code = apiErr?.response?.data?.error?.code;
+      // FastAPI wraps error bodies in "detail"; deps.py uses "envelope_id".
+      const code =
+        apiErr?.response?.data?.error?.code ||
+        apiErr?.response?.data?.detail?.error?.code ||
+        apiErr?.response?.data?.detail?.envelope_id;
 
       // 401 Unauthorized is definitive — the token was rejected by the
       // backend. Retrying with the same token can never succeed, so we
       // transition to SIGNED_OUT rather than TRANSIENT_ERROR to prevent
       // an infinite retry loop (see ADR 0024 §B5).
+      //
+      // We also clear the credential source (e.g. Clerk session) so the
+      // provider state stays in sync. If Clerk still believes the user is
+      // signed in while our state says SIGNED_OUT, Clerk's <SignIn />
+      // widget will auto-redirect away from /signin and create a login
+      // loop (user clicks Log in -> /signin -> Clerk redirects to / ->
+      // user clicks Log in again ...).
       if (status === 401) {
+        await auth.signOut?.().catch(() => {});
         setState({ status: "SIGNED_OUT" });
         return;
       }
