@@ -80,6 +80,14 @@ function incrementRetryCount(): void {
   }
 }
 
+function resetRetryCount(): void {
+  try {
+    sessionStorage.removeItem(RETRY_STORAGE_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 export default function AuthPendingBanner({ onRetry }: Props) {
   const [secondsLeft, setSecondsLeft] = useState(RETRY_AFTER_SECONDS);
   const [retryCount, setRetryCount] = useState(getRetryCount);
@@ -103,13 +111,24 @@ export default function AuthPendingBanner({ onRetry }: Props) {
     <div role="status" aria-live="polite" style={BANNER}>
       <p style={TEXT}>
         {exhausted
-          ? "Still having trouble connecting. Please refresh the page to try again."
+          ? "Still having trouble connecting. You can try again whenever you are ready."
           : onRetry
             ? `Reconnecting your sign-in… retrying in ${secondsLeft}s`
             : "Reconnecting your sign-in…"}
       </p>
-      {onRetry && !exhausted && (
-        <button type="button" onClick={onRetry} style={RETRY_BTN}>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={() => {
+            if (exhausted) {
+              resetRetryCount();
+              setRetryCount(0);
+              setSecondsLeft(RETRY_AFTER_SECONDS);
+            }
+            onRetry();
+          }}
+          style={RETRY_BTN}
+        >
           Try now
         </button>
       )}

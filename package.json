@@ -10,5 +10,8 @@
     "build": "npm run build --workspace=frontend",
     "test:unit": "npm run test:unit --workspace=frontend",
     "lint:timers": "npm run lint:timers --workspace=frontend"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
   }
 }

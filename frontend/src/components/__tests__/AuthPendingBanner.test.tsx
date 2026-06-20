@@ -73,14 +73,15 @@ describe("AuthPendingBanner", () => {
     expect(sessionStorage.getItem(RETRY_STORAGE_KEY)).toBe("1");
   });
 
-  it("shows 'Please refresh' after 3 auto-retries", () => {
+  it("shows calm copy and keeps Try now button after 3 auto-retries", () => {
     const onRetry = vi.fn();
     sessionStorage.setItem(RETRY_STORAGE_KEY, "3");
 
     renderBanner({ onRetry });
 
     expect(getText()).toMatch(/Still having trouble connecting/);
-    expect(getText()).not.toMatch(/Try now/);
+    expect(getText()).not.toMatch(/refresh/);
+    expect(getText()).toMatch(/Try now/);
   });
 
   it("does not auto-retry when exhausted", () => {
@@ -94,6 +95,31 @@ describe("AuthPendingBanner", () => {
     });
 
     expect(onRetry).not.toHaveBeenCalled();
+  });
+
+  it("resets retry count and restarts auto-retry on manual click when exhausted", () => {
+    const onRetry = vi.fn();
+    sessionStorage.setItem(RETRY_STORAGE_KEY, "3");
+
+    renderBanner({ onRetry });
+
+    const button = container.querySelector("button");
+    expect(button).not.toBeNull();
+
+    act(() => {
+      button!.click();
+    });
+
+    expect(sessionStorage.getItem(RETRY_STORAGE_KEY)).toBeNull();
+    expect(onRetry).toHaveBeenCalledTimes(1);
+
+    // After reset, auto-retry should resume: advance 15s
+    act(() => {
+      vi.advanceTimersByTime(15000);
+    });
+
+    expect(onRetry).toHaveBeenCalledTimes(2);
+    expect(sessionStorage.getItem(RETRY_STORAGE_KEY)).toBe("1");
   });
 
   it("counts down from 15 to 0 in 1-second steps", () => {
