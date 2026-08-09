@@ -137,7 +137,7 @@ def export_telemetry_csv(db: Session = Depends(get_db)) -> StreamingResponse:
 # modules cannot leak into the rollup.
 
 
-@router.get("/rollup")
+@router.get("/rollup", dependencies=[Depends(_require_admin)])
 def retrieval_rollup(db: Session = Depends(get_db)) -> Dict[str, Any]:
     """Per-unit and per-module retrieval-choice accuracy.
 
