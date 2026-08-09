@@ -15,9 +15,12 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 
-from backend.api.routes.account import router as account_router
+from backend.api.routes.account import account_profile_router
+from backend.api.routes.onboarding_telemetry import router as onboarding_telemetry_router
+from backend.api.routes.session_validation import router as session_validation_router
 from backend.api.routes.auth import router as auth_router
 from backend.api.routes.billing import router as billing_router
+from backend.api.routes.clerk_telemetry import router as clerk_telemetry_router
 from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.gifts import router as gifts_router
 from backend.api.routes.landing import router as landing_router
@@ -120,23 +123,71 @@ async def lifespan(app: FastAPI):
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Sprint 23 H1: inject security headers on every response."""
+    """Sprint 23 H1: inject security headers on every response.
+    
+    Enhanced with additional security headers for comprehensive protection.
+    """
 
     async def dispatch(
         self, request: StarletteRequest, call_next: RequestResponseEndpoint
     ) -> StarletteResponse:
         response = await call_next(request)
+        
+        # Frame protection
         response.headers["X-Frame-Options"] = "DENY"
+        
+        # MIME type sniffing protection
         response.headers["X-Content-Type-Options"] = "nosniff"
+        
+        # XSS protection
         response.headers["X-XSS-Protection"] = "1; mode=block"
+        
+        # Referrer policy
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
-        )
+        
+        # Enhanced Content Security Policy
+        csp_directives = [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",  # Allow inline scripts for development
+            "style-src 'self' 'unsafe-inline'",  # Allow inline styles
+            "img-src 'self' data: https:",
+            "font-src 'self' data:",
+            "connect-src 'self'",
+            "frame-ancestors 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+        ]
+        response.headers["Content-Security-Policy"] = "; ".join(csp_directives)
+        
+        # Permissions Policy (restrict browser features)
+        permissions_policy = [
+            "geolocation=()",
+            "microphone=()",
+            "camera=()",
+            "payment=()",
+            "usb=()",
+            "magnetometer=()",
+            "gyroscope=()",
+            "accelerometer=()",
+        ]
+        response.headers["Permissions-Policy"] = ", ".join(permissions_policy)
+        
+        # Cross-Origin Resource Policy
+        response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+        
+        # Cross-Origin Opener Policy
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        
+        # Cross-Origin Embedder Policy
+        response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+        
+        # Production-specific headers
         if settings.ENVIRONMENT == "production":
+            # HSTS with preload
             response.headers["Strict-Transport-Security"] = (
-                "max-age=31536000; includeSubDomains"
+                "max-age=31536000; includeSubDomains; preload"
             )
+            
         return response
 
 
@@ -227,6 +278,7 @@ async def _http_exception_handler(request: Request, exc: HTTPException) -> JSONR
 app.include_router(curriculum_router, prefix="/api/v1/curriculum", tags=["curriculum"])
 app.include_router(signals_router, prefix="/api/v1/signals", tags=["signals"])
 app.include_router(landing_router, prefix="/api/v1/landing", tags=["landing"])
+app.include_router(clerk_telemetry_router, prefix="/api/v1", tags=["telemetry"])
 app.include_router(
     telemetry_export_router, prefix="/api/v1/telemetry", tags=["telemetry"]
 )
@@ -237,7 +289,11 @@ app.include_router(
     ui_envelope_router, prefix="/api/v1/ui-envelope", tags=["ui-envelope"]
 )
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
-app.include_router(account_router, prefix="/api/v1/me", tags=["account"])
+# EPIC-002 Phase 2: Account profile management endpoints
+app.include_router(account_profile_router, prefix="/api/v1/account", tags=["account"])
+# EPIC-002 Phase 4: Onboarding telemetry and session validation
+app.include_router(onboarding_telemetry_router, prefix="/api/v1/telemetry", tags=["telemetry"])
+app.include_router(session_validation_router, prefix="/api/v1/session", tags=["session"])
 app.include_router(billing_router, prefix="/api/v1/billing", tags=["billing"])
 app.include_router(gifts_router, prefix="/api/v1/gifts", tags=["gifts"])
 
@@ -251,6 +307,8 @@ _LEGACY_REDIRECTS = {
     "/me": "/api/v1/me",
     "/api/billing": "/api/v1/billing",
     "/api/gifts": "/api/v1/gifts",
+    # EPIC-002 Phase 2: Add account redirect
+    "/api/account": "/api/v1/account",
 }
 
 for old, new in _LEGACY_REDIRECTS.items():

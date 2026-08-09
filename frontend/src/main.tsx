@@ -9,6 +9,81 @@ import { ClerkProvider } from '@clerk/clerk-react';
 import { AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
+// Noni Geragogy-Compliant Theme for Clerk Widget
+// Matches design contract in docs/library/CONTRACT.md
+const noniTheme = {
+  variables: {
+    colorPrimary: '#4A6FA5',
+    colorBackground: '#F4F4F2',
+    colorText: '#222222',
+    colorTextOnPrimaryBackground: '#FAFAF8',
+    colorInputBackground: '#FAFAF8',
+    colorInputText: '#222222',
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontSize: '16px',
+    fontLineHeight: '1.6',
+    spacing: '8px',
+    borderRadius: '8px',
+  },
+  elements: {
+    // Customize buttons to match Noni's design
+    rootBox: {
+      boxShadow: 'none',
+    },
+    card: {
+      backgroundColor: '#FAFAF8',
+      boxShadow: 'none',
+      borderRadius: '8px',
+    },
+    headerTitle: {
+      color: '#222222',
+      fontWeight: '600',
+    },
+    headerSubtitle: {
+      color: '#222222',
+    },
+    formFieldLabel: {
+      color: '#222222',
+      fontWeight: '500',
+    },
+    formFieldInput: {
+      backgroundColor: '#FAFAF8',
+      color: '#222222',
+      borderRadius: '8px',
+      fontSize: '16px',
+    },
+    dividerLine: {
+      borderColor: '#B0B0B0',
+    },
+    footerActionLink: {
+      color: '#4A6FA5',
+      fontWeight: '500',
+    },
+    footerActionText: {
+      color: '#222222',
+    },
+    // Customize buttons
+    primaryButton: {
+      backgroundColor: '#4A6FA5',
+      color: '#FAFAF8',
+      fontWeight: '600',
+      borderRadius: '8px',
+      fontSize: '16px',
+    },
+    secondaryButton: {
+      backgroundColor: '#FAFAF8',
+      color: '#222222',
+      border: '1px solid #B0B0B0',
+      borderRadius: '8px',
+      fontSize: '16px',
+    },
+    // Minimize motion
+    formField: {
+      animation: 'none',
+    },
+  },
+};
+
 applyLargeTextOnBoot();
 
 // Dev/QA escape hatch: ?reset=1 wipes Noni-owned client state and
@@ -91,11 +166,20 @@ if (provider === 'clerk') {
       <React.StrictMode>
         <ErrorBoundary>
           <BrowserRouter>
-            {/* No `afterSignOutUrl` here: post-signout navigation is owned by
-                App.tsx, which is the single source of truth for view
-                transitions. Letting Clerk redirect us would race our state
-                updates and unmount the SignOut button mid-await. */}
-            <ClerkProvider publishableKey={clerkKey}>
+            {/* Clerk path-based routing configuration (EPIC-002 Phase 1):
+                - signInUrl: Where Clerk redirects for sign-in
+                - afterSignInUrl: Where Clerk redirects after successful sign-in
+                - afterSignUpUrl: Where Clerk redirects after sign-up
+                Path-based routing replaces deprecated virtual routing to fix
+                login loop issue. App.tsx owns post-signout navigation to avoid
+                state race conditions. */}
+            <ClerkProvider 
+              publishableKey={clerkKey} 
+              appearance={noniTheme}
+              signInUrl="/signin"
+              afterSignInUrl="/welcome"
+              afterSignUpUrl="/welcome"
+            >
               <AuthProvider>
                 <App />
               </AuthProvider>

@@ -81,6 +81,12 @@ class Settings(BaseSettings):
     # environments on the Postgres fallback limiter.
     REDIS_URL: str = ""
 
+    # BetterStack monitoring and telemetry
+    BETTERSTACK_API_KEY: str = ""
+    BETTERSTACK_SOURCE_NAME: str = "noni-api"
+    # EPIC-002 Phase 4: Onboarding-specific source name
+    BETTERSTACK_ONBOARDING_SOURCE_NAME: str = "noni-onboarding"
+
     model_config = SettingsConfigDict(
         env_file=".env", case_sensitive=True, extra="ignore"
     )

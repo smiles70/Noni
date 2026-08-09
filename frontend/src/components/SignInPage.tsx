@@ -71,15 +71,17 @@ function ClerkSignInBranch({ onSignedIn: _onSignedIn, onCancel }: Props) {
   // onSignedIn-from-Clerk callback would race AuthProvider's effect and
   // is intentionally not invoked. The prop remains in the type signature
   // for backward compatibility while callers migrate.
+  // EPIC-002 Phase 1: Removed routing="virtual" to fix login loop issue.
+  // Clerk now uses path-based routing configured in main.tsx.
   useAuth();
   return (
     <main style={PAGE} data-component="ClerkSignIn">
       <h1 style={H1}>Sign in</h1>
-      {/* routing="virtual" keeps Clerk inside our SPA (no URL changes).
+      {/* EPIC-002 Phase 1: Path-based routing configured in main.tsx.
           fallbackRedirectUrl is required by Clerk's API but unused in
           our flow because we drive the post-signin transition
           ourselves via onSignedIn -> App.tsx. */}
-      <SignIn routing="virtual" fallbackRedirectUrl="/" />
+      <SignIn fallbackRedirectUrl="/welcome" />
       <button type="button" style={SECONDARY_BTN} onClick={onCancel}>
         Go back
       </button>
@@ -96,7 +98,7 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
   useEffect(() => {
     loadEnvelope("account.signin")
       .then(setEnvelope)
-      .catch(() => setError("This page is paused. Refresh in a moment."));
+      .catch(() => setError("Please wait a moment and refresh the page."));
   }, []);
 
   // Clerk path: delegate to a child component so the useAuth() hook
@@ -118,7 +120,7 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
   if (!envelope) {
     return (
       <main style={PAGE} aria-live="polite" data-component="PendingBanner">
-        <p style={BODY}>One moment — loading.</p>
+        <p style={BODY}>One moment — loading the sign-in page.</p>
       </main>
     );
   }
@@ -140,7 +142,7 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
       notifyAuthChanged();
       onSignedIn();
     } catch {
-      setError("We could not sign you in. Please try again.");
+      setError("Please check your email address and try again.");
     } finally {
       setSubmitting(false);
     }

@@ -59,6 +59,8 @@ class Account(Base):
     auth_user_id = Column(UUID(as_uuid=True), nullable=True, index=True)
     email = Column(CITEXT(), nullable=True)
     display_name = Column(String(256), nullable=True)
+    # EPIC-002 Phase 2: User preferences for personalization
+    preferences = Column(String(1024), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     deleted_at = Column(DateTime(timezone=True), nullable=True)

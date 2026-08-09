@@ -124,6 +124,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [retryNonce, setRetryNonce] = useState(0);
   const retryAuth = useCallback(() => setRetryNonce((n) => n + 1), []);
 
+  // EPIC-002 Phase 1: Session timeout detection (30 minutes)
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
+
+  // Track session start time when user becomes READY
+  useEffect(() => {
+    if (state?.status === "READY" && !sessionStartTime) {
+      setSessionStartTime(Date.now());
+    } else if (state?.status !== "READY" && sessionStartTime) {
+      setSessionStartTime(null);
+    }
+  }, [state?.status, sessionStartTime]);
+
+  // Check for session timeout (30 minutes)
+  useEffect(() => {
+    if (!sessionStartTime || state?.status !== "READY") return;
+
+    const checkTimeout = () => {
+      const elapsed = Date.now() - sessionStartTime;
+      if (elapsed > 30 * 60 * 1000) { // 30 minutes
+        // Session expired - sign out
+        auth.signOut?.().catch(() => {});
+        setState({ status: "SIGNED_OUT" });
+        setSessionStartTime(null);
+      }
+    };
+
+    const timeoutId = setInterval(checkTimeout, 60000); // Check every minute
+    return () => clearInterval(timeoutId);
+  }, [sessionStartTime, state?.status, auth.signOut, setState]);
+
   useEffect(() => {
     function handle() {
       forceRefresh((n) => n + 1);
@@ -165,9 +195,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   /******************************************************************
    * ✅ SECTION 3C — AUTH FLOW (EXTRACTED TO useAuthSession)
    * Sprint '2nd Safe Yellow' P17: session resolution moved to hook.
+   * EPIC-002 Phase 1: Added session validation to prevent state
+   * synchronization issues that cause login loops.
    ******************************************************************/
 
   useAuthSession(auth, setState, retryNonce);
+
+  /******************************************************************
+   * ✅ SECTION 3E — SESSION VALIDATION (EPIC-002 Phase 1)
+   * Ensures AuthProvider state remains synchronized with credential
+   * source to prevent login loops caused by state desynchronization.
+   ******************************************************************/
+
+  useEffect(() => {
+    // EPIC-002 Phase 1: Session validation to prevent state desync
+    // Check if Clerk believes user is signed in but AuthProvider disagrees
+    if (auth.isLoaded && auth.isSignedIn && state?.status === "SIGNED_OUT") {
+      // State desync detected: Clerk thinks signed in, we don't
+      // This can cause login loops - clear Clerk state to re-sync
+      auth.signOut?.().catch(() => {});
+    }
+    // Check if Clerk believes user is signed out but AuthProvider disagrees
+    if (auth.isLoaded && !auth.isSignedIn && state?.status === "READY") {
+      // State desync detected: Clerk thinks signed out, we don't
+      // This can cause session issues - transition to SIGNED_OUT
+      setState({ status: "SIGNED_OUT" });
+    }
+  }, [auth.isLoaded, auth.isSignedIn, state?.status, auth.signOut, setState]);
 
 
   /******************************************************************

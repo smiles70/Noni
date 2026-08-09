@@ -15,6 +15,7 @@ import AuthPendingBanner from "./components/AuthPendingBanner";
 import AuthBlockedNotice from "./components/AuthBlockedNotice";
 import LoadingSkeleton from "./components/LoadingSkeleton";
 import RequireAuth from "./components/RequireAuth";
+import OnboardingErrorBoundary from "./components/OnboardingErrorBoundary";
 import { useAuth } from "./auth/AuthProvider";
 import { readProgress, writeProgress } from "./lib/progress";
 import { IS_DEV } from "./lib/env";
@@ -29,6 +30,10 @@ const PaywallPage = lazy(() => import("./components/PaywallPage"));
 const GiftRedeemPage = lazy(() => import("./components/GiftRedeemPage"));
 const AccountSettingsPage = lazy(() => import("./components/AccountSettingsPage"));
 const HelpPage = lazy(() => import("./components/HelpPage"));
+// EPIC-002 Phase 2-3: Add WelcomePage, AccountSetupPage, and GettingStartedPage
+const WelcomePage = lazy(() => import("./components/WelcomePage"));
+const AccountSetupPage = lazy(() => import("./components/AccountSetupPage"));
+const GettingStartedPage = lazy(() => import("./components/GettingStartedPage"));
 
 // Step 3 of the FE cutover plan: temporary debug surface that prints
 // the AuthProvider state in the corner of every page so we can watch
@@ -89,8 +94,9 @@ const App: React.FC = () => {
 
   // Series A Step 1: redirect after auth succeeds. If the URL has a
   // ?redirect= param (set by RequireAuth), forward the user there.
-  // If the user signed in directly at /signin with no redirect, send
-  // them to /curriculum as the natural post-auth destination.
+  // EPIC-002 Phase 1: If the user signed in directly at /signin with no redirect,
+  // send them to /welcome for account setup instead of /curriculum.
+  // This fixes the login loop issue and provides proper onboarding.
   useEffect(() => {
     if (isReady) {
       const params = new URLSearchParams(location.search);
@@ -98,7 +104,7 @@ const App: React.FC = () => {
       if (redirect) {
         navigate(redirect, { replace: true });
       } else if (location.pathname === "/signin") {
-        navigate("/curriculum", { replace: true });
+        navigate("/welcome", { replace: true });
       }
     }
   }, [isReady, location.search, location.pathname, navigate]);
@@ -216,6 +222,64 @@ const App: React.FC = () => {
                 }
               />
               <Route path="/signin" element={onSignInPage} />
+              <Route
+                path="/welcome"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <OnboardingErrorBoundary
+                        onRetry={() => window.location.reload()}
+                        onSkip={goCurriculum}
+                      >
+                        <WelcomePage
+                          onContinue={goCurriculum}
+                          onAccount={goAccount}
+                          onAccountSetup={() => navigate("/setup")}
+                          onSignOut={signOut}
+                        />
+                      </OnboardingErrorBoundary>
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/setup"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <OnboardingErrorBoundary
+                        onRetry={() => window.location.reload()}
+                        onSkip={() => navigate("/getting-started")}
+                      >
+                        <AccountSetupPage
+                          onContinue={() => navigate("/getting-started")}
+                          onBack={goLanding}
+                          onSignOut={signOut}
+                        />
+                      </OnboardingErrorBoundary>
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/getting-started"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <OnboardingErrorBoundary
+                        onRetry={() => window.location.reload()}
+                        onSkip={goCurriculum}
+                      >
+                        <GettingStartedPage
+                          onContinue={goCurriculum}
+                          onBack={() => navigate("/setup")}
+                          onSignOut={signOut}
+                        />
+                      </OnboardingErrorBoundary>
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
               <Route
                 path="/help"
                 element={

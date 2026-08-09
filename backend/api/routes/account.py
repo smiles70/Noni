@@ -1,53 +1,219 @@
-"""Account self-service routes: delete / cancel-delete.
+"""Account management routes.
 
-See ADR 0023 (original) and ADR 0024 (Bearer migration).
+EPIC-002 Phase 2: Account profile management endpoints.
 
-Post-Bearer-migration note: deletion no longer clears a session cookie
-because there is no session cookie. The frontend is responsible for
-calling `clerk.signOut()` (or clearing the mock token) after a
-successful 202; any straggling Bearer tokens we issued expire on their
-own and reference an account row that's been marked for deletion.
+Endpoints:
+    PUT  /api/v1/account/profile    Update user profile (display name, preferences)
+    GET  /api/v1/account/onboarding-status  Get onboarding progress
 """
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status
+import json
+from typing import Optional, Any, Dict
+from fastapi import APIRouter, Depends, Header, HTTPException, status
+from pydantic import BaseModel
 from sqlalchemy.orm import Session as DbSession
 
-from backend.api.deps import get_current_account, get_db
+from backend.api.deps import get_db
 from backend.models.accounts import Account
-from backend.services.deletion import cancel_deletion, request_deletion
 
-router = APIRouter()
+# EPIC-002 Phase 2: New router for account management endpoints
+account_profile_router = APIRouter()
 
 
-@router.post("/delete", status_code=status.HTTP_202_ACCEPTED)
-def request_account_deletion(
-    account: Account = Depends(get_current_account),
+# ---------------------------------------------------------------------------
+# EPIC-002 Phase 2: Profile update endpoint
+# ---------------------------------------------------------------------------
+
+
+class ProfileUpdateRequest(BaseModel):
+    """Request model for profile update."""
+
+    displayName: str
+    preferences: dict
+
+
+class ProfileUpdateResponse(BaseModel):
+    """Response model for profile update."""
+
+    account_id: str
+    display_name: str
+    preferences: dict
+
+
+@account_profile_router.put("/profile", response_model=ProfileUpdateResponse)
+def update_profile(
+    profile_data: ProfileUpdateRequest,
+    authorization: Optional[str] = Header(default=None),
     db: DbSession = Depends(get_db),
-):
-    req = request_deletion(db, account)
-    db.commit()
-    return {
-        "deletion_request_id": str(req.id),
-        "scheduled_for": req.scheduled_for.isoformat(),
-        "status": req.status,
-    }
+) -> ProfileUpdateResponse:
+    """Update user profile (display name and preferences).
 
+    EPIC-002 Phase 2: This endpoint allows users to update their display name
+    and learning preferences after account setup.
 
-@router.post("/delete/cancel")
-def cancel_account_deletion(
-    account: Account = Depends(get_current_account),
-    db: DbSession = Depends(get_db),
-):
-    req = cancel_deletion(db, account)
-    if req is None:
+    Args:
+        profile_data: Profile update data (display name, preferences)
+        authorization: Bearer token header
+        db: Database session
+
+    Returns:
+        Updated profile data
+
+    Raises:
+        401: Unauthorized (invalid or missing token)
+        404: Account not found
+    """
+    # Token verification
+    from backend.services.auth_verifier import parse_bearer, verify_token, AuthError
+
+    token = parse_bearer(authorization)
+    if not token:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail={"envelope_id": "account.deletion_not_cancelable"},
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"error": {"code": "auth.no_credential", "message": "No credential provided"}},
         )
+
+    try:
+        claims = verify_token(token)
+    except AuthError as err:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"error": {"code": err.code, "message": err.message}},
+        )
+
+    if not claims.auth_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"error": {"code": "auth.subject_missing", "message": "Subject missing"}},
+        )
+
+    # Get account
+    account = (
+        db.query(Account)
+        .filter(Account.auth_user_id == claims.auth_user_id)
+        .filter(Account.deleted_at.is_(None))
+        .first()
+    )
+
+    if not account:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "account.not_found", "message": "Account not found"}},
+        )
+
+    # Update profile
+    account.display_name = profile_data.displayName.strip()
+    # EPIC-002 Phase 2: Store preferences as JSON string
+    account.preferences = json.dumps(profile_data.preferences) if profile_data.preferences else None
+
     db.commit()
-    return {
-        "deletion_request_id": str(req.id),
-        "status": req.status,
-    }
+    db.refresh(account)
+
+    # Parse preferences back from JSON for response
+    preferences_dict = {}
+    if account.preferences:
+        try:
+            preferences_dict = json.loads(account.preferences)
+        except (json.JSONDecodeError, TypeError):
+            preferences_dict = {}
+
+    return ProfileUpdateResponse(
+        account_id=str(account.id),
+        display_name=account.display_name or "",
+        preferences=preferences_dict,
+    )
+
+
+# ---------------------------------------------------------------------------
+# EPIC-002 Phase 2: Onboarding status endpoint
+# ---------------------------------------------------------------------------
+
+
+class OnboardingStatusResponse(BaseModel):
+    """Response model for onboarding status."""
+
+    account_id: str
+    onboarding_complete: bool
+    display_name: Optional[str] = None
+    preferences_set: bool = False
+
+
+@account_profile_router.get("/onboarding-status", response_model=OnboardingStatusResponse)
+def get_onboarding_status(
+    authorization: Optional[str] = Header(default=None),
+    db: DbSession = Depends(get_db),
+) -> OnboardingStatusResponse:
+    """Get onboarding progress for the current user.
+
+    EPIC-002 Phase 2: This endpoint returns the onboarding status to determine
+    if the user has completed account setup.
+
+    Args:
+        authorization: Bearer token header
+        db: Database session
+
+    Returns:
+        Onboarding status data
+
+    Raises:
+        401: Unauthorized (invalid or missing token)
+        404: Account not found
+    """
+    # Token verification
+    from backend.services.auth_verifier import parse_bearer, verify_token, AuthError
+
+    token = parse_bearer(authorization)
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"error": {"code": "auth.no_credential", "message": "No credential provided"}},
+        )
+
+    try:
+        claims = verify_token(token)
+    except AuthError as err:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"error": {"code": err.code, "message": err.message}},
+        )
+
+    if not claims.auth_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"error": {"code": "auth.subject_missing", "message": "Subject missing"}},
+        )
+
+    # Get account
+    account = (
+        db.query(Account)
+        .filter(Account.auth_user_id == claims.auth_user_id)
+        .filter(Account.deleted_at.is_(None))
+        .first()
+    )
+
+    if not account:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "account.not_found", "message": "Account not found"}},
+        )
+
+    # Determine onboarding status
+    # EPIC-002 Phase 2: Parse preferences from JSON
+    preferences_dict = {}
+    if account.preferences:
+        try:
+            preferences_dict = json.loads(account.preferences)
+        except (json.JSONDecodeError, TypeError):
+            preferences_dict = {}
+
+    onboarding_complete = bool(account.display_name and preferences_dict)
+    preferences_set = bool(preferences_dict)
+
+    return OnboardingStatusResponse(
+        account_id=str(account.id),
+        onboarding_complete=onboarding_complete,
+        display_name=account.display_name,
+        preferences_set=preferences_set,
+    )

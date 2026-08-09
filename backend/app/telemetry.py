@@ -126,6 +126,63 @@ def record_email_collision() -> None:
         pass
 
 
+# EPIC-002 Phase 4: Onboarding telemetry metrics
+_onboarding_events = Counter(
+    "noni_onboarding_events_total",
+    "Onboarding flow event counts",
+    ["event"],
+)
+
+
+def record_onboarding_event(
+    event: str,
+    timestamp: int | None = None,
+    user_id: str | None = None,
+    metadata: dict | None = None,
+) -> None:
+    """Record an onboarding event for monitoring.
+
+    EPIC-002 Phase 4: This function records onboarding flow events
+    for monitoring and analytics integration with BetterStack.
+
+    Args:
+        event: The event name (e.g., "onboarding.welcome_view")
+        timestamp: Event timestamp (optional, defaults to current time)
+        user_id: User ID (optional)
+        metadata: Additional event metadata (optional)
+    """
+    _onboarding_events.labels(event=event).inc()
+
+    try:
+        logger.info(
+            "onboarding.event",
+            extra={
+                "event": event,
+                "timestamp": timestamp,
+                "user_id": user_id,
+                "metadata": metadata,
+            },
+        )
+    except Exception:
+        pass
+
+    # EPIC-002 Phase 4: Send to BetterStack if configured
+    try:
+        from backend.api.routes.betterstack_onboarding import get_betterstack_client
+
+        client = get_betterstack_client()
+        event_data = {
+            "event": event,
+            "timestamp": timestamp,
+            "user_id": user_id,
+            "metadata": metadata,
+        }
+        client.send_event(event_data)
+    except Exception:
+        # Silently fail to avoid disrupting user experience
+        pass
+
+
 def snapshot() -> dict[str, dict[str, int] | list[int]]:
     """Return a point-in-time snapshot of all counters (for /metrics + tests)."""
 
