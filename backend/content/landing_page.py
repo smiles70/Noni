@@ -11,10 +11,9 @@ from typing import Any, Dict
 
 LANDING_PAGE_CONTENT: Dict[str, Any] = {
     "hero": {
-        "headline": "A calm way to understand and use AI",
+        "headline": "Learn AI at your own pace",
         "subheadline": (
-            "Mynaani helps you learn what AI is, how Claude works, "
-            "and how to use it confidently - without pressure or confusion."
+            "Mynaani explains AI in plain language, one calm step at a time."
         ),
     },
     "introduction": {
@@ -57,12 +56,8 @@ LANDING_PAGE_CONTENT: Dict[str, Any] = {
     },
     "call_to_action": {
         "primary": {
-            "label": "Begin calmly",
-            "note": "You can explore without commitment. Nothing will be sent or shared.",
-        },
-        "secondary": {
-            "label": "Learn how it works",
-            "note": "See what to expect before starting.",
+            "label": "How it works",
+            "note": "Take a look first. There is no commitment.",
         },
     },
     "closing": {

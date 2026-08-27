@@ -27,11 +27,7 @@ import HowItWorksDialog from "./HowItWorksDialog";
 
 interface Props {
   onBegin: () => void;
-  onSignIn?: () => void;
-  onContinuePaid?: () => void;
-  onAccount?: () => void;
   signedIn?: boolean;
-  onSignOut?: () => void | Promise<void>;
   onHelp?: () => void;
 }
 
@@ -75,29 +71,15 @@ const PRIMARY_BTN: CSSProperties = {
   textAlign: "center",
 };
 
-const SECONDARY_BTN: CSSProperties = {
-  fontSize: TYPOGRAPHY.bodySizePx,
-  padding: `${SPACING.md}px ${SPACING.lg}px`,
-  backgroundColor: COLORS.surface,
-  color: COLORS.accentDesatGreen,
-  border: `2px solid ${COLORS.accentDesatGreen}`,
-  borderRadius: RADIUS.lg,
-  fontWeight: 600,
-  cursor: "pointer",
-  transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
-  width: "100%",
-  textAlign: "center",
-};
-
 const CARD: CSSProperties = {
   position: "relative",
   zIndex: 2,
   backgroundColor: COLORS.surface,
-  padding: SPACING.xl,
+  padding: SPACING.lg,
   borderRadius: RADIUS.lg,
   boxShadow: `0 ${SPACING.md}px ${SPACING.xl}px rgba(0, 0, 0, 0.12)`,
-  width: "90%",
-  maxWidth: 420,
+  width: "100%",
+  maxWidth: 320,
   boxSizing: "border-box",
 };
 
@@ -173,11 +155,7 @@ function BlockedLoad({ message }: { message: string }) {
 
 export default function LandingPage({
   onBegin,
-  onSignIn,
-  onContinuePaid,
-  onAccount,
   signedIn,
-  onSignOut,
   onHelp,
 }: Props) {
   const [content, setContent] = useState<LandingPageContent | null>(null);
@@ -273,11 +251,11 @@ export default function LandingPage({
             style={{
               position: "absolute",
               top: "50%",
-              right: "8%",
+              right: "4%",
               transform: "translateY(-50%)",
               zIndex: 2,
               width: "90%",
-              maxWidth: 360,
+              maxWidth: 340,
             }}
           >
             <div style={CARD}>
@@ -288,99 +266,27 @@ export default function LandingPage({
 
               <div style={ACTION_STACK}>
                 {signedIn ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={onBegin}
-                      style={PRIMARY_BTN}
-                    >
-                      Continue learning →
-                    </button>
-                    {onAccount && (
-                      <button
-                        type="button"
-                        onClick={onAccount}
-                        style={SECONDARY_BTN}
-                      >
-                        Your account
-                      </button>
-                    )}
-                    {onSignOut && (
-                      <button
-                        type="button"
-                        onClick={onSignOut}
-                        style={SECONDARY_BTN}
-                      >
-                        Sign out
-                      </button>
-                    )}
-                    {onContinuePaid && (
-                      <button
-                        type="button"
-                        onClick={onContinuePaid}
-                        style={SECONDARY_BTN}
-                      >
-                        Unlock full access
-                      </button>
-                    )}
-                    {onHelp && (
-                      <button
-                        type="button"
-                        onClick={onHelp}
-                        style={SECONDARY_BTN}
-                      >
-                        Help
-                      </button>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={onBegin}
-                      style={PRIMARY_BTN}
-                    >
-                      {content.call_to_action.primary.label}
-                    </button>
-                    <p style={NOTE}>
-                      {content.call_to_action.primary.note}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setShowHowItWorks(true)}
-                      style={SECONDARY_BTN}
-                    >
-                      {content.call_to_action.secondary.label}
-                    </button>
-                    {onSignIn && (
-                      <button
-                        type="button"
-                        onClick={onSignIn}
-                        style={SECONDARY_BTN}
-                      >
-                        Sign in
-                      </button>
-                    )}
-                    {onAccount && (
-                      <button
-                        type="button"
-                        onClick={onAccount}
-                        style={SECONDARY_BTN}
-                      >
-                        Your account
-                      </button>
-                    )}
-                    {onHelp && (
-                      <button
-                        type="button"
-                        onClick={onHelp}
-                        style={SECONDARY_BTN}
-                      >
-                        Help
-                      </button>
-                    )}
-                  </>
-                )}
+                <button
+                  type="button"
+                  onClick={onBegin}
+                  style={PRIMARY_BTN}
+                >
+                  Continue learning →
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setShowHowItWorks(true)}
+                    style={PRIMARY_BTN}
+                  >
+                    {content.call_to_action.primary.label}
+                  </button>
+                  <p style={NOTE}>
+                    {content.call_to_action.primary.note}
+                  </p>
+                </>
+              )}
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@ Wraps the dict in `backend.content.landing_page` so API responses and
 frontend clients have a validated, documented contract.
 """
 
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -31,7 +31,7 @@ class CTA(BaseModel):
 
 class CallToActionSection(BaseModel):
     primary: CTA
-    secondary: CTA
+    secondary: Optional[CTA] = None
 
 
 class ClosingSection(BaseModel):

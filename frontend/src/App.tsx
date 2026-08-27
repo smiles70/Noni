@@ -212,11 +212,7 @@ const App: React.FC = () => {
                 element={
                   <LandingPage
                     onBegin={goCurriculum}
-                    onSignIn={goSignIn}
-                    onContinuePaid={goPaywall}
-                    onAccount={goAccount}
                     signedIn={isReady}
-                    onSignOut={signOut}
                     onHelp={goHelp}
                   />
                 }

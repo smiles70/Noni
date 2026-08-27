@@ -24,7 +24,7 @@ export interface CTA {
 }
 export interface CallToAction {
   primary: CTA;
-  secondary: CTA;
+  secondary?: CTA;
 }
 export interface Closing {
   body: string;
