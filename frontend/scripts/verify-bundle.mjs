@@ -15,7 +15,7 @@ import { join } from 'node:path';
 import { env, exit } from 'node:process';
 
 const DIST_DIR = './dist';
-const PROD_API_URL = 'https://noni-api.fly.dev';
+const PROD_API_URL = env.VITE_API_BASE_URL ?? 'https://noni-api.fly.dev';
 
 console.log('🔍 Verifying production bundle...');
 
