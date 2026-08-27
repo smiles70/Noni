@@ -315,3 +315,12 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `EVI-HERO-008-BUILD` is `npm run type-check` and `npm run build` passing.
 - `EVI-HERO-008-DEPLOY` is GitHub Actions deploy `33112574993`.
 - `CAP-HERO-008` status is `deployed`.
+
+## PRICING-001 older-adult pricing research (2026-08-27)
+
+- `SRC-PRICING-001-INTAKE` is `.ai/intake/2026-08-27-pricing-research-001.md`.
+- `SRC-PRICING-001-PREFLIGHT` is `.ai/process/PREFLIGHT_PRICING_001.md`.
+- `SRC-PRICING-001-PHASE` is `.ai/process/PHASE_INVENTORY_PRICING_001.md`.
+- `EVI-PRICING-001-RESEARCH` is `.ai/process/PRICING_RESEARCH_001.md`.
+- `DEC-PRICING-001` is recommendation: keep ADR 0021 one-time purchase, strengthen caregiver gift, optional reverse trial.
+- `CAP-PRICING-001` status is `completed`.
