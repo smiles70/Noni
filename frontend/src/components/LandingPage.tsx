@@ -257,12 +257,12 @@ export default function LandingPage({
             loading="eager"
             style={{
               position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
+              top: "-7.5%",
+              left: "-7.5%",
+              width: "115%",
+              height: "115%",
               objectFit: "cover",
-              objectPosition: "center",
+              objectPosition: "25% 45%",
               zIndex: 0,
             }}
           />
