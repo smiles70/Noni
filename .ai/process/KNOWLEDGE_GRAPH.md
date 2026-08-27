@@ -211,3 +211,10 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - Product requirements: `docs/requirements/PRD.md`
 
 *Generated under Process v9.51.*
+
+## Railway migration
+
+- `DEC-RAILWAY-001` authorizes `EPIC-RAILWAY-MIGRATION`.
+- Capabilities `CAP-RAILWAY-*` are pending.
+- `GAP-RAILWAY-TOKEN` tracks the missing `RAILWAY_TOKEN`.
+- `EVI-RAILWAY-PLAN` is the migration plan.

@@ -38,8 +38,8 @@
   "metadata": {
     "repo": "smiles70/Noni",
     "date": "2026-08-27",
-    "node_count": 140,
-    "edge_count": 159
+    "node_count": 150,
+    "edge_count": 169
   },
   "nodes": [
     {
@@ -976,6 +976,71 @@
       "id": "EVI-MAGIC-BUILD",
       "name": "Frontend production build passed",
       "command": "npm run build"
+    },
+    {
+      "kind": "Decision",
+      "id": "DEC-RAILWAY-001",
+      "name": "Migrate backend from Fly.io to Railway",
+      "status": "decided",
+      "scope": "backend infrastructure"
+    },
+    {
+      "kind": "Epic",
+      "id": "EPIC-RAILWAY-MIGRATION",
+      "name": "Railway backend migration",
+      "status": "in_progress"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-RAILWAY-DEPLOY",
+      "name": "Deploy backend to Railway via GitHub Actions",
+      "path": ".github/workflows/deploy.yml",
+      "status": "pending"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-RAILWAY-SECRETS",
+      "name": "Sync secrets to Railway via CLI",
+      "path": "infra/scripts/secrets-sync.sh",
+      "status": "pending"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-RAILWAY-ENV",
+      "name": "Configure Railway environment in .env.prod.sops.yaml",
+      "path": "infra/.env.prod.sops.yaml",
+      "status": "pending"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-RAILWAY-SMOKE",
+      "name": "Smoke test against Railway backend",
+      "path": "infra/scripts/smoke-prod.sh",
+      "status": "pending"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-RAILWAY-DEPLOY",
+      "name": "GitHub Actions deploy workflow passes",
+      "status": "pending"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-RAILWAY-SMOKE",
+      "name": "Smoke test passes against Railway URL",
+      "status": "pending"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-RAILWAY-TOKEN",
+      "name": "RAILWAY_TOKEN not yet configured",
+      "reason": "needs GitHub Actions secret and SOPS update"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-RAILWAY-PLAN",
+      "name": "Railway migration plan created",
+      "artifact": ".ai/process/RAILWAY_MIGRATION_PLAN.md"
     }
   ],
   "edges": [
@@ -2083,6 +2148,76 @@
       "relationship": "implemented_by",
       "target": "CAP-MAGIC-SDK",
       "provenance": "Phase 1-3 implementation",
+      "status": "active"
+    },
+    {
+      "source": "DEC-RAILWAY-001",
+      "relationship": "authorizes",
+      "target": "EPIC-RAILWAY-MIGRATION",
+      "provenance": "migration decision",
+      "status": "active"
+    },
+    {
+      "source": "EPIC-RAILWAY-MIGRATION",
+      "relationship": "implemented_by",
+      "target": "CAP-RAILWAY-DEPLOY",
+      "provenance": "Phase 1",
+      "status": "active"
+    },
+    {
+      "source": "EPIC-RAILWAY-MIGRATION",
+      "relationship": "implemented_by",
+      "target": "CAP-RAILWAY-SECRETS",
+      "provenance": "Phase 2",
+      "status": "active"
+    },
+    {
+      "source": "EPIC-RAILWAY-MIGRATION",
+      "relationship": "implemented_by",
+      "target": "CAP-RAILWAY-ENV",
+      "provenance": "Phase 2",
+      "status": "active"
+    },
+    {
+      "source": "EPIC-RAILWAY-MIGRATION",
+      "relationship": "implemented_by",
+      "target": "CAP-RAILWAY-SMOKE",
+      "provenance": "Phase 3",
+      "status": "active"
+    },
+    {
+      "source": "CAP-RAILWAY-DEPLOY",
+      "relationship": "verified_by",
+      "target": "TEST-RAILWAY-DEPLOY",
+      "provenance": "workflow run",
+      "status": "active"
+    },
+    {
+      "source": "CAP-RAILWAY-SMOKE",
+      "relationship": "verified_by",
+      "target": "TEST-RAILWAY-SMOKE",
+      "provenance": "smoke-prod.sh",
+      "status": "active"
+    },
+    {
+      "source": "CAP-RAILWAY-DEPLOY",
+      "relationship": "evidenced_by",
+      "target": "EVI-RAILWAY-PLAN",
+      "provenance": "phase 0",
+      "status": "active"
+    },
+    {
+      "source": "EPIC-RAILWAY-MIGRATION",
+      "relationship": "has_gap",
+      "target": "GAP-RAILWAY-TOKEN",
+      "provenance": "RAILWAY_TOKEN missing",
+      "status": "active"
+    },
+    {
+      "source": "DEC-RAILWAY-001",
+      "relationship": "informs",
+      "target": "ADR 0027",
+      "provenance": "no auth impact",
       "status": "active"
     }
   ]
