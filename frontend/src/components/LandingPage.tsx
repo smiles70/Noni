@@ -1,5 +1,5 @@
 /**
- * Landing page — contract-bound renderer.
+ * Landing page — contract-bound hero renderer.
  *
  * Per ADR 0019 and CONTRACT Section IV, this component:
  *   - Resolves its envelope from `/api/ui-envelope/landing.page` on mount.
@@ -8,7 +8,10 @@
  *   - Uses ONLY tokens from `design/tokens.ts` for color, spacing, type,
  *     radius, and motion. No raw hex literals, no arbitrary spacing values.
  *
- * Copy still comes from the backend (`/api/landing/page`, per ADR 0006).
+ * Copy comes from the backend (`/api/landing/page`, per ADR 0006).
+ * This redesign (ADR 0028, HERO-001) uses a warm hero image on the left
+ * and a single action card on the right, with the remaining marketing
+ * sections stacked below in a calm, low-density column.
  */
 import { CSSProperties, useEffect, useState } from "react";
 import { loadLandingPage, LandingPageContent } from "../api/landing";
@@ -45,7 +48,7 @@ interface Props {
 // ---- Tokenized style objects -----------------------------------------------
 
 const PAGE: CSSProperties = {
-  padding: SPACING.xl,
+  padding: `${SPACING.xl}px ${SPACING.lg}px`,
   maxWidth: 1080, // 135 × 8px = grid-aligned; gives the hero room
   margin: "0 auto",
   fontSize: TYPOGRAPHY.bodySizePx,
@@ -60,18 +63,49 @@ const H1: CSSProperties = {
   marginTop: 0,
   marginBottom: SPACING.sm,
   color: COLORS.textPrimary,
+  lineHeight: TYPOGRAPHY.bodyLineHeight,
+};
+
+const H2: CSSProperties = {
+  fontSize: TYPOGRAPHY.headingScale.level2,
+  marginTop: 0,
+  marginBottom: SPACING.sm,
+  color: COLORS.textPrimary,
+};
+
+const BODY: CSSProperties = {
+  marginTop: 0,
+  marginBottom: SPACING.md,
+};
+
+const UL: CSSProperties = {
+  marginTop: 0,
+  marginBottom: SPACING.md,
+  paddingLeft: SPACING.lg,
+};
+
+const LI: CSSProperties = {
+  marginBottom: SPACING.sm,
+};
+
+const CARD: CSSProperties = {
+  backgroundColor: COLORS.surface,
+  border: `1px solid ${COLORS.disabled}`,
+  borderRadius: RADIUS.md,
+  padding: SPACING.lg,
 };
 
 const PRIMARY_BTN: CSSProperties = {
   fontSize: TYPOGRAPHY.bodySizePx,
   padding: `${SPACING.md}px ${SPACING.lg}px`,
   backgroundColor: COLORS.accentMutedBlue,
-  color: COLORS.surface, // WCAG-AA contrast against muted blue
+  color: COLORS.surface,
   border: `2px solid ${COLORS.accentMutedBlue}`,
   borderRadius: RADIUS.sm,
   fontWeight: 600,
   cursor: "pointer",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
+  width: "100%",
 };
 
 const SECONDARY_BTN: CSSProperties = {
@@ -84,6 +118,53 @@ const SECONDARY_BTN: CSSProperties = {
   fontWeight: 600,
   cursor: "pointer",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
+  width: "100%",
+};
+
+const DIVIDER: CSSProperties = {
+  border: 0,
+  borderTop: `1px solid ${COLORS.disabled}`,
+  margin: `${SPACING.xl}px 0`,
+};
+
+const IMAGE_CARD: CSSProperties = {
+  width: "100%",
+  borderRadius: RADIUS.md,
+  overflow: "hidden",
+  boxShadow: `0 ${SPACING.sm}px ${SPACING.lg}px rgba(0, 0, 0, 0.08)`,
+};
+
+const HERO_IMAGE: CSSProperties = {
+  width: "100%",
+  height: "auto",
+  maxHeight: 400,
+  objectFit: "cover",
+  display: "block",
+};
+
+const HERO_ROW: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: SPACING.xl,
+  alignItems: "center",
+  marginBottom: SPACING.xl,
+};
+
+const HERO_COLUMN: CSSProperties = {
+  flex: "1 1 320px",
+  minWidth: 280,
+};
+
+const ACTION_STACK: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: SPACING.md,
+};
+
+const NOTE: CSSProperties = {
+  margin: 0,
+  fontSize: TYPOGRAPHY.bodySizePx,
+  color: COLORS.disabled,
 };
 
 // ---- Loading / blocked states ----------------------------------------------
@@ -128,10 +209,6 @@ export default function LandingPage({
   const [content, setContent] = useState<LandingPageContent | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // Whether the long-form "How Noni works" dialog is open. Closed by
-  // default; opens when the visitor clicks the primary CTA
-  // ("Set up my account — free") on the auth row. Closing returns focus
-  // to the trigger via the browser's default.
   const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   useEffect(() => {
@@ -157,19 +234,12 @@ export default function LandingPage({
     return <PendingBanner />;
   }
 
-  // The proposal RenderGuard validates against the envelope. Counts
-  // reflect what the landing page actually renders now: hero image,
-  // headline, primary "Set up my account" button, secondary "Log in"
-  // button, help mailto link, plus up to 2 NavBar entries when signed
-  // in. Long-form copy lives in HowItWorksDialog, which is rendered
-  // outside the guarded subtree.
   const proposal: RenderProposal = {
-    components: ["Heading", "Body", "Button"],
-    // primary CTA + secondary CTA + help link + up to 2 NavBar entries.
+    components: ["Heading", "Body", "Button", "Card", "List", "Divider"],
     primaryActionCount: 5,
     irreversibleActionCount: 0,
-    highlightedRecommendationCount: 1, // primary CTA only
-    visibleTextLevels: 2, // h1 + body (note + button labels)
+    highlightedRecommendationCount: 1,
+    visibleTextLevels: 3,
     colorsUsed: [
       COLORS.background,
       COLORS.surface,
@@ -194,153 +264,163 @@ export default function LandingPage({
 
   return (
     <>
-    <RenderGuard envelope={envelope} proposal={proposal}>
-      <main style={PAGE}>
-        {/* Hero: full-width landscape image (whole picture visible — no
-            crop) with a centered white banner overlay containing the
-            headline and a "Learn more" action that scrolls to the
-            introduction. Beneath the photo: a primary "Create account"
-            and a secondary "Log in" action. Image is decorative (alt=""),
-            so it does not add to the visible-text-level count.
-
-            Note: the hero headline and overlay button label are
-            intentional front-end overrides per the user's request for
-            calmer SaaS-style phrasing. Other copy still flows from the
-            backend. */}
-        <section className="noni-hero" aria-labelledby="hero-heading">
-          <div className="noni-hero__frame">
-            <img
-              className="noni-hero__image"
-              src="/nonisplash.jpg"
-              alt=""
-              loading="eager"
-            />
-          </div>
-          <div className="noni-hero__overlay">
-            <h1 id="hero-heading" className="noni-hero__overlay-title">
-              How to learn AI — at your own pace.
-            </h1>
-          </div>
-
-          {/* Auth row directly under the photo. The primary label names
-              exactly what the click does today (account setup) and pairs
-              it with a one-line reassurance to remove the card-on-file
-              fear — geragogy research consistently shows older adults
-              respond better to plain, honest action labels than to
-              outcome promises that may not match the next screen. When a
-              real sample lesson exists, revisit this label as
-              "Try your first lesson". */}
-          <div className="noni-hero__auth-row">
-            {signedIn ? (
-              <>
-                <div className="noni-hero__primary-cta">
-                  <button
-                    type="button"
-                    onClick={onBegin}
-                    style={PRIMARY_BTN}
-                  >
-                    Continue learning →
-                  </button>
+      <RenderGuard envelope={envelope} proposal={proposal}>
+        <main style={PAGE}>
+          {/* Hero: warm image on the left, action card on the right. */}
+          <section aria-labelledby="hero-heading" style={{ marginBottom: SPACING.xxl }}>
+            <div style={HERO_ROW}>
+              <div style={HERO_COLUMN}>
+                <div style={IMAGE_CARD}>
+                  <img
+                    src="/nonisplash.jpg"
+                    alt=""
+                    loading="eager"
+                    style={HERO_IMAGE}
+                  />
                 </div>
-                {onSignOut && <SignOutLink onSignedOut={onSignOut} />}
-              </>
-            ) : (
-              <>
-                <div className="noni-hero__primary-cta">
-                  <button
-                    type="button"
-                    onClick={() => setShowHowItWorks(true)}
-                    style={PRIMARY_BTN}
-                  >
-                    Set up my account — free
-                  </button>
-                  <p className="noni-hero__cta-note">
-                    Free. No card needed. Stop any time.
-                  </p>
+              </div>
+
+              <div style={HERO_COLUMN}>
+                <h1 id="hero-heading" style={H1}>
+                  {content.hero.headline}
+                </h1>
+                <p style={BODY}>{content.hero.subheadline}</p>
+
+                <div style={CARD}>
+                  <div style={ACTION_STACK}>
+                    {signedIn ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={onBegin}
+                          style={PRIMARY_BTN}
+                        >
+                          Continue learning →
+                        </button>
+                        {onSignOut && <SignOutLink onSignedOut={onSignOut} />}
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={onBegin}
+                          style={PRIMARY_BTN}
+                        >
+                          {content.call_to_action.primary.label}
+                        </button>
+                        <p style={NOTE}>
+                          {content.call_to_action.primary.note}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setShowHowItWorks(true)}
+                          style={SECONDARY_BTN}
+                        >
+                          {content.call_to_action.secondary.label}
+                        </button>
+                        <p style={NOTE}>
+                          {content.call_to_action.secondary.note}
+                        </p>
+                        {onSignIn && (
+                          <button
+                            type="button"
+                            onClick={onSignIn}
+                            style={SECONDARY_BTN}
+                          >
+                            Log in
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-                {onSignIn && (
-                  <button
-                    type="button"
-                    onClick={onSignIn}
-                    style={SECONDARY_BTN}
-                  >
-                    Log in
-                  </button>
-                )}
-              </>
-            )}
-          </div>
+              </div>
+            </div>
+          </section>
 
-          <p style={{ marginTop: SPACING.md, fontSize: TYPOGRAPHY.bodySizePx }}>
-            Questions? We are here to help:{" "}
-            <a href="mailto:hello@mynaani.com" style={{ color: COLORS.accentMutedBlue }}>
-              hello@mynaani.com
-            </a>
-          </p>
+          {/* Supporting sections — kept low-density and plain. */}
+          <section aria-labelledby="intro-heading">
+            <h2 id="intro-heading" style={H2}>
+              {content.introduction.title}
+            </h2>
+            {content.introduction.body.split("\n\n").map((paragraph, i) => (
+              <p key={i} style={BODY}>
+                {paragraph}
+              </p>
+            ))}
+          </section>
 
-          {onHelp && (
-            <p style={{ marginTop: SPACING.sm, fontSize: TYPOGRAPHY.bodySizePx }}>
-              <button
-                type="button"
-                onClick={onHelp}
-                style={{
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                  color: COLORS.accentMutedBlue,
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                  fontSize: TYPOGRAPHY.bodySizePx,
-                  fontFamily: TYPOGRAPHY.fontFamily,
-                }}
-              >
-                Help and common questions
-              </button>
-            </p>
-          )}
+          <hr style={DIVIDER} />
 
-          <p
-            style={{
-              marginTop: SPACING.sm,
-              fontSize: TYPOGRAPHY.bodySizePx,
-              color: COLORS.disabled,
-            }}
-          >
-            Patent-pending curriculum and interface designed specifically for
-            adult learners.
-          </p>
+          <section aria-labelledby="what-heading">
+            <h2 id="what-heading" style={H2}>
+              {content.what_noni_does.title}
+            </h2>
+            <ul style={UL}>
+              {content.what_noni_does.items.map((item) => (
+                <li key={item} style={LI}>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
 
-          {/* NavBar surfaces signed-in entries (Upgrade / Your account).
-              Signed-out users see no extra entries here. NavBar reads
-              AuthProvider state via useAuth() so a re-render on auth
-              transition is sufficient; the `key` is retained as a belt-
-              and-braces remount guard against any cached local state
-              surviving a sign-out frame. */}
+          <hr style={DIVIDER} />
+
+          <section aria-labelledby="feel-heading">
+            <h2 id="feel-heading" style={H2}>
+              {content.how_it_feels.title}
+            </h2>
+            <ul style={UL}>
+              {content.how_it_feels.items.map((item) => (
+                <li key={item} style={LI}>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <hr style={DIVIDER} />
+
+          <section aria-labelledby="trust-heading">
+            <h2 id="trust-heading" style={H2}>
+              {content.trust_and_safety.title}
+            </h2>
+            {content.trust_and_safety.body.split("\n\n").map((paragraph, i) => (
+              <p key={i} style={BODY}>
+                {paragraph}
+              </p>
+            ))}
+          </section>
+
+          <hr style={DIVIDER} />
+
+          <section>
+            {content.closing.body.split("\n\n").map((paragraph, i) => (
+              <p key={i} style={BODY}>
+                {paragraph}
+              </p>
+            ))}
+          </section>
+
           <NavBar
             key={signedIn ? "nav-signed-in" : "nav-signed-out"}
             onContinuePaid={onContinuePaid}
             onAccount={onAccount}
             onHelp={onHelp}
           />
-        </section>
-
-        {/* The "How Noni works" explanation is now the mandatory first
-            step for new users before they reach the auth wall. The
-            dialog is rendered outside the RenderGuard boundary. */}
-      </main>
-    </RenderGuard>
-    {showHowItWorks && (
-      <HowItWorksDialog
-        content={content}
-        onClose={() => setShowHowItWorks(false)}
-        onBegin={onBegin}
-      />
-    )}
+        </main>
+      </RenderGuard>
+      {showHowItWorks && (
+        <HowItWorksDialog
+          content={content}
+          onClose={() => setShowHowItWorks(false)}
+          onBegin={onBegin}
+        />
+      )}
     </>
   );
 }
 
-// Suppress unused-import warning from the FOCUS token — focus styling lives
-// in styles.css so it applies system-wide, but we keep the import to anchor
-// the token's owner here.
+// Suppress unused-import warning from the FOCUS token.
 void FOCUS;
