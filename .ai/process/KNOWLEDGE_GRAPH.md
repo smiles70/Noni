@@ -379,3 +379,13 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `DEC-MON-001` is recommendation: for-profit B2B2C-first hybrid (free core + one-time paid + B2B2C contracts).
 - `CAP-MON-001` status is `completed`.
 
+## GTM-001 sales and marketing plan (2026-08-27)
+
+- `ONTO-GTM-001` is `.ai/process/GTM_ONTOLOGY_001.md`.
+- `SRC-GTM-RESEARCH` is `.ai/process/GTM_RESEARCH_001.md`.
+- `SRC-GTM-001-INTAKE` is `.ai/intake/2026-08-27-go-to-market-001.md`.
+- `SRC-GTM-001-PREFLIGHT` is `.ai/process/PREFLIGHT_GTM_001.md`.
+- `SRC-GTM-001-PHASE` is `.ai/process/PHASE_INVENTORY_GTM_001.md`.
+- `DEC-GTM-001` is recommendation: dual B2C + B2B2C go-to-market with 30-60-90 actions.
+- `CAP-GTM-001` status is `completed`.
+
