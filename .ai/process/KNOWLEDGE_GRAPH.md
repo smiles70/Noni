@@ -368,3 +368,14 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `CAP-GiftRedeem` `depends_on` `CAP-MagicLinkAuth` and `CAP-UserAccess`.
 - `CAP-Refund` `depends_on` `CAP-Telemetry` and `CAP-UserAccess`.
 - `CAP-PRICING-002` status is `in_progress`.
+
+## MONETIZATION-001 older-adult AI-learning monetization (2026-08-27)
+
+- `ONTO-MON-001` is `.ai/process/MONETIZATION_ONTOLOGY_001.md`.
+- `SRC-MON-RESEARCH` is `.ai/process/MONETIZATION_RESEARCH_001.md`.
+- `SRC-MON-001-INTAKE` is `.ai/intake/2026-08-27-monetization-001.md`.
+- `SRC-MON-001-PREFLIGHT` is `.ai/process/PREFLIGHT_MONETIZATION_001.md`.
+- `SRC-MON-001-PHASE` is `.ai/process/PHASE_INVENTORY_MONETIZATION_001.md`.
+- `DEC-MON-001` is recommendation: hybrid free core + one-time paid + B2B2C sponsorship.
+- `CAP-MON-001` status is `completed`.
+
