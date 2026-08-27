@@ -324,3 +324,35 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `EVI-PRICING-001-RESEARCH` is `.ai/process/PRICING_RESEARCH_001.md`.
 - `DEC-PRICING-001` is recommendation: keep ADR 0021 one-time purchase, strengthen caregiver gift, optional reverse trial.
 - `CAP-PRICING-001` status is `completed`.
+
+## PRICING-001 ontology and traceability
+
+- `ONTO-PRICING-001` is `.ai/process/PRICING_ONTOLOGY_001.md`.
+- `SRC-AARP-2025` `evidenced_by` `EVI-PRICING-001`.
+- `SRC-JAMR-2017` `evidenced_by` `EVI-PRICING-002`.
+- `SRC-GERONTOL-2016` `evidenced_by` `EVI-PRICING-003`.
+- `SRC-CHI-2024` `evidenced_by` `EVI-PRICING-004`.
+- `SRC-KYLE-POYAR` `evidenced_by` `EVI-PRICING-005`.
+- `SRC-LUMOSITY`, `SRC-DUOLINGO`, `SRC-TOOLRADAR-2026` `evidenced_by` `EVI-PRICING-006`.
+- `SRC-GERAGOGY-2022` `evidenced_by` `EVI-PRICING-007`.
+- `EVI-PRICING-001`, `EVI-PRICING-002`, `EVI-PRICING-007` `defines` `REQ-PRICING-001`.
+- `EVI-PRICING-004` `defines` `REQ-PRICING-002`.
+- `EVI-PRICING-003` `defines` `REQ-PRICING-003`.
+- `EVI-PRICING-007`, `EVI-PRICING-004` `defines` `REQ-PRICING-004`.
+- `SRC-ADR-0021` `defines` `REQ-PRICING-005` and `REQ-PRICING-006`.
+- `SRC-ADR-0021` `defines` `REQ-PRICING-007`.
+- `REQ-PRICING-001` `serves` `PERSONA-Learner-55Plus`.
+- `REQ-PRICING-003` `serves` `PERSONA-Caregiver`.
+- `REQ-PRICING-005` `part_of` `JOURNEY-FreeToPaid`.
+- `REQ-PRICING-003` `part_of` `JOURNEY-GiftPurchase`.
+- `CAP-Paywall` `implements` `REQ-PRICING-005` and `REQ-PRICING-006`.
+- `CAP-GiftRedeem` `implements` `REQ-PRICING-003`.
+- `CAP-Refund` `implements` `REQ-PRICING-007`.
+- `CAP-ReverseTrial` `implements` `REQ-PRICING-004` and `US-PRICING-004`.
+- `DEC-PRICING-001` `decides` `REQ-PRICING-001`, `REQ-PRICING-002`, `REQ-PRICING-004`, `REQ-PRICING-006`.
+- `DEC-PRICING-002` `decides` `REQ-PRICING-004` (optional, future).
+- `DEC-PRICING-003` `decides` `REQ-PRICING-002`.
+- `DEC-PRICING-001`, `DEC-PRICING-002`, `DEC-PRICING-003` `owned_by` `OWNER-Product`.
+- `CAP-Paywall`, `CAP-GiftRedeem`, `CAP-Refund`, `CAP-ReverseTrial` `owned_by` `OWNER-Engineering`.
+- `ASM-PRICING-001` and `ASM-PRICING-002` are `assumes` on `DEC-PRICING-001`.
+- `GAP-PRICING-001`, `GAP-PRICING-002`, `GAP-PRICING-003` are `has_gap` on `DEC-PRICING-001`.
