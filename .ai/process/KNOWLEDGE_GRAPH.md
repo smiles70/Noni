@@ -356,3 +356,15 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `CAP-Paywall`, `CAP-GiftRedeem`, `CAP-Refund`, `CAP-ReverseTrial` `owned_by` `OWNER-Engineering`.
 - `ASM-PRICING-001` and `ASM-PRICING-002` are `assumes` on `DEC-PRICING-001`.
 - `GAP-PRICING-001`, `GAP-PRICING-002`, `GAP-PRICING-003` are `has_gap` on `DEC-PRICING-001`.
+
+## PRICING-002 implementation intake (2026-08-27)
+
+- `SRC-PRICING-002-INTAKE` is `.ai/intake/2026-08-27-pricing-002-implementation.md`.
+- `SRC-PRICING-002-PREFLIGHT` is `.ai/process/PREFLIGHT_PRICING_002.md`.
+- `SRC-PRICING-002-PHASE` is `.ai/process/PHASE_INVENTORY_PRICING_002.md`.
+- `DEC-PRICING-001` `depends_on` `CAP-Paywall`, `CAP-GiftRedeem`, `CAP-Refund`.
+- `DEC-PRICING-002` `depends_on` `CAP-ReverseTrial`.
+- `CAP-Paywall` `depends_on` `CAP-UserAccess` and `CAP-Telemetry`.
+- `CAP-GiftRedeem` `depends_on` `CAP-MagicLinkAuth` and `CAP-UserAccess`.
+- `CAP-Refund` `depends_on` `CAP-Telemetry` and `CAP-UserAccess`.
+- `CAP-PRICING-002` status is `in_progress`.
