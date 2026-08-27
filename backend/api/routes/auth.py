@@ -1,7 +1,8 @@
 """Authentication routes.
 
-See ADR 0023 (original session-cookie design) and ADR 0024 (Clerk
-migration; this module's current shape).
+See ADR 0023 (original session-cookie design). The Clerk-specific
+implementation has been removed; only the mock provider remains while a
+production provider is deferred per docs/deferred-decisions.md.
 
 Endpoints:
 
@@ -32,6 +33,7 @@ from backend.api.deps import get_db
 from backend.app.telemetry import record_auth_session_outcome
 from backend.core.config import settings
 from backend.models.accounts import Account
+from backend.services.auth_provider import AuthClaims, get_auth_provider
 from backend.services.auth_verifier import AuthError, parse_bearer, verify_token
 
 router = APIRouter()
@@ -55,14 +57,8 @@ class AuthConfigResponse(BaseModel):
 
 @router.get("/config", response_model=AuthConfigResponse)
 def auth_config() -> AuthConfigResponse:
-    # Sprint 22 S7: never echo the raw AUTH_PROVIDER string publicly.
-    # In production we always claim "clerk" regardless of backend config
-    # to avoid information leakage; dev/tests see the real value.
-    provider = (
-        "clerk"
-        if settings.ENVIRONMENT == "production"
-        else settings.AUTH_PROVIDER.strip().lower()
-    )
+    # Auth is mock-only while the production provider is deferred.
+    provider = settings.AUTH_PROVIDER.strip().lower()
     return AuthConfigResponse(provider=provider, version=settings.VERSION)
 
 
@@ -120,8 +116,8 @@ def auth_session(
     STEP 2 — verify_token raises AuthError with a discriminated `code`
              (B5, C3, B11).
     STEP 3 — subject resolution. The verifier hashes the provider `sub`
-             into a stable UUID (see auth_verifier._verify_clerk and
-             _verify_mock); we filter on that UUID, NOT the raw `sub`,
+             into a stable UUID (see auth_verifier._verify_mock); we
+             filter on that UUID, NOT the raw `sub`,
              so existing rows continue to match.
     STEP 4 — single SELECT, no filter on deleted_at yet (we want to
              distinguish "no row" from "soft-deleted row").
@@ -225,6 +221,20 @@ def auth_session_init(
     # STEP 3.
     if not claims.auth_user_id:
         auth_error("auth.subject_missing")
+
+    # STEP 3a: Magic DID tokens do not include an email claim. Fetch the
+    # user profile from the Magic API on first materialisation only.
+    if not claims.email:
+        provider = get_auth_provider()
+        profile = provider.fetch_user_profile(str(claims.subject), token)
+        if not profile:
+            auth_error("auth.transient_verifier_unavailable")
+        claims = AuthClaims(
+            auth_user_id=claims.auth_user_id,
+            email=profile.email,
+            display_name=claims.display_name or profile.display_name,
+            subject=claims.subject,
+        )
 
     # STEP 4: check existing.
     existing = (

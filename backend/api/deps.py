@@ -74,6 +74,7 @@ def _upsert_account(
     db: DbSession,
     claims: AuthClaims,
     provider: AuthProvider,
+    credential: Optional[str] = None,
 ) -> Optional[Account]:
     """Idempotent account row for the given provider claims.
 
@@ -109,7 +110,7 @@ def _upsert_account(
     email = claims.email
     display_name = claims.display_name
     if not email and claims.subject:
-        profile = provider.fetch_user_profile(claims.subject)
+        profile = provider.fetch_user_profile(claims.subject, credential)
         if profile is not None:
             email = profile.email
             if not display_name:
@@ -177,7 +178,7 @@ def get_optional_account(
     claims = provider.verify_credential(token)
     if claims is None:
         return None
-    account = _upsert_account(db, claims, provider)
+    account = _upsert_account(db, claims, provider, token)
     if account is None:
         return None
     db.commit()

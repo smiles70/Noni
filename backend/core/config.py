@@ -19,29 +19,19 @@ class Settings(BaseSettings):
     SESSION_COOKIE_NAME: str = "noni_session"
     SESSION_TTL_DAYS: int = 30
 
-    # Identity provider. "mock" (dev/tests, MockAuthProvider) or "clerk"
-    # (production, ClerkAuthProvider with RS256 + JWKS). The legacy
-    # "supabase" value is rejected by `get_auth_provider()` — Supabase
-    # is the Postgres database, not an identity provider.
+    # Identity provider. "mock" for dev/tests; "magic" for production.
+    # See ADR 0027 and docs/deferred-decisions.md.
     AUTH_PROVIDER: str = "mock"
-    # The browser app origin we redirect users back to after auth. Used
-    # by the Clerk integration's post-signin redirect and by any future
-    # backend-initiated redirect. Defaults to the local Compose stack.
-    FRONTEND_URL: str = "http://localhost:8080"
 
-    # Clerk integration (ADR 0024). Required when AUTH_PROVIDER=clerk.
-    # JWKS_URL is the public key endpoint Clerk exposes per instance,
-    # of the form https://<frontend-api>.clerk.accounts.dev/.well-known/jwks.json
-    # (dev) or https://clerk.<your-domain>.com/.well-known/jwks.json (prod).
-    # ISSUER must match the `iss` claim on Clerk-issued JWTs; usually the
-    # same host without /.well-known/jwks.json.
-    CLERK_JWKS_URL: str = ""
-    CLERK_ISSUER: str = ""
-    # Optional: secret key for Clerk Backend SDK calls (revocations, user
-    # lookups). Not required for JWT verification, but reserved here so
-    # future server-side admin endpoints can pick it up without a config
-    # migration.
-    CLERK_SECRET_KEY: str = ""
+    # Magic.link credentials (ADR 0027). API secret is required for
+    # DID token validation; client ID is auto-fetched from Magic if blank.
+    MAGIC_API_SECRET_KEY: str = ""
+    MAGIC_CLIENT_ID: str = ""
+
+    # The browser app origin we redirect users back to after auth. Used
+    # by any future backend-initiated redirect. Defaults to the local
+    # Compose stack.
+    FRONTEND_URL: str = "http://localhost:8080"
 
     # Payment provider: 'mock' for dev/tests, 'stripe' in production.
     PAYMENT_PROVIDER: str = "mock"
@@ -103,5 +93,5 @@ def validate_settings() -> None:
     # Sprint '2nd Safe Yellow' P1: non-breaking secret rotation visibility.
     from backend.core.secret_rotation import warn_if_secret_old
 
-    for name in ("SECRET_KEY", "SESSION_SECRET", "CLERK_SECRET_KEY", "STRIPE_SECRET_KEY"):
+    for name in ("SECRET_KEY", "SESSION_SECRET", "STRIPE_SECRET_KEY"):
         warn_if_secret_old(name, max_age_sec=60 * 60 * 24 * 90)
