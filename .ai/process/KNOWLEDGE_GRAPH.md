@@ -243,3 +243,14 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `EVI-HERO-BUILD` is `npm run type-check` and `npm run build` passing.
 - `EVI-HERO-DEPLOY` is Cloudflare Pages deploy of `noni-web.pages.dev/assets/index-NwLzaeT9.js`.
 - `DEC-0028` status updated to `Accepted`.
+
+## HERO-001 landing page competitive analysis (2026-08-27)
+
+- `SRC-HERO-COMP-RESEARCH` is `.ai/process/LANDING_HERO_COMPETITIVE_RESEARCH.md`.
+- `SRC-HERO-RUBRIC` is `.ai/process/LANDING_HERO_RUBRIC.md`.
+- `SRC-HERO-GAP` is `.ai/process/LANDING_HERO_GAP_ANALYSIS.md`.
+- `SRC-ADR-0029` is `docs/decisions/0029-landing-hero-contract-exemption.md`.
+- `SRC-HERO-GAP` identifies `GAP-HERO-HEADLINE` (headline below competitor size).
+- `SRC-HERO-GAP` identifies `GAP-HERO-BENEFITS` (no benefit cards above fold).
+- `SRC-HERO-GAP` identifies `GAP-HERO-TRUST` (missing explicit trust signal).
+- `DEC-0029` proposes partial contract exemption for `LandingPage.tsx`.
