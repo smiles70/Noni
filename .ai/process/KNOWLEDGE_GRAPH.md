@@ -266,3 +266,5 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `GAP-HERO-TRUST` resolution path: add "Free. No card needed." note to primary CTA.
 - `CAP-HERO-LANDING-EXEMPT` depends_on `DEP-HERO-IMAGE` (placeholder `nonisplash.jpg`).
 - `EVI-HERO-002-PREFLIGHT` is `PREFLIGHT_HERO_EXEMPT.md` with `GO` status.
+- `EVI-HERO-002-DEPLOY` is live bundle `https://noni-web.pages.dev/assets/index-BQ6GAP4z.js`.
+- `CAP-HERO-LANDING-EXEMPT` status is `implemented`.

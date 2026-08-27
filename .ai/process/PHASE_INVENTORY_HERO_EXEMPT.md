@@ -12,7 +12,7 @@
 | 0 | Exemption pre-flight | Completed | Product / Engineering | ADR 0029 accepted; design locked; no contract leak risk |
 | 1 | LandingPage.tsx exempt redesign | Completed | Engineering | Component renders and passes `RenderGuard` for `landing.page` |
 | 2 | Build + bundle verification | Completed | Engineering | `npm run type-check`, `npm run build`, bundle guard pass; no brand leaks |
-| 3 | Live smoke | In Progress | Engineering | `noni-web.pages.dev` shows new hero; no console errors |
+| 3 | Live smoke | Completed | Engineering | `noni-web.pages.dev` shows new hero; no console errors |
 | 4 | Process closeout | Completed | Engineering | Phase inventory, pre-flight, and knowledge graph updated |
 
 ## Phase 0 — Exemption pre-flight
