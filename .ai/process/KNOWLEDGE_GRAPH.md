@@ -295,3 +295,14 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `CAP-HERO-MYNAAANI` depends_on `public/hero-mynaani.png` and is implemented in `LandingPage.tsx`.
 - `EVI-HERO-004-DEPLOY` is live bundle `https://noni-web.pages.dev/assets/index-DuqHZxup.js` and image `https://noni-web.pages.dev/hero-mynaani.png`.
 - `CAP-HERO-MYNAAANI` status is `deployed`.
+
+## HERO-006 high-resolution original image search (2026-08-27)
+
+- `SRC-HERO-006-INTAKE` is `.ai/intake/2026-08-27-find-highres-mynaani-original.md`.
+- `SRC-PHASE-HERO-ORIGINAL` is `.ai/process/PHASE_INVENTORY_HERO_ORIGINAL.md`.
+- `SRC-PREFLIGHT-HERO-ORIGINAL` is `.ai/process/PREFLIGHT_HERO_ORIGINAL.md`.
+- `SRC-FINDINGS-HERO-ORIGINAL` is `.ai/process/HERO_ORIGINAL_IMAGE_RESEARCH.md`.
+- `EVI-HERO-006-DAM` is `https://dam.metlife.com/` and
+  `https://metlifeglobal.brand-portal.adobe.com/.../photography`.
+- `EVI-HERO-006-PORTAL` shows the original is behind MetLife Adobe Brand Portal.
+- `CAP-HERO-ORIGINAL-RESEARCH` status is `completed` with no public URL.
