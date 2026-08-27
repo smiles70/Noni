@@ -1,6 +1,6 @@
 # ADR 0028 — Landing Hero Redesign
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-08-27
 **Process:** v9.51
 **Owner:** Product

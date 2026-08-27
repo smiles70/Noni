@@ -239,3 +239,7 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `GAP-HERO-IMAGE` remains open until a Noni-appropriate hero image is sourced.
 - `EVI-HERO-RESEARCH` is `.ai/process/LANDING_HERO_REDESIGN_RESEARCH.md`.
 - `PHASE-HERO-0` pre-flight is `PREFLIGHT_HERO.md` and status is `GO`.
+- `CAP-HERO-LANDING` is `implemented_by` `frontend/src/components/LandingPage.tsx`.
+- `EVI-HERO-BUILD` is `npm run type-check` and `npm run build` passing.
+- `EVI-HERO-DEPLOY` is Cloudflare Pages deploy of `noni-web.pages.dev/assets/index-NwLzaeT9.js`.
+- `DEC-0028` status updated to `Accepted`.

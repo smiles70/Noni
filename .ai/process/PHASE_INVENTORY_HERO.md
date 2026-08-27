@@ -11,11 +11,12 @@ existing `landing.page` UI state envelope.
 | Phase | Name | Status | Primary owner | Exit gate |
 |---|---|---|---|---|
 | 0 | Design lock + asset selection | Pending | Product / Design | Approved hero image, copy, and CTA set; pre-flight pass |
-| 1 | Component update | Pending | Engineering | `LandingPage.tsx` renders with new layout and passes `RenderGuard` |
-| 2 | Build + bundle verification | Pending | Engineering | `npm run type-check` and `npm run build` pass; bundle guard passes |
+| 0 | Design lock + asset selection | Completed | Product / Design | Approved hero image, copy, and CTA set; pre-flight pass |
+| 1 | Component update | Completed | Engineering | `LandingPage.tsx` renders with new layout and passes `RenderGuard` |
+| 2 | Build + bundle verification | Completed | Engineering | `npm run type-check` and `npm run build` pass; bundle guard passes |
 | 3 | Accessibility + mobile verification | Pending | Engineering / QA | WCAG 2.2 AA and mobile single-column checks pass |
-| 4 | Process closeout | Pending | Engineering | BRD/FRD/PRD/ADR, knowledge graph, and `CURRENT_STATE.md` updated |
-| 5 | Release + smoke | Pending | Engineering | Deployed to Cloudflare Pages; live `/` shows new hero |
+| 4 | Process closeout | In Progress | Engineering | BRD/FRD/PRD/ADR, knowledge graph, and `CURRENT_STATE.md` updated |
+| 5 | Release + smoke | Completed | Engineering | Deployed to Cloudflare Pages; live `/` shows new hero |
 
 ## Phase 0 — Design lock + asset selection
 
