@@ -1,5 +1,5 @@
 """
-Noni - Geragogy-grounded AI learning system for older adults.
+Mynaani - Geragogy-grounded AI learning system for older adults.
 
 All UI state transitions are governed by the Interface State Control
 System (ISCS). Subsystems emit signals; the ISCS decides UI states.

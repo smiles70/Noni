@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.6
-# Multi-stage build for the Noni frontend.
+# Multi-stage build for the Mynaani frontend.
 # Stage 1: build the Vite bundle.
 # Stage 2: serve the static bundle with nginx.
 

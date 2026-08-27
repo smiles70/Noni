@@ -1,4 +1,4 @@
-"""Noni - System configuration via pydantic-settings."""
+"""Mynaani - System configuration via pydantic-settings."""
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

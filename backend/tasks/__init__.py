@@ -1,1 +1,1 @@
-"""Celery task registry for Noni background jobs."""
+"""Celery task registry for Mynaani background jobs."""

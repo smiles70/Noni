@@ -1,6 +1,6 @@
 """Test-suite environment defaults.
 
-The Noni runtime container ships with `AUTH_PROVIDER=clerk` so the app
+The Mynaani runtime container ships with `AUTH_PROVIDER=clerk` so the app
 boots ready to verify real Clerk JWTs. The pytest suite, on the other
 hand, uses the mock provider exclusively (`Bearer mock:<email>`); the
 canonical Clerk JWT flow is covered by integration tests separately.

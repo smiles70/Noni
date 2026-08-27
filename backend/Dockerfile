@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.6
-# Multi-stage build for the Noni backend.
+# Multi-stage build for the Mynaani backend.
 # Stage 1: install dependencies into a virtualenv.
 # Stage 2: copy the venv + code into a slim runtime image.
 # Build context is the repo root (so we can copy alembic/, backend/).

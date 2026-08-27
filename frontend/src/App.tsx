@@ -1,5 +1,5 @@
 /**
- * Noni root component.
+ * Mynaani root component.
  *
  * Simple view-state machine (no router). Sprint A8 adds account/billing
  * views; landing and curriculum are unchanged. The curriculum -> paywall

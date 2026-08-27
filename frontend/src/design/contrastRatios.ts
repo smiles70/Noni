@@ -1,5 +1,5 @@
 /**
- * Verified WCAG contrast ratios for Noni color tokens.
+ * Verified WCAG contrast ratios for Mynaani color tokens.
  *
  * Source of truth for which color pairs are permitted as text/background.
  * Computed via WebAIM contrast checker.

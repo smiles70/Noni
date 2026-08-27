@@ -9,7 +9,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 applyLargeTextOnBoot();
 
-// Dev/QA escape hatch: ?reset=1 wipes Noni-owned client state and
+// Dev/QA escape hatch: ?reset=1 wipes Mynaani-owned client state and
 // reloads to the same path with the param stripped. Lets a developer
 // or tester return to Lesson 1 without DevTools tricks.
 const resetting = ((): boolean => {

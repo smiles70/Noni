@@ -1,4 +1,4 @@
-# Noni
+# Mynaani
 
 A geragogy-grounded AI learning system for older adults.
 
@@ -6,7 +6,7 @@ A geragogy-grounded AI learning system for older adults.
 
 ## 1. Project Purpose
 
-Noni provides structured, respectful learning experiences designed specifically for older adults. The system prioritizes **cognitive safety**, **dignity**, and **autonomy** over speed or engagement metrics.
+Mynaani provides structured, respectful learning experiences designed specifically for older adults. The system prioritizes **cognitive safety**, **dignity**, and **autonomy** over speed or engagement metrics.
 
 The design philosophy centers on:
 - **Predictable experiences**: no surprises, no sudden changes
@@ -69,7 +69,7 @@ See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the complete non-negotiable rules
 
 ## 4. Geragogy Grounding
 
-Noni is built on principles of geragogy (learning theory for older adults):
+Mynaani is built on principles of geragogy (learning theory for older adults):
 
 - Respect for autonomy: learners control their journey
 - Acknowledgment of experience: content honors life experience and wisdom
@@ -363,7 +363,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
 
 ## License
 
-Proprietary — Noni Engineering Team
+Proprietary — Mynaani Engineering Team
 
 ---
 

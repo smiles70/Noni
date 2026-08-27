@@ -1,6 +1,6 @@
 /**
- * HowItWorksDialog — accessible modal that surfaces the long-form Noni
- * marketing copy when the visitor clicks "See how Noni works" on the
+ * HowItWorksDialog — accessible modal that surfaces the long-form Mynaani
+ * marketing copy when the visitor clicks "See how Mynaani works" on the
  * landing hero.
  *
  * Behaviour:
