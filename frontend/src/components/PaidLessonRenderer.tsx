@@ -27,6 +27,10 @@ interface Props {
 }
 
 const PAID_SEQUENCE = [
+  { module: 3, unitId: "module3-unit-1" },
+  { module: 3, unitId: "module3-unit-2" },
+  { module: 3, unitId: "module3-unit-3" },
+  { module: 3, unitId: "module3-unit-4" },
   { module: 4, unitId: "module4-unit-1" },
   { module: 4, unitId: "module4-unit-2" },
   { module: 4, unitId: "module4-unit-3" },
@@ -52,7 +56,7 @@ export default function PaidLessonRenderer({
     <LessonRenderer
       sequence={PAID_SEQUENCE}
       loadLesson={async (module, unitId) => {
-        const result = await loadPaidLesson(module as 4 | 5, unitId);
+        const result = await loadPaidLesson(module as 3 | 4 | 5, unitId);
         if (result.kind === "ok") return result.lesson;
         if (result.kind === "paywall") {
           throw new PaywallError(result.signal);

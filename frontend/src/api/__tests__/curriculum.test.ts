@@ -195,12 +195,16 @@ describe("loadFreeUnit", () => {
       },
     });
 
-    const unit = await loadFreeUnit(3, "module3-unit-1");
+    const result = await loadPaidUnit(3, "module3-unit-1");
 
     expect(mockGet).toHaveBeenCalledWith(
       "/api/curriculum/module-3/units/module3-unit-1",
+      expect.any(Object),
     );
-    expect(unit.module).toBe(3);
+    expect(result.kind).toBe("ok");
+    if (result.kind === "ok") {
+      expect(result.unit.module).toBe(3);
+    }
   });
 
   it("propagates a rejected request as a thrown error", async () => {

@@ -162,16 +162,16 @@ def lesson_menu(
 
       {
         "modules": [
-          {"id": 1, "title": "...", "units": [{"id", "title", "description"}...]},
+          {"id": 0, "title": "...", "units": [{"id", "title", "description"}...]},
+          {"id": 1, "title": "...", "units": [...]},
           {"id": 2, "title": "...", "units": [...]},
-          {"id": 3, "title": "...", "units": [...]},
         ],
         "bridge_units": [{"id", "title", "description"}...]
       }
 
     Authoritative ordering is the order of each list as defined in the
-    units modules. The menu does NOT include Modules 4+ - those are the
-    paid track and are gated by entitlement.
+    units modules. The menu does NOT include Modules 3+ - those are the
+    paid track and are gated by entitlement (ADR 0022).
     """
 
     def _serialize(u: CurriculumUnit) -> dict:
@@ -197,11 +197,6 @@ def lesson_menu(
                 "id": 2,
                 "title": "Module 2 — Sustained use over time",
                 "units": [_serialize(u) for u in UNITS_MODULE_2],
-            },
-            {
-                "id": 3,
-                "title": "Module 3 — Long-term judgment",
-                "units": [_serialize(u) for u in UNITS_MODULE_3],
             },
         ],
         "bridge_units": [_serialize(u) for u in BRIDGE_UNITS],
@@ -542,7 +537,8 @@ def list_module_3_units(
 
 @router.get("/module-3/units/{unit_id}")
 def get_module_3_unit_page(
-    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
+    _account=Depends(paid_bundle_dep),
 ) -> dict:
     unit = get_module_3_unit(unit_id)
     if unit is None:
@@ -584,7 +580,9 @@ def get_module_3_unit_page(
 
 
 @router.get("/module-3/next")
-def next_module_3_unit() -> dict:
+def next_module_3_unit(
+    _account=Depends(paid_bundle_dep),
+) -> dict:
     """Recommend the most advanced Module 3 unit reachable at current stability.
 
     Linear walk through UNITS_MODULE_3. Per-learner volatility/strain/mastery
@@ -892,7 +890,8 @@ def get_lesson_module_2(
 
 @router.get("/module-3/units/{unit_id}/lesson")
 def get_lesson_module_3(
-    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
+    _account=Depends(paid_bundle_dep),
 ) -> dict:
     unit = get_module_3_unit(unit_id)
     if unit is None:

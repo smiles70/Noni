@@ -40,10 +40,6 @@ const FREE_SEQUENCE = [
   { module: 2, unitId: "module2-unit-3" },
   { module: 2, unitId: "module2-unit-4" },
   { module: 2, unitId: "module2-unit-5" },
-  { module: 3, unitId: "module3-unit-1" },
-  { module: 3, unitId: "module3-unit-2" },
-  { module: 3, unitId: "module3-unit-3" },
-  { module: 3, unitId: "module3-unit-4" },
 ] as const;
 
 export default function CurriculumRenderer({
@@ -58,7 +54,7 @@ export default function CurriculumRenderer({
       <LessonRenderer
         sequence={FREE_SEQUENCE}
         loadLesson={(module, unitId) =>
-          loadFreeLesson(module as 0 | 1 | 2 | 3, unitId)
+          loadFreeLesson(module as 0 | 1 | 2, unitId)
         }
         onSequenceComplete={onContinueGated}
         onContinuePaid={onContinueGated}

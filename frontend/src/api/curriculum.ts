@@ -91,7 +91,7 @@ export type LoadUnitResult =
   | { kind: "error"; message: string };
 
 export async function loadPaidUnit(
-  module: 4 | 5,
+  module: 3 | 4 | 5,
   unitId: string,
 ): Promise<LoadUnitResult> {
   try {
@@ -124,15 +124,15 @@ export async function loadPaidUnit(
 }
 
 /**
- * Load a free-track curriculum unit (modules 1-3). Returns the
+ * Load a free-track curriculum unit (modules 0-2). Returns the
  * ApprovedUnit directly; free endpoints never 402.
  *
  * Module 1 uses `/api/curriculum/units/{id}` (the original endpoint).
- * Modules 2-3 use `/api/curriculum/module-{n}/units/{id}`.
+ * Module 2 uses `/api/curriculum/module-2/units/{id}`.
  * We synthesize `module` on the way out so callers always see it.
  */
 export async function loadFreeUnit(
-  module: 0 | 1 | 2 | 3,
+  module: 0 | 1 | 2,
   unitId: string,
 ): Promise<ApprovedUnit> {
   const path =
@@ -167,21 +167,21 @@ export interface LessonResponse {
 
 /** Result discriminator for paid lesson loads. Mirrors `LoadUnitResult`. */
 export type LoadLessonResult =
-  | { kind: "ok"; lesson: LessonResponse & { module: 4 | 5 } }
+  | { kind: "ok"; lesson: LessonResponse & { module: 3 | 4 | 5 } }
   | { kind: "paywall"; signal: PaywallSignal }
   | { kind: "error"; message: string };
 
 export async function loadFreeLesson(
-  module: 0 | 1 | 2 | 3,
+  module: 0 | 1 | 2,
   unitId: string,
-): Promise<LessonResponse & { module: 0 | 1 | 2 | 3 }> {
+): Promise<LessonResponse & { module: 0 | 1 | 2 }> {
   const path =
     module === 1
       ? `/api/curriculum/units/${unitId}/lesson`
       : `/api/curriculum/module-${module}/units/${unitId}/lesson`;
   // The backend response includes `module`, but for module 1 it always
   // emits 1; we cast through `unknown` so the call site sees the narrow
-  // 1|2|3 type even when the JSON `module` is widened to `number`.
+  // 0|1|2 type even when the JSON `module` is widened to `number`.
   const res = await apiClient.get<{
     module: number;
     unit_id: string;
@@ -193,14 +193,14 @@ export async function loadFreeLesson(
 }
 
 /**
- * Load a paid-track lesson (modules 4 or 5; Sprint "paid modules" P3).
+ * Load a paid-track lesson (modules 3-5; ADR 0022).
  *
  * Like `loadPaidUnit`, this returns a discriminated result so the
  * renderer can route a 402 to the paywall view without throwing. The
  * 402 detail envelope is the same one `loadPaidUnit` already handles.
  */
 export async function loadPaidLesson(
-  module: 4 | 5,
+  module: 3 | 4 | 5,
   unitId: string,
 ): Promise<LoadLessonResult> {
   try {
@@ -285,7 +285,7 @@ export interface MenuUnit {
 }
 
 export interface MenuModule {
-  id: 0 | 1 | 2 | 3;
+  id: 0 | 1 | 2;
   title: string;
   units: MenuUnit[];
 }

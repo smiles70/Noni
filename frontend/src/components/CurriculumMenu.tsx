@@ -216,8 +216,8 @@ export default function CurriculumMenu(props: Props) {
           Lessons
         </h1>
         <p style={INTRO} data-component="Body">
-          Here is the full course at a glance. Modules 0–3 are free.
-          Modules 4–5 are available after a one-time purchase.
+          Here is the full course at a glance. Modules 0–2 are free.
+          Modules 3–5 are available after a one-time purchase.
           Tap any free lesson to jump straight to it.
         </p>
 

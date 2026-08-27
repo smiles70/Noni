@@ -68,7 +68,7 @@ def _seed_dev_products() -> None:
             db.add(
                 Product(
                     code="modules_4_5",
-                    display_name="Modules 4 and 5: Build Skills and Agents",
+                    display_name="Modules 3, 4, and 5: Build Skills and Agents",
                     price_cents=3900,
                     currency="usd",
                     active=True,

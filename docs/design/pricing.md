@@ -8,14 +8,15 @@
 
 ## Tier Structure
 
-### Free Tier: Modules 1, 2, and 3
-- 16 curriculum units
+### Free Tier: Modules 0, 1, and 2
+- ~10 curriculum units
 - All page types: context, principle, example, retrieval
 - Progress saved (with free account)
 - No credit card required
 
-### Paid Tier: Modules 4 and 5
-- 11 curriculum units
+### Paid Tier: Modules 3, 4, and 5
+- ~16 curriculum units
+- Learn long-term judgment with Claude
 - Learn to build Claude Skills
 - Learn to compose Agents from Skills
 - Lifetime access
@@ -38,7 +39,7 @@
 "Continue your journey. Build Skills. Create Agents."
 
 ### Body
-"Modules 1-3 gave you the foundation -- understanding Claude and using it with judgment. Modules 4-5 teach you to build your own Claude Skills and compose them into Agents that work for you."
+"Modules 0-2 give you the foundation -- understanding Claude and using it with judgment. Modules 3-5 teach you to keep good judgment over time, build your own Claude Skills, and compose them into Agents that work for you."
 
 "This is a one-time purchase. No subscription. No auto-renewal. No surprises. You pay once and the content is yours, permanently."
 
