@@ -9,7 +9,7 @@
  *     through (B2 single credential pipeline).
  *   - Mock-mode token write/clear helpers (re-exported by `./auth`).
  *
- * The Clerk-mode Bearer is attached by AuthProvider's single
+ * The Bearer token is attached by AuthProvider's single
  * interceptor inside the React tree, NOT by this module.
  */
 
@@ -18,6 +18,7 @@ import { API_BASE_URL } from "../lib/env";
 // Sprint 28: env variables now centralized in lib/env.ts.
 
 export const MOCK_TOKEN_KEY = "noni.mock_token";
+export const MAGIC_TOKEN_KEY = "noni.magic_token";
 export { API_BASE_URL };
 
 function _generateRequestId(): string {
@@ -237,4 +238,13 @@ export function setMockToken(email: string): void {
 
 export function clearMockToken(): void {
   localStorage.removeItem(MOCK_TOKEN_KEY);
+}
+
+/** Magic-link helpers. */
+export function setMagicToken(didToken: string): void {
+  localStorage.setItem(MAGIC_TOKEN_KEY, didToken);
+}
+
+export function clearMagicToken(): void {
+  localStorage.removeItem(MAGIC_TOKEN_KEY);
 }

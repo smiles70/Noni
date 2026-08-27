@@ -1,37 +1,20 @@
 /**
  * Sign-in page (account.signin envelope).
  *
- * Two providers, selected at build time by VITE_AUTH_PROVIDER (ADR 0024):
+ * In mock mode, a token of the form `mock:<email>` is stored.
+ * In magic mode, the Magic SDK sends a one-time sign-in link and the
+ * returned DID token is stored as the Bearer credential.
  *
- *   - "mock"  -> dev/tests; renders an email form. On submit we write
- *                `mock:<email>` to localStorage via setMockToken and
- *                dispatch `notifyAuthChanged()` so AuthProvider
- *                re-evaluates and transitions AUTHENTICATING -> READY.
- *                Account materialisation happens on AuthProvider's
- *                `/auth/session/init` call, not here.
- *
- *   - "clerk" -> production; renders Clerk's hosted <SignIn /> widget.
- *                Sign-in completion is observed by AuthProvider's
- *                dependency on useClerkAuth().isSignedIn; this page
- *                no longer needs its own onSignedIn callback.
- *
- * The RenderGuard envelope is intentionally bypassed in the Clerk
- * branch because the rendered tree is a vendor widget we don't own.
+ * The RenderGuard envelope is used so the page remains subject to the
+ * closed-world design contract.
  */
 import { useEffect, useState } from "react";
-import { SignIn, useAuth } from "@clerk/clerk-react";
-import { setMockToken } from "../api/auth";
+import { setMagicToken, setMockToken } from "../api/auth";
 import { notifyAuthChanged } from "../auth/AuthProvider";
 import { loadEnvelope } from "../api/envelope";
+import { magic } from "../lib/magic";
 import { AUTH_PROVIDER } from "../lib/env";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
-import {
-  COLORS,
-  MOTION,
-  RADIUS,
-  SPACING,
-} from "../design/tokens";
-import type { UIStateEnvelope } from "../design/envelope";
 import {
   ALERT_TEXT,
   BODY,
@@ -44,49 +27,17 @@ import {
   SECONDARY_BTN,
   STACK,
 } from "./AccountStyles";
-
-// AUTH_PROVIDER imported from lib/env.ts (Sprint 28 quick-win).
+import type { UIStateEnvelope } from "../design/envelope";
+import {
+  COLORS,
+  MOTION,
+  RADIUS,
+  SPACING,
+} from "../design/tokens";
 
 interface Props {
   onSignedIn: () => void;
   onCancel: () => void;
-}
-
-/**
- * Clerk-only sub-component: renders the <SignIn /> widget.
- *
- * AuthProvider already observes useClerkAuth().isSignedIn and drives
- * the post-signin transition, so this component does NOT invoke
- * onSignedIn from the Clerk hook. The onSignedIn prop remains in the
- * type signature for caller backward-compat but is intentionally
- * unused.
- *
- * Lives inside SignInPage so it only mounts when AUTH_PROVIDER ===
- * "clerk"; otherwise useClerkAuth() would throw for lack of
- * ClerkProvider in the tree.
- */
-function ClerkSignInBranch({ onSignedIn: _onSignedIn, onCancel }: Props) {
-  // FE Step-4 cutover: AuthProvider now owns the post-signin transition
-  // via its dependency on useClerkAuth().isSignedIn. The legacy
-  // onSignedIn-from-Clerk callback would race AuthProvider's effect and
-  // is intentionally not invoked. The prop remains in the type signature
-  // for backward compatibility while callers migrate.
-  // EPIC-002 Phase 1: Removed routing="virtual" to fix login loop issue.
-  // Clerk now uses path-based routing configured in main.tsx.
-  useAuth();
-  return (
-    <main style={PAGE} data-component="ClerkSignIn">
-      <h1 style={H1}>Sign in</h1>
-      {/* EPIC-002 Phase 1: Path-based routing configured in main.tsx.
-          fallbackRedirectUrl is required by Clerk's API but unused in
-          our flow because we drive the post-signin transition
-          ourselves via onSignedIn -> App.tsx. */}
-      <SignIn fallbackRedirectUrl="/welcome" />
-      <button type="button" style={SECONDARY_BTN} onClick={onCancel}>
-        Go back
-      </button>
-    </main>
-  );
 }
 
 export default function SignInPage({ onSignedIn, onCancel }: Props) {
@@ -94,20 +45,13 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [magicSent, setMagicSent] = useState(false);
 
   useEffect(() => {
     loadEnvelope("account.signin")
       .then(setEnvelope)
       .catch(() => setError("Please wait a moment and refresh the page."));
   }, []);
-
-  // Clerk path: delegate to a child component so the useAuth() hook
-  // is only evaluated when ClerkProvider is in the tree (i.e. when
-  // AUTH_PROVIDER === "clerk"). Calling useAuth() in mock mode would
-  // crash because the provider is intentionally absent.
-  if (AUTH_PROVIDER === "clerk") {
-    return <ClerkSignInBranch onSignedIn={onSignedIn} onCancel={onCancel} />;
-  }
 
   if (error) {
     return (
@@ -131,18 +75,22 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      // Mock provider: persist the bearer token so the apiClient picks
-      // it up on the very next request. AuthProvider's resolveSession()
-      // will materialise the account row via /auth/session/init.
-      setMockToken(email.trim());
-      // FE Step-4 cutover: localStorage isn't observable by React, so
-      // notify AuthProvider that the credential source changed. This
-      // triggers a re-render -> useCredentialSource() re-evaluates ->
-      // auth-flow effect transitions AUTHENTICATING -> READY.
+      if (AUTH_PROVIDER === "magic" && magic) {
+        const didToken = await magic.auth.loginWithMagicLink({
+          email: email.trim(),
+          showUI: false,
+        });
+        setMagicToken(didToken as string);
+        setMagicSent(true);
+      } else {
+        setMockToken(email.trim());
+      }
       notifyAuthChanged();
       onSignedIn();
-    } catch {
-      setError("Please check your email address and try again.");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Please check your email and try again.";
+      setError(message);
     } finally {
       setSubmitting(false);
     }
@@ -179,6 +127,11 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
           Enter the email you would like to use. We will send you a
           one-time link in a moment. There is no password to remember.
         </p>
+        {magicSent && (
+          <p style={ALERT_TEXT} role="status">
+            Please check your email and click the link we sent.
+          </p>
+        )}
         <form onSubmit={handleSubmit} style={STACK} aria-busy={submitting}>
           <div>
             <label htmlFor="signin-email" style={FIELD_LABEL}>

@@ -24,7 +24,13 @@
  */
 import { apiClient } from "./client";
 
-export { setMockToken, clearMockToken, API_BASE_URL } from "./client";
+export {
+  setMockToken,
+  clearMockToken,
+  setMagicToken,
+  clearMagicToken,
+  API_BASE_URL,
+} from "./client";
 
 export async function deleteAccount(): Promise<void> {
   await apiClient.post("/me/delete");

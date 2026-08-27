@@ -17,66 +17,33 @@
  **********************************************************************/
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 
 import { apiClient } from "../api/client";
-import { AUTH_PROVIDER } from "../lib/env";
 import { useAuthParity } from "./useAuthParity";
 import { useAuthSession, type AuthState } from "./useAuthSession";
+import { AUTH_PROVIDER } from "../lib/env";
+import { magic } from "../lib/magic";
+import { MAGIC_TOKEN_KEY, MOCK_TOKEN_KEY } from "../api/client";
 
-
-/**********************************************************************
- * ✅ SECTION 1 — CREDENTIAL SOURCE (CLERK + MOCK)
- **********************************************************************/
-
-/*
-Abstracts auth provider so AuthProvider never directly touches Clerk.
-Prevents mock-mode crash.
-*/
+const TOKEN_KEY = AUTH_PROVIDER === "magic" ? MAGIC_TOKEN_KEY : MOCK_TOKEN_KEY;
 
 function useCredentialSource() {
-  const mode = AUTH_PROVIDER;
-
-  // ✅ MOCK MODE (default / fail-safe)
-  // Mirror main.tsx exactly: it mounts <ClerkProvider> ONLY when
-  // provider === "clerk". Any other value (including a malformed one)
-  // gets the mock tree with NO ClerkProvider. So the Clerk code path
-  // below must run ONLY for an exact "clerk" match — otherwise we'd call
-  // useClerkAuth() with no provider in the tree and crash. Failing safe
-  // to mock keeps the two predicates in lockstep.
-  if (mode !== "clerk") {
-    return {
-      isLoaded: true,
-      isSignedIn: !!localStorage.getItem("noni.mock_token"),
-      getToken: async () => localStorage.getItem("noni.mock_token"),
-      signOut: async () => {
-        localStorage.removeItem("noni.mock_token");
-      },
-    };
-  }
-
-  // ✅ CLERK MODE
-  const clerk = useClerkAuth();
-
   return {
-    isLoaded: clerk.isLoaded,
-    isSignedIn: clerk.isSignedIn,
-    getToken: clerk.getToken,
-    signOut: clerk.signOut,
+    isLoaded: true,
+    isSignedIn: !!localStorage.getItem(TOKEN_KEY),
+    getToken: async () => localStorage.getItem(TOKEN_KEY),
+    signOut: async () => {
+      localStorage.removeItem(TOKEN_KEY);
+      if (AUTH_PROVIDER === "magic" && magic) {
+        try {
+          await magic.user.logout();
+        } catch {
+          // best-effort; session is already cleared locally
+        }
+      }
+    },
   };
 }
-
-
-/**********************************************************************
- * ✅ SECTION 2 — IMPORT API CLIENT (CRITICAL FIX)
- **********************************************************************/
-
-// (apiClient is imported at the top of this file.)
-
-
-/**********************************************************************
- * ✅ SECTION 3 — AUTH PROVIDER
- **********************************************************************/
 
 export interface AuthContextValue {
   state: AuthState;
@@ -94,18 +61,6 @@ export function useAuth(): AuthContextValue {
   return ctx;
 }
 
-/**
- * Notify AuthProvider that the credential source has changed.
- *
- * Mock mode writes a Bearer token to localStorage, which React cannot
- * observe on its own. SignInPage's mock branch fires this event after
- * setMockToken() so AuthProvider re-evaluates `useCredentialSource()`
- * and transitions AUTHENTICATING -> READY.
- *
- * In Clerk mode, the Clerk SDK's hook state changes are already
- * observable via useClerkAuth(); this event is harmless if dispatched
- * but is not required.
- */
 export function notifyAuthChanged(): void {
   window.dispatchEvent(new Event("noni:auth-changed"));
 }
@@ -114,20 +69,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useCredentialSource();
 
   const [state, setState] = useState<AuthState>({ status: "BOOT" });
-  // Bump on `noni:auth-changed` so React re-renders AuthProvider; that
-  // re-runs useCredentialSource(), which re-reads localStorage, which
-  // makes the auth-flow useEffect below see the new isSignedIn value.
   const [, forceRefresh] = useState(0);
-  // Monotonic nonce incremented by retryAuth() to re-trigger session
-  // resolution without page reload. Never reset — avoids extra effect
-  // re-runs on READY (see ADR 0024 §4.2).
   const [retryNonce, setRetryNonce] = useState(0);
   const retryAuth = useCallback(() => setRetryNonce((n) => n + 1), []);
 
-  // EPIC-002 Phase 1: Session timeout detection (30 minutes)
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
 
-  // Track session start time when user becomes READY
   useEffect(() => {
     if (state?.status === "READY" && !sessionStartTime) {
       setSessionStartTime(Date.now());
@@ -136,21 +83,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state?.status, sessionStartTime]);
 
-  // Check for session timeout (30 minutes)
   useEffect(() => {
     if (!sessionStartTime || state?.status !== "READY") return;
 
     const checkTimeout = () => {
       const elapsed = Date.now() - sessionStartTime;
-      if (elapsed > 30 * 60 * 1000) { // 30 minutes
-        // Session expired - sign out
+      if (elapsed > 30 * 60 * 1000) {
         auth.signOut?.().catch(() => {});
         setState({ status: "SIGNED_OUT" });
         setSessionStartTime(null);
       }
     };
 
-    const timeoutId = setInterval(checkTimeout, 60000); // Check every minute
+    const timeoutId = setInterval(checkTimeout, 60000);
     return () => clearInterval(timeoutId);
   }, [sessionStartTime, state?.status, auth.signOut, setState]);
 
@@ -161,11 +106,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener("noni:auth-changed", handle);
     return () => window.removeEventListener("noni:auth-changed", handle);
   }, []);
-
-
-  /******************************************************************
-   * ✅ SECTION 3A — SINGLE INTERCEPTOR (FIXED)
-   ******************************************************************/
 
   useEffect(() => {
     const interceptor = apiClient.interceptors.request.use(async (config) => {
@@ -184,60 +124,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [auth]);
 
-
-  /******************************************************************
-   * ✅ SECTION 3B — PROVIDER PARITY (EXTRACTED TO useAuthParity)
-   ******************************************************************/
-
   useAuthParity(setState);
-
-
-  /******************************************************************
-   * ✅ SECTION 3C — AUTH FLOW (EXTRACTED TO useAuthSession)
-   * Sprint '2nd Safe Yellow' P17: session resolution moved to hook.
-   * EPIC-002 Phase 1: Added session validation to prevent state
-   * synchronization issues that cause login loops.
-   ******************************************************************/
-
   useAuthSession(auth, setState, retryNonce);
-
-  /******************************************************************
-   * ✅ SECTION 3E — SESSION VALIDATION (EPIC-002 Phase 1)
-   * Ensures AuthProvider state remains synchronized with credential
-   * source to prevent login loops caused by state desynchronization.
-   ******************************************************************/
-
-  useEffect(() => {
-    // EPIC-002 Phase 1: Session validation to prevent state desync
-    // Check if Clerk believes user is signed in but AuthProvider disagrees
-    if (auth.isLoaded && auth.isSignedIn && state?.status === "SIGNED_OUT") {
-      // State desync detected: Clerk thinks signed in, we don't
-      // This can cause login loops - clear Clerk state to re-sync
-      auth.signOut?.().catch(() => {});
-    }
-    // Check if Clerk believes user is signed out but AuthProvider disagrees
-    if (auth.isLoaded && !auth.isSignedIn && state?.status === "READY") {
-      // State desync detected: Clerk thinks signed out, we don't
-      // This can cause session issues - transition to SIGNED_OUT
-      setState({ status: "SIGNED_OUT" });
-    }
-  }, [auth.isLoaded, auth.isSignedIn, state?.status, auth.signOut, setState]);
-
-
-  /******************************************************************
-   * ✅ SECTION 3D — SIGN OUT
-   ******************************************************************/
 
   async function signOut() {
     await auth.signOut();
     setState({ status: "SIGNED_OUT" });
-    // F8: surface the auth-state change to any listener that uses the
-    // window-event channel (mirrors SignInPage's post-sign-in dispatch).
-    // Idempotent: AuthProvider's own listener short-circuits if state
-    // is already SIGNED_OUT.
     notifyAuthChanged();
   }
-
 
   return (
     <AuthContext.Provider value={{ state, signOut, retryAuth }}>
