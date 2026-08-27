@@ -1,0 +1,88 @@
+{
+  "repo": "smiles70/Noni",
+  "assessment_date": "2026-08-27",
+  "process_version": "v9.51",
+  "score_composition_rule": "final_score = min(weighted_domain_total, every applicable overall-score cap)",
+  "weighted_raw_total": 88,
+  "domain_scores": [
+    {
+      "domain": "Repository Orientation",
+      "weight": 10,
+      "score": 9
+    },
+    {
+      "domain": "Architecture",
+      "weight": 15,
+      "score": 13
+    },
+    {
+      "domain": "Decision Records",
+      "weight": 10,
+      "score": 10
+    },
+    {
+      "domain": "Operational Readiness",
+      "weight": 15,
+      "score": 13
+    },
+    {
+      "domain": "Knowledge Transfer",
+      "weight": 15,
+      "score": 12
+    },
+    {
+      "domain": "Ownership",
+      "weight": 10,
+      "score": 9
+    },
+    {
+      "domain": "Delivery Governance",
+      "weight": 10,
+      "score": 8
+    },
+    {
+      "domain": "Security and Compliance",
+      "weight": 5,
+      "score": 5
+    },
+    {
+      "domain": "Testability",
+      "weight": 10,
+      "score": 9
+    }
+  ],
+  "caps": [
+    {
+      "rule": "Missing README caps score at 90",
+      "applies": false,
+      "cap": 90
+    },
+    {
+      "rule": "Missing architecture docs caps score at 85",
+      "applies": false,
+      "cap": 85
+    },
+    {
+      "rule": "Missing current-state artifact caps score at 85",
+      "applies": false,
+      "cap": 85
+    },
+    {
+      "rule": "Missing runbook/rollback for production systems caps at 80",
+      "applies": false,
+      "cap": 80
+    },
+    {
+      "rule": "Missing ownership/escalation path caps at 80",
+      "applies": false,
+      "cap": 80
+    },
+    {
+      "rule": "No SECURITY.md for production system handling sensitive data",
+      "applies": false,
+      "cap": 50
+    }
+  ],
+  "final_score": 88,
+  "gate_verdict": "Enterprise Mature"
+}

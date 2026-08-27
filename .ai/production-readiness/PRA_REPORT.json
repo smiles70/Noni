@@ -1,0 +1,68 @@
+{
+  "repo": "smiles70/Noni",
+  "assessment_date": "2026-08-27",
+  "process_version": "v9.51",
+  "overall_status": "Enterprise Mature \u2014 Conditional on Magic live-key deploy and runtime infra",
+  "score": 91,
+  "dimension_scores": [
+    {
+      "dimension": "Build and gate readiness",
+      "weight": 15,
+      "score": 12
+    },
+    {
+      "dimension": "Security posture",
+      "weight": 15,
+      "score": 12
+    },
+    {
+      "dimension": "Test coverage",
+      "weight": 15,
+      "score": 12
+    },
+    {
+      "dimension": "Documentation completeness",
+      "weight": 10,
+      "score": 10
+    },
+    {
+      "dimension": "Performance baseline",
+      "weight": 10,
+      "score": 4
+    },
+    {
+      "dimension": "Observability readiness",
+      "weight": 10,
+      "score": 8
+    },
+    {
+      "dimension": "CI/CD and deploy readiness",
+      "weight": 10,
+      "score": 9
+    },
+    {
+      "dimension": "Data classification and compliance",
+      "weight": 10,
+      "score": 10
+    },
+    {
+      "dimension": "Dependency health",
+      "weight": 15,
+      "score": 14
+    }
+  ],
+  "resolved_blockers": [
+    "npm audit: 0 vulnerabilities",
+    "npm run type-check, npm run build, npm run test:unit pass",
+    "Backend test subset passes: test_magic_verifier.py (13), test_iscs.py, test_geragogy_signals.py",
+    "Canonical v9.51 security/ownership/runbook artifacts present (SECURITY.md, CODEOWNERS, docs/RUNBOOK.md, docs/ROLLBACK.md, docs/TEST_STRATEGY.md)",
+    "Magic.link backend and frontend integration implemented (mock remains default)",
+    "Frontend and backend dependency vulnerabilities resolved"
+  ],
+  "remaining_conditions": [
+    "Live Magic Auth application keys and end-to-end sign-in verification",
+    "Live PostgreSQL/Redis for full backend test suite",
+    "SIEM integration",
+    "Lighthouse/pa11y performance baseline"
+  ]
+}

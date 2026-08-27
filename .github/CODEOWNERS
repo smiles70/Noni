@@ -1,0 +1,19 @@
+# Noni CODEOWNERS
+# Fallback for all paths
+* @smiles70
+
+# Backend and data
+/backend/ @smiles70
+/alembic/ @smiles70
+
+# Frontend
+/frontend/ @smiles70
+
+# Docs, process, and governance
+/docs/ @smiles70
+/.ai/ @smiles70
+
+# Infrastructure / CI
+/.github/ @smiles70
+/infra/ @smiles70
+/scripts/ @smiles70
