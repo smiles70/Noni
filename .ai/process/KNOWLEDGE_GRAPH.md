@@ -293,3 +293,5 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `GAP-HERO-COPYRIGHT` notes the screenshot is a placeholder, not production-cleared.
 - `EVI-HERO-004-BUILD` is `npm run type-check` and `npm run build` passing.
 - `CAP-HERO-MYNAAANI` depends_on `public/hero-mynaani.png` and is implemented in `LandingPage.tsx`.
+- `EVI-HERO-004-DEPLOY` is live bundle `https://noni-web.pages.dev/assets/index-DuqHZxup.js` and image `https://noni-web.pages.dev/hero-mynaani.png`.
+- `CAP-HERO-MYNAAANI` status is `deployed`.

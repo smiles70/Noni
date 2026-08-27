@@ -10,10 +10,10 @@
 | Phase | Name | Status | Owner | Exit gate |
 |---|---|---|---|---|
 | 0 | Image swap pre-flight | Completed | Product / Engineering | Source file verified, crop plan defined |
-| 1 | Copy + update LandingPage | Pending | Engineering | `hero-mynaani.png` used, `object-position` adjusted |
-| 2 | Build + bundle | Pending | Engineering | Type-check, build, bundle guard, no brand leaks |
-| 3 | Live smoke | Pending | Engineering | `noni-web.pages.dev` shows new hero |
-| 4 | Process closeout | Pending | Engineering | Graph and inventory updated |
+| 1 | Copy + update LandingPage | Completed | Engineering | `hero-mynaani.png` used, `object-position` adjusted |
+| 2 | Build + bundle | Completed | Engineering | Type-check, build, bundle guard, no brand leaks |
+| 3 | Live smoke | Completed | Engineering | `noni-web.pages.dev` shows new hero |
+| 4 | Process closeout | Completed | Engineering | Graph and inventory updated |
 
 ## Phase 0 — Image swap pre-flight
 
