@@ -14,7 +14,7 @@ SOPS_FILE="$INFRA_DIR/.env.prod.sops.yaml"
 
 require() { command -v "$1" >/dev/null 2>&1 || { echo "ERROR: required CLI missing: $1"; exit 1; }; }
 require sops
-require flyctl
+require railway
 require wrangler
 require gh
 
@@ -32,10 +32,10 @@ sops --decrypt --input-type yaml --output-type dotenv "$SOPS_FILE" > "$TMP"
 # shellcheck disable=SC1090
 set -a; source "$TMP"; set +a
 
-FLY_APP="${FLY_APP_NAME:-noni-api}"
+RAILWAY_SERVICE="${RAILWAY_SERVICE_NAME:-noni-api}"
 CF_PAGES_PROJECT="${CLOUDFLARE_PAGES_PROJECT:-noni-web}"
 
-declare -a FLY_KEYS=(
+declare -a RAILWAY_KEYS=(
   DATABASE_URL DATABASE_URL_DIRECT
   SECRET_KEY SESSION_SECRET SESSION_COOKIE_NAME SESSION_TTL_DAYS
   AUTH_PROVIDER MAGIC_API_SECRET_KEY MAGIC_CLIENT_ID
@@ -55,7 +55,8 @@ declare -a CF_PAGES_KEYS=(
 )
 
 declare -a GH_KEYS=(
-  FLY_API_TOKEN CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
+  RAILWAY_TOKEN RAILWAY_SERVICE_NAME
+  CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
   SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF
   STRIPE_SECRET_KEY
   # Build-time frontend env mirrored here so .github/workflows/deploy.yml
@@ -69,15 +70,15 @@ declare -a GH_KEYS=(
 # laptop-only deploy) are legitimately absent and would otherwise block
 # the whole sync. The status table still shows them so an operator can
 # spot-check that genuinely-required keys are present.
-push_fly() {
+push_railway() {
   local key="$1"
   local val="${!key:-}"
   if [[ -z "$val" ]]; then
-    printf '  %-40s | fly                   | SKIPPED (empty)\n' "$key"
+    printf '  %-40s | railway               | SKIPPED (empty)\n' "$key"
     return 0
   fi
-  flyctl secrets set "$key=$val" --app "$FLY_APP" --stage >/dev/null
-  printf '  %-40s | fly                   | OK\n' "$key"
+  railway variables set "$key=$val" --service "$RAILWAY_SERVICE" >/dev/null
+  printf '  %-40s | railway               | OK\n' "$key"
 }
 
 push_cf_pages() {
@@ -104,9 +105,8 @@ push_gh() {
 
 FAIL=0
 
-echo "==> Pushing to Fly (app: $FLY_APP)"
-for k in "${FLY_KEYS[@]}"; do push_fly "$k" || FAIL=1; done
-flyctl secrets deploy --app "$FLY_APP" >/dev/null 2>&1 || true
+echo "==> Pushing to Railway (service: $RAILWAY_SERVICE)"
+for k in "${RAILWAY_KEYS[@]}"; do push_railway "$k" || FAIL=1; done
 
 echo "==> Pushing to Cloudflare Pages (project: $CF_PAGES_PROJECT)"
 for k in "${CF_PAGES_KEYS[@]}"; do push_cf_pages "$k" || FAIL=1; done
