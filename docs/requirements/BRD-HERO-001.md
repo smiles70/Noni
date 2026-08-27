@@ -10,7 +10,7 @@
 
 Increase first-visit trust and clarity for older adults and caregivers by
 replacing the current landing page with a calm, single-focus hero that
-explicitly states Noni's value and offers a clear, low-pressure next step.
+explicitly states Mynaani's value and offers a clear, low-pressure next step.
 
 ## Objectives
 
@@ -43,4 +43,4 @@ explicitly states Noni's value and offers a clear, low-pressure next step.
 ## Assumptions
 
 - The existing `landing.page` envelope (`max_primary_actions=5`, `max_visible_text_levels=3`) is sufficient for the new layout.
-- A Noni-appropriate hero image is available or will be selected before implementation.
+- A Mynaani-appropriate hero image is available or will be selected before implementation.

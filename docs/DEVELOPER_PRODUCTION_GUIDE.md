@@ -1,6 +1,6 @@
-# Developer Production Guide — Noni
+# Developer Production Guide — Mynaani
 
-**Scope:** the five remaining conditions before Noni can be promoted to a real production environment.
+**Scope:** the five remaining conditions before Mynaani can be promoted to a real production environment.
 
 ---
 
@@ -110,12 +110,12 @@ uvicorn backend.app.main:app --reload
 In a second terminal:
 
 ```bash
-export PATH=/home/hazbyn/Noni/.tools/node/bin:$PATH
+export PATH=/home/hazbyn/Mynaani/.tools/node/bin:$PATH
 cd frontend
 npm run dev
 ```
 
-Open <http://localhost:5173> and sign in with an email address. Click the Magic link in the email, then confirm the app redirects back to Noni.
+Open <http://localhost:5173> and sign in with an email address. Click the Magic link in the email, then confirm the app redirects back to Mynaani.
 
 ---
 
@@ -236,7 +236,7 @@ pip install "sentry-sdk[fastapi]>=2.0"
 Frontend:
 
 ```bash
-export PATH=/home/hazbyn/Noni/.tools/node/bin:$PATH
+export PATH=/home/hazbyn/Mynaani/.tools/node/bin:$PATH
 cd frontend
 npm install @sentry/react @sentry/browser
 ```
@@ -303,7 +303,7 @@ sentry-cli releases finalize "noni@$(git rev-parse --short HEAD)"
 ### 5.1 Install the tools
 
 ```bash
-export PATH=/home/hazbyn/Noni/.tools/node/bin:$PATH
+export PATH=/home/hazbyn/Mynaani/.tools/node/bin:$PATH
 npm install -g lighthouse pa11y
 ```
 
@@ -316,7 +316,7 @@ npm install --save-dev lighthouse pa11y
 ### 5.2 Run a local production build
 
 ```bash
-export PATH=/home/hazbyn/Noni/.tools/node/bin:$PATH
+export PATH=/home/hazbyn/Mynaani/.tools/node/bin:$PATH
 npm run build
 ```
 

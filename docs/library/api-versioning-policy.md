@@ -8,7 +8,7 @@
 
 ## Versioning Strategy
 
-Noni uses **URL path versioning**: `/api/v1/...` for all public endpoints.
+Mynaani uses **URL path versioning**: `/api/v1/...` for all public endpoints.
 
 Legacy paths (`/api/...`, `/auth/...`, `/me/...`) are preserved as **302 redirects** with `Deprecation: true` and `Sunset: Sun, 01 Dec 2026 00:00:00 GMT` headers.
 

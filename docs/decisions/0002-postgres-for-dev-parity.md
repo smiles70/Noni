@@ -6,7 +6,7 @@ Accepted (Sprint 1, durably documented in Sprint 4).
 
 ## Context
 
-Noni stores telemetry as a durable audit trail (ARCHITECTURE rule on telemetry). Telemetry is queried for analysis and downstream export. Production will use a managed PostgreSQL.
+Mynaani stores telemetry as a durable audit trail (ARCHITECTURE rule on telemetry). Telemetry is queried for analysis and downstream export. Production will use a managed PostgreSQL.
 
 Two options for development:
 - SQLite (zero-setup, single file)

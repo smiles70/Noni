@@ -1,6 +1,6 @@
-# Authentication Provider Alternatives for Noni
+# Authentication Provider Alternatives for Mynaani
 
-**Purpose:** Explore alternatives to Clerk for Noni authentication  
+**Purpose:** Explore alternatives to Clerk for Mynaani authentication  
 **Current Status:** Codebase supports "mock" and "clerk" providers  
 **Recommendation:** Multiple viable options depending on requirements  
 

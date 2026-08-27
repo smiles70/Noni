@@ -1,4 +1,4 @@
-# Noni Production Readiness Audit — 100-Point Threat Model
+# Mynaani Production Readiness Audit — 100-Point Threat Model
 
 **Date:** 2026-05-25
 **Auditor:** Adversarial Principal Security Engineer
@@ -9,7 +9,7 @@
 
 ## EXECUTIVE SUMMARY
 
-Post-Sprint 22, Noni has closed its most egregious security holes and graduated from **"prototype masquerading as production"** to **"hardened beta with operational gaps."** The immediate critical vulnerabilities (unprotected telemetry export, hard-coded secrets, open signals ingestion, client-side info leaks) are now sealed. However, the codebase still lacks security headers, API versioning, circuit breakers, background job infrastructure, and comprehensive CI security scanning. It is ready for **limited live traffic with monitoring**, but not for a public marketing launch.
+Post-Sprint 22, Mynaani has closed its most egregious security holes and graduated from **"prototype masquerading as production"** to **"hardened beta with operational gaps."** The immediate critical vulnerabilities (unprotected telemetry export, hard-coded secrets, open signals ingestion, client-side info leaks) are now sealed. However, the codebase still lacks security headers, API versioning, circuit breakers, background job infrastructure, and comprehensive CI security scanning. It is ready for **limited live traffic with monitoring**, but not for a public marketing launch.
 
 ---
 

@@ -16,14 +16,14 @@ Module 3 lands following ADR 0015 verbatim:
 
 - 4 units land **content-verbatim** (titles, descriptions, page text, thresholds, telemetry_requirements).
 - A new `Module3Unit` in `backend/models/curriculum_units_module_3.py` mirrors `Module2Unit`: extends `CurriculumUnit` with a typed `telemetry_requirements: Dict[str, float]` field. The base model is untouched.
-- Three endpoints under `/api/curriculum/module-3/`: `units`, `units/{id}`, `next`. None accept signals from the request body. Stability is derived from the running [InterfaceStateEstimator](cci:2://file:///mnt/c/Users/kimem/Noni/backend/core/interface_control/state_estimator.py:10:0-25:42).
+- Three endpoints under `/api/curriculum/module-3/`: `units`, `units/{id}`, `next`. None accept signals from the request body. Stability is derived from the running [InterfaceStateEstimator](cci:2://file:///mnt/c/Users/kimem/Mynaani/backend/core/interface_control/state_estimator.py:10:0-25:42).
 - `telemetry_requirements` are recorded in `event_metadata` on every Module 3 ISCS decision, per ADR 0009.
 - Per-learner enforcement (volatility/strain/mastery gates) remains deferred to the auth-vendor pass.
 - `Module2Unit` and `Module3Unit` carry identical fields. A shared `TelemetryGatedUnit` base could collapse them, but is deliberately deferred until a Module 4 lands; the duplication is small and explicit ("Explicit Over Implicit").
 
 ## Consequences
 
-- The Noni curriculum is now a 3-module structure: orientation/safety (Module 1) -> sustained use (Module 2) -> long-term judgment (Module 3).
+- The Mynaani curriculum is now a 3-module structure: orientation/safety (Module 1) -> sustained use (Module 2) -> long-term judgment (Module 3).
 - Test coverage grows from 65 -> 72 (7 new specs mirroring Module 2's invariants for Module 3).
 - The architectural rule that the frontend cannot supply ISCS signals stays intact across all three modules.
 - Future curriculum modules should follow ADR 0015 / 0016 unchanged: same model subclass shape, same routes, same audit-logging, same deferral on per-learner enforcement.

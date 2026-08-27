@@ -21,11 +21,11 @@
 1. **Browser chrome and taskbar in the source will show if the crop is
    not tight enough.** Use `object-position: left 55%` or similar.
 
-2. **The MetLife card will appear behind the Noni card unless the Noni
+2. **The MetLife card will appear behind the Mynaani card unless the Mynaani
    card is positioned on the right and opaque.**
 
 3. **Screenshot quality may not scale to large monitors.**
    The source is likely 1366×768 or similar. On 4K it will pixelate.
 
-4. **Copyright:** the MetLife photo is not owned by Noni. Replace before
+4. **Copyright:** the MetLife photo is not owned by Mynaani. Replace before
    public launch.

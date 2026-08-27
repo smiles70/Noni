@@ -7,7 +7,7 @@
 
 ## Context
 
-The current Noni landing page does not communicate value or a clear first
+The current Mynaani landing page does not communicate value or a clear first
 step quickly enough for older adults and caregivers. Competitive analysis
 and senior-friendly UX research show that a warm hero image, a single
 headline, and a small set of clear CTAs improve trust and conversion for
@@ -18,7 +18,7 @@ this audience.
 Redesign the `LandingPage.tsx` hero using the existing `landing.page` UI
 state envelope. The new page will:
 
-- Show a warm, Noni-appropriate hero photograph.
+- Show a warm, Mynaani-appropriate hero photograph.
 - Display one headline and one sentence of body text.
 - Offer one primary CTA ("Begin learning") and up to two secondary CTAs.
 - Remove all third-party brand references.

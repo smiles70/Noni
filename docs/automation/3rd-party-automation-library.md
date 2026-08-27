@@ -63,7 +63,7 @@ Global API Key (`X-Auth-Key` + `X-Auth-Email`).
 **Request body** (simplified):
 ```json
 {
-  "name": "Noni Pages Deploy",
+  "name": "Mynaani Pages Deploy",
   "policies": [
     {
       "effect": "allow",
@@ -354,7 +354,7 @@ Content-Type: application/json
     Create at https://github.com/settings/tokens (one-time web visit).
 #>
 param(
-    [string]$Repo = "smiles70/Noni",
+    [string]$Repo = "smiles70/Mynaani",
     [string]$Token = $env:GITHUB_TOKEN
 )
 
@@ -415,7 +415,7 @@ Content-Type: application/json
 
 Or via `gh`:
 ```bash
-gh workflow run deploy.yml --repo smiles70/Noni --ref main
+gh workflow run deploy.yml --repo smiles70/Mynaani --ref main
 ```
 
 ---
@@ -443,7 +443,7 @@ param(
     [string]$CfApiKey    = $env:CLOUDFLARE_API_KEY,
     [string]$CfEmail     = $env:CLOUDFLARE_EMAIL,
     [string]$FlyApp      = "noni-api",
-    [string]$GhRepo      = "smiles70/Noni",
+    [string]$GhRepo      = "smiles70/Mynaani",
     [string]$GhToken     = $env:GITHUB_TOKEN
 )
 

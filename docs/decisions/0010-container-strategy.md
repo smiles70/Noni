@@ -9,7 +9,7 @@ Accepted (Sprint 11).
 Until this sprint, `docker-compose.yml` orchestrated only Postgres. The backend ran on the host via `uvicorn`, and the frontend ran via `npm run dev`. That is fine for active development but creates two recurring problems:
 
 1. **Environment drift between developers and CI/prod.** Each contributor's host installs a different Python and Node minor version. Deploys would have surfaced incompatibilities late.
-2. **No reproducible "Noni-in-a-box" demo.** Showing the system to a stakeholder, an investor, or a patent attorney requires a reliable single-command boot.
+2. **No reproducible "Mynaani-in-a-box" demo.** Showing the system to a stakeholder, an investor, or a patent attorney requires a reliable single-command boot.
 
 A hosting / image-registry vendor decision is explicitly deferred (`docs/deferred-decisions.md`). What is *not* deferred is producing buildable images that are ready when that decision lands.
 
@@ -23,7 +23,7 @@ A hosting / image-registry vendor decision is explicitly deferred (`docs/deferre
 
 ## Consequences
 
-- `docker compose up --build` produces a fully running Noni stack from a clean clone.
+- `docker compose up --build` produces a fully running Mynaani stack from a clean clone.
 - Backend deps are pinned implicitly by the Dockerfile RUN; aligning that pin set with the host venv and CI is a future cleanup (a single `requirements.txt` would help).
 - The frontend container does not include Playwright. E2E remains a developer-machine concern; CI uses the dedicated `e2e` job from Sprint 8.
 - Image sizes: backend ~150 MB compressed, frontend ~30 MB. Acceptable given the slim/alpine bases.

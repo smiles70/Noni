@@ -167,7 +167,7 @@
     ],
     "auth_stack": [
       "@clerk/clerk-react (ClerkAuthProvider)",
-      "frontend/src/auth/AuthProvider.tsx (Noni auth state machine)",
+      "frontend/src/auth/AuthProvider.tsx (Mynaani auth state machine)",
       "frontend/src/auth/useAuthSession.ts (session resolution hook)",
       "frontend/src/auth/useAuthParity.ts (FE/BE parity check)"
     ],

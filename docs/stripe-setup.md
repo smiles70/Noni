@@ -1,7 +1,7 @@
 # Stripe setup (Sprint B4)
 
-Noni delegates payment to Stripe Checkout. This doc is the exact,
-ordered checklist for wiring a Stripe account to a Noni deployment.
+Mynaani delegates payment to Stripe Checkout. This doc is the exact,
+ordered checklist for wiring a Stripe account to a Mynaani deployment.
 
 You go through it twice:
   - first in **test mode** (no real money; use Stripe's test cards)
@@ -19,14 +19,14 @@ You go through it twice:
 1. **Products -> Add product**.
 2. Name: `Modules 4 & 5: Building & Composing Claude Skills`.
 3. Price model: **One-time**, **USD**, **$49.00**. The recurring/subscription
-   options must stay off — Noni's billing flow assumes one-time payment.
+   options must stay off — Mynaani's billing flow assumes one-time payment.
 4. Save and copy the price ID. It looks like `price_1QABCxxxxxxxxxxxxxxx`.
 
 ## 3. Get the API keys
 
 **Developers -> API keys** (test mode):
 
-| Stripe field                  | Noni env var              |
+| Stripe field                  | Mynaani env var              |
 |-------------------------------|---------------------------|
 | Secret key (`sk_test_...`)    | `STRIPE_SECRET_KEY`       |
 | Publishable key (`pk_test_...`) | `STRIPE_PUBLISHABLE_KEY` |
@@ -59,7 +59,7 @@ so you can run it in deploy pipelines.
 
 ## 5. Webhook endpoint + signing secret
 
-The webhook is what tells Noni "the buyer paid" / "the buyer was
+The webhook is what tells Mynaani "the buyer paid" / "the buyer was
 refunded". Without it, `POST /api/billing/checkout` returns a checkout
 URL but the entitlement never gets granted.
 
@@ -117,6 +117,6 @@ URL but the entitlement never gets granted.
 |------------------------------------------------------|-----------------------------------------------------------|
 | `/api/billing/checkout` returns 500                  | `STRIPE_PRICE_ID_MODULES_4_5` missing OR product row has stale `stripe_price_id`. Run `seed_products`. |
 | Checkout opens but Stripe says "No such price"        | Mismatch between live/test mode — the price ID is from the other mode, or you flipped modes without rotating keys. |
-| Buyer pays, redirects back, paywall stays            | Webhook not delivering. Check `stripe listen` output / dashboard's Webhooks -> Events. Most common cause is `STRIPE_WEBHOOK_SECRET` not matching the endpoint Noni is using. |
-| Webhook delivered but Noni returns 400               | Signature mismatch. The secret on Noni is for a different endpoint than the one Stripe is calling. |
+| Buyer pays, redirects back, paywall stays            | Webhook not delivering. Check `stripe listen` output / dashboard's Webhooks -> Events. Most common cause is `STRIPE_WEBHOOK_SECRET` not matching the endpoint Mynaani is using. |
+| Webhook delivered but Mynaani returns 400               | Signature mismatch. The secret on Mynaani is for a different endpoint than the one Stripe is calling. |
 | Refund processed but entitlement still active        | `charge.refunded` not subscribed at the endpoint, or the purchase row's `stripe_payment_intent_id` was never recorded (check that `checkout.session.completed` fired first). |

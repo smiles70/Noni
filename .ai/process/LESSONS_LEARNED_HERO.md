@@ -11,7 +11,7 @@
    not obvious until we compared directly.
 
 2. **A single reference image is not enough for a redesign brief.**
-   The MetLife image needed competitive research to translate into a Noni-
+   The MetLife image needed competitive research to translate into a Mynaani-
    appropriate pattern. The first implementation (HERO-001) was too quiet
    because it stayed inside the contract.
 

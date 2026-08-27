@@ -29,7 +29,7 @@ Module 4 lands following ADRs 0015 / 0016 verbatim:
 
 ## Consequences
 
-- Noni's curriculum is now 4 modules: orientation/safety -> sustained use -> long-term judgment -> building Skills. 15 units across Modules 1-3 plus 6 in Module 4 = **21 units**.
+- Mynaani's curriculum is now 4 modules: orientation/safety -> sustained use -> long-term judgment -> building Skills. 15 units across Modules 1-3 plus 6 in Module 4 = **21 units**.
 - Test coverage grows from 72 -> 79.
 - The architectural rule that the frontend cannot supply ISCS signals stays intact across all four modules.
 - `docs/deferred-decisions.md` is amended: a Claude Skills creation flow requires Anthropic API + auth (per-Skill ownership). Both are vendor-blocked.

@@ -6,7 +6,7 @@ Accepted (pre-implementation; binds future code).
 
 ## Context
 
-The system now ships five curriculum modules (26 units total). Sustaining development and hosting requires revenue, but Noni's `ARCHITECTURE.md` and ADR 0019 closed-world contract impose hard prohibitions that most consumer-software pricing patterns violate:
+The system now ships five curriculum modules (26 units total). Sustaining development and hosting requires revenue, but Mynaani's `ARCHITECTURE.md` and ADR 0019 closed-world contract impose hard prohibitions that most consumer-software pricing patterns violate:
 
 - Rule 5 (No Urgency Framing): no countdowns, no "limited time", no scarcity messaging.
 - Rule 6 (No Dark Patterns): no variable rewards, no hidden costs, no confusing navigation, no false scarcity, no manipulation.

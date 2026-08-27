@@ -1,4 +1,4 @@
-# AI Slop Audit — Noni Codebase
+# AI Slop Audit — Mynaani Codebase
 **Date:** 2026-05-26
 **Auditor:** Principal Software Architect / Static Analysis Agent
 **Scope:** Full-stack FastAPI + React/Vite SaaS

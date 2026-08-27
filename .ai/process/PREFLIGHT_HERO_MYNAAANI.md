@@ -16,7 +16,7 @@ background and that the crop plan is safe under the contract exemption.
 | 1 | Source file exists | `ls /home/hazbyn/Downloads/formynaani.png` | ✅ | Engineering |
 | 2 | Target directory exists | `ls frontend/public/` | ✅ | Engineering |
 | 3 | Image is a PNG | File extension | ✅ | Engineering |
-| 4 | MetLife UI can be hidden by Noni card and `object-position` | Visual plan | ✅ | Engineering |
+| 4 | MetLife UI can be hidden by Mynaani card and `object-position` | Visual plan | ✅ | Engineering |
 | 5 | ADR 0029 still accepted | `docs/decisions/0029-landing-hero-contract-exemption.md` | ✅ | Engineering |
 
 ## Findings
@@ -24,7 +24,7 @@ background and that the crop plan is safe under the contract exemption.
 - `formynaani.png` is a full-page screenshot of the MetLife landing page.
 - The left side contains the desired photograph of two people.
 - The right side contains the original MetLife action card, which the
-  Noni card will cover.
+  Mynaani card will cover.
 - The top and bottom contain browser chrome and taskbar, which can be
   cropped using `object-position`.
 

@@ -1,17 +1,17 @@
-# Onboarding — Noni
+# Onboarding — Mynaani
 
 ## Prerequisites
 
-- Python 3.11+ (the local venv uses the system `python3` at `/home/hazbyn/Noni/.venv`).
-- Node 20+ and npm (the local toolchain is at `/home/hazbyn/Noni/.tools/node`).
+- Python 3.11+ (the local venv uses the system `python3` at `/home/hazbyn/Mynaani/.venv`).
+- Node 20+ and npm (the local toolchain is at `/home/hazbyn/Mynaani/.tools/node`).
 - Docker and docker-compose for the Postgres service.
 - Git.
 
 ## Quick start
 
-1. Clone `https://github.com/smiles70/Noni`.
+1. Clone `https://github.com/smiles70/Mynaani`.
 2. Activate the Python venv: `source .venv/bin/activate`
-3. Ensure Node is on `PATH`: `export PATH=/home/hazbyn/Noni/.tools/node/bin:$PATH`
+3. Ensure Node is on `PATH`: `export PATH=/home/hazbyn/Mynaani/.tools/node/bin:$PATH`
 4. Install JS dependencies: `npm install`
 5. Start infrastructure: `docker compose up -d`
 6. Run migrations: `alembic upgrade head` (from `backend/`)

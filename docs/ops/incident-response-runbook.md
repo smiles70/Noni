@@ -1,4 +1,4 @@
-# Noni Incident Response Runbook
+# Mynaani Incident Response Runbook
 
 **Version:** 1.0.0
 **Owner:** SRE / Platform Engineering
@@ -77,7 +77,7 @@ Thread for updates |
 
 ### SEV-1 / SEV-2 - External Status Page
 ```
-Noni is experiencing a service disruption.
+Mynaani is experiencing a service disruption.
 Affected: {web app / checkout / curriculum / all services}
 Status: Investigating
 Next update: {15 minutes from now}

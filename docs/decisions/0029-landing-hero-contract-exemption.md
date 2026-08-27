@@ -16,7 +16,7 @@ landing pages for this audience use:
 - Stronger benefit communication above the fold.
 - More relatable, high-quality photography.
 
-Noni’s `CONTRACT.md` (Section I.C) currently caps headings at 1.4× body
+Mynaani’s `CONTRACT.md` (Section I.C) currently caps headings at 1.4× body
 size (≈22 px), which is at the low end of the AARP heuristic range and
 below common practice. The question is whether to grant a controlled
 exemption for the landing page only.

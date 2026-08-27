@@ -41,18 +41,18 @@ Clerk auto-redirects to /signin → INFINITE LOOP
 
 **Technical Analysis:**
 
-**Clerk Configuration (<ref_file file="C:\Users\travel\CascadeProjects\Noni\frontend\src\components\SignInPage.tsx" lines="82" />):**
+**Clerk Configuration (<ref_file file="C:\Users\travel\CascadeProjects\Mynaani\frontend\src\components\SignInPage.tsx" lines="82" />):**
 ```typescript
 <SignIn routing="virtual" fallbackRedirectUrl="/" />
 ```
 
-**AuthProvider Logic (<ref_file file="C:\Users\travel\CascadeProjects\Noni\frontend\src\auth\AuthProvider.tsx" lines="64-66" />):**
+**AuthProvider Logic (<ref_file file="C:\Users\travel\CascadeProjects\Mynaani\frontend\src\auth\AuthProvider.tsx" lines="64-66" />):**
 ```typescript
 const auth = useCredentialSource();
 const [state, setState] = useState<AuthState>({ status: "BOOT" });
 ```
 
-**App.tsx Redirect Logic (<ref_file file="C:\Users\travel\CascadeProjects\Noni\frontend\src\App.tsx" lines="94-104" />):**
+**App.tsx Redirect Logic (<ref_file file="C:\Users\travel\CascadeProjects\Mynaani\frontend\src\App.tsx" lines="94-104" />):**
 ```typescript
 useEffect(() => {
   if (isReady) {
@@ -67,12 +67,12 @@ useEffect(() => {
 }, [isReady, location.search, location.pathname, navigate]);
 ```
 
-**Session Resolution (<ref_file file="C:\Users\travel\CascadeProjects\Noni\frontend\src\auth\useAuthSession.ts" lines="68-104" />):**
+**Session Resolution (<ref_file file="C:\Users\travel\CascadeProjects\Mynaani\frontend\src\auth\useAuthSession.ts" lines="68-104" />):**
 - Calls `/auth/session` to verify token
 - If `materialized=false`, calls `/auth/session/init` to create account
 - Transitions to "READY" state on success
 
-**Backend Session Logic (<ref_file file="C:\Users\travel\CascadeProjects\Noni\backend\api\routes\auth.py" lines="109-181" />):**
+**Backend Session Logic (<ref_file file="C:\Users\travel\CascadeProjects\Mynaani\backend\api\routes\auth.py" lines="109-181" />):**
 - `/auth/session` endpoint verifies token and checks for existing account
 - Returns `materialized=false` if no account exists
 - `/auth/session/init` creates account row
@@ -105,7 +105,7 @@ useEffect(() => {
 - ✅ Clear next steps and progress tracking
 - ✅ Geragogy compliance for older adult learners
 
-**Current Noni Gaps:**
+**Current Mynaani Gaps:**
 - ❌ No welcome/account setup phase
 - ❌ No profile completion step
 - ❌ No progressive onboarding

@@ -12,7 +12,7 @@
 
 ### Current State
 
-Noni has users but no visibility into:
+Mynaani has users but no visibility into:
 - Where users drop off in the signup funnel
 - Which lessons are completed vs. abandoned
 - Whether the landing page changes actually improved activation

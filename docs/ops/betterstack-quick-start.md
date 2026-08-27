@@ -8,7 +8,7 @@
 
 ## Overview
 
-This guide provides a quick start for configuring BetterStack monitoring for the Noni platform. The implementation includes uptime monitors, log sources, alert rules, and dashboards.
+This guide provides a quick start for configuring BetterStack monitoring for the Mynaani platform. The implementation includes uptime monitors, log sources, alert rules, and dashboards.
 
 ---
 
@@ -18,8 +18,8 @@ This guide provides a quick start for configuring BetterStack monitoring for the
 - BetterStack API key
 - Fly.io CLI access
 - Cloudflare account access
-- Noni backend deployed to Fly.io
-- Noni frontend deployed to Cloudflare Pages
+- Mynaani backend deployed to Fly.io
+- Mynaani frontend deployed to Cloudflare Pages
 
 ---
 
@@ -55,7 +55,7 @@ BETTERSTACK_SOURCE_NAME=noni-api
 1. Navigate to Monitors → Uptime
 2. Click "New Monitor"
 3. Configure:
-   - **Name:** Noni API Health
+   - **Name:** Mynaani API Health
    - **Type:** HTTP
    - **URL:** `https://noni-api.fly.dev/health`
    - **Method:** GET
@@ -70,7 +70,7 @@ BETTERSTACK_SOURCE_NAME=noni-api
 1. Navigate to Monitors → Uptime
 2. Click "New Monitor"
 3. Configure:
-   - **Name:** Noni Frontend
+   - **Name:** Mynaani Frontend
    - **Type:** HTTP
    - **URL:** `https://noni-web.pages.dev`
    - **Method:** GET
@@ -85,7 +85,7 @@ BETTERSTACK_SOURCE_NAME=noni-api
 1. Navigate to Monitors → Uptime
 2. Click "New Monitor"
 3. Configure:
-   - **Name:** Noni Auth Config
+   - **Name:** Mynaani Auth Config
    - **Type:** HTTP
    - **URL:** `https://noni-api.fly.dev/api/v1/auth/config`
    - **Method:** GET
@@ -100,7 +100,7 @@ BETTERSTACK_SOURCE_NAME=noni-api
 1. Navigate to Monitors → Uptime
 2. Click "New Monitor"
 3. Configure:
-   - **Name:** Noni Curriculum
+   - **Name:** Mynaani Curriculum
    - **Type:** HTTP
    - **URL:** `https://noni-api.fly.dev/api/v1/curriculum/units`
    - **Method:** GET
@@ -215,7 +215,7 @@ fly logs drain add betterstack \
 1. Navigate to Settings → Notifications
 2. Add Slack workspace
 3. Configure:
-   - **Workspace:** Noni Engineering
+   - **Workspace:** Mynaani Engineering
    - **Channel:** #alerts (for SEV-3), #incidents (for SEV-1/SEV-2)
    - **Webhook URL:** Configure in BetterStack
 
@@ -246,7 +246,7 @@ fly logs drain add betterstack \
 **Setup:**
 1. Navigate to Dashboards
 2. Create new dashboard
-3. Name: "Noni Operations"
+3. Name: "Mynaani Operations"
 4. Add widgets:
    - Backend uptime (last 24 hours)
    - Frontend uptime (last 24 hours)
@@ -260,7 +260,7 @@ fly logs drain add betterstack \
 **Setup:**
 1. Navigate to Dashboards
 2. Create new dashboard
-3. Name: "Noni Performance"
+3. Name: "Mynaani Performance"
 4. Add widgets:
    - Request latency distribution
    - Error rate by endpoint

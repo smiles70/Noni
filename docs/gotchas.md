@@ -185,7 +185,7 @@ If that import fails while `import jwt` works, you have G1.
 ### Fix
 
 ```bash
-source /mnt/c/Users/kimem/Noni/venv/bin/activate
+source /mnt/c/Users/kimem/Mynaani/venv/bin/activate
 pip install -r requirements.txt
 # verify:
 python -c "import cryptography; assert cryptography.__version__ == '43.0.3'; print('OK')"

@@ -6,7 +6,7 @@ Accepted (Sprint 6).
 
 ## Context
 
-Noni's primary audience is older adults. Accessibility is a product requirement, not a polish item. Three reinforcing layers are needed:
+Mynaani's primary audience is older adults. Accessibility is a product requirement, not a polish item. Three reinforcing layers are needed:
 
 1. **Static / semantic correctness** — proper landmarks, headings, ARIA where appropriate.
 2. **Keyboard usability** — visible focus indicators on every interactive element.

@@ -9,7 +9,7 @@
 
 ## 1. Why This Sprint Exists
 
-Noni currently surfaces a single `mailto:hello@mynaani.com` link as its entire support surface. Competitor analysis of Duolingo, Coursera, Khan Academy, Codecademy, Skillshare, MasterClass, Mimo, and Elements of AI shows an average of 6 major help categories and ~80 self-service articles. Noni has zero.
+Mynaani currently surfaces a single `mailto:hello@mynaani.com` link as its entire support surface. Competitor analysis of Duolingo, Coursera, Khan Academy, Codecademy, Skillshare, MasterClass, Mimo, and Elements of AI shows an average of 6 major help categories and ~80 self-service articles. Mynaani has zero.
 
 This sprint adds the minimum viable help surface: four articles covering authentication, curriculum, payments, and account management — the four areas where users are most likely to need guidance.
 

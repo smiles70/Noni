@@ -70,14 +70,14 @@ From *AARP Audience-Centered Heuristics: Older Adults* (Chisnell & Redish, 2025 
 - Put key messages first.
 - Use headings and subheadings to organize.
 
-## Implications for Noni
+## Implications for Mynaani
 
 - The MetLife reference is not an outlier: many successful senior sites use
   a large headline, relatable photo, and a single CTA card.
-- Noni’s contract cap of 22 px headings is **below** the AARP heuristic
+- Mynaani’s contract cap of 22 px headings is **below** the AARP heuristic
   recommendation of 18–24-point headings and **well below** the common
   practice of 24–48 px hero headlines.
-- The current Noni hero is visually quieter than most competitors and
+- The current Mynaani hero is visually quieter than most competitors and
   government references, which may reduce trust/recognition for first-time
   visitors.
 - Floating elements and photo overlays are rare among top senior sites;

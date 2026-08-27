@@ -23,7 +23,7 @@ These sources are **not** previously listed in `docs/library/README.md` or `digi
 **What it is**  
 A comprehensive retrospective and update of Cognitive Load Theory (CLT) two decades after its formalization. Extends the original framework with new evidence on element interactivity, intrinsic/extraneous/germane load, and the implications for instructional design in digital environments.
 
-**Key contributions for Noni**
+**Key contributions for Mynaani**
 - **Element interactivity** as the driver of intrinsic cognitive load — critical for pacing curriculum complexity.
 - **Worked-example effect** and **expertise reversal effect** — justify the recap → principle → example → retrieval structure; worked examples reduce load for novices but can impede experts.
 - **Collective working memory** in digital learning — distributed cognition between learner and interface.
@@ -47,10 +47,10 @@ The 4-page lesson structure (recap, principle, example, retrieval) directly impl
 **What it is**  
 The definitive practitioner-oriented synthesis of evidence-based guidelines for designing effective digital learning. Covers 25+ research-tested principles for multimedia, modality, contiguity, redundancy, coherence, personalization, segmenting, and pre-training.
 
-**Key contributions for Noni**
+**Key contributions for Mynaani**
 - **Segmenting principle:** Break continuous content into learner-controlled segments — justifies the 4-page structure.
 - **Pre-training principle:** Teach component concepts before the whole — justifies recap pages.
-- **Personalization principle:** Conversational style enhances learning — supports Noni's "you decide" tone.
+- **Personalization principle:** Conversational style enhances learning — supports Mynaani's "you decide" tone.
 - **Coherence principle:** Eliminate extraneous words, pictures, and sounds — supports single-focus pages.
 
 **How it informs curriculum depth**  
@@ -72,7 +72,7 @@ Each of the 25+ principles is a design decision that can be tested against curri
 **What it is**  
 A unifying instructional design framework proposing five first principles that underlie all effective instruction: task-centered, activation, demonstration, application, and integration. Tested across multiple instructional theories and models.
 
-**Key contributions for Noni**
+**Key contributions for Mynaani**
 - **Task-centered:** Learning is promoted when instruction is centered on real-world tasks — supports concrete scenarios.
 - **Activation:** Learning is promoted when learners activate prior knowledge — supports recap pages.
 - **Demonstration:** Learning is promoted when learners observe a demonstration — supports example pages.
@@ -98,7 +98,7 @@ Merrill's framework validates the 4-page structure as a *task-centered instructi
 **What it is**  
 The comprehensive presentation of the **4C/ID model** (Four-Component Instructional Design) for teaching complex skills. Addresses whole-task sequencing, supportive information, procedural information, and part-task practice.
 
-**Key contributions for Noni**
+**Key contributions for Mynaani**
 - **Whole-task sequencing:** Start with simple but complete versions of the whole task, then increase complexity — validates Module 1→5 progression.
 - **Supportive information:** Information that helps learners reason about the task (principles, mental models) — maps to principle pages.
 - **Procedural information:** Step-by-step guidance for task execution — maps to example pages.
@@ -123,7 +123,7 @@ The 4C/ID model provides a systematic way to assess whether the curriculum teach
 **What it is**  
 A focused investigation of the worked-example effect — the finding that studying worked examples is more effective for novice learners than solving equivalent problems. Addresses the expertise reversal effect (worked examples become less effective as expertise grows).
 
-**Key contributions for Noni**
+**Key contributions for Mynaani**
 - **Worked-example effect:** Novice learners learn more from studying complete examples than from independent problem-solving — validates the ExampleBlock structure.
 - **Expertise reversal:** As learners gain expertise, worked examples can impede learning — justifies the complexity ramp (Module 1 is all examples, Module 5 requires more independent reasoning).
 - **Efficiency metrics:** Instructional efficiency = (mental effort)⁻¹ × (test performance) — a quantitative way to measure curriculum quality.
@@ -138,7 +138,7 @@ The ExampleBlock is not merely a "story" — it is a *worked example* in the tec
 
 ## Part B: Five Competitor Courses — Older Adult Digital Learning Landscape
 
-These are real, operating courses/programs that serve older adults learning digital skills. They represent the competitive landscape against which Noni is positioned.
+These are real, operating courses/programs that serve older adults learning digital skills. They represent the competitive landscape against which Mynaani is positioned.
 
 ---
 
@@ -163,15 +163,15 @@ These are real, operating courses/programs that serve older adults learning digi
 - Established national presence with physical centers
 - Multilingual offerings (English, Spanish, Chinese)
 
-**Weaknesses relative to Noni**
+**Weaknesses relative to Mynaani**
 - **Not geragogy-first in design:** Classes follow traditional pedagogy, not a cognitively protective contract.
 - **No systematic complexity ramp:** Learners self-select into classes without telemetry-gated progression.
 - **Interface is standard video conferencing:** No cognitively protective UI. Zoom fatigue is real.
 - **Content is broad, not deep:** Covers many topics superficially rather than one topic deeply.
 - **No AI-specific curriculum:** While they have "AI literacy" sessions, there is no structured curriculum for Claude or AI assistants specifically.
 
-**Strategic implication for Noni**  
-Senior Planet owns the "community learning" segment. Noni should differentiate through depth (task-centered curriculum) and cognitive protection (predictable, low-load interface), not by competing on social features.
+**Strategic implication for Mynaani**  
+Senior Planet owns the "community learning" segment. Mynaani should differentiate through depth (task-centered curriculum) and cognitive protection (predictable, low-load interface), not by competing on social features.
 
 ---
 
@@ -195,15 +195,15 @@ Senior Planet owns the "community learning" segment. Noni should differentiate t
 - Text-first, screenshot-heavy format is low-bandwidth
 - Self-paced allows learners to stop and return
 
-**Weaknesses relative to Noni**
+**Weaknesses relative to Mynaani**
 - **No geragogy design:** Dense text pages, small screenshots, standard web design (not age-optimized).
 - **No instructional design framework:** Content is reference material, not structured learning. No recap, principle, example, retrieval.
 - **No complexity management:** A learner can jump from "Mouse Basics" to "Excel Pivot Tables" with no guidance.
 - **No AI curriculum:** Nothing on Claude, ChatGPT, or AI assistants.
 - **Passive consumption:** No interactivity, retrieval, or application.
 
-**Strategic implication for Noni**  
-GCFLearnFree owns the "free reference" segment. Noni differentiates through structured, pedagogically-designed curriculum with built-in assessment and progression management.
+**Strategic implication for Mynaani**  
+GCFLearnFree owns the "free reference" segment. Mynaani differentiates through structured, pedagogically-designed curriculum with built-in assessment and progression management.
 
 ---
 
@@ -227,15 +227,15 @@ GCFLearnFree owns the "free reference" segment. Noni differentiates through stru
 - Equipment grants reduce access barriers
 - NCOA credibility in aging services
 
-**Weaknesses relative to Noni**
+**Weaknesses relative to Mynaani**
 - **Very basic level:** Stops at email and video calls. No AI, no advanced concepts.
 - **No curriculum depth:** Modules are single-session, not cumulative.
 - **No cognitive protection:** Standard web modules, standard senior center classrooms.
 - **No geragogy framework:** Content is functional skills training, not dignity-centered learning design.
 - **No Claude/AI content:** Entirely absent.
 
-**Strategic implication for Noni**  
-AT&T/NCOA owns the "digital inclusion" segment (basic access). Noni serves learners who have passed this threshold and want to engage with AI meaningfully.
+**Strategic implication for Mynaani**  
+AT&T/NCOA owns the "digital inclusion" segment (basic access). Mynaani serves learners who have passed this threshold and want to engage with AI meaningfully.
 
 ---
 
@@ -260,15 +260,15 @@ AT&T/NCOA owns the "digital inclusion" segment (basic access). Noni serves learn
 - Quiz-based assessment provides feedback
 - Free and accessible
 
-**Weaknesses relative to Noni**
+**Weaknesses relative to Mynaani**
 - **No geragogy contract:** Standard video+quiz format. Small text, no cognitive load management.
 - **No complexity ramp:** Modules are standalone; no progression from simple to complex.
 - **No AI content:** Nothing on AI assistants, Claude, or generative AI.
 - **Passive video consumption:** Learners watch videos; limited interactivity.
 - **Quiz framing is evaluative:** "Did you pass?" rather than "What did you learn?"
 
-**Strategic implication for Noni**  
-DigitalLearn owns the "public library basic skills" segment. Noni differentiates through AI-specific depth, geragogy-centered design, and cognitively protective UI.
+**Strategic implication for Mynaani**  
+DigitalLearn owns the "public library basic skills" segment. Mynaani differentiates through AI-specific depth, geragogy-centered design, and cognitively protective UI.
 
 ---
 
@@ -294,7 +294,7 @@ DigitalLearn owns the "public library basic skills" segment. Noni differentiates
 - **Community feel:** Regular learners form cohorts and friendships
 - **Higher engagement:** Live format creates commitment and accountability
 
-**Weaknesses relative to Noni**
+**Weaknesses relative to Mynaani**
 - **Not structured curriculum:** Classes are standalone sessions, not progressive modules.
 - **No geragogy UI:** Uses standard Zoom-style video interface. Cognitive load is high (managing video, chat, screen sharing simultaneously).
 - **No complexity management:** Learners self-select classes with no guidance on readiness.
@@ -302,14 +302,14 @@ DigitalLearn owns the "public library basic skills" segment. Noni differentiates
 - **Requires synchronous attendance:** Missed classes cannot be made up easily.
 - **Paid tier creates friction:** Freemium model may exclude learners who cannot afford subscriptions.
 
-**Strategic implication for Noni**  
-GetSetUp owns the "live interactive learning" segment. Noni should not try to replicate live interaction. Instead, Noni differentiates through: (a) structured, progressive curriculum, (b) geragogy-first UI design, (c) asynchronous flexibility, and (d) AI-specific depth that no competitor offers.
+**Strategic implication for Mynaani**  
+GetSetUp owns the "live interactive learning" segment. Mynaani should not try to replicate live interaction. Instead, Mynaani differentiates through: (a) structured, progressive curriculum, (b) geragogy-first UI design, (c) asynchronous flexibility, and (d) AI-specific depth that no competitor offers.
 
 ---
 
-## Part C: Strategic Summary — Noni's Differentiation
+## Part C: Strategic Summary — Mynaani's Differentiation
 
-| Competitor | Segment | Noni's Differentiation |
+| Competitor | Segment | Mynaani's Differentiation |
 |:-----------|:--------|:-----------------------|
 | **Senior Planet** | Community learning (in-person + online) | Depth over breadth; cognitively protective UI; telemetry-gated progression |
 | **GCFLearnFree** | Free reference tutorials | Structured instructional design; geragogy contract; AI-specific curriculum |
@@ -325,7 +325,7 @@ None of the five competitors offer:
 3. **Telemetry-gated, complexity-managed progression** — all rely on learner self-selection.
 4. **Confidence-preserving assessment (no scoring, no evaluative framing)** — all use traditional quiz/pass-fail models.
 
-This is Noni's **defensible position**.
+This is Mynaani's **defensible position**.
 
 ---
 
@@ -348,4 +348,4 @@ This is Noni's **defensible position**.
 ---
 
 *Document compiled: 2026-05-25*  
-*Purpose: Noni Curriculum Quality Framework — Methodology & Competitor Landscape*
+*Purpose: Mynaani Curriculum Quality Framework — Methodology & Competitor Landscape*

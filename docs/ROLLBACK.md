@@ -1,4 +1,4 @@
-# Rollback Guide — Noni
+# Rollback Guide — Mynaani
 
 ## Backend (Railway)
 

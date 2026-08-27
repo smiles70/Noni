@@ -1,6 +1,6 @@
-# Nelson Repo Hygiene Scorecard — Noni
+# Nelson Repo Hygiene Scorecard — Mynaani
 
-**Assessment date:** 2026-08-27
+**Assessment date:** 2026-08-26
 **Process:** v9.51
 **Score composition rule:** `final_score = min(weighted_domain_total, every applicable overall-score cap)`
 
@@ -10,15 +10,15 @@
 |---|---|---|
 | README.md | PRESENT | repo root |
 | CONTRIBUTING.md | PRESENT | repo root |
-| SECURITY.md | PRESENT | repo root |
-| CODEOWNERS | PRESENT | `.github/CODEOWNERS` |
+| SECURITY.md | MISSING | not at repo root |
+| CODEOWNERS | MISSING | not at repo root or `.github/` |
 | CHANGELOG.md | PRESENT | `docs/changelog.md` |
 | docs/ARCHITECTURE.md | PRESENT | root `ARCHITECTURE.md`; `docs/architecture/` also present |
-| docs/CURRENT_STATE.md | PRESENT | `docs/CURRENT_STATE.md` |
-| docs/ONBOARDING.md | PRESENT | `docs/ONBOARDING.md` |
-| docs/RUNBOOK.md | PRESENT | `docs/RUNBOOK.md` |
-| docs/ROLLBACK.md | PRESENT | `docs/ROLLBACK.md` |
-| docs/TEST_STRATEGY.md | PRESENT | `docs/TEST_STRATEGY.md` |
+| docs/CURRENT_STATE.md | MISSING | no canonical current-state doc |
+| docs/ONBOARDING.md | MISSING | no canonical onboarding doc |
+| docs/RUNBOOK.md | MISSING | `docs/ops/` runbooks exist but no canonical `RUNBOOK.md` |
+| docs/ROLLBACK.md | MISSING | `docs/ops/epic002-rollback-plan.md` exists but no canonical `ROLLBACK.md` |
+| docs/TEST_STRATEGY.md | MISSING | no canonical test-strategy doc |
 | docs/adr/ | PRESENT | `docs/decisions/` (27 ADRs) |
 | .ai/process/PROCESS_CURRENT_STATE.md | PRESENT | v9.51 bootstrap |
 | .ai/nelson/artifact-inventory.json | PRESENT | This assessment |
@@ -30,14 +30,14 @@
 | Repository Orientation | 10 | README, purpose, stack, build/deploy summary in README | 9 / 10 |
 | Architecture | 15 | `ARCHITECTURE.md`, `docs/architecture/`, data-flow, schema, vendors | 13 / 15 |
 | Decision Records | 10 | 27 ADRs in `docs/decisions/` | 10 / 10 |
-| Operational Readiness | 15 | `docs/RUNBOOK.md`, `docs/ROLLBACK.md`, incident response, recovery, status page, SRE audit | 13 / 15 |
-| Knowledge Transfer | 15 | README, `docs/ONBOARDING.md`, staging-deploy, integrations-setup, local-testing-guide | 12 / 15 |
-| Ownership | 10 | `CODEOWNERS` present, escalation path documented | 9 / 10 |
+| Operational Readiness | 15 | `docs/ops/` runbooks, incident response, recovery, status page, SRE audit | 11 / 15 |
+| Knowledge Transfer | 15 | README, staging-deploy, integrations-setup, local-testing-guide; no `ONBOARDING.md` | 9 / 15 |
+| Ownership | 10 | No `CODEOWNERS`, escalation path unclear | 3 / 10 |
 | Delivery Governance | 10 | `CONTRIBUTING.md`, `.github/workflows/`, pre-commit config | 8 / 10 |
-| Security and Compliance | 5 | `SECURITY.md`, threat model in `docs/audits/` | 5 / 5 |
-| Testability | 10 | `backend/tests/`, `frontend/src/` tests, `docs/TEST_STRATEGY.md`, CI test matrix | 9 / 10 |
+| Security and Compliance | 5 | Threat model in `docs/audits/`, no `SECURITY.md` | 3 / 5 |
+| Testability | 10 | `backend/tests/`, `frontend/src/` tests, CI test matrix | 8 / 10 |
 
-**Weighted raw total:** `9 + 13 + 10 + 13 + 12 + 9 + 8 + 5 + 9 = 88` / 100
+**Weighted raw total:** `9 + 13 + 10 + 11 + 9 + 3 + 8 + 3 + 8 = 74` / 100
 
 ## 3. Score Caps
 
@@ -45,26 +45,27 @@
 |---|---|---|
 | Missing README caps score at 90 | NO | — |
 | Missing architecture docs caps score at 85 | NO | — |
-| Missing current-state artifact caps score at 85 | NO | — |
-| Missing runbook/rollback for production systems caps at 80 | NO | — |
-| Missing ownership/escalation path caps at 80 | NO | — |
-| No `SECURITY.md` for production system handling sensitive data (v9.51 §14.3) | NO | — |
+| Missing current-state artifact caps score at 85 | YES | <= 85 |
+| Missing runbook/rollback for production systems caps at 80 | YES | <= 80 |
+| Missing ownership/escalation path caps at 80 | YES | <= 80 |
+| No `SECURITY.md` for production system handling sensitive data (v9.51 §14.3) | YES | <= 50 |
 
 ## 4. Final Score
 
 ```text
-final_score = 88
+final_score = min(74, 85, 80, 80, 50)
+final_score = 50
 ```
 
-**Nelson Repo Score: 88 / 100**
+**Nelson Repo Score: 50 / 100**
 
 ## 5. Gate Verdict
 
 | Band | Meaning | Status |
 |---|---|---|
 | 95-100 | Industry Leading | — |
-| 85-94 | Enterprise Mature | **CURRENT** |
+| 85-94 | Enterprise Mature | — |
 | 70-84 | Managed Risk | — |
-| <70 | Operational Risk | — |
+| <70 | Operational Risk | **CURRENT** |
 
-**Verdict:** `Enterprise Mature` — no repo-hygiene blockers remain. Runtime/infrastructure conditions are tracked in `PRA_REPORT.md`.
+**Verdict:** `Operational Risk` — block major work until `SECURITY.md`, `CODEOWNERS`, canonical `RUNBOOK.md`/`ROLLBACK.md`, and frontend dependency vulnerabilities are addressed.

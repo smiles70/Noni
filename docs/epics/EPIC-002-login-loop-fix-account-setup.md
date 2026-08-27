@@ -76,7 +76,7 @@
    - Graceful error handling for transient failures
    - Clear sign-out flow that clears all state
 
-**Current Noni Gaps:**
+**Current Mynaani Gaps:**
 - ❌ No welcome/account setup phase
 - ❌ No profile completion step
 - ❌ No progressive onboarding

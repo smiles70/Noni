@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Noni platform.
+All notable changes to the Mynaani platform.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/).
 

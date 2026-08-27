@@ -37,7 +37,7 @@ introducing new backend dependencies.
 
 ## Known issues and edge cases
 
-1. **Hero image source** — a Noni-appropriate image is not yet in the repo.
+1. **Hero image source** — a Mynaani-appropriate image is not yet in the repo.
    A placeholder path should be used if the final image is not available.
 2. **Mobile two-column collapse** — the layout must collapse gracefully; the
    `reflow_permitted=False` constraint means the mobile layout should be a

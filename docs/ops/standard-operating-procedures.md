@@ -1,4 +1,4 @@
-# Noni Standard Operating Procedures (SOP)
+# Mynaani Standard Operating Procedures (SOP)
 
 **Version:** 1.0.0
 **Owner:** SRE / Platform Engineering

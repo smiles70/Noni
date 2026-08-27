@@ -1,4 +1,4 @@
-# Noni Staging Deploy
+# Mynaani Staging Deploy
 
 Sprint **B3** ships a containerized backend, an nginx-served frontend, and a
 managed Postgres dependency. This guide covers a generic Docker host (VPS,

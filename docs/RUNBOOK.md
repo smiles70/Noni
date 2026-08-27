@@ -1,4 +1,4 @@
-# Operations Runbook — Noni
+# Operations Runbook — Mynaani
 
 ## Incident response
 

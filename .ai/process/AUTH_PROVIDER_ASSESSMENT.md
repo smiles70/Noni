@@ -32,7 +32,7 @@ The mock provider (`MockAuthProvider`) is functional and is now the only identit
 
 ---
 
-## 2. Research question: Can NextAuth.js be used for Noni?
+## 2. Research question: Can NextAuth.js be used for Mynaani?
 
 ### 2.1 External sources
 
@@ -53,16 +53,16 @@ The mock provider (`MockAuthProvider`) is functional and is now the only identit
 
 ### 2.2 Assessment
 
-| Fit criterion | NextAuth.js / Auth.js for Noni |
+| Fit criterion | NextAuth.js / Auth.js for Mynaani |
 |---|---|
 | Frontend is Vite + React (no Next.js) | ❌ No first-class package. Vite/React integration is possible only via custom `@auth/core` wrapper or a separate Node auth service. |
 | Backend is FastAPI (Python) | ❌ NextAuth/Auth.js expects Node.js/Express route handlers. There is no official FastAPI adapter. |
 | Deployment is Fly.io + Cloudflare Pages | ⚠️ Would require a Node auth micro-service on Fly or Cloudflare Pages functions; adds infrastructure. |
 | Geragogy needs (calm, password-optional, no dark patterns) | ⚠️ Depends on provider chosen. Credentials provider is possible but requires custom DB adapter. |
 | Open-source and self-hosted option | ✅ `@auth/core` is open source, but a full implementation still needs Node. |
-| Implementation effort | **High** for Noni's stack: would require either (a) rewriting/migrating the auth surface to a Node service, or (b) writing a custom `@auth/core` ↔ FastAPI bridge. |
+| Implementation effort | **High** for Mynaani's stack: would require either (a) rewriting/migrating the auth surface to a Node service, or (b) writing a custom `@auth/core` ↔ FastAPI bridge. |
 
-**Conclusion:** NextAuth.js is **not a natural fit** for the current Noni stack. The codebase is a Vite React SPA plus a FastAPI backend. NextAuth/Auth.js's documented integrations are Next.js, SvelteKit, SolidStart, and Express. There is no supported path to drop it into a Vite+FastAPI app without adding a Node auth layer or a custom bridge.
+**Conclusion:** NextAuth.js is **not a natural fit** for the current Mynaani stack. The codebase is a Vite React SPA plus a FastAPI backend. NextAuth/Auth.js's documented integrations are Next.js, SvelteKit, SolidStart, and Express. There is no supported path to drop it into a Vite+FastAPI app without adding a Node auth layer or a custom bridge.
 
 ---
 

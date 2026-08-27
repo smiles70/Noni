@@ -1,10 +1,10 @@
-# Noni Package Inventory
+# Mynaani Package Inventory
 
 **Process:** v9.51 — Package and Version Alignment Agent view
 **Date:** 2026-08-27
-**Repository:** smiles70/Noni
+**Repository:** smiles70/Mynaani
 
-This inventory captures the packages, services, and toolchains required to develop and run Noni, aligned with the v9.51 repo-landscape and package-alignment gates.
+This inventory captures the packages, services, and toolchains required to develop and run Mynaani, aligned with the v9.51 repo-landscape and package-alignment gates.
 
 ## Toolchain prerequisites
 

@@ -1,4 +1,4 @@
-# Login Discovery — Noni System Audit
+# Login Discovery — Mynaani System Audit
 
 **Date:** 2026-05-17
 **Branch at audit time:** `main` @ `faac463`
@@ -462,7 +462,7 @@ largest loss of semantic information in the auth path.
 | "I signed out" | localStorage progress retained; mock token may persist | next user inherits |
 | "I deleted my account" | `deleted_at` set; Clerk session intact | resurrection |
 | "I'm on lesson 5" | progress is browser-scoped, not account-scoped | wrong unit |
-| "Reset wiped my data" | Only Noni's keys; Clerk persists | unexpected auto-signin |
+| "Reset wiped my data" | Only Mynaani's keys; Clerk persists | unexpected auto-signin |
 | Email = current Clerk email | Cached at first sight; never refreshed | stale display |
 
 ---

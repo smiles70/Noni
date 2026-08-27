@@ -1,4 +1,4 @@
-# Noni Recovery Runbook
+# Mynaani Recovery Runbook
 
 **Version:** 1.0.0
 **Owner:** SRE / Platform Engineering

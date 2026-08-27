@@ -1,4 +1,4 @@
-# Test Strategy — Noni
+# Test Strategy — Mynaani
 
 ## Backend
 

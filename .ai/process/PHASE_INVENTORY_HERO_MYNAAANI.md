@@ -37,7 +37,7 @@
 1. `cp /home/hazbyn/Downloads/formynaani.png frontend/public/hero-mynaani.png`.
 2. Update `LandingPage.tsx` `src` to `/hero-mynaani.png`.
 3. Adjust `object-position` to `left 55%` (or similar) to show the two people.
-4. Verify the Noni card sits on the right.
+4. Verify the Mynaani card sits on the right.
 
 ## Phase 2 — Build + bundle
 

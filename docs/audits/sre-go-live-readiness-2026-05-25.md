@@ -1,7 +1,7 @@
-# Noni SRE Go-Live Readiness Assessment
+# Mynaani SRE Go-Live Readiness Assessment
 
 > **Date:** 2026-05-25  
-> **Assessor:** Noni Engineering (self-assessment)  
+> **Assessor:** Mynaani Engineering (self-assessment)  
 > **Scope:** Backend API concurrency, database capacity, infrastructure scaling, monitoring, and operational runbooks.  
 > **Not in scope:** Marketing, user acquisition, content quality, or geragogy compliance.
 
@@ -11,7 +11,7 @@
 
 **Status: NOT READY for production traffic beyond a soft launch.**
 
-Noni's infrastructure is functional for development and a small pilot (<100 concurrent users), but critical SRE gaps exist around database connection pooling, horizontal scaling, load testing, and observability. The current architecture would degrade or fail under moderate production load (500+ concurrent users).
+Mynaani's infrastructure is functional for development and a small pilot (<100 concurrent users), but critical SRE gaps exist around database connection pooling, horizontal scaling, load testing, and observability. The current architecture would degrade or fail under moderate production load (500+ concurrent users).
 
 **Recommendation:** Address the 4 CRITICAL and 3 HIGH items below before go-live. A soft-launch to ≤50 beta users is feasible with monitoring in place.
 

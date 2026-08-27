@@ -1,8 +1,8 @@
-# Gap Analysis — Noni Landing Page vs. Older-Adult Best Practice
+# Gap Analysis — Mynaani Landing Page vs. Older-Adult Best Practice
 
 **Process:** v9.51
 **Date:** 2026-08-27
-**Scope:** Compare the live Noni landing page against the competitive
+**Scope:** Compare the live Mynaani landing page against the competitive
 research and rubric from `LANDING_HERO_COMPETITIVE_RESEARCH.md` and
 `LANDING_HERO_RUBRIC.md`.
 
@@ -27,11 +27,11 @@ research and rubric from `LANDING_HERO_COMPETITIVE_RESEARCH.md` and
 | 8 | Plain language | Backend copy is plain and calm | All successful senior sites use plain language | No gap | None |
 | 9 | No urgency / fear | No urgency language | No urgency in best practice | No gap | None |
 | 10 | Mobile single column | Flex-wrap two-column that stacks; may reflow | AARP / Medicare use deterministic single-column on mobile | Layout may reflow at narrow widths | Low |
-| 11 | Contract compliance | Fully token-driven; passes RenderGuard | Noni-specific; not applicable to competitors | Strong | None (strength) |
+| 11 | Contract compliance | Fully token-driven; passes RenderGuard | Mynaani-specific; not applicable to competitors | Strong | None (strength) |
 
 ## Root cause of the headline / dominance gap
 
-The Noni contract (`CONTRACT.md` Section I.C) sets:
+The Mynaani contract (`CONTRACT.md` Section I.C) sets:
 
 > "Headings ≤1.4× body text size."
 

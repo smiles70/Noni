@@ -1,4 +1,4 @@
-# Execution Playbook — Noni Login Redesign
+# Execution Playbook — Mynaani Login Redesign
 
 **Date:** 2026-05-17
 **Companion to:** `docs/design/login-redesign-2026-05-17.md`

@@ -37,7 +37,7 @@ home-like setting, full-bleed capable.
 **Pexels 3768131** was chosen because:
 - Two women: older adult + adult daughter.
 - Warm, natural, golden/cream/brown color palette closest to the MetLife reference.
-- Shallow depth of field gives an open right side for the Noni action card.
+- Shallow depth of field gives an open right side for the Mynaani action card.
 - 1620×1080 resolution is sufficient for full-bleed hero without visible pixelation.
 - Pexels License allows free use with no attribution required.
 

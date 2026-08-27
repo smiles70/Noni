@@ -9,7 +9,7 @@
 
 ## Overview
 
-This guide provides comprehensive instructions for setting up a staging environment for the Noni project using GitHub. The staging environment will mirror production configuration and allow for safe testing of changes before production deployment.
+This guide provides comprehensive instructions for setting up a staging environment for the Mynaani project using GitHub. The staging environment will mirror production configuration and allow for safe testing of changes before production deployment.
 
 **Key Benefits:**
 - Safe testing environment separate from production
@@ -25,23 +25,23 @@ This guide provides comprehensive instructions for setting up a staging environm
 ### Required Accounts and Access
 
 1. **GitHub Account**
-   - Admin access to the Noni repository
+   - Admin access to the Mynaani repository
    - Ability to create branches and workflows
    - Access to GitHub Actions
 
 2. **Cloudflare Pages Account**
-   - Access to Noni frontend project
+   - Access to Mynaani frontend project
    - Ability to create projects
    - Access to environment variables
 
 3. **Fly.io Account**
-   - Access to Noni backend apps
+   - Access to Mynaani backend apps
    - Ability to create apps
    - Access to environment variables
    - API token for automation
 
 4. **Clerk Account**
-   - Access to Noni Clerk application
+   - Access to Mynaani Clerk application
    - Ability to configure redirect URLs
    - Access to API keys
 
@@ -341,7 +341,7 @@ Navigate to project settings → "Environment variables"
 **Objective:** Create separate Clerk application for staging
 
 1. Navigate to Clerk dashboard
-2. Create new application: "Noni Staging"
+2. Create new application: "Mynaani Staging"
 3. Note the API keys:
    - Publishable key: `pk_test_...`
    - Secret key: `sk_test_...`
@@ -380,7 +380,7 @@ Navigate to project settings → "Environment variables"
 **Objective:** Create separate BetterStack source for staging
 
 1. Navigate to BetterStack dashboard
-2. Create new source: "Noni Staging"
+2. Create new source: "Mynaani Staging"
 3. Configure source type: "Application"
 4. Note the API key
 

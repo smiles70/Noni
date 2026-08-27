@@ -225,7 +225,7 @@ No write access to code, no admin access.
 
 ### Step 1: Run the PowerShell Script
 ```powershell
-cd C:\Users\travel\CascadeProjects\Noni
+cd C:\Users\travel\CascadeProjects\Mynaani
 .\scripts\AutoDeploy.ps1
 ```
 

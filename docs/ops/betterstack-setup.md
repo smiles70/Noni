@@ -8,7 +8,7 @@
 
 ## Overview
 
-BetterStack provides unified monitoring, uptime monitoring, and alerting for the Noni platform. This guide covers the complete setup and configuration process.
+BetterStack provides unified monitoring, uptime monitoring, and alerting for the Mynaani platform. This guide covers the complete setup and configuration process.
 
 ---
 
@@ -16,8 +16,8 @@ BetterStack provides unified monitoring, uptime monitoring, and alerting for the
 
 - BetterStack account (https://betterstack.com)
 - Fly.io CLI installed and authenticated
-- Noni backend deployed to Fly.io
-- Noni frontend deployed to Cloudflare Pages
+- Mynaani backend deployed to Fly.io
+- Mynaani frontend deployed to Cloudflare Pages
 
 ---
 
@@ -28,7 +28,7 @@ BetterStack provides unified monitoring, uptime monitoring, and alerting for the
 **Purpose:** Monitor the FastAPI backend health endpoint
 
 **Configuration:**
-- **Name:** Noni API Health
+- **Name:** Mynaani API Health
 - **Type:** HTTP
 - **URL:** `https://noni-api.fly.dev/health`
 - **Request Method:** GET
@@ -48,7 +48,7 @@ curl -I https://noni-api.fly.dev/health
 **Purpose:** Monitor the Cloudflare Pages frontend
 
 **Configuration:**
-- **Name:** Noni Frontend
+- **Name:** Mynaani Frontend
 - **Type:** HTTP
 - **URL:** `https://noni-web.pages.dev`
 - **Request Method:** GET
@@ -68,7 +68,7 @@ curl -I https://noni-web.pages.dev
 **Purpose:** Monitor authentication endpoint availability
 
 **Configuration:**
-- **Name:** Noni Auth Config
+- **Name:** Mynaani Auth Config
 - **Type:** HTTP
 - **URL:** `https://noni-api.fly.dev/api/v1/auth/config`
 - **Request Method:** GET
@@ -82,7 +82,7 @@ curl -I https://noni-web.pages.dev
 **Purpose:** Monitor core curriculum functionality
 
 **Configuration:**
-- **Name:** Noni Curriculum
+- **Name:** Mynaani Curriculum
 - **Type:** HTTP
 - **URL:** `https://noni-api.fly.dev/api/v1/curriculum/units`
 - **Request Method:** GET
@@ -209,7 +209,7 @@ curl -I https://noni-web.pages.dev
 ### 3.3 Notification Channels
 
 **Slack Integration:**
-- Workspace: Noni Engineering
+- Workspace: Mynaani Engineering
 - Channel: #alerts (for SEV-3), #incidents (for SEV-1/SEV-2)
 - Webhook URL: Configure in BetterStack notification settings
 

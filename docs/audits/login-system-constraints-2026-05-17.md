@@ -1,4 +1,4 @@
-# System Constraint Model — Noni Login Domain
+# System Constraint Model — Mynaani Login Domain
 
 **Date:** 2026-05-17
 **Source:** Phase 1–26 discovery audit

@@ -8,7 +8,7 @@ Accepted (Sprint 10).
 
 Sprint 6 added telemetry persistence and CSV/JSON export. The schema then was minimal: `id`, `time`, `event`, and a free-form `metadata` JSON column. That shape is acceptable for ad-hoc product debugging but is a poor audit-trail substrate for two reasons:
 
-1. **Defensibility / patentability.** Noni's claim of being a backend-governed, ISCS-driven learning system rests on showing that every UI-state decision is grounded in measurable variables. If those variables live only inside an opaque JSON blob, an external auditor (or a patent examiner reviewing prior art) cannot confirm at a glance that the system actually behaves as claimed.
+1. **Defensibility / patentability.** Mynaani's claim of being a backend-governed, ISCS-driven learning system rests on showing that every UI-state decision is grounded in measurable variables. If those variables live only inside an opaque JSON blob, an external auditor (or a patent examiner reviewing prior art) cannot confirm at a glance that the system actually behaves as claimed.
 2. **Queryability.** Filtering on `metadata->>'stability'` requires Postgres-specific JSON operators and resists indexing on most hosts. SQL queries in dashboards and reports become awkward.
 
 The decision variables that uniquely characterize an ISCS decision are:

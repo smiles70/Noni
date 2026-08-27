@@ -11,7 +11,7 @@
 ### FR-001 — Hero layout
 
 The landing page MUST display a two-column hero layout on desktop and a
-single stacked column on mobile. The left side MUST contain the Noni logo,
+single stacked column on mobile. The left side MUST contain the Mynaani logo,
 a single H1, and a one-sentence body. The right side MUST contain a card
 with the primary CTA and no more than three secondary actions.
 
@@ -22,13 +22,13 @@ with the primary CTA and no more than three secondary actions.
 
 ### FR-002 — Brand and content
 
-All visible text and imagery on the landing page MUST be Noni-branded.
+All visible text and imagery on the landing page MUST be Mynaani-branded.
 No MetLife, legal-plan, or third-party references may appear in the
 rendered DOM or in the production bundle.
 
 **Acceptance criteria:**
 - `grep -i "metlife" dist/assets/*` returns no matches.
-- Hero image filename and alt text are Noni-specific.
+- Hero image filename and alt text are Mynaani-specific.
 
 ### FR-003 — Primary call to action
 

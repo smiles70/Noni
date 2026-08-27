@@ -1,7 +1,7 @@
 # Digital Education Quality: Expert Resource Library
 
 > Curated foundational references for assessing and standardizing digital education quality.  
-> Compiled for the Noni curriculum quality framework.
+> Compiled for the Mynaani curriculum quality framework.
 
 ---
 
@@ -25,7 +25,7 @@ A comprehensive set of 42 specific standards across 8 categories used to evaluat
 - Learner Support
 - Accessibility & Usability
 
-**Why it matters for Noni**  
+**Why it matters for Mynaani**  
 The QM rubric is the closest thing to a standardized "quality bar" for digital curriculum. Its emphasis on clear learning objectives, accessibility, and learner support directly maps to geragogy principles (cognitive protection, progressive disclosure, human authority).
 
 **How to cite**  
@@ -50,7 +50,7 @@ A comparative, thematic analysis of how OECD countries shape their digital educa
 - Equity and inclusion in digital education
 - Data governance and privacy
 
-**Why it matters for Noni**  
+**Why it matters for Mynaani**  
 Provides the macro-level policy context for quality standards. The OECD's framework for assessing "maturity" of digital transformation in education teaching (Chapter 3) offers a vocabulary for quality benchmarking that is internationally recognized.
 
 **How to cite**  
@@ -76,7 +76,7 @@ A common framework built on six pillars to guide the digital transformation of e
 5. Innovation and emerging technologies
 6. Partnerships and collaboration
 
-**Why it matters for Noni**  
+**Why it matters for Mynaani**  
 Pillar 3 (Digital competencies and content) provides the closest thing to a global standard for what quality digital curriculum should achieve. The framework's emphasis on inclusion and equity aligns with geragogy's learner-centered approach.
 
 **How to cite**  
@@ -100,8 +100,8 @@ A systematic narrative review of 17 international papers (2010–2020) examining
 - Three dominant themes emerged: negative perceptions of aging, the learning environment, and value of technology.
 - Digital skills programs that succeed with older adults create safe learning environments and emphasize the *personal value* of technology over abstract utility.
 
-**Why it matters for Noni**  
-This is the most rigorous academic synthesis specifically on digital skills education for older adults. The finding that "personal value of technology" drives engagement directly supports Noni's principle-based curriculum design.
+**Why it matters for Mynaani**  
+This is the most rigorous academic synthesis specifically on digital skills education for older adults. The finding that "personal value of technology" drives engagement directly supports Mynaani's principle-based curriculum design.
 
 **How to cite**  
 > Gates, J. R., & Wilson-Menzfeld, G. (2022). What role does geragogy play in the delivery of digital skills programs for middle and older age adults? A systematic narrative review. *International Journal of Environmental Research and Public Health*, *19*(15), 9147. https://doi.org/10.3390/ijerph19159147
@@ -124,8 +124,8 @@ A research synthesis arguing for a "learning-sciences-based approach" to older a
 - Integrative geragogy (combining pedagogy, andragogy, and geragogy) produces better outcomes for older learners than any single theory.
 - Quality assessment for older adult education must account for cognitive changes, life experience as prior knowledge, and the emotional dimension of technology learning.
 
-**Why it matters for Noni**  
-This is the most recent peer-reviewed synthesis explicitly calling for *quality standards* in older adult digital education. The argument that quality assessment must account for "emotional dimension of technology learning" is a direct design input for Noni's confidence-preserving tone and geragogy contract.
+**Why it matters for Mynaani**  
+This is the most recent peer-reviewed synthesis explicitly calling for *quality standards* in older adult digital education. The argument that quality assessment must account for "emotional dimension of technology learning" is a direct design input for Mynaani's confidence-preserving tone and geragogy contract.
 
 **How to cite**  
 > Formosa, M., & Fragoso, A. (2025). Bridging geragogy and pedagogy: Towards a learning-sciences-based approach to older adults' education. *Educational Gerontology*. https://doi.org/10.1080/03601277.2025.2569386
@@ -150,7 +150,7 @@ This is the most recent peer-reviewed synthesis explicitly calling for *quality 
 Use the QM rubric (Resource 1) as the baseline design checklist. Cross-reference against the geragogy-specific findings from Resources 4 and 5 to ensure older-learner appropriateness.
 
 **For policy/institutional alignment:**  
-Resources 2 and 3 provide the vocabulary and framework references needed to align Noni's quality standards with internationally recognized benchmarks.
+Resources 2 and 3 provide the vocabulary and framework references needed to align Mynaani's quality standards with internationally recognized benchmarks.
 
 **For academic grounding:**  
 All five resources are citable in academic or policy contexts. Resources 4 and 5 are peer-reviewed and directly support the geragogy contract.
@@ -158,4 +158,4 @@ All five resources are citable in academic or policy contexts. Resources 4 and 5
 ---
 
 *Document compiled: 2026-05-24*  
-*Purpose: Noni Curriculum Quality Framework — Expert Resource Foundation*
+*Purpose: Mynaani Curriculum Quality Framework — Expert Resource Foundation*

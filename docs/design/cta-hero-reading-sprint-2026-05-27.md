@@ -10,7 +10,7 @@
 ## 1. Why this sprint exists
 
 The landing page presented three primary actions to new visitors:
-1. "See how Noni works" (overlay on hero image)
+1. "See how Mynaani works" (overlay on hero image)
 2. "Set up my account — free" (primary CTA)
 3. "Log in" (secondary CTA)
 
@@ -22,7 +22,7 @@ The bigger problem: "Set up my account — free" immediately hit the Clerk auth 
 Per Gleap's SaaS onboarding research (Mistake #1), asking users to authenticate
 before they understand the product is the #1 onboarding mistake.
 
-**Goal:** Reduce landing page to 2 buttons and make the "How Noni works" explanation
+**Goal:** Reduce landing page to 2 buttons and make the "How Mynaani works" explanation
 the mandatory first step before the auth wall.
 
 ---
@@ -35,7 +35,7 @@ the mandatory first step before the auth wall.
 LandingPage.tsx
 ├── Hero overlay
 │   ├── Headline
-│   └── "See how Noni works" button ──► HowItWorksDialog (optional)
+│   └── "See how Mynaani works" button ──► HowItWorksDialog (optional)
 ├── Auth row
 │   ├── "Set up my account — free" ──► goCurriculum() ──► Clerk sign-in
 │   └── "Log in" ──► goSignIn() ──► Clerk sign-in
@@ -66,7 +66,7 @@ Proposal: primaryActionCount = 4
 
 | # | Item | Contract anchor | Files touched | Lines | Status |
 |---|------|----------------|---------------|-------|--------|
-| H1 | Remove overlay "See how Noni works" button | Hick's Law; CONTRACT §I.F ≤5 primary actions | `LandingPage.tsx` | 222-228 | Done |
+| H1 | Remove overlay "See how Mynaani works" button | Hick's Law; CONTRACT §I.F ≤5 primary actions | `LandingPage.tsx` | 222-228 | Done |
 | H2 | Wire signed-out primary CTA to open dialog | Gleap FTUX #1; NN/G trust up-front | `LandingPage.tsx` | 250-251 | Done |
 | H3 | Add `onBegin` prop to `HowItWorksDialog` | CONTRACT §I.D component inventory | `HowItWorksDialog.tsx` | 23-28 | Done |
 | H4 | Change dialog footer to "Continue to my account" | CONTRACT §III reversibility | `HowItWorksDialog.tsx` | 220-237 | Done |
@@ -131,9 +131,9 @@ Proposal: primaryActionCount = 4
 ## 6. Commit
 
 ```
-feat: move How Noni works explanation to primary CTA
+feat: move How Mynaani works explanation to primary CTA
 
-- Remove overlay "See how Noni works" button from hero
+- Remove overlay "See how Mynaani works" button from hero
 - Wire signed-out primary CTA to open HowItWorksDialog
 - Add onBegin prop to HowItWorksDialog
 - Change dialog footer from "Got it" to "Continue to my account — free"

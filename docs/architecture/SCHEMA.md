@@ -1,6 +1,6 @@
 # Database Schema
 
-Authoritative Postgres schema for Noni. Reflects every P0 from the architect review: no FK into `auth.users`, idempotent webhooks, per-user estimator state, append-only telemetry, content versioning, RLS-ready.
+Authoritative Postgres schema for Mynaani. Reflects every P0 from the architect review: no FK into `auth.users`, idempotent webhooks, per-user estimator state, append-only telemetry, content versioning, RLS-ready.
 
 Status: binding. Referenced by ADRs 0023 (auth and session model) and 0024 (database operational policy).
 

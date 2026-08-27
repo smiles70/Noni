@@ -1,4 +1,4 @@
-# System Design — Noni Login Domain (post-redesign)
+# System Design — Mynaani Login Domain (post-redesign)
 
 **Date:** 2026-05-17
 **Source constraints:** `login-constraints-v1` (frozen tag).

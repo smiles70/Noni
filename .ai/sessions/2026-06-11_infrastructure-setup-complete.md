@@ -11,7 +11,7 @@ deliverables: 2 scripts, 1 guide, full automation
 
 ## Executive Summary
 
-**The Process** was executed to establish full infrastructure automation for the Noni project. The deployment failed earlier due to missing `FLY_API_TOKEN` secret and lack of local tooling (git, flyctl, npm). This session provides **complete automated solutions**.
+**The Process** was executed to establish full infrastructure automation for the Mynaani project. The deployment failed earlier due to missing `FLY_API_TOKEN` secret and lack of local tooling (git, flyctl, npm). This session provides **complete automated solutions**.
 
 ---
 
@@ -95,7 +95,7 @@ Error: Process completed with exit code 1
 3. Backend deployment failed before frontend could deploy
 
 **Solution:**
-1. Add `FLY_API_TOKEN` secret: `https://github.com/smiles70/Noni/settings/secrets/actions`
+1. Add `FLY_API_TOKEN` secret: `https://github.com/smiles70/Mynaani/settings/secrets/actions`
 2. Or skip backend deployment (already healthy) and deploy frontend only
 
 ---
@@ -128,7 +128,7 @@ Error: Process completed with exit code 1
 
 ### Option A: Manual GitHub Actions (Quickest)
 
-1. **Go to:** `https://github.com/smiles70/Noni/actions/workflows/deploy.yml`
+1. **Go to:** `https://github.com/smiles70/Mynaani/actions/workflows/deploy.yml`
 2. **Click:** "Run workflow" dropdown
 3. **Select:** Branch: `main`
 4. **Click:** "Run workflow"
@@ -186,7 +186,7 @@ Since backend is healthy, we can focus on frontend:
 
 **To add secrets:**
 ```
-https://github.com/smiles70/Noni/settings/secrets/actions
+https://github.com/smiles70/Mynaani/settings/secrets/actions
 ```
 
 ---

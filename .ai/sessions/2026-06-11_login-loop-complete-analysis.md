@@ -105,7 +105,7 @@ if (!code) {  // Network error (localhost unreachable)
 ## Fix Commands
 
 ### Option A: Trigger GitHub Actions Redeploy
-1. Navigate to: `https://github.com/smiles70/Noni/actions/workflows/deploy.yml`
+1. Navigate to: `https://github.com/smiles70/Mynaani/actions/workflows/deploy.yml`
 2. Click "Run workflow" on `main` branch
 3. Verify secrets are set:
    - `VITE_API_BASE_URL=https://noni-api.fly.dev`

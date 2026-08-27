@@ -5,7 +5,7 @@
 **Source:** User file `Downloads/formynaani.png`.
 **Scope:** Use `formynaani.png` as the landing-page hero background and
 adjust layout/cropping so the subject is visible while the MetLife UI is
-hidden behind the Noni card.
+hidden behind the Mynaani card.
 
 ## Image
 
@@ -16,14 +16,14 @@ hidden behind the Noni card.
 ## Cropping / layout requirements
 
 The source file is a full-page screenshot that includes browser chrome,
-MetLife branding, and the original action card. The Noni layout must show
-only the family photograph on the left and hide the rest behind the Noni
+MetLife branding, and the original action card. The Mynaani layout must show
+only the family photograph on the left and hide the rest behind the Mynaani
 card or by cropping:
 
 - Use `object-position` to keep the two people on the left.
 - Shift the vertical crop to avoid the top browser chrome and bottom
 taskbar.
-- Keep the Noni action card on the right so it covers the MetLife card.
+- Keep the Mynaani action card on the right so it covers the MetLife card.
 
 ## Risks
 

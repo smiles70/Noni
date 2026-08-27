@@ -2,7 +2,7 @@
 
 **Process:** v9.51
 **Date:** 2026-08-27
-**Scope:** Implementation of Magic.link as the production auth provider for Noni
+**Scope:** Implementation of Magic.link as the production auth provider for Mynaani
 **Source:** `.ai/process/MAGIC_LINK_INTEGRATION_PLAN.md` | ADR 0027 | Intake 2026-08-27
 
 ---

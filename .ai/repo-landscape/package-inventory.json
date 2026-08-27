@@ -1,7 +1,7 @@
 {
   "assessment_date": "2026-08-27",
   "process_version": "v9.51",
-  "repo": "smiles70/Noni",
+  "repo": "smiles70/Mynaani",
   "backend_runtime": [
     {
       "name": "fastapi",

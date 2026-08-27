@@ -36,7 +36,7 @@
     ]
   },
   "metadata": {
-    "repo": "smiles70/Noni",
+    "repo": "smiles70/Mynaani",
     "date": "2026-08-27",
     "node_count": 151,
     "edge_count": 172
@@ -46,91 +46,91 @@
       "kind": "SourceArtifact",
       "id": "SRC-README",
       "name": "README.md",
-      "path": "/home/hazbyn/Noni/README.md",
+      "path": "/home/hazbyn/Mynaani/README.md",
       "authority": "primary"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-ARCH",
       "name": "ARCHITECTURE.md",
-      "path": "/home/hazbyn/Noni/ARCHITECTURE.md",
+      "path": "/home/hazbyn/Mynaani/ARCHITECTURE.md",
       "authority": "primary"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-IDD",
       "name": "IDD-2026-cognitively-protective-iscs.md",
-      "path": "/home/hazbyn/Noni/docs/library/IDD-2026-cognitively-protective-iscs.md",
+      "path": "/home/hazbyn/Mynaani/docs/library/IDD-2026-cognitively-protective-iscs.md",
       "authority": "primary"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-CONTRACT",
       "name": "CONTRACT.md",
-      "path": "/home/hazbyn/Noni/docs/library/CONTRACT.md",
+      "path": "/home/hazbyn/Mynaani/docs/library/CONTRACT.md",
       "authority": "primary"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-LIB-README",
       "name": "docs/library/README.md",
-      "path": "/home/hazbyn/Noni/docs/library/README.md",
+      "path": "/home/hazbyn/Mynaani/docs/library/README.md",
       "authority": "primary"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-ADR-0001",
       "name": "0001-landing-flow.md",
-      "path": "/home/hazbyn/Noni/docs/decisions/0001-landing-flow.md",
+      "path": "/home/hazbyn/Mynaani/docs/decisions/0001-landing-flow.md",
       "authority": "decision"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-ADR-0019",
       "name": "0019-closed-world-design-contract.md",
-      "path": "/home/hazbyn/Noni/docs/decisions/0019-closed-world-design-contract.md",
+      "path": "/home/hazbyn/Mynaani/docs/decisions/0019-closed-world-design-contract.md",
       "authority": "decision"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-ADR-0021",
       "name": "0021-pricing-and-tiering.md",
-      "path": "/home/hazbyn/Noni/docs/decisions/0021-pricing-and-tiering.md",
+      "path": "/home/hazbyn/Mynaani/docs/decisions/0021-pricing-and-tiering.md",
       "authority": "decision"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-COMPETITOR",
       "name": "teaching-methodology-competitor-landscape.md",
-      "path": "/home/hazbyn/Noni/docs/library/teaching-methodology-competitor-landscape.md",
+      "path": "/home/hazbyn/Mynaani/docs/library/teaching-methodology-competitor-landscape.md",
       "authority": "secondary"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-RUBRIC",
       "name": "geragogy-quality-standards-rubric.md",
-      "path": "/home/hazbyn/Noni/docs/library/geragogy-quality-standards-rubric.md",
+      "path": "/home/hazbyn/Mynaani/docs/library/geragogy-quality-standards-rubric.md",
       "authority": "secondary"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-PRA",
       "name": "PRA_REPORT.md",
-      "path": "/home/hazbyn/Noni/.ai/production-readiness/PRA_REPORT.md",
+      "path": "/home/hazbyn/Mynaani/.ai/production-readiness/PRA_REPORT.md",
       "authority": "assessment"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-NELSON",
       "name": "nelson-scorecard.md",
-      "path": "/home/hazbyn/Noni/.ai/nelson/nelson-scorecard.md",
+      "path": "/home/hazbyn/Mynaani/.ai/nelson/nelson-scorecard.md",
       "authority": "assessment"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-PROJECT-INTENT",
       "name": "PROJECT_INTENT.md",
-      "path": "/home/hazbyn/Noni/.ai/process/PROJECT_INTENT.md",
+      "path": "/home/hazbyn/Mynaani/.ai/process/PROJECT_INTENT.md",
       "authority": "assessment"
     },
     {
@@ -263,103 +263,103 @@
       "kind": "Capability",
       "id": "CAP-001",
       "name": "Interface State Control System (ISCS)",
-      "path": "/home/hazbyn/Noni/backend/core/interface_control/"
+      "path": "/home/hazbyn/Mynaani/backend/core/interface_control/"
     },
     {
       "kind": "Capability",
       "id": "CAP-002",
       "name": "UI State Envelope",
-      "path": "/home/hazbyn/Noni/backend/api/routes/ui_envelope.py"
+      "path": "/home/hazbyn/Mynaani/backend/api/routes/ui_envelope.py"
     },
     {
       "kind": "Capability",
       "id": "CAP-003",
       "name": "React RenderGuard",
-      "path": "/home/hazbyn/Noni/frontend/src/design/__tests__/RenderGuard.test.ts"
+      "path": "/home/hazbyn/Mynaani/frontend/src/design/__tests__/RenderGuard.test.ts"
     },
     {
       "kind": "Capability",
       "id": "CAP-004",
       "name": "Curriculum API",
-      "path": "/home/hazbyn/Noni/backend/api/routes/curriculum.py"
+      "path": "/home/hazbyn/Mynaani/backend/api/routes/curriculum.py"
     },
     {
       "kind": "Capability",
       "id": "CAP-005",
       "name": "Landing API",
-      "path": "/home/hazbyn/Noni/backend/api/routes/landing.py"
+      "path": "/home/hazbyn/Mynaani/backend/api/routes/landing.py"
     },
     {
       "kind": "Capability",
       "id": "CAP-006",
       "name": "Billing API",
-      "path": "/home/hazbyn/Noni/backend/api/routes/billing.py"
+      "path": "/home/hazbyn/Mynaani/backend/api/routes/billing.py"
     },
     {
       "kind": "Capability",
       "id": "CAP-007",
       "name": "Auth API",
-      "path": "/home/hazbyn/Noni/backend/api/routes/auth.py"
+      "path": "/home/hazbyn/Mynaani/backend/api/routes/auth.py"
     },
     {
       "kind": "Capability",
       "id": "CAP-008",
       "name": "Telemetry Export",
-      "path": "/home/hazbyn/Noni/backend/api/routes/telemetry_export.py"
+      "path": "/home/hazbyn/Mynaani/backend/api/routes/telemetry_export.py"
     },
     {
       "kind": "Capability",
       "id": "CAP-009",
       "name": "Telemetry Summary",
-      "path": "/home/hazbyn/Noni/backend/api/routes/telemetry_summary.py"
+      "path": "/home/hazbyn/Mynaani/backend/api/routes/telemetry_summary.py"
     },
     {
       "kind": "Capability",
       "id": "CAP-010",
       "name": "Session Validation",
-      "path": "/home/hazbyn/Noni/backend/api/routes/session_validation.py"
+      "path": "/home/hazbyn/Mynaani/backend/api/routes/session_validation.py"
     },
     {
       "kind": "Capability",
       "id": "CAP-011",
       "name": "Onboarding Telemetry",
-      "path": "/home/hazbyn/Noni/backend/api/routes/onboarding_telemetry.py"
+      "path": "/home/hazbyn/Mynaani/backend/api/routes/onboarding_telemetry.py"
     },
     {
       "kind": "Capability",
       "id": "CAP-012",
       "name": "Frontend Build & Bundle Verification",
-      "path": "/home/hazbyn/Noni/frontend/scripts/verify-bundle.mjs"
+      "path": "/home/hazbyn/Mynaani/frontend/scripts/verify-bundle.mjs"
     },
     {
       "kind": "Capability",
       "id": "CAP-013",
       "name": "Frontend Unit Tests",
-      "path": "/home/hazbyn/Noni/frontend/src/"
+      "path": "/home/hazbyn/Mynaani/frontend/src/"
     },
     {
       "kind": "Capability",
       "id": "CAP-014",
       "name": "Backend pytest Suite",
-      "path": "/home/hazbyn/Noni/backend/tests/"
+      "path": "/home/hazbyn/Mynaani/backend/tests/"
     },
     {
       "kind": "Capability",
       "id": "CAP-015",
       "name": "CI/CD Workflows",
-      "path": "/home/hazbyn/Noni/.github/workflows/"
+      "path": "/home/hazbyn/Mynaani/.github/workflows/"
     },
     {
       "kind": "Capability",
       "id": "CAP-016",
       "name": "Nelson Scoring",
-      "path": "/home/hazbyn/Noni/.ai/nelson/nelson-scorecard.json"
+      "path": "/home/hazbyn/Mynaani/.ai/nelson/nelson-scorecard.json"
     },
     {
       "kind": "Capability",
       "id": "CAP-017",
       "name": "PRA Assessment",
-      "path": "/home/hazbyn/Noni/.ai/production-readiness/PRA_REPORT.json"
+      "path": "/home/hazbyn/Mynaani/.ai/production-readiness/PRA_REPORT.json"
     },
     {
       "kind": "Decision",
@@ -537,7 +537,7 @@
     {
       "kind": "Owner",
       "id": "OWN-001",
-      "name": "Noni Engineering Team",
+      "name": "Mynaani Engineering Team",
       "domain": "engineering"
     },
     {
@@ -850,28 +850,28 @@
     {
       "kind": "Owner",
       "id": "OWN-MAGIC",
-      "name": "Noni Engineering Team",
+      "name": "Mynaani Engineering Team",
       "domain": "engineering"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-BRD-AUTH-001",
       "name": "BRD-AUTH-001 Business Requirements",
-      "path": "/home/hazbyn/Noni/docs/requirements/BRD.md",
+      "path": "/home/hazbyn/Mynaani/docs/requirements/BRD.md",
       "authority": "canonical"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-FRD-AUTH-001",
       "name": "FRD-AUTH-001 Functional Requirements",
-      "path": "/home/hazbyn/Noni/docs/requirements/FRD.md",
+      "path": "/home/hazbyn/Mynaani/docs/requirements/FRD.md",
       "authority": "canonical"
     },
     {
       "kind": "SourceArtifact",
       "id": "SRC-PRD-AUTH-001",
       "name": "PRD-AUTH-001 Product Requirements",
-      "path": "/home/hazbyn/Noni/docs/requirements/PRD.md",
+      "path": "/home/hazbyn/Mynaani/docs/requirements/PRD.md",
       "authority": "canonical"
     },
     {

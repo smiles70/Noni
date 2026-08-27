@@ -20,11 +20,11 @@ This is a **significant improvement** over the previous 3-button design. However
 
 ### The Core Problem
 
-The HowItWorksDialog is **explanatory** (reading about Noni) rather than **experiential** (actually doing a lesson). Digital Scientists' research on older adult learners explicitly found that older adults learn better by *manipulating* a product than by reading about it. The Nintendo Wii onboarding was cited as the gold standard because it lets users interact immediately.
+The HowItWorksDialog is **explanatory** (reading about Mynaani) rather than **experiential** (actually doing a lesson). Digital Scientists' research on older adult learners explicitly found that older adults learn better by *manipulating* a product than by reading about it. The Nintendo Wii onboarding was cited as the gold standard because it lets users interact immediately.
 
 ### Research Evidence
 
-| Source | Key Finding | Implication for Noni |
+| Source | Key Finding | Implication for Mynaani |
 |--------|-------------|----------------------|
 | **Gleap** — "SaaS User Onboarding: The Complete Guide" | "Mistake #1: Asking users to set up before they see value. Solution: remove friction... Cognitive load is the enemy of activation." | Users should do a lesson before seeing an auth wall |
 | **Digital Scientists** — "Onboarding Elderly Users" | "Older adults learn by manipulating a product, not reading about it. The Nintendo Wii succeeds because users interact immediately." | A preview lesson is more effective than an explanation dialog |
@@ -42,7 +42,7 @@ Senior Planet, the gold standard for older adult tech education, uses:
 - Clear "what you'll learn in this session" framing
 - No credit card, no commitment language
 
-Noni's current dialog-based approach is closer to a product brochure than a Senior Planet class.
+Mynaani's current dialog-based approach is closer to a product brochure than a Senior Planet class.
 
 ---
 
@@ -57,7 +57,7 @@ Noni's current dialog-based approach is closer to a product brochure than a Seni
 │  "Log in"                    →  Clerk  →  🎓                        │
 └─────────────────────────────────────────────────────────────────────┘
 
-User experience: READ about Noni → SIGN UP → LEARN
+User experience: READ about Mynaani → SIGN UP → LEARN
 ```
 
 ### Proposed Flow: "Freemium Preview" Model
@@ -105,7 +105,7 @@ User experience: READ about Noni → SIGN UP → LEARN
 │  • Reciprocity: user received 3 free lessons → more willing to give  │
 │  • Loss aversion: "I don't want to lose my progress"               │
 │  • Investment: 3 units of time invested → sunk cost effect         │
-│  • Aha moment: user now *understands* what Noni feels like         │
+│  • Aha moment: user now *understands* what Mynaani feels like         │
 └───────────────────────┬───────────────────────────────────────────────┘
                         │
                         ▼
@@ -267,11 +267,11 @@ See full grading in `docs/design/cta-hero-reading-sprint-2026-05-27.md` Section 
 
 ---
 
-## 6. Comparison: Noni vs. Senior-Focused Best Practices
+## 6. Comparison: Mynaani vs. Senior-Focused Best Practices
 
 ### Current State Analysis (from 2026-05-27 conversation)
 
-| Dimension | Senior Planet (OATS/AARP) | Noni Current | Noni Proposed |
+| Dimension | Senior Planet (OATS/AARP) | Mynaani Current | Mynaani Proposed |
 |-----------|---------------------------|--------------|---------------|
 | **First impression** | Large "Programs" menu with categories | Clean hero, but requires click to understand | "Try a free lesson" lets users experience immediately |
 | **Trust building** | Physical locations, instructor photos | Reassurance text is good; lacks human faces | Same, but experiential trust > textual trust |
@@ -351,7 +351,7 @@ This sprint plan was developed during a coding session on 2026-05-27. The sessio
 1. Completed and deployed the **CTA Hero Reading Sprint** (reduce landing page from 3 buttons to 2, move explanation to primary CTA flow).
 2. Verified build (`npm run type-check`, `npm run build`) and deployed to Cloudflare Pages.
 3. User requested a comparison of the landing page against other senior-focused sites.
-4. Analysis identified the remaining gap: users still don't *experience* Noni before auth.
+4. Analysis identified the remaining gap: users still don't *experience* Mynaani before auth.
 5. User asked: "how can we do that, with module 0 limit at the half way point?"
 6. This document captures the research, architecture, and planning for that future sprint.
 

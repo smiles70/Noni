@@ -1,8 +1,8 @@
 # Supabase setup (Sprint B2)
 
-Noni delegates identity to Supabase, which in turn delegates to Google.
+Mynaani delegates identity to Supabase, which in turn delegates to Google.
 This document is the exact, ordered checklist to wire a new Supabase
-project to a Noni deployment.
+project to a Mynaani deployment.
 
 You only need to do this once per environment (dev, staging, prod).
 
@@ -10,7 +10,7 @@ You only need to do this once per environment (dev, staging, prod).
 
 1. Sign in at <https://supabase.com> and create a new project.
 2. Pick the region nearest your users; the free tier is fine for staging.
-3. Save the database password somewhere safe — Noni does not use it
+3. Save the database password somewhere safe — Mynaani does not use it
    directly (we hit Postgres via our own connection string), but you
    will need it if you ever connect with `psql`.
 
@@ -23,12 +23,12 @@ You only need to do this once per environment (dev, staging, prod).
    Client). The Google authorized redirect URI must be the URL Supabase
    shows you on this page — copy it verbatim.
 
-## 3. Add Noni as an allowed redirect
+## 3. Add Mynaani as an allowed redirect
 
 Supabase will only redirect back to URLs you explicitly allow.
 
 1. **Authentication -> URL Configuration -> Redirect URLs.**
-2. Add the exact origin Noni runs at, e.g.:
+2. Add the exact origin Mynaani runs at, e.g.:
    - `http://localhost:5173` (local dev)
    - `https://staging.yourdomain.com`
    - `https://app.yourdomain.com`
@@ -37,11 +37,11 @@ Supabase will only redirect back to URLs you explicitly allow.
 If a redirect is rejected at sign-in time, this is almost always the
 cause.
 
-## 4. Collect the four values Noni needs
+## 4. Collect the four values Mynaani needs
 
 From **Project Settings -> API**:
 
-| Noni env var              | Supabase field                                       |
+| Mynaani env var              | Supabase field                                       |
 |---------------------------|------------------------------------------------------|
 | `SUPABASE_URL`            | "Project URL" (e.g. `https://abcd.supabase.co`)      |
 | `SUPABASE_JWT_SECRET`     | "JWT Settings -> JWT Secret"                         |
@@ -62,7 +62,7 @@ The frontend needs **one** of those too:
 3. Rebuild the frontend (`npm run build`) — Vite bakes `VITE_*` at
    build time, not runtime.
 4. From a clean browser session, click **Sign in -> Continue with
-   Google**. You should be redirected to Google, then back to Noni,
+   Google**. You should be redirected to Google, then back to Mynaani,
    then to the landing page with the NavBar showing your email.
 5. Inspect the network panel: the POST to `/auth/callback` should be
    201, and the `Set-Cookie` header should set `noni_session`.
@@ -74,7 +74,7 @@ The frontend needs **one** of those too:
 | Click "Continue with Google" -> nothing happens      | `VITE_AUTH_PROVIDER` or `VITE_SUPABASE_URL` unset; rebuild required |
 | Google says "redirect URI mismatch"                  | Step 2 authorized redirect URI does not match Supabase's |
 | Supabase says "redirect not allowed"                 | Origin not in step 3 Redirect URLs list        |
-| Round-trip returns to Noni, but stays signed out     | Backend rejected the JWT. Check that `SUPABASE_JWT_SECRET` matches **the same project** as the frontend's URL, and that `SUPABASE_JWT_AUDIENCE`/`SUPABASE_JWT_ISSUER` match the token's claims. The backend logs `supabase_jwt_rejected: <ErrorClass>` to narrow it down. |
+| Round-trip returns to Mynaani, but stays signed out     | Backend rejected the JWT. Check that `SUPABASE_JWT_SECRET` matches **the same project** as the frontend's URL, and that `SUPABASE_JWT_AUDIENCE`/`SUPABASE_JWT_ISSUER` match the token's claims. The backend logs `supabase_jwt_rejected: <ErrorClass>` to narrow it down. |
 
 ## 7. Rotating the JWT secret
 
@@ -82,5 +82,5 @@ Rotate quarterly at minimum, and immediately on suspected compromise.
 
 1. **Supabase -> Project Settings -> API -> JWT Settings -> Rotate.**
 2. Update `SUPABASE_JWT_SECRET` in every environment.
-3. Existing sessions stay valid (they use Noni's own cookie, not the
+3. Existing sessions stay valid (they use Mynaani's own cookie, not the
    Supabase JWT). Only new sign-ins use the new secret.

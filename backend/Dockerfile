@@ -34,16 +34,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq5 curl \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd --system --create-home --uid 10001 noni
+    && useradd --system --create-home --uid 10001 mynaani
 
 COPY --from=builder /opt/venv /opt/venv
 
 WORKDIR /app
-COPY --chown=noni:noni backend ./backend
-COPY --chown=noni:noni alembic ./alembic
-COPY --chown=noni:noni alembic.ini ./alembic.ini
+COPY --chown=mynaani:mynaani backend ./backend
+COPY --chown=mynaani:mynaani alembic ./alembic
+COPY --chown=mynaani:mynaani alembic.ini ./alembic.ini
 
-USER noni
+USER mynaani
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \

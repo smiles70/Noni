@@ -11,7 +11,7 @@ The Supabase project region has not been explicitly verified in the deployment c
 
 ## Intended Statement (Template)
 
-> "Noni stores learner data in [REGION] via Supabase (PostgreSQL on AWS [REGION]). Backups are stored in Cloudflare R2 in [R2 REGION]. All data remains within [JURISDICTION] boundaries."
+> "Mynaani stores learner data in [REGION] via Supabase (PostgreSQL on AWS [REGION]). Backups are stored in Cloudflare R2 in [R2 REGION]. All data remains within [JURISDICTION] boundaries."
 
 ## Verification Steps
 

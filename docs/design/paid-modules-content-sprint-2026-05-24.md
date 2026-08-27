@@ -11,7 +11,7 @@
 
 ### 1.1 Courses Reviewed
 
-| Course | URL | Relevance to Noni | Adaptability |
+| Course | URL | Relevance to Mynaani | Adaptability |
 |---|---|---|---|
 | **Introduction to agent skills** | /introduction-to-agent-skills | **Direct M4 map** — covers Skills creation, configuration, sharing, troubleshooting | Moderate — structure is sound, content is too technical |
 | **Introduction to subagents** | /introduction-to-subagents | **Direct M5 map** — covers subagent creation, design, delegation | Moderate — concepts align, examples are developer-only |
@@ -54,17 +54,17 @@
 
 3. **Tone and register:**
    - Skilljar: "spin up a separate context window", "wire Skills into custom subagents"
-   - Noni: "Claude can learn a trick you teach it once"
+   - Mynaani: "Claude can learn a trick you teach it once"
    - **Why:** Geragogy contract requires plain words, short sentences, no jargon.
 
 4. **Concrete scenarios for our audience:**
    - Skilljar has none for older adults.
-   - Noni needs: grocery lists, letters to grandchildren, medical appointment prep, hobby research.
+   - Mynaani needs: grocery lists, letters to grandchildren, medical appointment prep, hobby research.
    - **Why:** Concrete-over-abstract is a geragogy requirement (Fisk et al. 2009, C1).
 
 ### 1.3 Adaptation Strategy
 
-| Skilljar Element | Noni Equivalent | Effort |
+| Skilljar Element | Mynaani Equivalent | Effort |
 |---|---|---|
 | "SKILL.md frontmatter" | "Giving your Skill a name and purpose" | Rewrite |
 | "context window efficiency" | "Keeping instructions short so Claude remembers" | Rewrite |
@@ -341,7 +341,7 @@ Before this sprint begins:
 ## 9. Reference: Skilljar Material Map
 
 ```
-Skilljar "Introduction to agent skills" ──► Noni Module 4
+Skilljar "Introduction to agent skills" ──► Mynaani Module 4
 ├── What are skills?               ──► M4-U1: What a Claude Skill Is
 ├── Creating your first skill      ──► M4-U3: Creating Your First Skill
 ├── Configuration and multi-file   ──► M4-U4: Naming and Describing a Skill
@@ -349,7 +349,7 @@ Skilljar "Introduction to agent skills" ──► Noni Module 4
 ├── Sharing skills                 ──► M4-U5: Testing and Refining a Skill (partial)
 └── Troubleshooting skills         ──► M4-U6: Trusting a Skill Over Time (partial)
 
-Skilljar "Introduction to subagents" ──► Noni Module 5
+Skilljar "Introduction to subagents" ──► Mynaani Module 5
 ├── What are subagents?            ──► M5-U1: What an Agent Is (Built from Skills)
 ├── Creating a subagent            ──► M5-U3: Building an Agent Step by Step
 ├── Designing effective subagents  ──► M5-U2: Designing an Agent's Job

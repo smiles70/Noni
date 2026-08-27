@@ -96,11 +96,11 @@ The original photograph is **not publicly available**. It is part of the MetLife
 and/or Ellie Smith for Warren Seuradge / SID LEE. It is an enterprise-owned
 asset, not a stock image.
 
-## Implications for Noni
+## Implications for Mynaani
 
 - **Cannot use this image in production without a license.**
 - The screenshot in `Downloads/formynaani.png` is a copyrighted third-party work.
-- For a live Noni landing page, a rights-cleared or original replacement is
+- For a live Mynaani landing page, a rights-cleared or original replacement is
   required.
 
 ## Recommended next steps
@@ -118,5 +118,5 @@ asset, not a stock image.
    high-resolution, royalty-free license.
 
 4. **Option D — Use `nonisplash.jpg` (current live placeholder).**
-   The existing Noni-owned image is legally safe but visually less aligned with
+   The existing Mynaani-owned image is legally safe but visually less aligned with
    the MetLife reference.

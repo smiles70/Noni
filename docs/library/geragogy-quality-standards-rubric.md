@@ -344,5 +344,5 @@ After remediation, re-run full test suite and re-audit sampled units.
 ---
 
 *Document updated: 2026-05-25* (v2: added teaching methodology sources A1–A5)*  
-*Purpose: Noni Curriculum Quality Assessment — Geragogy-Grounded Rubric*  
+*Purpose: Mynaani Curriculum Quality Assessment — Geragogy-Grounded Rubric*  
 *Adoption: Requires ADR per `CONTRACT.md` Section VI*

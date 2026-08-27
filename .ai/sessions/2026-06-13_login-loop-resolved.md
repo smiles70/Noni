@@ -54,7 +54,7 @@ This mirrors the guard already present in `auth.py`'s `/auth/config` endpoint, e
 ## Deployment
 
 - Commit: `bda07cd`
-- Deploy workflow: https://github.com/smiles70/Noni/actions/runs/27483164206
+- Deploy workflow: https://github.com/smiles70/Mynaani/actions/runs/27483164206
 - Status: **SUCCESS**
 - Backend health: `{"status":"healthy","environment":"production"}`
 - Auth config: `{"provider":"clerk"}`

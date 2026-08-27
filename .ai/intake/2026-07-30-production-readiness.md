@@ -1,6 +1,6 @@
 # Production Readiness Assessment — 2026-07-30
 
-**Repository**: smiles70/Noni  
+**Repository**: smiles70/Mynaani  
 **Assessment Date**: 2026-07-30  
 **Assessor**: Full-Stack Agent Harness (Bootstrap + PRA)  
 **Assessment Framework**: The Process — Full-Stack Agent Harness
@@ -262,7 +262,7 @@
 
 #### Repo Registry
 - ✅ Created: `.ai/enterprise/repo-registry.json`
-- Single repository: smiles70/Noni (monorepo)
+- Single repository: smiles70/Mynaani (monorepo)
 - No cross-repo contracts
 - No portfolio dependencies
 

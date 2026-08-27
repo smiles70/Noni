@@ -1,4 +1,4 @@
-# Drift Log — Noni Codebase
+# Drift Log — Mynaani Codebase
 
 > Maintained by Codebase Context Agent v4.
 > Each session appends diffs between documented architecture and live map.

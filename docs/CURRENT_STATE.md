@@ -1,4 +1,4 @@
-# Current State — Noni
+# Current State — Mynaani
 
 **Last updated:** 2026-08-27
 

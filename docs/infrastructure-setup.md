@@ -7,7 +7,7 @@ process: The Process v2.0
 
 # Infrastructure Setup Guide
 
-Complete automated setup for Noni project infrastructure using **The Process** methodology.
+Complete automated setup for Mynaani project infrastructure using **The Process** methodology.
 
 ## Quick Start
 
@@ -32,7 +32,7 @@ Before starting, ensure you have access to:
 
 | Service | URL | Purpose |
 |---------|-----|---------|
-| GitHub | https://github.com/smiles70/Noni | Repository access |
+| GitHub | https://github.com/smiles70/Mynaani | Repository access |
 | Fly.io | https://fly.io/apps/noni-api | Backend deployment |
 | Cloudflare | https://dash.cloudflare.com | Frontend deployment |
 | Clerk | https://dashboard.clerk.com | Authentication |
@@ -156,7 +156,7 @@ flyctl auth login
 
 **Manual Configuration:**
 
-1. Go to `https://github.com/smiles70/Noni/settings/secrets/actions`
+1. Go to `https://github.com/smiles70/Mynaani/settings/secrets/actions`
 2. Click "New repository secret" for each secret above
 3. Paste the value
 4. Click "Add secret"
@@ -170,10 +170,10 @@ flyctl auth login
 
 ```powershell
 # Via GitHub Actions (recommended)
-gh workflow run deploy.yml --repo smiles70/Noni
+gh workflow run deploy.yml --repo smiles70/Mynaani
 
 # Or via web interface
-# https://github.com/smiles70/Noni/actions/workflows/deploy.yml
+# https://github.com/smiles70/Mynaani/actions/workflows/deploy.yml
 ```
 
 #### Frontend-Only Deploy (When Backend is Healthy)
@@ -213,8 +213,8 @@ curl -s https://noni-web.pages.dev/ | findstr "localhost"
 **Diagnosis:**
 ```powershell
 # Check workflow logs
-gh run list --repo smiles70/Noni
-gh run view <run-id> --repo smiles70/Noni
+gh run list --repo smiles70/Mynaani
+gh run view <run-id> --repo smiles70/Mynaani
 ```
 
 **Common Causes:**
@@ -292,7 +292,7 @@ gh extension upgrade --all
 ### Rotating Secrets
 
 1. Generate new token at provider dashboard
-2. Update in GitHub: `https://github.com/smiles70/Noni/settings/secrets/actions`
+2. Update in GitHub: `https://github.com/smiles70/Mynaani/settings/secrets/actions`
 3. Re-run Deploy workflow
 
 ## Reference

@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-27
 **Process:** v9.51
-**Source:** decision to migrate Noni backend off Fly.io to Railway.
+**Source:** decision to migrate Mynaani backend off Fly.io to Railway.
 
 ## Trigger
 
@@ -18,7 +18,7 @@ Fly.io account has an overdue-invoice block, preventing `flyctl deploy` from com
 
 ## Decision
 
-Use Railway as the new backend host. Railway natively supports Docker, has a CLI (`railway`), and the Noni repo already has a portable `Dockerfile`.
+Use Railway as the new backend host. Railway natively supports Docker, has a CLI (`railway`), and the Mynaani repo already has a portable `Dockerfile`.
 
 ## Risks and assumptions
 

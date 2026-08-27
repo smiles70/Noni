@@ -11,10 +11,10 @@
 
 ## Epic Overview
 
-This epic addresses critical geragogy compliance concerns identified in the login experience and Clerk widget analysis. The epic focuses on confirming geragogy violations, implementing login experience improvements, customizing the Clerk widget to meet Noni's design contract, and establishing monitoring and fallback mechanisms.
+This epic addresses critical geragogy compliance concerns identified in the login experience and Clerk widget analysis. The epic focuses on confirming geragogy violations, implementing login experience improvements, customizing the Clerk widget to meet Mynaani's design contract, and establishing monitoring and fallback mechanisms.
 
 **Business Impact:**
-- Ensures Noni's core value proposition for older adult learners (ages 55+)
+- Ensures Mynaani's core value proposition for older adult learners (ages 55+)
 - Reduces cognitive load and improves accessibility
 - Maintains compliance with geragogy design contract
 - Reduces risk of user abandonment during authentication
@@ -44,7 +44,7 @@ This epic addresses critical geragogy compliance concerns identified in the logi
    - Enhance user feedback throughout authentication flow
 
 3. **Clerk Widget Customization**
-   - Implement custom theme matching Noni's design contract
+   - Implement custom theme matching Mynaani's design contract
    - Configure Clerk dashboard settings
    - Add element-level styling where possible
    - Test customization effectiveness
@@ -328,7 +328,7 @@ This epic addresses critical geragogy compliance concerns identified in the logi
 ### Internal Dependencies
 - Design contract approval
 - ADR for custom UI fallback (if needed)
-- Noni theme design approval
+- Mynaani theme design approval
 
 ---
 

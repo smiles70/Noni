@@ -1,8 +1,8 @@
-# Railway Migration Plan — Noni
+# Railway Migration Plan — Mynaani
 
 **Date:** 2026-08-27
 **Process:** v9.51
-**Goal:** move the Noni backend from Fly.io to Railway without affecting the Cloudflare Pages frontend.
+**Goal:** move the Mynaani backend from Fly.io to Railway without affecting the Cloudflare Pages frontend.
 
 ## Phase 0 — Intake, ADR, and graph
 

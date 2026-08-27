@@ -30,14 +30,14 @@ Define the minimal, safe, cognitively respectful path from first visit to first 
 ### Step 1 — What This Is (Orientation Without Action)
 
 - **User state**: Wants to know "What is this?"; assessing risk, tone, credibility.
-- **System responsibility**: Explain what Noni is in plain language. Clarify what it does and does not do. Set calm expectations.
+- **System responsibility**: Explain what Mynaani is in plain language. Clarify what it does and does not do. Set calm expectations.
 - **User agency**: Passive reading only. No decisions required.
 - **Exit safety**: Full exit, no penalty.
 
 ### Step 2 — Is This For Me? (Self-Assessment, Not Testing)
 
 - **User state**: Internally evaluating relevance; comparing this to past technology experiences.
-- **System responsibility**: Describe who Noni is designed for. Normalize uncertainty and lack of experience. Explicitly remove any expectation of prior knowledge.
+- **System responsibility**: Describe who Mynaani is designed for. Normalize uncertainty and lack of experience. Explicitly remove any expectation of prior knowledge.
 - **User agency**: User decides privately if this feels appropriate. No input required.
 - **Exit safety**: Full exit, no penalty.
 
@@ -65,7 +65,7 @@ Define the minimal, safe, cognitively respectful path from first visit to first 
 ### Step 6 — First Safe Win (Value Before Commitment)
 
 - **User state**: Experiencing usefulness for the first time; beginning to form confidence.
-- **System responsibility**: Make the value explicit ("This is what learning with Noni feels like"). Reflect success back to the user without praise or judgment.
+- **System responsibility**: Make the value explicit ("This is what learning with Mynaani feels like"). Reflect success back to the user without praise or judgment.
 - **User outcome**: Understanding achieved. No identity threat. No dependency created.
 - **Exit safety**: User can leave feeling informed, not enrolled.
 

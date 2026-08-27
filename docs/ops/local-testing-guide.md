@@ -18,7 +18,7 @@ This guide will help you test the EPIC-002 changes locally to verify the login l
 
 1. **Clerk Account** (Free tier works)
    - Sign up at https://clerk.com
-   - Create a new application called "Noni Local Testing"
+   - Create a new application called "Mynaani Local Testing"
    - Note your API keys (Publishable Key and Secret Key)
 
 ### Required Software
@@ -36,7 +36,7 @@ This guide will help you test the EPIC-002 changes locally to verify the login l
 
 1. Go to https://dashboard.clerk.com
 2. Click "Create Application"
-3. Name it "Noni Local Testing"
+3. Name it "Mynaani Local Testing"
 4. Select "Email" and "Password" authentication
 5. Note your API keys:
    - **Publishable Key**: Starts with `pk_test_...`
@@ -196,7 +196,7 @@ npm run dev
 ### 7.1 Welcome Page Test
 
 - [ ] Welcome page loads without errors
-- [ ] Display shows "Welcome to Noni"
+- [ ] Display shows "Welcome to Mynaani"
 - [ ] "Get Started" button is visible
 - [ ] "Maybe later" option is available
 

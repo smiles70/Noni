@@ -1,6 +1,6 @@
 # Architecture Documents
 
-Authoritative system, vendor, and schema diagrams for Noni. These documents are binding and are referenced from the ADRs in `docs/decisions/`.
+Authoritative system, vendor, and schema diagrams for Mynaani. These documents are binding and are referenced from the ADRs in `docs/decisions/`.
 
 | Document | Scope | Bound by ADRs |
 |---|---|---|

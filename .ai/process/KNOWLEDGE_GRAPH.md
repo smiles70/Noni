@@ -2,7 +2,7 @@
 
 **Process:** v9.51 ontology and traceability protocol
 **Date:** 2026-08-27
-**Repo:** smiles70/Noni
+**Repo:** smiles70/Mynaani
 **Nodes:** 140 | **Edges:** 159
 
 ## Ontology
@@ -236,7 +236,7 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `DEC-0028` shapes `CAP-HERO-LANDING`.
 - `CAP-HERO-LANDING` depends_on `DEP-HERO-IMAGE` (hero image asset).
 - `CAP-HERO-LANDING` verified_by `TEST-HERO-TYPECHECK`, `TEST-HERO-BUILD`, `TEST-HERO-BUNDLE`.
-- `GAP-HERO-IMAGE` remains open until a Noni-appropriate hero image is sourced.
+- `GAP-HERO-IMAGE` remains open until a Mynaani-appropriate hero image is sourced.
 - `EVI-HERO-RESEARCH` is `.ai/process/LANDING_HERO_REDESIGN_RESEARCH.md`.
 - `PHASE-HERO-0` pre-flight is `PREFLIGHT_HERO.md` and status is `GO`.
 - `CAP-HERO-LANDING` is `implemented_by` `frontend/src/components/LandingPage.tsx`.

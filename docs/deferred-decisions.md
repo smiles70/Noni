@@ -15,7 +15,7 @@ Deferring all third-party / vendor decisions to a single dedicated pass so they 
 | Item | Originally planned in | Notes |
 |---|---|---|
 | Authentication provider | Sprint 6 | **Implemented: Magic.link** per ADR 0027 (Phases 1-3 complete; pending live-key deploy and PRA/Nelson refresh). Mock remains for dev/tests. |
-| Per-learner state model | Sprint 6 | Anonymous-session approach drafted (users / sessions / learner_progress tables, X-Noni-Session-Id header). Implementation deferred until auth choice is made; the user model converges. |
+| Per-learner state model | Sprint 6 | Anonymous-session approach drafted (users / sessions / learner_progress tables, X-Mynaani-Session-Id header). Implementation deferred until auth choice is made; the user model converges. |
 | Anthropic API key + real Claude | Sprint 7 | Mock `claude_engine` keeps working. Plan: USE_REAL_CLAUDE feature flag, default off. |
 | Email provider | Likely needed alongside auth | Postmark / SES / Resend / Mailgun. Needed for magic-link, password reset, transactional email. |
 | Observability / error tracking | Future | Sentry / Datadog / Honeycomb / OpenTelemetry-only. |

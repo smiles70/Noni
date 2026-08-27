@@ -1,4 +1,4 @@
-# AI Workspace for Noni
+# AI Workspace for Mynaani
 
 This directory contains session artifacts, recovery logs, and process documentation for AI agent coding sessions.
 

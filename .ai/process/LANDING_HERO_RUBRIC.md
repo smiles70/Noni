@@ -2,7 +2,7 @@
 
 **Process:** v9.51
 **Date:** 2026-08-27
-**Scope:** Evaluate Noni’s landing page against the top 15 senior-focused
+**Scope:** Evaluate Mynaani’s landing page against the top 15 senior-focused
 sites and AARP heuristics.
 
 ## Scoring
@@ -64,7 +64,7 @@ sites and AARP heuristics.
 | Tap targets ≥ 44 × 44 px | 1 | Button padding |
 | No horizontal scrolling | 1 | Manual check |
 
-### 7. Contract compliance (Noni-specific)
+### 7. Contract compliance (Mynaani-specific)
 
 | Criterion | Weight | Evidence source |
 |---|---|---|

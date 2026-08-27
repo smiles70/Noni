@@ -1,4 +1,4 @@
-# Constraint Refinement — Noni Login Domain
+# Constraint Refinement — Mynaani Login Domain
 
 **Date:** 2026-05-17
 **Source:** `docs/audits/login-system-constraints-2026-05-17.md` +

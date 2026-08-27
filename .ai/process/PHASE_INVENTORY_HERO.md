@@ -33,7 +33,7 @@ contract compliance before any code is written.
 
 **Tasks:**
 1. Finalize headline, subheadline, primary CTA, and secondary CTAs.
-2. Select or create a Noni-appropriate hero image.
+2. Select or create a Mynaani-appropriate hero image.
 3. Confirm the `RenderProposal` fits `landing.page` limits.
 4. Run the Phase 0 pre-flight check.
 
@@ -57,7 +57,7 @@ hero layout.
 **Tasks:**
 1. Refactor `LandingPage.tsx` to two-column hero.
 2. Use only V1 components and contract colors/spacing.
-3. Ensure all text and imagery are Noni-branded.
+3. Ensure all text and imagery are Mynaani-branded.
 4. Update the `RenderProposal` for the new layout.
 
 **Verification:**

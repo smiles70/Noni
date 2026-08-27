@@ -160,7 +160,7 @@ Developer builds locally → prebuild script runs
 
 ### Option 1: Trigger GitHub Actions Redeploy (Recommended)
 ```
-1. Go to: https://github.com/smiles70/Noni/actions/workflows/deploy.yml
+1. Go to: https://github.com/smiles70/Mynaani/actions/workflows/deploy.yml
 2. Click "Run workflow" on main branch
 3. Verify secrets are set:
    - VITE_API_BASE_URL=https://noni-api.fly.dev

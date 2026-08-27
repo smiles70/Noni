@@ -1,6 +1,6 @@
-# Noni — Third-Party Integration Setup
+# Mynaani — Third-Party Integration Setup
 
-This is the **only** document you need to set up Noni's outside services.
+This is the **only** document you need to set up Mynaani's outside services.
 It tells you the **one right way** to do each step. No alternatives, no
 "depending on your situation." Just do it in this order.
 
@@ -11,7 +11,7 @@ You will set up **three accounts**:
 3. **Stripe** — takes credit cards
 
 When you are done, the file `.env` (in the repo root) and `frontend/.env`
-will be filled out, and Noni will be ready to deploy.
+will be filled out, and Mynaani will be ready to deploy.
 
 Allow about **45 minutes** start to finish.
 
@@ -33,11 +33,11 @@ defined here.
 | **JWT (JSON Web Token)** | A short string of text that proves "this user is logged in and they are person X." Supabase issues one when a user signs in; our backend checks the signature on every request. |
 | **JWT secret** | The shared password between Supabase and our backend that makes JWT signatures verifiable. |
 | **OAuth** | The standard way an app says "let me sign in using my existing Google/Apple/etc. account." The user types their password to **Google**, never to us. |
-| **OAuth consent screen** | The page Google shows the user the first time they sign in: "Noni would like to access your email address. Allow?" Google requires us to register what our app is called and what we will ask for. |
+| **OAuth consent screen** | The page Google shows the user the first time they sign in: "Mynaani would like to access your email address. Allow?" Google requires us to register what our app is called and what we will ask for. |
 | **Redirect URI** | The exact URL Google will send the user back to after they approve sign-in. It must match a URL we pre-registered, character for character. |
 | **Project URL** (Supabase) | The unique web address Supabase gives our project, e.g. `https://abcd1234.supabase.co`. |
 | **Anon key** (Supabase) | A public key the frontend uses to talk to Supabase. Safe to put in the browser. |
-| **Service role key** (Supabase) | A super-powerful admin key. **Never** put this in the frontend or commit it. We do not use it in Noni. |
+| **Service role key** (Supabase) | A super-powerful admin key. **Never** put this in the frontend or commit it. We do not use it in Mynaani. |
 | **Connection string** (Postgres) | The URL the app uses to talk to the database, e.g. `postgresql://user:password@host:5432/dbname`. |
 | **Test mode** (Stripe) | A separate sandbox where you can pretend to charge cards without real money moving. All keys start with `sk_test_` or `pk_test_`. |
 | **Price ID** (Stripe) | A short code like `price_1Q...` that points to a specific product + amount. Our app sends this code to Stripe to start a checkout. |
@@ -48,7 +48,7 @@ defined here.
 
 ## Before you start
 
-1. Open a terminal in the repo: `cd /mnt/c/Users/kimem/Noni`
+1. Open a terminal in the repo: `cd /mnt/c/Users/kimem/Mynaani`
 2. Make a working copy of the env files:
    ```bash
    cp .env.example .env
@@ -63,10 +63,10 @@ defined here.
 
 ## Part 1 — Supabase
 
-**What it does for Noni:** Supabase gives us two things in one account: a
+**What it does for Mynaani:** Supabase gives us two things in one account: a
 **login system** (the verified-identity tokens we trust) and a **PostgreSQL
 database** (where every user, purchase, and event is stored). Without
-Supabase, Noni has no memory and no way to know who is signed in.
+Supabase, Mynaani has no memory and no way to know who is signed in.
 
 ### Steps
 
@@ -158,7 +158,7 @@ Supabase, Noni has no memory and no way to know who is signed in.
 
 ## Part 2 — Google Cloud
 
-**What it does for Noni:** This is the actual machinery behind the "Sign in
+**What it does for Mynaani:** This is the actual machinery behind the "Sign in
 with Google" button. Google verifies the user's identity and tells Supabase,
 who tells us. Without registering with Google, the button cannot work.
 
@@ -184,7 +184,7 @@ who tells us. Without registering with Google, the button cannot work.
      consent screen"**.
    - **User Type:** click **External** → **CREATE**.
    - On the next page fill in:
-     - **App name:** `Noni`
+     - **App name:** `Mynaani`
      - **User support email:** your email (pick from the dropdown).
      - **App logo:** leave blank.
      - **Application home page:** leave blank.
@@ -211,7 +211,7 @@ who tells us. Without registering with Google, the button cannot work.
    - Left sidebar → **"APIs & Services"** → **"Credentials"**.
    - Top bar, click **"+ CREATE CREDENTIALS"** → choose **"OAuth client ID"**.
    - **Application type:** `Web application`.
-   - **Name:** `Noni Supabase`.
+   - **Name:** `Mynaani Supabase`.
    - **Authorized JavaScript origins:** click **+ ADD URI**, type your
      Supabase project URL exactly: `https://abcd1234.supabase.co` (no
      trailing slash). Use the URL you saved in Part 1 step 5.
@@ -245,7 +245,7 @@ backend never talks to Google directly — it only ever talks to Supabase.
 
 ## Part 3 — Stripe
 
-**What it does for Noni:** Stripe shows the credit-card form, charges the
+**What it does for Mynaani:** Stripe shows the credit-card form, charges the
 card, and tells our backend "person X just paid." Our backend then unlocks
 the paid modules for that person. Without Stripe we cannot accept money
 without months of compliance work.
@@ -290,7 +290,7 @@ without months of compliance work.
    ```
 
    The script logs into Stripe with the secret key you just saved, creates
-   a product called **"Noni Modules 4–5"** priced at **$24.00 USD
+   a product called **"Mynaani Modules 4–5"** priced at **$24.00 USD
    one-time**, and prints the new **price ID** to your terminal. It looks
    like `price_1Qabc123XYZ`.
 
@@ -398,7 +398,7 @@ Now do, in order:
 
 1. Click **Sign in**. You are redirected to a real Google sign-in page.
    Sign in with the email you added to Google's "Test users" list.
-2. After signing in you land back on Noni, signed in.
+2. After signing in you land back on Mynaani, signed in.
 3. Navigate until you hit a paywalled module. Click **Buy modules 4–5**.
 4. You are redirected to Stripe's hosted checkout page.
 5. Enter test card details: card number `4242 4242 4242 4242`, any future
@@ -444,6 +444,6 @@ You should not need to edit these files for setup, but if you are curious:
 | Stripe checkout + webhook | `backend/services/payment_provider.py`, `backend/api/routes/billing.py` |
 | Stripe product seeding | `scripts/seed_products.py` |
 
-That is everything. After Part 5 passes, Noni is fully wired to its
+That is everything. After Part 5 passes, Mynaani is fully wired to its
 third-party services and ready for staging deployment (see
 `docs/staging-deploy.md`).

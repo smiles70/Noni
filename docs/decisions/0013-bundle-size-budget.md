@@ -6,7 +6,7 @@ Accepted (Sprint 15).
 
 ## Context
 
-The frontend bundle is currently ~63 kB gzipped. Without a CI gate, every dependency added compounds silently. For Noni's audience - older adults often on slow or metered connections - bundle size is a measurable component of the calm-experience promise.
+The frontend bundle is currently ~63 kB gzipped. Without a CI gate, every dependency added compounds silently. For Mynaani's audience - older adults often on slow or metered connections - bundle size is a measurable component of the calm-experience promise.
 
 ## Decision
 
