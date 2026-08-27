@@ -205,6 +205,15 @@ def test_endpoint_payload_respects_contract_maxima():
         "landing.page",
         "landing.first_win",
         "curriculum.unit",
+        "curriculum.menu",
+        "account.welcome",
+        "account.setup",
+        "account.getting-started",
+        "account.signin",
+        "account.paywall",
+        "account.gift_redeem",
+        "account.settings",
+        "account.deleted",
     ],
 )
 def test_seeded_envelope_resolves(state_id):
@@ -221,6 +230,15 @@ def test_seeded_envelope_resolves(state_id):
         "landing.page",
         "landing.first_win",
         "curriculum.unit",
+        "curriculum.menu",
+        "account.welcome",
+        "account.setup",
+        "account.getting-started",
+        "account.signin",
+        "account.paywall",
+        "account.gift_redeem",
+        "account.settings",
+        "account.deleted",
     ],
 )
 def test_seeded_envelope_respects_contract_ceilings(state_id):
@@ -240,6 +258,15 @@ def test_seeded_envelope_respects_contract_ceilings(state_id):
         "landing.page",
         "landing.first_win",
         "curriculum.unit",
+        "curriculum.menu",
+        "account.welcome",
+        "account.setup",
+        "account.getting-started",
+        "account.signin",
+        "account.paywall",
+        "account.gift_redeem",
+        "account.settings",
+        "account.deleted",
     ],
 )
 def test_seeded_envelope_uses_only_v1_components(state_id):
@@ -256,6 +283,15 @@ def test_seeded_envelope_uses_only_v1_components(state_id):
         "landing.page",
         "landing.first_win",
         "curriculum.unit",
+        "curriculum.menu",
+        "account.welcome",
+        "account.setup",
+        "account.getting-started",
+        "account.signin",
+        "account.paywall",
+        "account.gift_redeem",
+        "account.settings",
+        "account.deleted",
     ],
 )
 def test_seeded_envelope_endpoint_returns_200(state_id):

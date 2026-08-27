@@ -301,6 +301,85 @@ _CURRICULUM_MENU_ENVELOPE = UIStateEnvelope(
 
 # Account / billing screens (Sprint A8). Each is a single-purpose page.
 
+_ACCOUNT_WELCOME_ENVELOPE = UIStateEnvelope(
+    state_id="account.welcome",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=3,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=2,
+    ),
+    transition_permissions=[
+        TransitionPermission(to_state_id="account.setup"),
+        TransitionPermission(to_state_id="account.settings"),
+        TransitionPermission(to_state_id="landing.page"),
+    ],
+)
+
+
+# Account setup — profile completion form.
+_ACCOUNT_SETUP_ENVELOPE = UIStateEnvelope(
+    state_id="account.setup",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.FIELD,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=3,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=2,
+    ),
+    transition_permissions=[
+        TransitionPermission(to_state_id="account.getting-started"),
+        TransitionPermission(to_state_id="account.welcome"),
+        TransitionPermission(to_state_id="landing.page"),
+    ],
+)
+
+
+# Getting started — progressive onboarding after account setup.
+_ACCOUNT_GETTING_STARTED_ENVELOPE = UIStateEnvelope(
+    state_id="account.getting-started",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.DIVIDER,
+        AuthorizedComponent.INDICATOR,
+        AuthorizedComponent.PENDING_BANNER,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=3,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=2,
+    ),
+    transition_permissions=[
+        TransitionPermission(to_state_id="curriculum.menu"),
+        TransitionPermission(to_state_id="account.setup"),
+        TransitionPermission(to_state_id="landing.page"),
+    ],
+)
+
+
 _ACCOUNT_SIGNIN_ENVELOPE = UIStateEnvelope(
     state_id="account.signin",
     authorized_components=[
@@ -440,6 +519,9 @@ ENVELOPES: dict[str, UIStateEnvelope] = {
     _LANDING_FIRST_WIN_ENVELOPE.state_id: _LANDING_FIRST_WIN_ENVELOPE,
     _CURRICULUM_UNIT_ENVELOPE.state_id: _CURRICULUM_UNIT_ENVELOPE,
     _CURRICULUM_MENU_ENVELOPE.state_id: _CURRICULUM_MENU_ENVELOPE,
+    _ACCOUNT_WELCOME_ENVELOPE.state_id: _ACCOUNT_WELCOME_ENVELOPE,
+    _ACCOUNT_SETUP_ENVELOPE.state_id: _ACCOUNT_SETUP_ENVELOPE,
+    _ACCOUNT_GETTING_STARTED_ENVELOPE.state_id: _ACCOUNT_GETTING_STARTED_ENVELOPE,
     _ACCOUNT_SIGNIN_ENVELOPE.state_id: _ACCOUNT_SIGNIN_ENVELOPE,
     _ACCOUNT_PAYWALL_ENVELOPE.state_id: _ACCOUNT_PAYWALL_ENVELOPE,
     _ACCOUNT_GIFT_REDEEM_ENVELOPE.state_id: _ACCOUNT_GIFT_REDEEM_ENVELOPE,
