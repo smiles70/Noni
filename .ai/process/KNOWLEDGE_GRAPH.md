@@ -389,3 +389,12 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `DEC-GTM-001` is recommendation: dual B2C + B2B2C go-to-market with 30-60-90 actions.
 - `CAP-GTM-001` status is `completed`.
 
+## B2B2C-IMPL-001 implementation preflight (2026-08-27)
+
+- `ONTO-B2B2C-IMPL-001` is `.ai/process/B2B2C_IMPL_PLAN_001.md`.
+- `SRC-B2B2C-IMPL-001-INTAKE` is `.ai/intake/2026-08-27-b2b2c-impl-001.md`.
+- `SRC-B2B2C-IMPL-001-PREFLIGHT` is `.ai/process/PREFLIGHT_B2B2C_IMPL_001.md`.
+- `SRC-B2B2C-IMPL-001-PHASE` is `.ai/process/PHASE_INVENTORY_B2B2C_IMPL_001.md`.
+- `DEC-B2B2C-IMPL-001` is go-ahead: implement data model + backend API + frontend paywall entry.
+- `CAP-B2B2C-IMPL-001` status is `preflight-completed`.
+
