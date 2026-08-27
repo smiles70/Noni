@@ -146,6 +146,8 @@ jobs:
 
       - name: Verify bundle (G3 guard)
         working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://noni-api.fly.dev' }}
         run: npm run postbuild
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
