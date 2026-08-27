@@ -155,7 +155,7 @@ export default function WelcomePage({ onContinue, onAccount, onAccountSetup, onS
   return (
     <RenderGuard envelope={envelope} proposal={proposal}>
       <main style={PAGE}>
-        <h1 style={H1}>Welcome to Noni</h1>
+        <h1 style={H1}>Welcome to Mynaani</h1>
 
         <p style={BODY}>
           You have successfully signed in. We will now set up your account

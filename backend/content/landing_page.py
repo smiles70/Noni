@@ -13,7 +13,7 @@ LANDING_PAGE_CONTENT: Dict[str, Any] = {
     "hero": {
         "headline": "A calm way to understand and use AI",
         "subheadline": (
-            "Noni helps you learn what AI is, how Claude works, "
+            "Mynaani helps you learn what AI is, how Claude works, "
             "and how to use it confidently - without pressure or confusion."
         ),
     },
@@ -22,13 +22,13 @@ LANDING_PAGE_CONTENT: Dict[str, Any] = {
         "body": (
             "Many people feel unsure about new technology, especially AI. "
             "That is normal.\n\n"
-            "Noni was created to make learning AI feel steady, respectful, "
+            "Mynaani was created to make learning AI feel steady, respectful, "
             "and manageable. Nothing happens too fast, and nothing changes "
             "without clear guidance. You stay in control at every step."
         ),
     },
     "what_noni_does": {
-        "title": "What Noni helps you do",
+        "title": "What Mynaani helps you do",
         "items": [
             "Understand what AI is and what it is not",
             "Learn how Claude can help with everyday thinking and tasks",
@@ -37,7 +37,7 @@ LANDING_PAGE_CONTENT: Dict[str, Any] = {
         ],
     },
     "how_it_feels": {
-        "title": "What it feels like to use Noni",
+        "title": "What it feels like to use Mynaani",
         "items": [
             "Clear explanations in plain language",
             "No tests, grades, or time pressure",
@@ -48,7 +48,7 @@ LANDING_PAGE_CONTENT: Dict[str, Any] = {
     "trust_and_safety": {
         "title": "Your comfort and control come first",
         "body": (
-            "Noni does not rush you and does not act on its own. "
+            "Mynaani does not rush you and does not act on its own. "
             "AI suggestions are always shown for review, and you decide "
             "what to use or ignore.\n\n"
             "You never have to share personal information to learn, "
@@ -68,7 +68,7 @@ LANDING_PAGE_CONTENT: Dict[str, Any] = {
     "closing": {
         "body": (
             "Learning something new should feel steady, not stressful.\n\n"
-            "Noni is here to support you - at your pace, on your terms."
+            "Mynaani is here to support you - at your pace, on your terms."
         ),
     },
 }

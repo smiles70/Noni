@@ -164,7 +164,7 @@ export default function HowItWorksDialog({ content, onClose, onBegin }: Props) {
       >
         <header style={HEADER}>
           <h2 id="how-it-works-title" style={TITLE}>
-            How Noni works
+            How Mynaani works
           </h2>
           <button
             ref={closeButtonRef}

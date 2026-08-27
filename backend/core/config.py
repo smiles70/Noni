@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Noni"
+    PROJECT_NAME: str = "Mynaani"
     VERSION: str = "0.1.0"
     DATABASE_URL: str = ""
     DATABASE_URL_DIRECT: str = (

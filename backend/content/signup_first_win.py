@@ -23,7 +23,7 @@ SIGNUP_FIRST_WIN_CONTENT = {
     "step_4_invitation": {
         "title": "You can try this without commitment",
         "body": (
-            "If you’d like, you can take a small look at how learning with Noni works.\n\n"
+            "If you’d like, you can take a small look at how learning with Mynaani works.\n\n"
             "You are not signing up for anything yet. Nothing will be sent, saved, "
             "or shared unless you later choose to continue."
         ),
@@ -48,13 +48,13 @@ SIGNUP_FIRST_WIN_CONTENT = {
     "step_6_first_safe_win": {
         "title": "That’s the whole idea",
         "body": (
-            "Using Noni means taking things one small step at a time.\n\n"
+            "Using Mynaani means taking things one small step at a time.\n\n"
             "You see suggestions clearly. You decide what matters. "
             "There is no rush, and nothing is permanent."
         ),
         "reflection": (
             "If this felt manageable, that’s a good sign. "
-            "Learning with Noni is meant to feel this way."
+            "Learning with Mynaani is meant to feel this way."
         ),
     },
     "optional_next_steps": {

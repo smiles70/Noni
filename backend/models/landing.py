@@ -62,7 +62,7 @@ LANDING_STEPS: List[LandingStep] = [
             "Assessing risk, tone, and credibility",
         ],
         system_responsibility=[
-            "Explain what Noni is in plain language",
+            "Explain what Mynaani is in plain language",
             "Clarify what it does and does not do",
             "Set calm expectations",
         ],
@@ -82,7 +82,7 @@ LANDING_STEPS: List[LandingStep] = [
             "Comparing this to past technology experiences",
         ],
         system_responsibility=[
-            "Describe who Noni is designed for",
+            "Describe who Mynaani is designed for",
             "Normalize uncertainty and lack of experience",
             "Explicitly remove any expectation of prior knowledge",
         ],
@@ -160,7 +160,7 @@ LANDING_STEPS: List[LandingStep] = [
             "Beginning to form confidence",
         ],
         system_responsibility=[
-            "Make the value explicit (this is what learning with Noni feels like)",
+            "Make the value explicit (this is what learning with Mynaani feels like)",
             "Reflect success back to the user without praise or judgment",
         ],
         user_agency=[
