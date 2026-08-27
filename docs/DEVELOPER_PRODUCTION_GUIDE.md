@@ -4,6 +4,49 @@
 
 ---
 
+## 0. Deploy the backend to Railway
+
+### 0.1 Install the Railway CLI
+
+```bash
+npm install -g @railway/cli
+railway login
+```
+
+### 0.2 Create the project and services
+
+```bash
+railway init --name noni
+railway service create --name noni-api
+railway service create --name noni-db --type database
+railway add --service noni-db --type database --database postgresql
+```
+
+### 0.3 Set the production secrets
+
+```bash
+export RAILWAY_TOKEN=...           # from Railway dashboard
+export RAILWAY_SERVICE_NAME=noni-api
+railway variables set DATABASE_URL="postgresql://..." --service noni-api
+railway variables set MAGIC_API_SECRET_KEY="sk_live_..." --service noni-api
+# repeat for all backend secrets (see infra/.env.example)
+```
+
+### 0.4 Deploy
+
+```bash
+railway up --service noni-api
+```
+
+### 0.5 Add `RAILWAY_TOKEN` to GitHub Actions
+
+```bash
+gh secret set RAILWAY_TOKEN --body "<your-token>"
+gh secret set RAILWAY_SERVICE_NAME --body "noni-api"
+```
+
+---
+
 ## 1. Provision Magic Auth and set the secrets
 
 ### 1.1 Create the Magic Auth app

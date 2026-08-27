@@ -25,7 +25,7 @@ echo "$HEALTH" | jq -e '.status == "healthy" or .status == "ok"' >/dev/null \
 # Use the canonical path directly to avoid CI-specific redirect failures.
 echo "==> GET $API_BASE/api/v1/auth/config"
 AUTH_CFG="$(curl -fsSL "$API_BASE/api/v1/auth/config")"
-if ! echo "$AUTH_CFG" | jq -e '.provider == "clerk" or .provider == "mock"' >/dev/null; then
+if ! echo "$AUTH_CFG" | jq -e '.provider == "magic" or .provider == "mock"' >/dev/null; then
   echo "FAIL: /api/v1/auth/config provider unrecognised"
   echo "  Raw body: $AUTH_CFG"
   exit 1
