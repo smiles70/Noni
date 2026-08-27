@@ -20,7 +20,8 @@ jobs:
   preflight:
     runs-on: ubuntu-latest
     outputs:
-      ready: ${{ steps.check.outputs.ready }}
+      cloudflare_ready: ${{ steps.check.outputs.cloudflare_ready }}
+      railway_ready: ${{ steps.check.outputs.railway_ready }}
       have_supabase: ${{ steps.check.outputs.have_supabase }}
     steps:
       - name: Check whether deploy secrets are present
@@ -32,16 +33,24 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: |
-          # Required for any deploy (Railway + Cloudflare Pages).
-          missing=()
-          for k in RAILWAY_TOKEN CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
-            if [[ -z "${!k}" ]]; then missing+=("$k"); fi
+          # Cloudflare Pages only needs Cloudflare secrets.
+          # Railway backend only needs RAILWAY_TOKEN.
+          cloudflare_missing=()
+          for k in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+            if [[ -z "${!k}" ]]; then cloudflare_missing+=("$k"); fi
           done
-          if [[ ${#missing[@]} -gt 0 ]]; then
-            echo "::notice::Deploy skipped — missing required secrets: ${missing[*]}"
-            echo "ready=false" >> "$GITHUB_OUTPUT"
+          if [[ ${#cloudflare_missing[@]} -gt 0 ]]; then
+            echo "::notice::Cloudflare deploy skipped — missing: ${cloudflare_missing[*]}"
+            echo "cloudflare_ready=false" >> "$GITHUB_OUTPUT"
           else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "cloudflare_ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [[ -z "$RAILWAY_TOKEN" ]]; then
+            echo "::notice::Railway deploy skipped — missing: RAILWAY_TOKEN"
+            echo "railway_ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "railway_ready=true" >> "$GITHUB_OUTPUT"
           fi
           # Optional Supabase migration step. Skipped when DB is Fly Postgres.
           if [[ -n "$SUPABASE_ACCESS_TOKEN" && -n "$SUPABASE_PROJECT_REF" ]]; then
@@ -57,7 +66,7 @@ jobs:
     # any non-Supabase Postgres) this job is skipped; Alembic owns the
     # schema and applies on backend boot via the FastAPI lifespan in
     # backend/app/main.py.
-    if: needs.preflight.outputs.ready == 'true' && needs.preflight.outputs.have_supabase == 'true'
+    if: needs.preflight.outputs.railway_ready == 'true' && needs.preflight.outputs.have_supabase == 'true'
     runs-on: ubuntu-latest
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -79,7 +88,7 @@ jobs:
     # or by listing them but not blocking on their result — using
     # `if: success() || needs.supabase-db-push.result == 'skipped'`.
     needs: [preflight, supabase-db-push]
-    if: success() || needs.supabase-db-push.result == 'skipped'
+    if: (success() || needs.supabase-db-push.result == 'skipped') && needs.preflight.outputs.railway_ready == 'true'
     runs-on: ubuntu-latest
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
@@ -96,7 +105,7 @@ jobs:
 
   cloudflare-pages-deploy:
     needs: [preflight]  # DECOUPLED: backend already deployed
-    if: needs.preflight.outputs.ready == 'true'
+    if: needs.preflight.outputs.cloudflare_ready == 'true'
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -148,8 +157,8 @@ jobs:
           branch: main
 
   smoke:
-    needs: [preflight, cloudflare-pages-deploy]
-    if: needs.preflight.outputs.ready == 'true'
+    needs: [preflight, railway-deploy-backend, cloudflare-pages-deploy]
+    if: needs.preflight.outputs.railway_ready == 'true' && needs.preflight.outputs.cloudflare_ready == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
