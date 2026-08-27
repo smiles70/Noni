@@ -225,3 +225,17 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `CAP-RAILWAY-DEPLOY`, `CAP-RAILWAY-SECRETS`, `CAP-RAILWAY-ENV`, `CAP-RAILWAY-SMOKE` marked `implemented`.
 - `GAP-RAILWAY-TOKEN` remains open until `RAILWAY_TOKEN` is configured.
 - `EVI-RAILWAY-CODE` records the code changes.
+
+## Landing hero redesign (HERO-001) — 2026-08-27
+
+- `SRC-HERO-INTAKE` defines `REQ-HERO-001` through `REQ-HERO-006`.
+- `BRD-HERO-001` defines `BRG-HERO-001` (business goal).
+- `FRD-HERO-001` defines `FR-HERO-001` through `FR-HERO-005`.
+- `PRD-HERO-001` defines `NFR-HERO-001` through `NFR-HERO-005` and `TR-HERO-001` through `TR-HERO-003`.
+- `SRC-ADR-0028` authorizes `DEC-0028`.
+- `DEC-0028` shapes `CAP-HERO-LANDING`.
+- `CAP-HERO-LANDING` depends_on `DEP-HERO-IMAGE` (hero image asset).
+- `CAP-HERO-LANDING` verified_by `TEST-HERO-TYPECHECK`, `TEST-HERO-BUILD`, `TEST-HERO-BUNDLE`.
+- `GAP-HERO-IMAGE` remains open until a Noni-appropriate hero image is sourced.
+- `EVI-HERO-RESEARCH` is `.ai/process/LANDING_HERO_REDESIGN_RESEARCH.md`.
+- `PHASE-HERO-0` pre-flight is `PREFLIGHT_HERO.md` and status is `GO`.
