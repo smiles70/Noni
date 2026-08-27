@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mynaani Payment Flow — Noni</title>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: {
+      primaryColor: "#e8f4f8",
+      primaryTextColor: "#1a2b3c",
+      primaryBorderColor: "#4a90a4",
+      lineColor: "#4a90a4",
+      secondaryColor: "#f7f6f2",
+      tertiaryColor: "#fff8e1"
+    }});
+  </script>
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --text: #1a2b3c;
+      --accent: #4a90a4;
+      --accent-muted: #7bb3c2;
+      --border: #d3d3d3;
+      --warning: #fff8e1;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      max-width: 960px;
+      margin: 0 auto 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--accent);
+    }
+    h1 { margin: 0 0 0.5rem; font-size: 1.75rem; }
+    h2 { margin-top: 2.5rem; font-size: 1.4rem; color: var(--accent); }
+    h3 { margin-top: 1.5rem; font-size: 1.1rem; }
+    .subtitle { color: #555; margin: 0; }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+    }
+    .diagram {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: auto;
+    }
+    .legend {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1rem 0 2rem;
+      padding: 1rem;
+      background: var(--warning);
+      border-radius: 6px;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+    .legend .shape {
+      display: inline-block;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 1px solid var(--accent);
+    }
+    .legend .rect { background: var(--primaryColor); }
+    .legend .diamond { transform: rotate(45deg); width: 0.9rem; height: 0.9rem; margin: 0 0.3rem; }
+    .note {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #eef7f9;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+    }
+    footer {
+      max-width: 960px;
+      margin: 2rem auto;
+      color: #777;
+      font-size: 0.9rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mynaani Payment Flow</h1>
+    <p class="subtitle">Mock (dev) and Stripe (production) checkouts — Noni view</p>
+  </header>
+
+  <div class="container">
+    <div class="legend">
+      <span><span class="shape rect"></span> Step / surface</span>
+      <span><span class="shape diamond"></span> Decision</span>
+      <span><strong>Noni</strong> = local-only / dev flow path</span>
+    </div>
+
+    <h2>1. Shared decision path</h2>
+    <p>Both mock and Stripe share the same paywall, free-account auth, and post-purchase state.</p>
+    <div class="mermaid diagram">
+graph TD
+  Start([Learner completes Module 3])
+  Paywall[account.paywall page]
+  Choice{Choose an action}
+  Free([Continue free modules])
+  Gift[Buy as gift — $59]
+  Self[Buy for myself — $39]
+  Redeem[Redeem a gift code]
+  Signin{Signed in?}
+  Auth[Magic.link sign-in]
+
+  Start --> Signin
+  Signin -->|No| Auth
+  Signin -->|Yes| Paywall
+  Auth --> Paywall
+  Paywall --> Choice
+  Choice -->|Free tier| Free
+  Choice -->|Self| Self
+  Choice -->|Gift| Gift
+  Choice -->|Redeem| Redeem
+    </div>
+
+    <h2>2. Mock flow (PAYMENT_PROVIDER=mock)</h2>
+    <p>Used in local development, tests, and browser previews. No real money moves.</p>
+    <div class="mermaid diagram">
+graph TD
+  Self([Buy for myself — $39])
+  Gift([Buy as gift — $59])
+  Checkout[POST /api/billing/checkout]
+  Product[(Product: modules_4_5)]
+  Purchase[(Purchase row: pending)]
+  GiftToken{Is gift?}
+  MockCheckout[/mock-checkout page\nwith success/cancel paths]
+  Decision{User choice}
+  MockSuccess[/purchase/success\npurchase={id}&provider=mock]
+  MockCancel[/purchase/cancel]
+  Complete[POST /api/billing/mock-checkout-complete]
+  Grant[Entitlement granted]
+  Paid[(Purchase: paid)]
+  Curriculum([Continue to Module 4])
+  GiftShow[Gift code shown to buyer]
+  Redeem2[Redeem /api/gifts/claim]
+
+  Self --> Checkout
+  Gift --> Checkout
+  Checkout --> Product
+  Product --> Purchase
+  Purchase --> GiftToken
+  GiftToken -->|No| MockCheckout
+  GiftToken -->|Yes| MockCheckout
+  MockCheckout --> Decision
+  Decision -->|Complete| MockSuccess
+  Decision -->|Cancel| MockCancel
+  MockSuccess --> Complete
+  Complete --> Paid
+  Complete -->|Self| Grant
+  Grant --> Curriculum
+  Complete -->|Gift| GiftShow
+  GiftShow --> Buyer([Buyer shares token])
+  Buyer --> Redeem2
+  Redeem2 --> Grant
+    </div>
+
+    <h3>Mock flow key data</h3>
+    <table>
+      <tr><th>Item</th><th>Self purchase</th><th>Gift purchase</th></tr>
+      <tr><td>Product code</td><td>modules_4_5</td><td>modules_4_5</td></tr>
+      <tr><td>Price</td><td>$39 (3900 cents)</td><td>$59 (5900 cents)</td></tr>
+      <tr><td>Entitlement granted to</td><td>Buyer</td><td>Learner who redeems token</td></tr>
+      <tr><td>Token</td><td>—</td><td>Returned in checkout.gift_token</td></tr>
+      <tr><td>Webhook</td><td>Simulated synchronously by /mock-checkout-complete</td><td>—</td></tr>
+    </table>
+
+    <h2>3. Stripe flow (PAYMENT_PROVIDER=stripe)</h2>
+    <p>Real payments. The user leaves Mynaani briefly, completes checkout on Stripe, then returns.</p>
+    <div class="mermaid diagram">
+graph TD
+  Self([Buy for myself — $39])
+  Gift([Buy as gift — $59])
+  Checkout[POST /api/billing/checkout]
+  Product[(Product: modules_4_5)]
+  Purchase[(Purchase row: pending)]
+  GiftToken{Is gift?}
+  Stripe[Stripe Checkout hosted page]
+  StripeDecision{Payment outcome}
+  StripeSuccess[Redirect to STRIPE_SUCCESS_URL\n?cs={CHECKOUT_SESSION_ID}]
+  StripeCancel[Redirect to STRIPE_CANCEL_URL]
+  Webhook[Stripe webhook\nPOST /api/billing/stripe-webhook]
+  Celery[process_stripe_webhook task]
+  Process[process_event]
+  Paid[(Purchase: paid)]
+  Grant[Entitlement granted]
+  GiftShow[Gift emailed / shown on success page]
+  Redeem[Redeem /api/gifts/claim]
+  Curriculum([Continue to Module 4])
+
+  Self --> Checkout
+  Gift --> Checkout
+  Checkout --> Product
+  Product --> Purchase
+  Purchase --> GiftToken
+  GiftToken -->|No| Stripe
+  GiftToken -->|Yes| Stripe
+  Stripe --> StripeDecision
+  StripeDecision -->|Paid| StripeSuccess
+  StripeDecision -->|Canceled| StripeCancel
+  StripeSuccess --> Webhook
+  Webhook --> Celery
+  Celery --> Process
+  Process --> Paid
+  Process -->|Self| Grant
+  Grant --> Curriculum
+  Process -->|Gift| GiftShow
+  GiftShow --> Redeem
+  Redeem --> Grant
+    </div>
+
+    <h2>4. Refund flow (both providers)</h2>
+    <div class="mermaid diagram">
+graph TD
+  Request([User requests refund within 30 days])
+  Refund[POST /api/billing/refund\nnot yet implemented]
+  Webhook[Stripe charge.refunded webhook]
+  Revoke[Entitlement revoked]
+  Audit[Audit: billing_event\nrefunded logged]
+  Money[Money returned]
+
+  Request --> Refund
+  Refund --> Webhook
+  Webhook --> Revoke
+  Webhook --> Audit
+  Webhook --> Money
+    </div>
+
+    <div class="note">
+      <strong>Noni / Mynaani naming note:</strong>
+      This file uses the name <em>Mynaani</em> for the customer-facing product.
+      The "Noni" suffix in the filename identifies this as a design artifact
+      for the <code>/home/hazbyn/Noni</code> workspace; it does not change
+      the product name.
+    </div>
+  </div>
+
+  <footer>
+    Generated 2026-08-27 · Process v9.51 · PRICING-002
+  </footer>
+</body>
+</html>
