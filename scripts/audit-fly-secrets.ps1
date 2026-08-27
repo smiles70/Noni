@@ -19,7 +19,7 @@ Write-Host "=== Sprint 23 Q6 — Fly Secrets Audit ===" -ForegroundColor Cyan
 # List secrets (values are redacted by Fly; we only see keys)
 $secrets = fly secrets list -a noni-api --json | ConvertFrom-Json
 
-$required = @("SECRET_KEY", "SESSION_SECRET", "DATABASE_URL", "CLERK_PUBLISHABLE_KEY", "CLERK_SECRET_KEY")
+$required = @("SECRET_KEY", "SESSION_SECRET", "DATABASE_URL", "AUTH_PROVIDER", "MAGIC_API_SECRET_KEY", "FRONTEND_URL")
 $found = $secrets | ForEach-Object { $_.Key }
 
 Write-Host "`nSecrets present on app 'noni-api':" -ForegroundColor Yellow

@@ -160,7 +160,8 @@ class GitHubAutomation:
         """Check which required secrets are present"""
         required = [
             "VITE_API_BASE_URL",
-            "VITE_CLERK_PUBLISHABLE_KEY",
+            "VITE_AUTH_PROVIDER",
+            "VITE_MAGIC_PUBLISHABLE_KEY",
             "FLY_API_TOKEN",
             "SUPABASE_ACCESS_TOKEN",
             "CLOUDFLARE_API_TOKEN"
@@ -290,7 +291,7 @@ class DeploymentOrchestrator:
         secrets_status = self.github.check_required_secrets()
         
         # Check if we have minimum required secrets
-        critical_secrets = ["VITE_API_BASE_URL", "VITE_CLERK_PUBLISHABLE_KEY"]
+        critical_secrets = ["VITE_API_BASE_URL", "VITE_AUTH_PROVIDER"]
         missing = [s for s in critical_secrets if not secrets_status.get(s)]
         
         if missing:

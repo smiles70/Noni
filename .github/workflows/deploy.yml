@@ -115,12 +115,9 @@ jobs:
         working-directory: frontend
         env:
           VITE_API_BASE_URL: 'https://noni-api.fly.dev'
-          # Process v9: Decomposed Clerk, using mock as temporary bridge
-          # Previous hardcoded Clerk configuration caused login loop
-          # Now using mock provider until NextAuth.js migration complete
+          # ADR 0027: mock is the safe default for CI builds.
           VITE_AUTH_PROVIDER: 'mock'
-          # Clerk configuration disabled during decommission
-          # VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_aW1wcm92ZWQtcGhlYXNhbnQtMzguY2xlcmsuYWNjb3VudHMuZGV2JA'
+          VITE_MAGIC_PUBLISHABLE_KEY: ''
           CI: true
           NODE_ENV: production
         run: npm run prebuild
@@ -129,12 +126,9 @@ jobs:
         working-directory: frontend
         env:
           VITE_API_BASE_URL: 'https://noni-api.fly.dev'
-          # Process v9: Decomposed Clerk, using mock as temporary bridge
-          # Previous hardcoded Clerk configuration caused login loop
-          # Now using mock provider until NextAuth.js migration complete
+          # ADR 0027: mock is the safe default for CI builds.
           VITE_AUTH_PROVIDER: 'mock'
-          # Clerk configuration disabled during decommission
-          # VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_aW1wcm92ZWQtcGhlYXNhbnQtMzguY2xlcmsuYWNjb3VudHMuZGV2JA'
+          VITE_MAGIC_PUBLISHABLE_KEY: ''
           CI: true
           NODE_ENV: production
         run: npm run build

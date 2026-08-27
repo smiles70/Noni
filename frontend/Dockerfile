@@ -18,15 +18,13 @@ COPY . .
 # as build ARGs keeps the values out of the image tag and lets
 # docker-compose forward them from the project's .env file.
 #
-# Auth selection (ADR 0024):
-#   VITE_AUTH_PROVIDER=mock  -> default; dev/tests; no Clerk required.
-#   VITE_AUTH_PROVIDER=clerk -> production path; requires
-#                               VITE_CLERK_PUBLISHABLE_KEY (pk_test_*
-#                               in dev, pk_live_* in prod).
+# Auth selection (mock default; magic for production):
+#   VITE_AUTH_PROVIDER=mock  -> default; dev/tests.
+#   VITE_AUTH_PROVIDER=magic -> requires VITE_MAGIC_PUBLISHABLE_KEY.
 ARG VITE_AUTH_PROVIDER=mock
-ARG VITE_CLERK_PUBLISHABLE_KEY=
+ARG VITE_MAGIC_PUBLISHABLE_KEY=
 ENV VITE_AUTH_PROVIDER=$VITE_AUTH_PROVIDER
-ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
+ENV VITE_MAGIC_PUBLISHABLE_KEY=$VITE_MAGIC_PUBLISHABLE_KEY
 
 RUN npm run build
 

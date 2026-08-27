@@ -48,10 +48,10 @@ services:
       dockerfile: Dockerfile
       args:
         # Forwarded from .env. Defaults keep mock signin working without
-        # any external setup. To turn on Clerk, set both in .env then
-        # rebuild the frontend image (Vite bakes these in at build time).
+        # any external setup. Set VITE_AUTH_PROVIDER=magic and
+        # VITE_MAGIC_PUBLISHABLE_KEY to use Magic.link.
         VITE_AUTH_PROVIDER: ${VITE_AUTH_PROVIDER:-mock}
-        VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY:-}
+        VITE_MAGIC_PUBLISHABLE_KEY: ${VITE_MAGIC_PUBLISHABLE_KEY:-}
     container_name: noni_frontend
     ports:
       - "8080:80"

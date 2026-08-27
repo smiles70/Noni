@@ -196,8 +196,8 @@ if ($detected.gh) {
 # Required secrets for deployment
 $requiredSecrets = @(
     @{ name = "VITE_API_BASE_URL"; value = "https://noni-api.fly.dev"; desc = "Frontend API URL" }
-    @{ name = "VITE_CLERK_PUBLISHABLE_KEY"; value = ""; desc = "Clerk Frontend Key (from clerk.com)" }
-    @{ name = "VITE_AUTH_PROVIDER"; value = "clerk"; desc = "Auth provider" }
+    @{ name = "VITE_AUTH_PROVIDER"; value = "mock"; desc = "Auth provider (mock default; magic per ADR 0027)" }
+    @{ name = "VITE_MAGIC_PUBLISHABLE_KEY"; value = ""; desc = "Magic publishable key (required when VITE_AUTH_PROVIDER=magic)" }
     @{ name = "FLY_API_TOKEN"; value = $FlyToken; desc = "Fly.io API Token" }
     @{ name = "SUPABASE_ACCESS_TOKEN"; value = ""; desc = "Supabase Token (from supabase.com)" }
     @{ name = "SUPABASE_DB_PASSWORD"; value = ""; desc = "Supabase DB Password" }
