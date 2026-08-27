@@ -42,6 +42,11 @@ def init_db() -> None:
     """Create all tables registered on Base. Idempotent."""
     # Import models to register them with Base.metadata
     from backend.models.telemetry import TelemetryEvent  # noqa: F401
+    from backend.models.organizations import (  # noqa: F401
+        Organization,
+        OrgLicense,
+        AccessCode,
+    )
 
     Base.metadata.create_all(bind=engine)
 

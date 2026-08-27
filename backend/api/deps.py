@@ -197,6 +197,23 @@ def get_current_account(
     return account
 
 
+def require_staff(
+    account: Account = Depends(get_current_account),
+) -> Account:
+    """Require a staff/admin account for org management."""
+    from backend.core.config import settings
+
+    allowed = {
+        s.strip() for s in settings.ADMIN_ACCOUNT_IDS.split(",") if s.strip()
+    }
+    if str(account.id) not in allowed:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"envelope_id": "auth.not_staff"},
+        )
+    return account
+
+
 def require_entitlement(product_code: str):
     """Dependency factory that gates a route behind an active entitlement.
 

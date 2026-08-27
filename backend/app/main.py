@@ -23,6 +23,7 @@ from backend.api.routes.billing import router as billing_router
 from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.gifts import router as gifts_router
 from backend.api.routes.landing import router as landing_router
+from backend.api.routes.organizations import router as organizations_router
 from backend.api.routes.signals import router as signals_router
 from backend.api.routes.telemetry_export import router as telemetry_export_router
 from backend.api.routes.telemetry_summary import router as telemetry_summary_router
@@ -325,6 +326,7 @@ app.include_router(onboarding_telemetry_router, prefix="/api/v1/telemetry", tags
 app.include_router(session_validation_router, prefix="/api/v1/session", tags=["session"])
 app.include_router(billing_router, prefix="/api/v1/billing", tags=["billing"])
 app.include_router(gifts_router, prefix="/api/v1/gifts", tags=["gifts"])
+app.include_router(organizations_router, prefix="/api/v1/billing", tags=["billing"])
 
 _LEGACY_REDIRECTS = {
     "/api/curriculum": "/api/v1/curriculum",

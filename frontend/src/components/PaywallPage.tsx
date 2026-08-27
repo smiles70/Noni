@@ -12,7 +12,7 @@
  * we add more, this page reads them from the products endpoint.
  */
 import { useEffect, useState } from "react";
-import { startCheckout } from "../api/billing";
+import { startCheckout, redeemOrgCode } from "../api/billing";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import {
@@ -52,6 +52,8 @@ export default function PaywallPage({
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [orgCode, setOrgCode] = useState("");
+  const [orgRedeeming, setOrgRedeeming] = useState(false);
 
   useEffect(() => {
     loadEnvelope("account.paywall")
@@ -92,6 +94,28 @@ export default function PaywallPage({
     } catch {
       setError("We could not start checkout. Please try again in a moment.");
       setSubmitting(false);
+    }
+  };
+
+  const handleRedeemOrg = async () => {
+    if (!orgCode.trim()) return;
+    setOrgRedeeming(true);
+    setError(null);
+    try {
+      await redeemOrgCode(orgCode.trim());
+      window.location.href = "/curriculum";
+    } catch (err: any) {
+      const msg = err?.response?.data?.detail?.envelope_id;
+      if (msg === "org.code_not_found") {
+        setError("That code was not recognized. Check the letters and numbers and try again.");
+      } else if (msg === "org.code_already_claimed") {
+        setError("That code was already used. Ask your organization for a new one.");
+      } else if (msg === "org.license_full") {
+        setError("This code has already been used by the allowed number of people.");
+      } else {
+        setError("We could not redeem that code. Please try again in a moment.");
+      }
+      setOrgRedeeming(false);
     }
   };
 
@@ -165,6 +189,38 @@ export default function PaywallPage({
             onClick={onRedeemGift}
           >
             I have a gift code to redeem
+          </button>
+        </section>
+
+        <section style={CARD} aria-label="Organization access code">
+          <h2 style={H2}>I have an organization code</h2>
+          <p style={BODY}>
+            If your employer, health plan, or community gave you an access code,
+            enter it here.
+          </p>
+          <input
+            type="text"
+            value={orgCode}
+            onChange={(e) => setOrgCode(e.target.value)}
+            placeholder="Paste your access code"
+            aria-label="Organization access code"
+            style={{
+              width: "100%",
+              padding: SPACING.sm,
+              border: "1px solid #d3d3d3",
+              borderRadius: RADIUS.sm,
+              marginBottom: SPACING.md,
+              fontSize: TYPOGRAPHY.bodySizePx,
+              fontFamily: TYPOGRAPHY.fontFamily,
+            }}
+          />
+          <button
+            type="button"
+            style={SECONDARY_BTN}
+            disabled={orgRedeeming || !orgCode.trim()}
+            onClick={handleRedeemOrg}
+          >
+            {orgRedeeming ? "Checking..." : "Continue with organization code"}
           </button>
         </section>
 

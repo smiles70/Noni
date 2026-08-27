@@ -6,6 +6,11 @@
  */
 import { apiClient } from "./client";
 
+export interface OrgRedeemResponse {
+  granted: boolean;
+  product_code: string;
+}
+
 export interface CheckoutResponse {
   purchase_id: string;
   checkout_url: string;
@@ -61,5 +66,10 @@ export interface GiftClaim {
 
 export async function claimGift(token: string): Promise<GiftClaim> {
   const res = await apiClient.post<GiftClaim>("/api/gifts/claim", { token });
+  return res.data;
+}
+
+export async function redeemOrgCode(code: string): Promise<OrgRedeemResponse> {
+  const res = await apiClient.post<OrgRedeemResponse>("/api/v1/billing/org/redeem", { code });
   return res.data;
 }
