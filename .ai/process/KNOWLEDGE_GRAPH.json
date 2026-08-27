@@ -1,0 +1,2089 @@
+{
+  "ontology": {
+    "version": "v9.51",
+    "entities": [
+      "SourceArtifact",
+      "Requirement",
+      "Capability",
+      "Epic",
+      "UserStory",
+      "AcceptanceCriterion",
+      "Test",
+      "Evidence",
+      "Owner",
+      "Decision",
+      "Dependency",
+      "Gap",
+      "Conflict",
+      "Assumption"
+    ],
+    "relationships": [
+      "defines",
+      "mandates",
+      "enforces",
+      "supports",
+      "implemented_by",
+      "verified_by",
+      "evidenced_by",
+      "shapes",
+      "authorizes",
+      "informs",
+      "consolidates",
+      "depends_on",
+      "blocked_by",
+      "has_gap",
+      "owns"
+    ]
+  },
+  "metadata": {
+    "repo": "smiles70/Noni",
+    "date": "2026-08-27",
+    "node_count": 140,
+    "edge_count": 159
+  },
+  "nodes": [
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-README",
+      "name": "README.md",
+      "path": "/home/hazbyn/Noni/README.md",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-ARCH",
+      "name": "ARCHITECTURE.md",
+      "path": "/home/hazbyn/Noni/ARCHITECTURE.md",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-IDD",
+      "name": "IDD-2026-cognitively-protective-iscs.md",
+      "path": "/home/hazbyn/Noni/docs/library/IDD-2026-cognitively-protective-iscs.md",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-CONTRACT",
+      "name": "CONTRACT.md",
+      "path": "/home/hazbyn/Noni/docs/library/CONTRACT.md",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-LIB-README",
+      "name": "docs/library/README.md",
+      "path": "/home/hazbyn/Noni/docs/library/README.md",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-ADR-0001",
+      "name": "0001-landing-flow.md",
+      "path": "/home/hazbyn/Noni/docs/decisions/0001-landing-flow.md",
+      "authority": "decision"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-ADR-0019",
+      "name": "0019-closed-world-design-contract.md",
+      "path": "/home/hazbyn/Noni/docs/decisions/0019-closed-world-design-contract.md",
+      "authority": "decision"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-ADR-0021",
+      "name": "0021-pricing-and-tiering.md",
+      "path": "/home/hazbyn/Noni/docs/decisions/0021-pricing-and-tiering.md",
+      "authority": "decision"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-COMPETITOR",
+      "name": "teaching-methodology-competitor-landscape.md",
+      "path": "/home/hazbyn/Noni/docs/library/teaching-methodology-competitor-landscape.md",
+      "authority": "secondary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-RUBRIC",
+      "name": "geragogy-quality-standards-rubric.md",
+      "path": "/home/hazbyn/Noni/docs/library/geragogy-quality-standards-rubric.md",
+      "authority": "secondary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-PRA",
+      "name": "PRA_REPORT.md",
+      "path": "/home/hazbyn/Noni/.ai/production-readiness/PRA_REPORT.md",
+      "authority": "assessment"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-NELSON",
+      "name": "nelson-scorecard.md",
+      "path": "/home/hazbyn/Noni/.ai/nelson/nelson-scorecard.md",
+      "authority": "assessment"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-PROJECT-INTENT",
+      "name": "PROJECT_INTENT.md",
+      "path": "/home/hazbyn/Noni/.ai/process/PROJECT_INTENT.md",
+      "authority": "assessment"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-001",
+      "name": "Cognitive Safety First",
+      "text": "All design must respect older-adult cognitive needs",
+      "priority": "critical"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-002",
+      "name": "Backend Authority",
+      "text": "All progression decisions live in backend code",
+      "priority": "critical"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-003",
+      "name": "Frontend Passivity",
+      "text": "Frontend never determines user state",
+      "priority": "critical"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-004",
+      "name": "Reversibility",
+      "text": "All user advancement is reversible",
+      "priority": "critical"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-005",
+      "name": "No Urgency Framing",
+      "text": "No timers, countdowns, or artificial pressure",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-006",
+      "name": "No Dark Patterns",
+      "text": "No psychological manipulation or deceptive design",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-007",
+      "name": "Explicit Review",
+      "text": "No automated actions without explicit review",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-008",
+      "name": "Auditability",
+      "text": "All system behavior must be auditable",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-009",
+      "name": "Long-Term Maintainability",
+      "text": "Code remains understandable and modifiable",
+      "priority": "medium"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-010",
+      "name": "UI State Envelope",
+      "text": "All renderable screens are returned as typed backend-approved envelopes",
+      "priority": "critical"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-011",
+      "name": "Render Guard Fail-Closed",
+      "text": "RenderGuard blocks on any contract violation",
+      "priority": "critical"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-012",
+      "name": "Closed Reference Library",
+      "text": "All design rationale cites only permitted sources",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-013",
+      "name": "Free Tier is Complete",
+      "text": "Modules 1-3 are a complete, dignified AI literacy",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-014",
+      "name": "No Subscriptions",
+      "text": "No recurring billing, no auto-renew, no trial conversions",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-015",
+      "name": "No Paywall Mid-Unit",
+      "text": "Paywalls live strictly between modules",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-016",
+      "name": "WCAG 2.1 AA",
+      "text": "Frontend meets WCAG 2.1 AA via axe-playwright",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-017",
+      "name": "No Localhost in Production Bundle",
+      "text": "Production bundle must not contain localhost API references",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-018",
+      "name": "Zero npm Vulnerabilities",
+      "text": "No unpatched vulnerabilities in dependency tree",
+      "priority": "high"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-001",
+      "name": "Interface State Control System (ISCS)",
+      "path": "/home/hazbyn/Noni/backend/core/interface_control/"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-002",
+      "name": "UI State Envelope",
+      "path": "/home/hazbyn/Noni/backend/api/routes/ui_envelope.py"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-003",
+      "name": "React RenderGuard",
+      "path": "/home/hazbyn/Noni/frontend/src/design/__tests__/RenderGuard.test.ts"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-004",
+      "name": "Curriculum API",
+      "path": "/home/hazbyn/Noni/backend/api/routes/curriculum.py"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-005",
+      "name": "Landing API",
+      "path": "/home/hazbyn/Noni/backend/api/routes/landing.py"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-006",
+      "name": "Billing API",
+      "path": "/home/hazbyn/Noni/backend/api/routes/billing.py"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-007",
+      "name": "Auth API",
+      "path": "/home/hazbyn/Noni/backend/api/routes/auth.py"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-008",
+      "name": "Telemetry Export",
+      "path": "/home/hazbyn/Noni/backend/api/routes/telemetry_export.py"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-009",
+      "name": "Telemetry Summary",
+      "path": "/home/hazbyn/Noni/backend/api/routes/telemetry_summary.py"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-010",
+      "name": "Session Validation",
+      "path": "/home/hazbyn/Noni/backend/api/routes/session_validation.py"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-011",
+      "name": "Onboarding Telemetry",
+      "path": "/home/hazbyn/Noni/backend/api/routes/onboarding_telemetry.py"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-012",
+      "name": "Frontend Build & Bundle Verification",
+      "path": "/home/hazbyn/Noni/frontend/scripts/verify-bundle.mjs"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-013",
+      "name": "Frontend Unit Tests",
+      "path": "/home/hazbyn/Noni/frontend/src/"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-014",
+      "name": "Backend pytest Suite",
+      "path": "/home/hazbyn/Noni/backend/tests/"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-015",
+      "name": "CI/CD Workflows",
+      "path": "/home/hazbyn/Noni/.github/workflows/"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-016",
+      "name": "Nelson Scoring",
+      "path": "/home/hazbyn/Noni/.ai/nelson/nelson-scorecard.json"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-017",
+      "name": "PRA Assessment",
+      "path": "/home/hazbyn/Noni/.ai/production-readiness/PRA_REPORT.json"
+    },
+    {
+      "kind": "Decision",
+      "id": "DEC-001",
+      "name": "Landing flow sequenced by user agency",
+      "status": "accepted",
+      "source": "ADR-0001"
+    },
+    {
+      "kind": "Decision",
+      "id": "DEC-002",
+      "name": "Closed-world design/rendering/AI contract",
+      "status": "accepted",
+      "source": "ADR-0019"
+    },
+    {
+      "kind": "Decision",
+      "id": "DEC-003",
+      "name": "Pricing: free 1-3, one-time 4-5, no subscriptions",
+      "status": "accepted",
+      "source": "ADR-0021"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-001",
+      "name": "npm run type-check",
+      "command": "npm run type-check",
+      "status": "pass"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-002",
+      "name": "npm run build",
+      "command": "npm run build",
+      "status": "pass"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-003",
+      "name": "npm run test:unit",
+      "command": "npm run test:unit",
+      "status": "pass",
+      "result": "120 passed, 15 expected fail"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-004",
+      "name": "npm audit",
+      "command": "npm audit",
+      "status": "pass",
+      "result": "0 vulnerabilities"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-005",
+      "name": "pytest test_iscs.py",
+      "command": "pytest backend/tests/test_iscs.py --no-cov",
+      "status": "pass"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-006",
+      "name": "pytest test_geragogy_signals.py",
+      "command": "pytest backend/tests/test_geragogy_signals.py --no-cov",
+      "status": "pass"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-007",
+      "name": "Bundle verification",
+      "command": "frontend/scripts/verify-bundle.mjs",
+      "status": "pass"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-008",
+      "name": "Full backend suite",
+      "command": "pytest backend/tests",
+      "status": "blocked"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-001",
+      "name": "Production build passes",
+      "artifact": "frontend/dist/"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-002",
+      "name": "Unit tests pass",
+      "artifact": "frontend/test output"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-003",
+      "name": "No npm vulnerabilities",
+      "artifact": "package-lock.json"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-004",
+      "name": "ISCS subset tests pass",
+      "artifact": "backend/tests/test_iscs.py"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-005",
+      "name": "PRA score 91/100",
+      "artifact": ".ai/production-readiness/PRA_REPORT.md"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-006",
+      "name": "Nelson score 95/100",
+      "artifact": ".ai/nelson/nelson-scorecard.md"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-001",
+      "name": "No live Postgres/Redis",
+      "reason": "Docker unavailable in sandbox; full backend suite blocked"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-002",
+      "name": "No SIEM integration",
+      "reason": "Not configured; logs stdout only"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-003",
+      "name": "No Lighthouse/pa11y baseline",
+      "reason": "Not established"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-004",
+      "name": "No canonical CHARTER.md",
+      "reason": "Purpose distributed across README, ARCHITECTURE, IDD, ADRs"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-005",
+      "name": "No PERSONAS.md",
+      "reason": "Audience inferred from IDD and ADRs"
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-001",
+      "name": "Auth vendor decision",
+      "status": "deferred",
+      "reason": "Needed for per-learner state"
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-002",
+      "name": "Claude API key",
+      "status": "deferred",
+      "reason": "Needed for real Module 4/5 interactivity"
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-003",
+      "name": "numpy 1.26.4 vs 2.5.2",
+      "status": "deviation",
+      "reason": "Python 3.14 needs cp314 wheel"
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-004",
+      "name": "Docker for local services",
+      "status": "missing",
+      "reason": "docker command not found in environment"
+    },
+    {
+      "kind": "Owner",
+      "id": "OWN-001",
+      "name": "Noni Engineering Team",
+      "domain": "engineering"
+    },
+    {
+      "kind": "Owner",
+      "id": "OWN-002",
+      "name": "Product / Geragogy Lead",
+      "domain": "product"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-MAGIC-INTAKE",
+      "name": "Magic.link auth intake",
+      "path": ".ai/intake/2026-08-27-magic-link-auth.md",
+      "authority": "intake"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-MAGIC-ADR",
+      "name": "ADR 0027 Magic.link auth",
+      "path": "docs/decisions/0027-magic-link-auth.md",
+      "authority": "decision"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-MAGIC-PLAN",
+      "name": "Magic.link integration plan",
+      "path": ".ai/process/MAGIC_LINK_INTEGRATION_PLAN.md",
+      "authority": "plan"
+    },
+    {
+      "kind": "Decision",
+      "id": "DEC-0027",
+      "name": "Select Magic.link as production auth provider",
+      "status": "accepted",
+      "source": "ADR-0027"
+    },
+    {
+      "kind": "Requirement",
+      "id": "FR-001",
+      "name": "FR-001: Add Magic.link as a supported AUTH_PROVIDER value",
+      "category": "functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "FR-002",
+      "name": "FR-002: Authenticate users via email magic links",
+      "category": "functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "FR-003",
+      "name": "FR-003: Validate DID tokens server-side and extract email",
+      "category": "functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "FR-004",
+      "name": "FR-004: Materialize accounts rows on first verified sign-in",
+      "category": "functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "FR-005",
+      "name": "FR-005: Preserve AuthProvider session resolution contract",
+      "category": "functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "FR-006",
+      "name": "FR-006: Support mock fallback for dev/tests",
+      "category": "functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "FR-007",
+      "name": "FR-007: Update public privacy/terms to reference Magic",
+      "category": "functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "FR-008",
+      "name": "FR-008: Update CI/deploy secrets for MAGIC_* env vars",
+      "category": "functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "NFR-001",
+      "name": "NFR-001: No passwords, no dark patterns, no urgency framing",
+      "category": "non-functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "NFR-002",
+      "name": "NFR-002: No auto-renew or subscription vendor lock-in",
+      "category": "non-functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "NFR-003",
+      "name": "NFR-003: DID token short lifetime and user-initiated refresh",
+      "category": "non-functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "NFR-004",
+      "name": "NFR-004: Geragogy-first copy on the sign-in page",
+      "category": "non-functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "NFR-005",
+      "name": "NFR-005: Maintain WCAG 2.1 AA compliance",
+      "category": "non-functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "NFR-006",
+      "name": "NFR-006: Maintain the closed-world UI contract",
+      "category": "non-functional",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-001",
+      "name": "TR-001: Add magic-admin to Python dependencies",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-002",
+      "name": "TR-002: Add magic-sdk to frontend package.json",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-003",
+      "name": "TR-003: Implement MagicAuthProvider class",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-004",
+      "name": "TR-004: Implement magic_verifier.py with fail-closed validation",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-005",
+      "name": "TR-005: Update core config with MAGIC_* settings",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-006",
+      "name": "TR-006: Update auth_verifier.py for magic branch",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-007",
+      "name": "TR-007: Update SignInPage.tsx to call loginWithMagicLink",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-008",
+      "name": "TR-008: Update AuthProvider.tsx to use DID token",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-009",
+      "name": "TR-009: Update infrastructure env and secret files",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "TR-010",
+      "name": "TR-010: Add unit and integration tests for Magic flow",
+      "category": "technical",
+      "priority": "high"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-MAGIC-SDK",
+      "name": "Magic Web SDK client",
+      "path": "frontend/src/lib/magic.ts",
+      "status": "implemented"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-MAGIC-ADMIN",
+      "name": "Magic Admin Python SDK",
+      "path": "backend/services/magic_verifier.py",
+      "status": "implemented"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-MAGIC-VERIFIER",
+      "name": "DID token validation",
+      "path": "backend/services/magic_verifier.py",
+      "status": "implemented"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-MAGIC-LOGIN",
+      "name": "Magic link sign-in UI",
+      "path": "frontend/src/components/SignInPage.tsx",
+      "status": "implemented"
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-MAGIC-CONFIG",
+      "name": "Magic environment configuration",
+      "path": "backend/core/config.py",
+      "status": "implemented"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-MAGIC-VERIFIER",
+      "name": "pytest test_magic_verifier.py",
+      "command": "pytest backend/tests/test_magic_verifier.py --no-cov -q",
+      "status": "passed"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-MAGIC-AUTH-FE",
+      "name": "Magic auth frontend unit tests",
+      "command": "npm run test:unit",
+      "status": "pending"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-MAGIC-INTAKE",
+      "name": "Magic intake accepted",
+      "artifact": ".ai/intake/2026-08-27-magic-link-auth.md"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-MAGIC-ADR",
+      "name": "ADR 0027 accepted",
+      "artifact": "docs/decisions/0027-magic-link-auth.md"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-MAGIC-PLAN",
+      "name": "Integration plan issued",
+      "artifact": ".ai/process/MAGIC_LINK_INTEGRATION_PLAN.md"
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-MAGIC-ACCOUNT",
+      "name": "Magic Dashboard account",
+      "status": "missing",
+      "reason": "Must create app and get API keys"
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-MAGIC-SDK-FE",
+      "name": "magic-sdk npm package",
+      "status": "pending"
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-MAGIC-ADMIN",
+      "name": "magic-admin python package",
+      "status": "pending"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-MAGIC-IMPL",
+      "name": "Magic provider not yet implemented",
+      "reason": "implemented 2026-08-27 (Phases 1-3)",
+      "status": "closed"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-MAGIC-SESSION-REFRESH",
+      "name": "DID 15-minute token refresh strategy not defined",
+      "reason": "Needs ADR/clarification for long learning sessions"
+    },
+    {
+      "kind": "Assumption",
+      "id": "ASM-MAGIC-PRICING",
+      "name": "Magic free tier sufficient for pilot",
+      "reason": "Will validate before launch"
+    },
+    {
+      "kind": "Owner",
+      "id": "OWN-MAGIC",
+      "name": "Noni Engineering Team",
+      "domain": "engineering"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-BRD-AUTH-001",
+      "name": "BRD-AUTH-001 Business Requirements",
+      "path": "/home/hazbyn/Noni/docs/requirements/BRD.md",
+      "authority": "canonical"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-FRD-AUTH-001",
+      "name": "FRD-AUTH-001 Functional Requirements",
+      "path": "/home/hazbyn/Noni/docs/requirements/FRD.md",
+      "authority": "canonical"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-PRD-AUTH-001",
+      "name": "PRD-AUTH-001 Product Requirements",
+      "path": "/home/hazbyn/Noni/docs/requirements/PRD.md",
+      "authority": "canonical"
+    },
+    {
+      "kind": "Requirement",
+      "id": "BRG-001",
+      "name": "BRG-001: Reduce sign-in abandonment for learners 55+",
+      "category": "business",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "BRG-002",
+      "name": "BRG-002: Eliminate password management burden",
+      "category": "business",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "BRG-003",
+      "name": "BRG-003: No auto-renew or dark patterns in auth vendor",
+      "category": "business",
+      "priority": "high"
+    },
+    {
+      "kind": "Requirement",
+      "id": "BRG-004",
+      "name": "BRG-004: Enable real older-adult pilots",
+      "category": "business",
+      "priority": "high"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-MAGIC-RESEARCH",
+      "name": "Magic.link implementation research",
+      "path": ".ai/process/MAGIC_IMPLEMENTATION_RESEARCH.md",
+      "authority": "research"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-MAGIC-SUBJECT-ID",
+      "name": "Magic auth_user_id should derive from sub, not email",
+      "reason": "Research edge case E-007"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-MAGIC-REDIRECT",
+      "name": "Decision needed on redirectURI and callback page",
+      "reason": "Research edge case E-006"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-MAGIC-REFRESH",
+      "name": "DID token 15-min refresh strategy not defined",
+      "reason": "Research issue 3.1"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-MAGIC-TEST-MODE",
+      "name": "Need dedicated test-mode tenant and CI config",
+      "reason": "Research issue 3.6"
+    },
+    {
+      "kind": "Assumption",
+      "id": "ASM-MAGIC-EMAIL",
+      "name": "Magic email deliverability acceptable for pilot",
+      "reason": "Research issue 3.4"
+    },
+    {
+      "kind": "Assumption",
+      "id": "ASM-MAGIC-FREE-TIER",
+      "name": "Magic free tier (1,000 MAW) sufficient for pilot",
+      "reason": "Research pricing"
+    },
+    {
+      "kind": "Assumption",
+      "id": "ASM-MAGIC-AUTH-APP",
+      "name": "Dashboard will create a Magic Auth app, not Magic Connect",
+      "reason": "Research issue 3.3"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-MAGIC-VERIFY-TEST",
+      "name": "Magic verifier unit tests passed",
+      "artifact": "backend/tests/test_magic_verifier.py",
+      "result": "13 passed"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-MAGIC-TC",
+      "name": "Frontend type-check passed",
+      "command": "npm run type-check"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-MAGIC-UNIT",
+      "name": "Frontend unit tests passed",
+      "command": "npm run test:unit",
+      "result": "120 passed"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-MAGIC-BUILD",
+      "name": "Frontend production build passed",
+      "command": "npm run build"
+    }
+  ],
+  "edges": [
+    {
+      "source": "SRC-README",
+      "relationship": "defines",
+      "target": "REQ-001",
+      "provenance": "README.md \u00a71",
+      "status": "active"
+    },
+    {
+      "source": "SRC-README",
+      "relationship": "defines",
+      "target": "REQ-002",
+      "provenance": "README.md \u00a73",
+      "status": "active"
+    },
+    {
+      "source": "SRC-README",
+      "relationship": "defines",
+      "target": "REQ-003",
+      "provenance": "README.md \u00a73",
+      "status": "active"
+    },
+    {
+      "source": "SRC-README",
+      "relationship": "defines",
+      "target": "REQ-004",
+      "provenance": "README.md \u00a73",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ARCH",
+      "relationship": "mandates",
+      "target": "REQ-005",
+      "provenance": "ARCHITECTURE.md Rule 5",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ARCH",
+      "relationship": "mandates",
+      "target": "REQ-006",
+      "provenance": "ARCHITECTURE.md Rule 6",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ARCH",
+      "relationship": "mandates",
+      "target": "REQ-007",
+      "provenance": "ARCHITECTURE.md Rule 7",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ARCH",
+      "relationship": "mandates",
+      "target": "REQ-008",
+      "provenance": "ARCHITECTURE.md Rule 9",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ARCH",
+      "relationship": "mandates",
+      "target": "REQ-009",
+      "provenance": "ARCHITECTURE.md Rule 10",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ARCH",
+      "relationship": "mandates",
+      "target": "REQ-001",
+      "provenance": "ARCHITECTURE.md Rule 8",
+      "status": "active"
+    },
+    {
+      "source": "SRC-CONTRACT",
+      "relationship": "mandates",
+      "target": "REQ-010",
+      "provenance": "CONTRACT.md \u00a7IV.A",
+      "status": "active"
+    },
+    {
+      "source": "SRC-CONTRACT",
+      "relationship": "mandates",
+      "target": "REQ-011",
+      "provenance": "CONTRACT.md \u00a7IV.B",
+      "status": "active"
+    },
+    {
+      "source": "SRC-CONTRACT",
+      "relationship": "mandates",
+      "target": "REQ-012",
+      "provenance": "CONTRACT.md \u00a7I",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ADR-0019",
+      "relationship": "enforces",
+      "target": "REQ-010",
+      "provenance": "ADR 0019 \u00a74",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ADR-0019",
+      "relationship": "enforces",
+      "target": "REQ-011",
+      "provenance": "ADR 0019 \u00a74",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ADR-0019",
+      "relationship": "enforces",
+      "target": "REQ-012",
+      "provenance": "ADR 0019 \u00a72",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ADR-0021",
+      "relationship": "enforces",
+      "target": "REQ-013",
+      "provenance": "ADR 0021 \u00a7(1)",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ADR-0021",
+      "relationship": "enforces",
+      "target": "REQ-014",
+      "provenance": "ADR 0021 \u00a7(4)",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ADR-0021",
+      "relationship": "enforces",
+      "target": "REQ-015",
+      "provenance": "ADR 0021 \u00a7(5)",
+      "status": "active"
+    },
+    {
+      "source": "SRC-LIB-README",
+      "relationship": "supports",
+      "target": "REQ-012",
+      "provenance": "docs/library/README.md",
+      "status": "active"
+    },
+    {
+      "source": "REQ-001",
+      "relationship": "implemented_by",
+      "target": "CAP-001",
+      "provenance": "ISCS protects cognitive safety",
+      "status": "active"
+    },
+    {
+      "source": "REQ-002",
+      "relationship": "implemented_by",
+      "target": "CAP-002",
+      "provenance": "UI state governed by backend",
+      "status": "active"
+    },
+    {
+      "source": "REQ-003",
+      "relationship": "implemented_by",
+      "target": "CAP-003",
+      "provenance": "RenderGuard enforces passivity",
+      "status": "active"
+    },
+    {
+      "source": "REQ-004",
+      "relationship": "implemented_by",
+      "target": "CAP-004",
+      "provenance": "Curriculum API preserves history",
+      "status": "active"
+    },
+    {
+      "source": "REQ-005",
+      "relationship": "implemented_by",
+      "target": "CAP-005",
+      "provenance": "Landing API has no urgency",
+      "status": "active"
+    },
+    {
+      "source": "REQ-006",
+      "relationship": "implemented_by",
+      "target": "CAP-006",
+      "provenance": "Billing follows non-dark-pattern model",
+      "status": "active"
+    },
+    {
+      "source": "REQ-007",
+      "relationship": "implemented_by",
+      "target": "CAP-008",
+      "provenance": "Telemetry export enables review",
+      "status": "active"
+    },
+    {
+      "source": "REQ-008",
+      "relationship": "implemented_by",
+      "target": "CAP-009",
+      "provenance": "Telemetry summary supports audit",
+      "status": "active"
+    },
+    {
+      "source": "REQ-010",
+      "relationship": "implemented_by",
+      "target": "CAP-002",
+      "provenance": "UI envelope returned",
+      "status": "active"
+    },
+    {
+      "source": "REQ-011",
+      "relationship": "implemented_by",
+      "target": "CAP-003",
+      "provenance": "RenderGuard validates",
+      "status": "active"
+    },
+    {
+      "source": "REQ-012",
+      "relationship": "implemented_by",
+      "target": "CAP-003",
+      "provenance": "Closed component inventory",
+      "status": "active"
+    },
+    {
+      "source": "REQ-013",
+      "relationship": "implemented_by",
+      "target": "CAP-004",
+      "provenance": "Free modules 1-3",
+      "status": "active"
+    },
+    {
+      "source": "REQ-014",
+      "relationship": "implemented_by",
+      "target": "CAP-006",
+      "provenance": "One-time purchase, no subscriptions",
+      "status": "active"
+    },
+    {
+      "source": "REQ-015",
+      "relationship": "implemented_by",
+      "target": "CAP-004",
+      "provenance": "Paywall at module boundary",
+      "status": "active"
+    },
+    {
+      "source": "REQ-016",
+      "relationship": "implemented_by",
+      "target": "CAP-013",
+      "provenance": "axe-playwright E2E",
+      "status": "active"
+    },
+    {
+      "source": "REQ-017",
+      "relationship": "implemented_by",
+      "target": "CAP-012",
+      "provenance": "verify-bundle.mjs",
+      "status": "active"
+    },
+    {
+      "source": "REQ-018",
+      "relationship": "implemented_by",
+      "target": "CAP-012",
+      "provenance": "npm audit",
+      "status": "active"
+    },
+    {
+      "source": "CAP-012",
+      "relationship": "verified_by",
+      "target": "TEST-002",
+      "provenance": "build command",
+      "status": "active"
+    },
+    {
+      "source": "CAP-012",
+      "relationship": "verified_by",
+      "target": "TEST-007",
+      "provenance": "bundle verification script",
+      "status": "active"
+    },
+    {
+      "source": "CAP-013",
+      "relationship": "verified_by",
+      "target": "TEST-001",
+      "provenance": "type-check",
+      "status": "active"
+    },
+    {
+      "source": "CAP-013",
+      "relationship": "verified_by",
+      "target": "TEST-003",
+      "provenance": "unit tests",
+      "status": "active"
+    },
+    {
+      "source": "CAP-014",
+      "relationship": "verified_by",
+      "target": "TEST-005",
+      "provenance": "test_iscs.py",
+      "status": "active"
+    },
+    {
+      "source": "CAP-014",
+      "relationship": "verified_by",
+      "target": "TEST-006",
+      "provenance": "test_geragogy_signals.py",
+      "status": "active"
+    },
+    {
+      "source": "CAP-014",
+      "relationship": "verified_by",
+      "target": "TEST-008",
+      "provenance": "full suite (blocked)",
+      "status": "active"
+    },
+    {
+      "source": "CAP-006",
+      "relationship": "verified_by",
+      "target": "TEST-004",
+      "provenance": "npm audit",
+      "status": "active"
+    },
+    {
+      "source": "CAP-001",
+      "relationship": "verified_by",
+      "target": "TEST-005",
+      "provenance": "test_iscs.py",
+      "status": "active"
+    },
+    {
+      "source": "CAP-002",
+      "relationship": "verified_by",
+      "target": "TEST-008",
+      "provenance": "full envelope tests",
+      "status": "active"
+    },
+    {
+      "source": "CAP-012",
+      "relationship": "evidenced_by",
+      "target": "EVI-001",
+      "provenance": "dist/ generated",
+      "status": "active"
+    },
+    {
+      "source": "CAP-013",
+      "relationship": "evidenced_by",
+      "target": "EVI-002",
+      "provenance": "test output",
+      "status": "active"
+    },
+    {
+      "source": "CAP-006",
+      "relationship": "evidenced_by",
+      "target": "EVI-003",
+      "provenance": "package-lock.json",
+      "status": "active"
+    },
+    {
+      "source": "CAP-001",
+      "relationship": "evidenced_by",
+      "target": "EVI-004",
+      "provenance": "test_iscs.py",
+      "status": "active"
+    },
+    {
+      "source": "CAP-017",
+      "relationship": "evidenced_by",
+      "target": "EVI-005",
+      "provenance": "PRA report",
+      "status": "active"
+    },
+    {
+      "source": "CAP-016",
+      "relationship": "evidenced_by",
+      "target": "EVI-006",
+      "provenance": "Nelson scorecard",
+      "status": "active"
+    },
+    {
+      "source": "DEC-001",
+      "relationship": "shapes",
+      "target": "CAP-005",
+      "provenance": "Landing API",
+      "status": "active"
+    },
+    {
+      "source": "DEC-002",
+      "relationship": "shapes",
+      "target": "CAP-002",
+      "provenance": "UI envelope",
+      "status": "active"
+    },
+    {
+      "source": "DEC-002",
+      "relationship": "shapes",
+      "target": "CAP-003",
+      "provenance": "RenderGuard",
+      "status": "active"
+    },
+    {
+      "source": "DEC-003",
+      "relationship": "shapes",
+      "target": "CAP-006",
+      "provenance": "Billing model",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ADR-0019",
+      "relationship": "authorizes",
+      "target": "DEC-002",
+      "provenance": "closed contract",
+      "status": "active"
+    },
+    {
+      "source": "SRC-ADR-0021",
+      "relationship": "authorizes",
+      "target": "DEC-003",
+      "provenance": "pricing",
+      "status": "active"
+    },
+    {
+      "source": "SRC-IDD",
+      "relationship": "informs",
+      "target": "SRC-CONTRACT",
+      "provenance": "IDD Section II informs UI contract",
+      "status": "active"
+    },
+    {
+      "source": "SRC-IDD",
+      "relationship": "informs",
+      "target": "SRC-PROJECT-INTENT",
+      "provenance": "IDD is core provenance",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PROJECT-INTENT",
+      "relationship": "consolidates",
+      "target": "SRC-README",
+      "provenance": "Synthesis",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PROJECT-INTENT",
+      "relationship": "consolidates",
+      "target": "SRC-IDD",
+      "provenance": "Synthesis",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PROJECT-INTENT",
+      "relationship": "consolidates",
+      "target": "SRC-COMPETITOR",
+      "provenance": "Synthesis",
+      "status": "active"
+    },
+    {
+      "source": "CAP-007",
+      "relationship": "depends_on",
+      "target": "DEP-001",
+      "provenance": "Auth API needs auth vendor",
+      "status": "active"
+    },
+    {
+      "source": "CAP-004",
+      "relationship": "depends_on",
+      "target": "DEP-003",
+      "provenance": "numpy for ISCS",
+      "status": "active"
+    },
+    {
+      "source": "CAP-014",
+      "relationship": "depends_on",
+      "target": "DEP-004",
+      "provenance": "Postgres for full tests",
+      "status": "active"
+    },
+    {
+      "source": "CAP-004",
+      "relationship": "depends_on",
+      "target": "DEP-002",
+      "provenance": "Real Claude for Module 4/5",
+      "status": "active"
+    },
+    {
+      "source": "REQ-002",
+      "relationship": "blocked_by",
+      "target": "GAP-001",
+      "provenance": "Full test evidence missing",
+      "status": "active"
+    },
+    {
+      "source": "CAP-014",
+      "relationship": "blocked_by",
+      "target": "GAP-001",
+      "provenance": "Cannot run full backend suite",
+      "status": "active"
+    },
+    {
+      "source": "CAP-001",
+      "relationship": "has_gap",
+      "target": "GAP-004",
+      "provenance": "No CHARTER.md",
+      "status": "active"
+    },
+    {
+      "source": "SRC-README",
+      "relationship": "has_gap",
+      "target": "GAP-004",
+      "provenance": "Charter distributed",
+      "status": "active"
+    },
+    {
+      "source": "SRC-README",
+      "relationship": "has_gap",
+      "target": "GAP-005",
+      "provenance": "Personas distributed",
+      "status": "active"
+    },
+    {
+      "source": "OWN-001",
+      "relationship": "owns",
+      "target": "CAP-012",
+      "provenance": "Engineering",
+      "status": "active"
+    },
+    {
+      "source": "OWN-001",
+      "relationship": "owns",
+      "target": "CAP-014",
+      "provenance": "Engineering",
+      "status": "active"
+    },
+    {
+      "source": "OWN-002",
+      "relationship": "owns",
+      "target": "DEC-003",
+      "provenance": "Product",
+      "status": "active"
+    },
+    {
+      "source": "OWN-002",
+      "relationship": "owns",
+      "target": "REQ-005",
+      "provenance": "Product",
+      "status": "active"
+    },
+    {
+      "source": "SRC-MAGIC-INTAKE",
+      "relationship": "defines",
+      "target": "FR-001",
+      "provenance": "intake FR section",
+      "status": "active"
+    },
+    {
+      "source": "SRC-MAGIC-INTAKE",
+      "relationship": "defines",
+      "target": "NFR-001",
+      "provenance": "intake NFR section",
+      "status": "active"
+    },
+    {
+      "source": "SRC-MAGIC-ADR",
+      "relationship": "authorizes",
+      "target": "DEC-0027",
+      "provenance": "ADR 0027",
+      "status": "active"
+    },
+    {
+      "source": "DEC-0027",
+      "relationship": "shapes",
+      "target": "FR-001",
+      "provenance": "provider selection",
+      "status": "active"
+    },
+    {
+      "source": "DEC-0027",
+      "relationship": "shapes",
+      "target": "TR-001",
+      "provenance": "provider selection",
+      "status": "active"
+    },
+    {
+      "source": "DEC-0027",
+      "relationship": "shapes",
+      "target": "CAP-MAGIC-SDK",
+      "provenance": "provider selection",
+      "status": "active"
+    },
+    {
+      "source": "DEC-0027",
+      "relationship": "shapes",
+      "target": "CAP-MAGIC-ADMIN",
+      "provenance": "provider selection",
+      "status": "active"
+    },
+    {
+      "source": "FR-001",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-CONFIG",
+      "provenance": "AUTH_PROVIDER=magic",
+      "status": "active"
+    },
+    {
+      "source": "FR-002",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-LOGIN",
+      "provenance": "loginWithMagicLink",
+      "status": "active"
+    },
+    {
+      "source": "FR-003",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-VERIFIER",
+      "provenance": "validate_did_token",
+      "status": "active"
+    },
+    {
+      "source": "FR-004",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-ADMIN",
+      "provenance": "account materialization",
+      "status": "active"
+    },
+    {
+      "source": "TR-001",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-ADMIN",
+      "provenance": "magic-admin dependency",
+      "status": "active"
+    },
+    {
+      "source": "TR-002",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-SDK",
+      "provenance": "magic-sdk dependency",
+      "status": "active"
+    },
+    {
+      "source": "TR-003",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-ADMIN",
+      "provenance": "MagicAuthProvider",
+      "status": "active"
+    },
+    {
+      "source": "TR-004",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-VERIFIER",
+      "provenance": "magic_verifier.py",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-VERIFIER",
+      "relationship": "verified_by",
+      "target": "TEST-MAGIC-VERIFIER",
+      "provenance": "pytest",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-LOGIN",
+      "relationship": "verified_by",
+      "target": "TEST-MAGIC-AUTH-FE",
+      "provenance": "vitest",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-ADMIN",
+      "relationship": "evidenced_by",
+      "target": "EVI-MAGIC-ADR",
+      "provenance": "ADR 0027",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-SDK",
+      "relationship": "evidenced_by",
+      "target": "EVI-MAGIC-PLAN",
+      "provenance": "integration plan",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-VERIFIER",
+      "relationship": "depends_on",
+      "target": "DEP-MAGIC-ADMIN",
+      "provenance": "package install",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-SDK",
+      "relationship": "depends_on",
+      "target": "DEP-MAGIC-SDK-FE",
+      "provenance": "package install",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-LOGIN",
+      "relationship": "depends_on",
+      "target": "DEP-MAGIC-ACCOUNT",
+      "provenance": "dashboard key",
+      "status": "active"
+    },
+    {
+      "source": "FR-002",
+      "relationship": "blocked_by",
+      "target": "GAP-MAGIC-IMPL",
+      "provenance": "not implemented yet",
+      "status": "active"
+    },
+    {
+      "source": "FR-003",
+      "relationship": "has_gap",
+      "target": "GAP-MAGIC-SESSION-REFRESH",
+      "provenance": "DID short lifetime",
+      "status": "active"
+    },
+    {
+      "source": "OWN-MAGIC",
+      "relationship": "owns",
+      "target": "CAP-MAGIC-ADMIN",
+      "provenance": "engineering",
+      "status": "active"
+    },
+    {
+      "source": "OWN-MAGIC",
+      "relationship": "owns",
+      "target": "CAP-MAGIC-SDK",
+      "provenance": "engineering",
+      "status": "active"
+    },
+    {
+      "source": "SRC-FRD-AUTH-001",
+      "relationship": "defines",
+      "target": "FR-001",
+      "provenance": "FRD-AUTH-001 FR-001",
+      "status": "active"
+    },
+    {
+      "source": "SRC-FRD-AUTH-001",
+      "relationship": "defines",
+      "target": "FR-002",
+      "provenance": "FRD-AUTH-001 FR-002",
+      "status": "active"
+    },
+    {
+      "source": "SRC-FRD-AUTH-001",
+      "relationship": "defines",
+      "target": "FR-003",
+      "provenance": "FRD-AUTH-001 FR-003",
+      "status": "active"
+    },
+    {
+      "source": "SRC-FRD-AUTH-001",
+      "relationship": "defines",
+      "target": "FR-004",
+      "provenance": "FRD-AUTH-001 FR-004",
+      "status": "active"
+    },
+    {
+      "source": "SRC-FRD-AUTH-001",
+      "relationship": "defines",
+      "target": "FR-005",
+      "provenance": "FRD-AUTH-001 FR-005",
+      "status": "active"
+    },
+    {
+      "source": "SRC-FRD-AUTH-001",
+      "relationship": "defines",
+      "target": "FR-006",
+      "provenance": "FRD-AUTH-001 FR-006",
+      "status": "active"
+    },
+    {
+      "source": "SRC-FRD-AUTH-001",
+      "relationship": "defines",
+      "target": "FR-007",
+      "provenance": "FRD-AUTH-001 FR-007",
+      "status": "active"
+    },
+    {
+      "source": "SRC-FRD-AUTH-001",
+      "relationship": "defines",
+      "target": "FR-008",
+      "provenance": "FRD-AUTH-001 FR-008",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "NFR-001",
+      "provenance": "PRD-AUTH-001 NFR-001",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "NFR-002",
+      "provenance": "PRD-AUTH-001 NFR-002",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "NFR-003",
+      "provenance": "PRD-AUTH-001 NFR-003",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "NFR-004",
+      "provenance": "PRD-AUTH-001 NFR-004",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "NFR-005",
+      "provenance": "PRD-AUTH-001 NFR-005",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "NFR-006",
+      "provenance": "PRD-AUTH-001 NFR-006",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-001",
+      "provenance": "PRD-AUTH-001 TR-001",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-002",
+      "provenance": "PRD-AUTH-001 TR-002",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-003",
+      "provenance": "PRD-AUTH-001 TR-003",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-004",
+      "provenance": "PRD-AUTH-001 TR-004",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-005",
+      "provenance": "PRD-AUTH-001 TR-005",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-006",
+      "provenance": "PRD-AUTH-001 TR-006",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-007",
+      "provenance": "PRD-AUTH-001 TR-007",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-008",
+      "provenance": "PRD-AUTH-001 TR-008",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-009",
+      "provenance": "PRD-AUTH-001 TR-009",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "defines",
+      "target": "TR-010",
+      "provenance": "PRD-AUTH-001 TR-010",
+      "status": "active"
+    },
+    {
+      "source": "SRC-BRD-AUTH-001",
+      "relationship": "defines",
+      "target": "BRG-001",
+      "provenance": "BRD-AUTH-001 B-001",
+      "status": "active"
+    },
+    {
+      "source": "SRC-BRD-AUTH-001",
+      "relationship": "defines",
+      "target": "BRG-002",
+      "provenance": "BRD-AUTH-001 B-002",
+      "status": "active"
+    },
+    {
+      "source": "SRC-BRD-AUTH-001",
+      "relationship": "defines",
+      "target": "BRG-003",
+      "provenance": "BRD-AUTH-001 B-003",
+      "status": "active"
+    },
+    {
+      "source": "SRC-BRD-AUTH-001",
+      "relationship": "defines",
+      "target": "BRG-004",
+      "provenance": "BRD-AUTH-001 B-004",
+      "status": "active"
+    },
+    {
+      "source": "SRC-MAGIC-ADR",
+      "relationship": "informs",
+      "target": "SRC-BRD-AUTH-001",
+      "provenance": "ADR 0027 drives business goals"
+    },
+    {
+      "source": "SRC-MAGIC-INTAKE",
+      "relationship": "informs",
+      "target": "SRC-FRD-AUTH-001",
+      "provenance": "intake FRs"
+    },
+    {
+      "source": "SRC-MAGIC-INTAKE",
+      "relationship": "informs",
+      "target": "SRC-PRD-AUTH-001",
+      "provenance": "intake NFRs/TRs"
+    },
+    {
+      "source": "BRG-001",
+      "relationship": "implemented_by",
+      "target": "FR-002",
+      "provenance": "passwordless flow reduces abandonment"
+    },
+    {
+      "source": "BRG-002",
+      "relationship": "implemented_by",
+      "target": "FR-002",
+      "provenance": "magic links eliminate passwords"
+    },
+    {
+      "source": "BRG-003",
+      "relationship": "implemented_by",
+      "target": "NFR-002",
+      "provenance": "vendor dark-pattern guard"
+    },
+    {
+      "source": "BRG-004",
+      "relationship": "implemented_by",
+      "target": "FR-001",
+      "provenance": "real provider selection"
+    },
+    {
+      "source": "SRC-MAGIC-RESEARCH",
+      "relationship": "informs",
+      "target": "CAP-MAGIC-VERIFIER",
+      "provenance": "DID validation edge cases",
+      "status": "active"
+    },
+    {
+      "source": "SRC-MAGIC-RESEARCH",
+      "relationship": "informs",
+      "target": "CAP-MAGIC-LOGIN",
+      "provenance": "sign-in UX and redirect",
+      "status": "active"
+    },
+    {
+      "source": "SRC-MAGIC-RESEARCH",
+      "relationship": "informs",
+      "target": "CAP-MAGIC-SDK",
+      "provenance": "session/token lifetime",
+      "status": "active"
+    },
+    {
+      "source": "SRC-MAGIC-RESEARCH",
+      "relationship": "informs",
+      "target": "FR-003",
+      "provenance": "DID validation edge cases",
+      "status": "active"
+    },
+    {
+      "source": "SRC-MAGIC-RESEARCH",
+      "relationship": "informs",
+      "target": "FR-004",
+      "provenance": "subject ID edge case E-007",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-VERIFIER",
+      "relationship": "has_gap",
+      "target": "GAP-MAGIC-SUBJECT-ID",
+      "provenance": "must hash sub",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-LOGIN",
+      "relationship": "has_gap",
+      "target": "GAP-MAGIC-REDIRECT",
+      "provenance": "redirectURI decision",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-SDK",
+      "relationship": "has_gap",
+      "target": "GAP-MAGIC-REFRESH",
+      "provenance": "15-min DID lifetime",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-VERIFIER",
+      "relationship": "has_gap",
+      "target": "GAP-MAGIC-TEST-MODE",
+      "provenance": "mock test data",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-SDK",
+      "relationship": "depends_on",
+      "target": "ASM-MAGIC-EMAIL",
+      "provenance": "deliverability",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-SDK",
+      "relationship": "depends_on",
+      "target": "ASM-MAGIC-FREE-TIER",
+      "provenance": "pricing",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-LOGIN",
+      "relationship": "depends_on",
+      "target": "ASM-MAGIC-AUTH-APP",
+      "provenance": "correct app type",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-VERIFIER",
+      "relationship": "evidenced_by",
+      "target": "EVI-MAGIC-VERIFY-TEST",
+      "provenance": "pytest test_magic_verifier.py",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-SDK",
+      "relationship": "evidenced_by",
+      "target": "EVI-MAGIC-TC",
+      "provenance": "npm run type-check",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-SDK",
+      "relationship": "evidenced_by",
+      "target": "EVI-MAGIC-UNIT",
+      "provenance": "npm run test:unit",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-SDK",
+      "relationship": "evidenced_by",
+      "target": "EVI-MAGIC-BUILD",
+      "provenance": "npm run build",
+      "status": "active"
+    },
+    {
+      "source": "CAP-MAGIC-LOGIN",
+      "relationship": "evidenced_by",
+      "target": "EVI-MAGIC-UNIT",
+      "provenance": "SignInPage tests",
+      "status": "active"
+    },
+    {
+      "source": "TEST-MAGIC-VERIFIER",
+      "relationship": "evidenced_by",
+      "target": "EVI-MAGIC-VERIFY-TEST",
+      "provenance": "test run",
+      "status": "active"
+    },
+    {
+      "source": "SRC-FRD-AUTH-001",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-LOGIN",
+      "provenance": "Phase 1-3 implementation",
+      "status": "active"
+    },
+    {
+      "source": "SRC-PRD-AUTH-001",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-VERIFIER",
+      "provenance": "Phase 1-3 implementation",
+      "status": "active"
+    },
+    {
+      "source": "SRC-BRD-AUTH-001",
+      "relationship": "implemented_by",
+      "target": "CAP-MAGIC-SDK",
+      "provenance": "Phase 1-3 implementation",
+      "status": "active"
+    }
+  ]
+}
