@@ -18,8 +18,8 @@ export function ResponsiveGrid({ children, gap = "md" }: GridProps) {
           breakpoint === "mobile"
             ? "1fr"
             : breakpoint === "tablet"
-            ? "1fr 1fr"
-            : "repeat(3, 1fr)",
+              ? "1fr 1fr"
+              : "repeat(3, 1fr)",
         gap: SPACING[breakpoint][gap],
         width: "100%",
       }}

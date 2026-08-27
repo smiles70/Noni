@@ -20,7 +20,11 @@ vi.mock("../../lib/env", () => ({
   IS_PROD: false,
 }));
 
-function CaptureAuth({ captureRef }: { captureRef: { current: AuthContextValue | null } }) {
+function CaptureAuth({
+  captureRef,
+}: {
+  captureRef: { current: AuthContextValue | null };
+}) {
   const auth = useAuth();
   useEffect(() => {
     captureRef.current = auth;
@@ -39,14 +43,18 @@ describe("AuthProvider — mock mode", () => {
         if (url.includes("/auth/config")) {
           return new Response(
             JSON.stringify({ provider: "mock", version: "0.1.0" }),
-            { status: 200, headers: { "content-type": "application/json" } }
+            { status: 200, headers: { "content-type": "application/json" } },
           );
         }
         return new Response(
-          JSON.stringify({ subject: "sub-1", materialized: true, account_id: "acc-1" }),
-          { status: 200, headers: { "content-type": "application/json" } }
+          JSON.stringify({
+            subject: "sub-1",
+            materialized: true,
+            account_id: "acc-1",
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
         );
-      })
+      }),
     );
   });
 
@@ -61,12 +69,9 @@ describe("AuthProvider — mock mode", () => {
     const container = document.createElement("div");
     const root = createRoot(container);
     root.render(
-      createElement(
-        AuthProvider,
-        {
-          children: createElement(CaptureAuth, { captureRef: captured }),
-        }
-      )
+      createElement(AuthProvider, {
+        children: createElement(CaptureAuth, { captureRef: captured }),
+      }),
     );
     await vi.waitFor(() => {
       if (!captured.current) throw new Error("not captured");
@@ -81,12 +86,9 @@ describe("AuthProvider — mock mode", () => {
     const container = document.createElement("div");
     const root = createRoot(container);
     root.render(
-      createElement(
-        AuthProvider,
-        {
-          children: createElement(CaptureAuth, { captureRef: captured }),
-        }
-      )
+      createElement(AuthProvider, {
+        children: createElement(CaptureAuth, { captureRef: captured }),
+      }),
     );
 
     await vi.waitFor(() => {
@@ -108,12 +110,9 @@ describe("AuthProvider — mock mode", () => {
     const container = document.createElement("div");
     const root = createRoot(container);
     root.render(
-      createElement(
-        AuthProvider,
-        {
-          children: createElement(CaptureAuth, { captureRef: captured }),
-        }
-      )
+      createElement(AuthProvider, {
+        children: createElement(CaptureAuth, { captureRef: captured }),
+      }),
     );
     await vi.waitFor(() => {
       if (!captured.current) throw new Error("not captured");
@@ -132,21 +131,22 @@ describe("AuthProvider — mock mode", () => {
 
     // Mock fetch to return 401 Unauthorized.
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn(async () =>
-      new Response(JSON.stringify({ detail: { error: { code: "auth.no_credential" } } }), {
-        status: 401,
-        statusText: "Unauthorized",
-        headers: { "content-type": "application/json" },
-      })
+    globalThis.fetch = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({ detail: { error: { code: "auth.no_credential" } } }),
+          {
+            status: 401,
+            statusText: "Unauthorized",
+            headers: { "content-type": "application/json" },
+          },
+        ),
     ) as unknown as typeof fetch;
 
     root.render(
-      createElement(
-        AuthProvider,
-        {
-          children: createElement(CaptureAuth, { captureRef: captured }),
-        }
-      )
+      createElement(AuthProvider, {
+        children: createElement(CaptureAuth, { captureRef: captured }),
+      }),
     );
 
     await vi.waitFor(() => {

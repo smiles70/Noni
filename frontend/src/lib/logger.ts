@@ -42,19 +42,15 @@ function _emit(level: Level, msg: string, ctx?: unknown): void {
   // Map to the matching console method.
   switch (level) {
     case "debug":
-      // eslint-disable-next-line no-console
       console.debug(payload);
       break;
     case "info":
-      // eslint-disable-next-line no-console
       console.info(payload);
       break;
     case "warn":
-      // eslint-disable-next-line no-console
       console.warn(payload);
       break;
     case "error":
-      // eslint-disable-next-line no-console
       console.error(payload);
       break;
   }

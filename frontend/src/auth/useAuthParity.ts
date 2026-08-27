@@ -18,13 +18,16 @@ type AuthState =
   | { status: "BOOT" }
   | { status: "SIGNED_OUT" }
   | { status: "AUTHENTICATING" }
-  | { status: "READY"; accountId: string | null; email: string | null; displayName: string | null }
+  | {
+      status: "READY";
+      accountId: string | null;
+      email: string | null;
+      displayName: string | null;
+    }
   | { status: "TRANSIENT_ERROR" }
   | { status: "REJECTED"; errorCode: string };
 
-export function useAuthParity(
-  setState: (state: AuthState) => void,
-): void {
+export function useAuthParity(setState: (state: AuthState) => void): void {
   useEffect(() => {
     async function checkProvider() {
       try {
@@ -45,6 +48,5 @@ export function useAuthParity(
     }
 
     checkProvider();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }

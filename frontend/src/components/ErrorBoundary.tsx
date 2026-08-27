@@ -1,6 +1,6 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { logger } from '../lib/logger';
-import { COLORS } from '../design/tokens';
+import { Component, type ErrorInfo, type ReactNode } from "react";
+import { logger } from "../lib/logger";
+import { COLORS } from "../design/tokens";
 
 interface Props {
   children: ReactNode;
@@ -28,8 +28,8 @@ export class ErrorBoundary extends Component<Props, State> {
     // Log to telemetry with request_id if available
     const requestId =
       (window as unknown as { __noni_request_id?: string }).__noni_request_id ??
-      'unknown';
-    logger.error('ErrorBoundary caught error', {
+      "unknown";
+    logger.error("ErrorBoundary caught error", {
       requestId,
       error: error.message,
       componentStack: errorInfo.componentStack,
@@ -42,32 +42,32 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '100vh',
-            padding: '2rem',
-            textAlign: 'center',
-            fontFamily: 'system-ui, sans-serif',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "100vh",
+            padding: "2rem",
+            textAlign: "center",
+            fontFamily: "system-ui, sans-serif",
             color: COLORS.textPrimary,
             background: COLORS.background,
           }}
         >
-          <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
+          <h1 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>
             Something went wrong.
           </h1>
-          <p style={{ fontSize: '1rem', marginBottom: '1.5rem' }}>
+          <p style={{ fontSize: "1rem", marginBottom: "1.5rem" }}>
             Please refresh the page or contact support if the problem persists.
           </p>
           <button
             onClick={() => window.location.reload()}
             style={{
-              padding: '0.75rem 1.5rem',
-              fontSize: '1rem',
-              cursor: 'pointer',
-              border: 'none',
-              borderRadius: '4px',
+              padding: "0.75rem 1.5rem",
+              fontSize: "1rem",
+              cursor: "pointer",
+              border: "none",
+              borderRadius: "4px",
               background: COLORS.accentMutedBlue,
               color: COLORS.surface,
             }}

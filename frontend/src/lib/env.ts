@@ -8,7 +8,9 @@ export const API_BASE_URL: string = (
 // See ADR 0027 and docs/deferred-decisions.md.
 export const AUTH_PROVIDER: string = (
   import.meta.env.VITE_AUTH_PROVIDER ?? "mock"
-).trim().toLowerCase();
+)
+  .trim()
+  .toLowerCase();
 
 export const MAGIC_PUBLISHABLE_KEY: string = (
   import.meta.env.VITE_MAGIC_PUBLISHABLE_KEY ?? ""

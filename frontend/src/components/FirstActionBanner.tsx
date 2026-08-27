@@ -14,11 +14,7 @@
  * - Respects user pacing
  */
 import { useState } from "react";
-import {
-  COLORS,
-  RADIUS,
-  SPACING,
-} from "../design/tokens";
+import { COLORS, RADIUS, SPACING } from "../design/tokens";
 import {
   BODY,
   PRIMARY_BTN,
@@ -33,7 +29,11 @@ interface Props {
   completed?: boolean;
 }
 
-export default function FirstActionBanner({ onStart, onDismiss, completed = false }: Props) {
+export default function FirstActionBanner({
+  onStart,
+  onDismiss,
+  completed = false,
+}: Props) {
   const [dismissed, setDismissed] = useState(false);
 
   const handleDismiss = () => {
@@ -58,7 +58,7 @@ export default function FirstActionBanner({ onStart, onDismiss, completed = fals
       >
         <h3
           style={{
-              marginTop: 0,
+            marginTop: 0,
             marginBottom: SPACING.sm,
             color: COLORS.textPrimary,
           }}
@@ -70,11 +70,7 @@ export default function FirstActionBanner({ onStart, onDismiss, completed = fals
           automatically. Continue at your own pace.
         </p>
         <div style={STACK}>
-          <button
-            type="button"
-            style={SECONDARY_BTN}
-            onClick={handleDismiss}
-          >
+          <button type="button" style={SECONDARY_BTN} onClick={handleDismiss}>
             Continue learning
           </button>
         </div>
@@ -103,23 +99,16 @@ export default function FirstActionBanner({ onStart, onDismiss, completed = fals
       </h3>
       <p style={BODY}>
         Module 1 introduces the basics of AI. This lesson is designed for
-        beginners and takes about 30 minutes. Your progress is saved automatically.
+        beginners and takes about 30 minutes. Your progress is saved
+        automatically.
       </p>
       <div style={STACK}>
         {onStart && (
-          <button
-            type="button"
-            style={PRIMARY_BTN}
-            onClick={onStart}
-          >
+          <button type="button" style={PRIMARY_BTN} onClick={onStart}>
             Start Module 1
           </button>
         )}
-        <button
-          type="button"
-          style={SECONDARY_BTN}
-          onClick={handleDismiss}
-        >
+        <button type="button" style={SECONDARY_BTN} onClick={handleDismiss}>
           Maybe later
         </button>
       </div>

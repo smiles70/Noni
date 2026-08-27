@@ -9,9 +9,23 @@
     "type-check": "npm run type-check --workspace=frontend",
     "build": "npm run build --workspace=frontend",
     "test:unit": "npm run test:unit --workspace=frontend",
-    "lint:timers": "npm run lint:timers --workspace=frontend"
+    "test:coverage": "npm run test:coverage --workspace=frontend",
+    "lint": "npm run lint --workspace=frontend",
+    "lint:fix": "npm run lint:fix --workspace=frontend",
+    "format:check": "npm run format:check --workspace=frontend",
+    "format": "npm run format --workspace=frontend",
+    "lint:timers": "npm run lint:timers --workspace=frontend",
+    "lint:licenses": "npm run lint:licenses --workspace=frontend",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "jsdom": "^24.0.0"
+    "jsdom": "^24.0.0",
+    "lint-staged": "^16.4.0"
+  },
+  "lint-staged": {
+    "frontend/**/*.{ts,tsx}": [
+      "cd frontend && npx prettier --write",
+      "cd frontend && npx eslint --max-warnings 0"
+    ]
   }
 }

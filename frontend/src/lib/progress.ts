@@ -53,7 +53,7 @@ export function readProgress(): Progress | null {
   } catch (e) {
     // Sprint 28 quick-win: SecurityError (Safari private mode) is
     // non-fatal — treat as no saved progress.
-    if (e instanceof DOMException && e.name === 'SecurityError') {
+    if (e instanceof DOMException && e.name === "SecurityError") {
       return null;
     }
     return null;
@@ -73,7 +73,7 @@ export function writeProgress(p: Progress): void {
     // both non-fatal for progress persistence.
     if (
       e instanceof DOMException &&
-      (e.name === 'QuotaExceededError' || e.name === 'SecurityError')
+      (e.name === "QuotaExceededError" || e.name === "SecurityError")
     ) {
       /* intentionally swallowed */
     }

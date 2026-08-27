@@ -45,7 +45,9 @@ interface ApiResponse<T = unknown> {
   headers: Headers;
 }
 
-type InterceptorHandler = (config: RequestConfig) => RequestConfig | Promise<RequestConfig>;
+type InterceptorHandler = (
+  config: RequestConfig,
+) => RequestConfig | Promise<RequestConfig>;
 
 const API_V1_PREFIX = "/api/v1";
 const RETRYABLE_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
@@ -119,7 +121,10 @@ class FetchClient {
 
     const controller = new AbortController();
     const timeoutMs = merged.timeout ?? this._defaultTimeout;
-    const timeoutId = globalThis.setTimeout(() => controller.abort(), timeoutMs);
+    const timeoutId = globalThis.setTimeout(
+      () => controller.abort(),
+      timeoutMs,
+    );
 
     const init: RequestInit = {
       method,
@@ -140,7 +145,9 @@ class FetchClient {
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
         const timeoutErr = new Error(`Request timeout after ${timeoutMs}ms`);
-        (timeoutErr as unknown as { response?: ApiResponse<unknown> }).response = {
+        (
+          timeoutErr as unknown as { response?: ApiResponse<unknown> }
+        ).response = {
           data: null,
           status: 0,
           statusText: "timeout",
@@ -152,7 +159,9 @@ class FetchClient {
     } finally {
       globalThis.clearTimeout(timeoutId);
     }
-    const isOk = merged.validateStatus ? merged.validateStatus(response.status) : response.ok;
+    const isOk = merged.validateStatus
+      ? merged.validateStatus(response.status)
+      : response.ok;
 
     let parsed: unknown;
     const contentType = response.headers.get("content-type") || "";
@@ -181,23 +190,41 @@ class FetchClient {
     };
   }
 
-  get<T = unknown>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
+  get<T = unknown>(
+    url: string,
+    config?: RequestConfig,
+  ): Promise<ApiResponse<T>> {
     return this._requestWithRetry<T>("GET", url, undefined, config);
   }
 
-  post<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
+  post<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: RequestConfig,
+  ): Promise<ApiResponse<T>> {
     return this._request<T>("POST", url, data, config);
   }
 
-  put<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
+  put<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: RequestConfig,
+  ): Promise<ApiResponse<T>> {
     return this._request<T>("PUT", url, data, config);
   }
 
-  patch<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<ApiResponse<T>> {
+  patch<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: RequestConfig,
+  ): Promise<ApiResponse<T>> {
     return this._request<T>("PATCH", url, data, config);
   }
 
-  delete<T = unknown>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
+  delete<T = unknown>(
+    url: string,
+    config?: RequestConfig,
+  ): Promise<ApiResponse<T>> {
     return this._request<T>("DELETE", url, undefined, config);
   }
 
@@ -218,8 +245,13 @@ class FetchClient {
         return await this._request<T>(method, url, data, config);
       } catch (err) {
         lastError = err;
-        const status = (err as { response?: ApiResponse<unknown> }).response?.status;
-        if (!status || !RETRYABLE_STATUSES.has(status) || attempt >= GET_RETRY_DELAYS_MS.length) {
+        const status = (err as { response?: ApiResponse<unknown> }).response
+          ?.status;
+        if (
+          !status ||
+          !RETRYABLE_STATUSES.has(status) ||
+          attempt >= GET_RETRY_DELAYS_MS.length
+        ) {
           throw err;
         }
         await _sleep(GET_RETRY_DELAYS_MS[attempt]);

@@ -15,13 +15,7 @@ import { useEffect, useState } from "react";
 import { startCheckout, redeemOrgCode } from "../api/billing";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
-import {
-  COLORS,
-  MOTION,
-  RADIUS,
-  SPACING,
-  TYPOGRAPHY,
-} from "../design/tokens";
+import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
   ALERT_TEXT,
@@ -58,7 +52,11 @@ export default function PaywallPage({
   useEffect(() => {
     loadEnvelope("account.paywall")
       .then(setEnvelope)
-      .catch(() => setError("We’re having trouble loading this page. Refresh in a moment."));
+      .catch(() =>
+        setError(
+          "We’re having trouble loading this page. Refresh in a moment.",
+        ),
+      );
   }, []);
 
   if (error && !envelope) {
@@ -81,7 +79,10 @@ export default function PaywallPage({
     setSubmitting(true);
     setError(null);
     try {
-      const { checkout_url, gift_token } = await startCheckout(productCode, isGift);
+      const { checkout_url, gift_token } = await startCheckout(
+        productCode,
+        isGift,
+      );
       // Server-controlled URL; in prod this is Stripe; in dev it's a mock.
       // For mock gift checkout, append the plaintext token so the recipient
       // can redeem it.
@@ -107,13 +108,21 @@ export default function PaywallPage({
     } catch (err: any) {
       const msg = err?.response?.data?.detail?.envelope_id;
       if (msg === "org.code_not_found") {
-        setError("That code was not recognized. Check the letters and numbers and try again.");
+        setError(
+          "That code was not recognized. Check the letters and numbers and try again.",
+        );
       } else if (msg === "org.code_already_claimed") {
-        setError("That code was already used. Ask your organization for a new one.");
+        setError(
+          "That code was already used. Ask your organization for a new one.",
+        );
       } else if (msg === "org.license_full") {
-        setError("This code has already been used by the allowed number of people.");
+        setError(
+          "This code has already been used by the allowed number of people.",
+        );
       } else {
-        setError("We could not redeem that code. Please try again in a moment.");
+        setError(
+          "We could not redeem that code. Please try again in a moment.",
+        );
       }
       setOrgRedeeming(false);
     }
@@ -153,10 +162,12 @@ export default function PaywallPage({
         <section style={CARD}>
           <h2 style={H2}>What you get</h2>
           <ul>
-            <li>Modules 3, 4, and 5, with their full set of practice activities.</li>
             <li>
-              The same calm, paced pace as the earlier modules — no urgency,
-              no time limits.
+              Modules 3, 4, and 5, with their full set of practice activities.
+            </li>
+            <li>
+              The same calm, paced pace as the earlier modules — no urgency, no
+              time limits.
             </li>
             <li>
               Lifetime access on this account, including any later content

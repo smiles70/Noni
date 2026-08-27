@@ -16,13 +16,7 @@
  */
 import { CSSProperties, useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
-import {
-  COLORS,
-  MOTION,
-  RADIUS,
-  SPACING,
-  TYPOGRAPHY,
-} from "../design/tokens";
+import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
 
 interface Props {
   /** Optional hook for the parent (LandingPage back-compat). Fires

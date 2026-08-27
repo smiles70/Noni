@@ -17,12 +17,7 @@ import { useState, useEffect } from "react";
 import { apiClient } from "../api/client";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
-import {
-  COLORS,
-  MOTION,
-  RADIUS,
-  SPACING,
-} from "../design/tokens";
+import { COLORS, MOTION, RADIUS, SPACING } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
   BODY,
@@ -51,7 +46,12 @@ interface OnboardingStatus {
   preferences_set: boolean;
 }
 
-export default function WelcomePage({ onContinue, onAccount, onAccountSetup, onSignOut }: Props) {
+export default function WelcomePage({
+  onContinue,
+  onAccount,
+  onAccountSetup,
+  onSignOut,
+}: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +61,9 @@ export default function WelcomePage({ onContinue, onAccount, onAccountSetup, onS
     // EPIC-002 Phase 2: Check onboarding status first
     const checkOnboardingStatus = async () => {
       try {
-        const res = await apiClient.get<OnboardingStatus>("/account/onboarding-status");
+        const res = await apiClient.get<OnboardingStatus>(
+          "/account/onboarding-status",
+        );
         if (res.data.onboarding_complete) {
           // User already completed onboarding, go directly to curriculum
           onContinue();
@@ -158,16 +160,16 @@ export default function WelcomePage({ onContinue, onAccount, onAccountSetup, onS
         <h1 style={H1}>Welcome to Mynaani</h1>
 
         <p style={BODY}>
-          You have successfully signed in. We will now set up your account
-          so you can save your progress and continue where you left off.
+          You have successfully signed in. We will now set up your account so
+          you can save your progress and continue where you left off.
         </p>
 
         <div style={CARD}>
           <h2 style={H2}>What happens next</h2>
           <p style={BODY}>
             You will complete a short setup to add your name and preferences.
-            This takes about 2 minutes. After that, you can begin learning
-            at your own pace.
+            This takes about 2 minutes. After that, you can begin learning at
+            your own pace.
           </p>
         </div>
 
@@ -175,39 +177,27 @@ export default function WelcomePage({ onContinue, onAccount, onAccountSetup, onS
           <h2 style={H2}>Why we ask for this information</h2>
           <p style={BODY}>
             Your name helps us personalize your experience. Your preferences
-            help us show you content that matches how you like to learn.
-            You can change these settings at any time from your account page.
+            help us show you content that matches how you like to learn. You can
+            change these settings at any time from your account page.
           </p>
         </div>
 
         <div style={STACK}>
-          <button
-            type="button"
-            style={PRIMARY_BTN}
-            onClick={onContinue}
-          >
+          <button type="button" style={PRIMARY_BTN} onClick={onContinue}>
             Continue to account setup
           </button>
-          <button
-            type="button"
-            style={SECONDARY_BTN}
-            onClick={onAccount}
-          >
+          <button type="button" style={SECONDARY_BTN} onClick={onAccount}>
             Go to account settings
           </button>
-          <button
-            type="button"
-            style={SECONDARY_BTN}
-            onClick={handleSignOut}
-          >
+          <button type="button" style={SECONDARY_BTN} onClick={handleSignOut}>
             Sign out
           </button>
         </div>
 
         <hr style={DIVIDER} />
         <p style={BODY}>
-          Signing in lets us save your progress and remember what works for
-          you. You can sign out from your account page at any time.
+          Signing in lets us save your progress and remember what works for you.
+          You can sign out from your account page at any time.
         </p>
       </main>
     </RenderGuard>

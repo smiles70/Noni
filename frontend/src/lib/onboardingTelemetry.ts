@@ -131,7 +131,10 @@ class OnboardingTelemetry {
       });
 
       if (!response.ok) {
-        console.error("Failed to send onboarding telemetry:", response.statusText);
+        console.error(
+          "Failed to send onboarding telemetry:",
+          response.statusText,
+        );
       }
     } catch (error) {
       // Silently fail to avoid disrupting user experience

@@ -28,12 +28,7 @@ import {
   STACK,
 } from "./AccountStyles";
 import type { UIStateEnvelope } from "../design/envelope";
-import {
-  COLORS,
-  MOTION,
-  RADIUS,
-  SPACING,
-} from "../design/tokens";
+import { COLORS, MOTION, RADIUS, SPACING } from "../design/tokens";
 
 interface Props {
   onSignedIn: () => void;
@@ -50,7 +45,9 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
   useEffect(() => {
     loadEnvelope("account.signin")
       .then(setEnvelope)
-      .catch(() => setError("Something went wrong. Please wait a moment and try again."));
+      .catch(() =>
+        setError("Something went wrong. Please wait a moment and try again."),
+      );
   }, []);
 
   if (error) {
@@ -89,7 +86,9 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
       onSignedIn();
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Please check your email and try again.";
+        err instanceof Error
+          ? err.message
+          : "Please check your email and try again.";
       setError(message);
     } finally {
       setSubmitting(false);
@@ -124,8 +123,8 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
         <h1 style={H1}>Sign in</h1>
 
         <p style={BODY}>
-          Enter the email you would like to use. We will send you a
-          one-time link in a moment. There is no password to remember.
+          Enter the email you would like to use. We will send you a one-time
+          link in a moment. There is no password to remember.
         </p>
         {magicSent && (
           <p style={ALERT_TEXT} role="status">
@@ -153,18 +152,10 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
             />
           </div>
           <div style={STACK}>
-            <button
-              type="submit"
-              style={PRIMARY_BTN}
-              disabled={submitting}
-            >
+            <button type="submit" style={PRIMARY_BTN} disabled={submitting}>
               {submitting ? "Signing you in…" : "Continue"}
             </button>
-            <button
-              type="button"
-              style={SECONDARY_BTN}
-              onClick={onCancel}
-            >
+            <button type="button" style={SECONDARY_BTN} onClick={onCancel}>
               Go back
             </button>
           </div>
@@ -177,8 +168,8 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
 
         <hr style={DIVIDER} />
         <p style={BODY}>
-          Signing in lets us save your progress and remember what works for
-          you. You can sign out from your account page at any time.
+          Signing in lets us save your progress and remember what works for you.
+          You can sign out from your account page at any time.
         </p>
       </main>
     </RenderGuard>

@@ -126,7 +126,14 @@ const CONTINUE_BUTTON: CSSProperties = {
 };
 
 export default function CurriculumMenu(props: Props) {
-  const { onContinue, onSignIn, onContinuePaid, onAccount, onSelectUnit, onHelp } = props;
+  const {
+    onContinue,
+    onSignIn,
+    onContinuePaid,
+    onAccount,
+    onSelectUnit,
+    onHelp,
+  } = props;
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [menu, setMenu] = useState<CurriculumMenu | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -216,9 +223,9 @@ export default function CurriculumMenu(props: Props) {
           Lessons
         </h1>
         <p style={INTRO} data-component="Body">
-          Here is the full course at a glance. Modules 0–2 are free.
-          Modules 3–5 are available after a one-time purchase.
-          Tap any free lesson to jump straight to it.
+          Here is the full course at a glance. Modules 0–2 are free. Modules 3–5
+          are available after a one-time purchase. Tap any free lesson to jump
+          straight to it.
         </p>
 
         {menu.modules.map((mod) => (

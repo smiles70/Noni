@@ -45,7 +45,9 @@ export default function EmptyState({
         {title}
       </h2>
       {description && (
-        <p style={{ fontSize: TYPOGRAPHY.bodySizePx, marginBottom: SPACING.lg }}>
+        <p
+          style={{ fontSize: TYPOGRAPHY.bodySizePx, marginBottom: SPACING.lg }}
+        >
           {description}
         </p>
       )}

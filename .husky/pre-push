@@ -1,0 +1,3 @@
+cd frontend
+npm run type-check
+npm run test:unit

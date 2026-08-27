@@ -153,11 +153,7 @@ function BlockedLoad({ message }: { message: string }) {
 
 // ---- Component -------------------------------------------------------------
 
-export default function LandingPage({
-  onBegin,
-  signedIn,
-  onHelp,
-}: Props) {
+export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
   const [content, setContent] = useState<LandingPageContent | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -176,9 +172,7 @@ export default function LandingPage({
 
   if (error) {
     return (
-      <BlockedLoad
-        message="We are having trouble loading this page. You can refresh in a moment."
-      />
+      <BlockedLoad message="We are having trouble loading this page. You can refresh in a moment." />
     );
   }
 
@@ -265,27 +259,21 @@ export default function LandingPage({
 
               <div style={ACTION_STACK}>
                 {signedIn ? (
-                <button
-                  type="button"
-                  onClick={onBegin}
-                  style={PRIMARY_BTN}
-                >
-                  Continue learning →
-                </button>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setShowHowItWorks(true)}
-                    style={PRIMARY_BTN}
-                  >
-                    {content.call_to_action.primary.label}
+                  <button type="button" onClick={onBegin} style={PRIMARY_BTN}>
+                    Continue learning →
                   </button>
-                  <p style={NOTE}>
-                    {content.call_to_action.primary.note}
-                  </p>
-                </>
-              )}
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowHowItWorks(true)}
+                      style={PRIMARY_BTN}
+                    >
+                      {content.call_to_action.primary.label}
+                    </button>
+                    <p style={NOTE}>{content.call_to_action.primary.note}</p>
+                  </>
+                )}
               </div>
             </div>
           </div>

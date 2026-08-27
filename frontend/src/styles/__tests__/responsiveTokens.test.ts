@@ -26,14 +26,12 @@ describe("MIN_TOUCH_TARGET", () => {
 
   it("decreases or stays flat as viewport grows", () => {
     expect(MIN_TOUCH_TARGET.tablet).toBeLessThanOrEqual(
-      MIN_TOUCH_TARGET.mobile
+      MIN_TOUCH_TARGET.mobile,
     );
     expect(MIN_TOUCH_TARGET.desktop).toBeLessThanOrEqual(
-      MIN_TOUCH_TARGET.tablet
+      MIN_TOUCH_TARGET.tablet,
     );
-    expect(MIN_TOUCH_TARGET.wide).toBeLessThanOrEqual(
-      MIN_TOUCH_TARGET.desktop
-    );
+    expect(MIN_TOUCH_TARGET.wide).toBeLessThanOrEqual(MIN_TOUCH_TARGET.desktop);
   });
 });
 
@@ -71,10 +69,10 @@ describe("MAX_CONTENT_WIDTH", () => {
   it("increases with viewport size", () => {
     const toPx = (s: string) => parseInt(s, 10);
     expect(toPx(MAX_CONTENT_WIDTH.tablet)).toBeLessThan(
-      toPx(MAX_CONTENT_WIDTH.desktop)
+      toPx(MAX_CONTENT_WIDTH.desktop),
     );
     expect(toPx(MAX_CONTENT_WIDTH.desktop)).toBeLessThanOrEqual(
-      toPx(MAX_CONTENT_WIDTH.wide)
+      toPx(MAX_CONTENT_WIDTH.wide),
     );
   });
 });
@@ -88,15 +86,9 @@ describe("SPACING", () => {
 
   it("scales increase with breakpoint", () => {
     for (const key of ["sm", "md", "lg", "xl"] as const) {
-      expect(SPACING.tablet[key]).toBeGreaterThanOrEqual(
-        SPACING.mobile[key]
-      );
-      expect(SPACING.desktop[key]).toBeGreaterThanOrEqual(
-        SPACING.tablet[key]
-      );
-      expect(SPACING.wide[key]).toBeGreaterThanOrEqual(
-        SPACING.desktop[key]
-      );
+      expect(SPACING.tablet[key]).toBeGreaterThanOrEqual(SPACING.mobile[key]);
+      expect(SPACING.desktop[key]).toBeGreaterThanOrEqual(SPACING.tablet[key]);
+      expect(SPACING.wide[key]).toBeGreaterThanOrEqual(SPACING.desktop[key]);
     }
   });
 

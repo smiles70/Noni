@@ -16,7 +16,13 @@
  * Tag: login-redesign-v1.
  **********************************************************************/
 
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { apiClient } from "../api/client";
 import { useAuthParity } from "./useAuthParity";

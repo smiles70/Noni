@@ -87,7 +87,9 @@ export interface RenderProposal {
 export function checkColors(p: RenderProposal): Violation | null {
   const disallowed = p.colorsUsed
     .map((c) => c.toUpperCase())
-    .filter((c) => !ALLOWED_COLOR_VALUES.map((x) => x.toUpperCase()).includes(c));
+    .filter(
+      (c) => !ALLOWED_COLOR_VALUES.map((x) => x.toUpperCase()).includes(c),
+    );
   if (disallowed.length === 0) return null;
   return {
     check: "colors",
@@ -186,8 +188,7 @@ export function checkIrreversibleConfirmation(
   if (p.hasUnconfirmedIrreversibleAction) {
     return {
       check: "irreversible_confirmation",
-      reason:
-        "Irreversible action present without matching confirmation gate.",
+      reason: "Irreversible action present without matching confirmation gate.",
     };
   }
   return null;
@@ -212,7 +213,8 @@ export function checkMotion(p: RenderProposal): Violation | null {
   );
   if (badDurations.length === 0 && badShifts.length === 0) return null;
   const parts: string[] = [];
-  if (badDurations.length) parts.push(`durations(ms) ${badDurations.join(",")}`);
+  if (badDurations.length)
+    parts.push(`durations(ms) ${badDurations.join(",")}`);
   if (badShifts.length) parts.push(`shifts(px) ${badShifts.join(",")}`);
   return {
     check: "motion",
@@ -226,7 +228,9 @@ export function checkCognitiveLoad(
 ): Violation | null {
   // A coarse but real check: cognitive load is preserved or reduced when
   // the proposal stays at or below the envelope's stated text-level limit.
-  if (p.visibleTextLevels > envelope.interaction_limits.max_visible_text_levels) {
+  if (
+    p.visibleTextLevels > envelope.interaction_limits.max_visible_text_levels
+  ) {
     return {
       check: "cognitive_load",
       reason: `Text levels ${p.visibleTextLevels} exceed envelope limit ${envelope.interaction_limits.max_visible_text_levels}.`,
@@ -281,7 +285,9 @@ export function RenderGuard({
 
   // Validate that BlockedNotice itself is authorized in *some* fallback
   // envelope. Per contract, even the failure path must be auditable.
-  const reasonList = violations.map((v) => `${v.check}: ${v.reason}`).join("\n");
+  const reasonList = violations
+    .map((v) => `${v.check}: ${v.reason}`)
+    .join("\n");
 
   return (
     <section
@@ -304,8 +310,8 @@ export function RenderGuard({
         We’re having trouble showing this screen.
       </h2>
       <p style={{ marginTop: 16, marginBottom: 0 }}>
-        The interface cannot continue safely right now. You can go back to
-        the previous screen.
+        The interface cannot continue safely right now. You can go back to the
+        previous screen.
       </p>
       <pre
         style={{

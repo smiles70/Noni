@@ -78,7 +78,7 @@ export default function NavBar({
   const signedIn = status === "READY";
   // Display identity = best available human-readable label.
   const identity: string | null = signedIn
-    ? state?.displayName ?? state?.email ?? null
+    ? (state?.displayName ?? state?.email ?? null)
     : null;
 
   return (

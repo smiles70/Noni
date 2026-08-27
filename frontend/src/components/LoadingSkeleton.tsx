@@ -36,10 +36,22 @@ const LoadingSkeleton: React.FC = () => (
     <p style={{ fontSize: TYPOGRAPHY.bodySizePx, margin: 0 }}>
       One moment — loading.
     </p>
-    <div style={{ ...block, height: SPACING.xl, width: "60%" }} aria-hidden="true" />
-    <div style={{ ...block, height: SPACING.md, width: "100%" }} aria-hidden="true" />
-    <div style={{ ...block, height: SPACING.md, width: "90%" }} aria-hidden="true" />
-    <div style={{ ...block, height: SPACING.md, width: "95%" }} aria-hidden="true" />
+    <div
+      style={{ ...block, height: SPACING.xl, width: "60%" }}
+      aria-hidden="true"
+    />
+    <div
+      style={{ ...block, height: SPACING.md, width: "100%" }}
+      aria-hidden="true"
+    />
+    <div
+      style={{ ...block, height: SPACING.md, width: "90%" }}
+      aria-hidden="true"
+    />
+    <div
+      style={{ ...block, height: SPACING.md, width: "95%" }}
+      aria-hidden="true"
+    />
   </main>
 );
 

@@ -11,18 +11,8 @@
  */
 
 import type { CSSProperties } from "react";
-import {
-  COLORS,
-  SPACING,
-  TYPOGRAPHY,
-} from "../design/tokens";
-import {
-  BODY,
-  DIVIDER,
-  H1,
-  H2,
-  PAGE,
-} from "./AccountStyles";
+import { COLORS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import { BODY, DIVIDER, H1, H2, PAGE } from "./AccountStyles";
 
 interface Props {
   onBack: () => void;
@@ -92,9 +82,9 @@ function GettingStartedSection() {
 
       <div style={BODY}>
         <p>
-          Mynaani is a calm, self-paced way to learn what AI is and how to
-          use it. You do not need any background in technology. You do not
-          need to be fast.
+          Mynaani is a calm, self-paced way to learn what AI is and how to use
+          it. You do not need any background in technology. You do not need to
+          be fast.
         </p>
 
         <h3 style={H3}>What you need</h3>
@@ -106,27 +96,27 @@ function GettingStartedSection() {
 
         <h3 style={H3}>Creating your account</h3>
         <p>
-          On the mynaani home page, select "Set up my account — free."
-          You will see a short explanation of how mynaani works. After
-          that, you can create an account with your email address.
+          On the mynaani home page, select "Set up my account — free." You will
+          see a short explanation of how mynaani works. After that, you can
+          create an account with your email address.
         </p>
         <p>
-          The account is free. No payment information is required to
-          start learning.
+          The account is free. No payment information is required to start
+          learning.
         </p>
 
         <h3 style={H3}>Signing in and out</h3>
         <p>
-          To sign in, select "Sign in" at the top of the page and enter
-          your email. To sign out, select your name at the top of the
-          page and choose "Sign out." You can sign in again at any time.
+          To sign in, select "Sign in" at the top of the page and enter your
+          email. To sign out, select your name at the top of the page and choose
+          "Sign out." You can sign in again at any time.
         </p>
 
         <h3 style={H3}>If signing in does not work</h3>
         <p>
           Make sure you are using the same email address you used when you
-          created your account. Check your spam folder if you are
-          waiting for a confirmation message.
+          created your account. Check your spam folder if you are waiting for a
+          confirmation message.
         </p>
         <p>
           If you still cannot sign in, write to
@@ -151,59 +141,56 @@ function HowItWorksSection() {
 
       <div style={BODY}>
         <p>
-          Mynaani is organized into modules. Each module covers one
-          part of learning about AI. You move through the modules at
-          your own pace.
+          Mynaani is organized into modules. Each module covers one part of
+          learning about AI. You move through the modules at your own pace.
         </p>
 
         <h3 style={H3}>The structure of each module</h3>
         <p>
-          Every module contains units. Each unit contains pages that
-          follow the same pattern:
+          Every module contains units. Each unit contains pages that follow the
+          same pattern:
         </p>
         <ul style={UL}>
           <li>
-            <strong>Recap</strong> — a brief reminder of what the last
-            unit covered.
+            <strong>Recap</strong> — a brief reminder of what the last unit
+            covered.
           </li>
           <li>
-            <strong>Principle</strong> — the main idea of this unit,
-            stated in plain language.
+            <strong>Principle</strong> — the main idea of this unit, stated in
+            plain language.
           </li>
           <li>
-            <strong>Example</strong> — a familiar situation that shows
-            the principle in action.
+            <strong>Example</strong> — a familiar situation that shows the
+            principle in action.
           </li>
           <li>
-            <strong>Retrieval</strong> — a question with two choices.
-            You pick the one that fits what you learned. There is no
-            time limit.
+            <strong>Retrieval</strong> — a question with two choices. You pick
+            the one that fits what you learned. There is no time limit.
           </li>
         </ul>
 
         <h3 style={H3}>Free and paid modules</h3>
         <p>
-          Modules 0, 1, and 2 are free. Anyone with an account can
-          read them. Modules 3, 4, and 5 require a one-time purchase.
+          Modules 0, 1, and 2 are free. Anyone with an account can read them.
+          Modules 3, 4, and 5 require a one-time purchase.
         </p>
         <p>
-          When you finish Module 2, you will see a page that explains
-          how to continue. You can buy access for yourself or receive
-          access as a gift.
+          When you finish Module 2, you will see a page that explains how to
+          continue. You can buy access for yourself or receive access as a gift.
         </p>
 
         <h3 style={H3}>Picking up where you left off</h3>
         <p>
-          Mynaani remembers which page you were reading. When you sign
-          in again, you will return to that page automatically. You do
-          not need to keep track yourself.
+          Mynaani remembers which page you were reading. When you sign in again,
+          you will return to that page automatically. You do not need to keep
+          track yourself.
         </p>
 
         <h3 style={H3}>Navigating between units</h3>
         <p>
-          At any time, you can open the lesson menu to see all units
-          and modules. Select any unit to jump to it. The menu is
-          available from the bar at the top of the page.
+          At any time, you can open the lesson menu to see all units and
+          modules. Select any unit to jump to it. The menu is available from the
+          bar at the top of the page.
         </p>
       </div>
     </section>
@@ -221,32 +208,30 @@ function PaymentsGiftsSection() {
 
       <div style={BODY}>
         <p>
-          Mynaani uses Stripe for payments. Stripe is a service that
-          processes card payments securely. Mynaani does not store your
-          card number.
+          Mynaani uses Stripe for payments. Stripe is a service that processes
+          card payments securely. Mynaani does not store your card number.
         </p>
 
         <h3 style={H3}>Buying access for yourself</h3>
         <p>
-          When you reach the end of Module 2, select "Buy access to
-          Modules 3, 4, and 5." You will be taken to a secure checkout
-          page. After payment, you can continue reading immediately.
+          When you reach the end of Module 2, select "Buy access to Modules 3,
+          4, and 5." You will be taken to a secure checkout page. After payment,
+          you can continue reading immediately.
         </p>
 
         <h3 style={H3}>Buying access as a gift</h3>
         <p>
-          You can buy mynaani access for another person. On the
-          checkout page, select "Buy as a gift." After payment, you will
-          receive a gift token. You can send that token to the
-          recipient by email or by printing it.
+          You can buy mynaani access for another person. On the checkout page,
+          select "Buy as a gift." After payment, you will receive a gift token.
+          You can send that token to the recipient by email or by printing it.
         </p>
 
         <h3 style={H3}>Redeeming a gift token</h3>
         <p>
-          If you received a gift token, sign in to your mynaani
-          account and go to the gift redemption page. Enter the token
-          exactly as it was given to you. Select "Redeem." Access will
-          be added to your account immediately.
+          If you received a gift token, sign in to your mynaani account and go
+          to the gift redemption page. Enter the token exactly as it was given
+          to you. Select "Redeem." Access will be added to your account
+          immediately.
         </p>
 
         <h3 style={H3}>Refunds</h3>
@@ -260,10 +245,9 @@ function PaymentsGiftsSection() {
 
         <h3 style={H3}>Payment security</h3>
         <p>
-          Your card details are handled by Stripe, not by mynaani.
-          Stripe meets the highest level of payment security
-          certification (PCI DSS Level 1). We never see or store your
-          card number.
+          Your card details are handled by Stripe, not by mynaani. Stripe meets
+          the highest level of payment security certification (PCI DSS Level 1).
+          We never see or store your card number.
         </p>
       </div>
     </section>
@@ -282,27 +266,25 @@ function YourAccountSection() {
       <div style={BODY}>
         <h3 style={H3}>Signing out</h3>
         <p>
-          To sign out, select your name at the top of the page and
-          choose "Sign out." This does not delete anything. You can
-          sign in again at any time.
+          To sign out, select your name at the top of the page and choose "Sign
+          out." This does not delete anything. You can sign in again at any
+          time.
         </p>
 
         <h3 style={H3}>Deleting your account</h3>
         <p>
-          You can delete your account from the "Your account" page.
-          You will see a clear explanation of what will happen.
-          Deletion is scheduled for 30 days later. During those 30
-          days, you can cancel the deletion and keep your account.
+          You can delete your account from the "Your account" page. You will see
+          a clear explanation of what will happen. Deletion is scheduled for 30
+          days later. During those 30 days, you can cancel the deletion and keep
+          your account.
         </p>
         <p>
-          After 30 days, your account and all associated data are
-          removed permanently. This cannot be reversed.
+          After 30 days, your account and all associated data are removed
+          permanently. This cannot be reversed.
         </p>
 
         <h3 style={H3}>Browser requirements</h3>
-        <p>
-          Mynaani works on any modern web browser. We recommend:
-        </p>
+        <p>Mynaani works on any modern web browser. We recommend:</p>
         <ul style={UL}>
           <li>Chrome, version 90 or newer</li>
           <li>Firefox, version 88 or newer</li>
@@ -310,8 +292,8 @@ function YourAccountSection() {
           <li>Edge, version 90 or newer</li>
         </ul>
         <p>
-          If a page does not load correctly, try refreshing the page
-          or switching to a different browser.
+          If a page does not load correctly, try refreshing the page or
+          switching to a different browser.
         </p>
 
         <h3 style={H3}>Contacting support</h3>
@@ -323,9 +305,9 @@ function YourAccountSection() {
           . We read every message and reply within two business days.
         </p>
         <p>
-          For the fastest response, include the email address
-          associated with your account and a description of what you
-          were doing when the issue occurred.
+          For the fastest response, include the email address associated with
+          your account and a description of what you were doing when the issue
+          occurred.
         </p>
       </div>
     </section>

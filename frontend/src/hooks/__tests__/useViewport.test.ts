@@ -18,7 +18,7 @@ describe("useViewport — server-side safety", () => {
       return createElement(
         "div",
         { "data-breakpoint": vp.breakpoint, "data-width": String(vp.width) },
-        null
+        null,
       );
     };
     const html = renderToString(createElement(Wrapper));

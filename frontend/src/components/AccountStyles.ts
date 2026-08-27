@@ -6,13 +6,7 @@
  * appear in styles.
  */
 import { CSSProperties } from "react";
-import {
-  COLORS,
-  MOTION,
-  RADIUS,
-  SPACING,
-  TYPOGRAPHY,
-} from "../design/tokens";
+import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
 
 export const PAGE: CSSProperties = {
   padding: SPACING.xl,

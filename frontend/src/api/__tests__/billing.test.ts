@@ -66,7 +66,9 @@ describe("gift redemption", () => {
       data: { valid: true, product_code: "modules_4_5", purchase_id: "p-1" },
     });
     const res = await previewGift("abc");
-    expect(mockPost).toHaveBeenCalledWith("/api/gifts/preview", { token: "abc" });
+    expect(mockPost).toHaveBeenCalledWith("/api/gifts/preview", {
+      token: "abc",
+    });
     expect(res.valid).toBe(true);
   });
 

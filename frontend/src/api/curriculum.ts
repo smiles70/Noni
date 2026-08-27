@@ -22,11 +22,7 @@ import { apiClient } from "./client";
 // id/title/content/complexity) keep deserializing without ceremony.
 
 export type PageType =
-  | "recap"
-  | "context"
-  | "principle"
-  | "example"
-  | "retrieval";
+  "recap" | "context" | "principle" | "example" | "retrieval";
 
 export interface RetrievalChoice {
   id: string;
@@ -71,7 +67,8 @@ export interface ApprovedUnit {
 }
 
 export interface PaywallSignal {
-  envelope_id: "billing.signin_or_purchase_required" | "billing.purchase_required";
+  envelope_id:
+    "billing.signin_or_purchase_required" | "billing.purchase_required";
   product_code: string;
 }
 

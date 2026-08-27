@@ -32,10 +32,7 @@ import {
   type PaywallSignal,
 } from "../../api/curriculum";
 import { loadEnvelope } from "../../api/envelope";
-import {
-  readProgress,
-  writeProgress,
-} from "../../lib/progress";
+import { readProgress, writeProgress } from "../../lib/progress";
 import {
   COLORS,
   SPACING,
@@ -260,9 +257,7 @@ export default function LessonRenderer({
   onPaywall,
   onHelp,
   getContinueLabel = (isLastUnit, isLastPage) =>
-    isLastUnit && isLastPage
-      ? "Continue to paid modules →"
-      : "Continue →",
+    isLastUnit && isLastPage ? "Continue to paid modules →" : "Continue →",
 }: LessonRendererProps) {
   // Resume from localStorage; fall back to first unit / first page if
   // missing or stale. `pageIdx` is clamped to the unit's lesson length
@@ -275,7 +270,7 @@ export default function LessonRenderer({
     );
     return {
       idx: i >= 0 ? i : 0,
-      pageIdx: i >= 0 ? saved.pageIdx ?? 0 : 0,
+      pageIdx: i >= 0 ? (saved.pageIdx ?? 0) : 0,
     };
   })();
 
@@ -298,9 +293,7 @@ export default function LessonRenderer({
       })
       .catch((e: unknown) => {
         if (!cancelled) {
-          setError(
-            e instanceof Error ? e.message : "Failed to load envelope",
-          );
+          setError(e instanceof Error ? e.message : "Failed to load envelope");
         }
       });
     return () => {
@@ -330,7 +323,11 @@ export default function LessonRenderer({
           } else {
             safe = current;
           }
-          writeProgress({ module: module as 0 | 1 | 2 | 3 | 4 | 5, unitId, pageIdx: safe });
+          writeProgress({
+            module: module as 0 | 1 | 2 | 3 | 4 | 5,
+            unitId,
+            pageIdx: safe,
+          });
           return safe;
         });
       })
@@ -351,7 +348,11 @@ export default function LessonRenderer({
   useEffect(() => {
     if (!lesson) return;
     const { unitId } = sequence[idx];
-    writeProgress({ module: sequence[idx].module as 0 | 1 | 2 | 3 | 4 | 5, unitId, pageIdx });
+    writeProgress({
+      module: sequence[idx].module as 0 | 1 | 2 | 3 | 4 | 5,
+      unitId,
+      pageIdx,
+    });
     setRetrievalAnswered(null);
   }, [pageIdx, idx, lesson]);
 

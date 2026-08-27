@@ -30,10 +30,10 @@ export function useViewport(): ViewportState {
   const safeWindow = typeof window !== "undefined";
 
   const [width, setWidth] = useState<number>(
-    safeWindow ? window.innerWidth : 1024
+    safeWindow ? window.innerWidth : 1024,
   );
   const [height, setHeight] = useState<number>(
-    safeWindow ? window.innerHeight : 768
+    safeWindow ? window.innerHeight : 768,
   );
 
   useEffect(() => {

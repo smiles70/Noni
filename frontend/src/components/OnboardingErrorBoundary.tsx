@@ -38,7 +38,10 @@ interface State {
   errorInfo: React.ErrorInfo | null;
 }
 
-export default class OnboardingErrorBoundary extends React.Component<Props, State> {
+export default class OnboardingErrorBoundary extends React.Component<
+  Props,
+  State
+> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -97,8 +100,8 @@ export default class OnboardingErrorBoundary extends React.Component<Props, Stat
           <div style={CARD}>
             <p style={BODY}>
               The onboarding process encountered an issue. This is a system
-              state, not something you did wrong. You can try again or skip
-              this step and continue to the curriculum.
+              state, not something you did wrong. You can try again or skip this
+              step and continue to the curriculum.
             </p>
           </div>
 

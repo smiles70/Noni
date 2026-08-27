@@ -33,7 +33,7 @@ describe("COLORS", () => {
   it("exposes a frozen list of allowed values", () => {
     expect(ALLOWED_COLOR_VALUES.length).toBeGreaterThan(0);
     expect(Object.values(COLORS).sort()).toEqual(
-      [...ALLOWED_COLOR_VALUES].sort()
+      [...ALLOWED_COLOR_VALUES].sort(),
     );
   });
 
@@ -54,7 +54,7 @@ describe("SPACING", () => {
   it("exposes a frozen list of allowed values", () => {
     expect(ALLOWED_SPACING_VALUES.length).toBeGreaterThan(0);
     expect(Object.values(SPACING).sort((a, b) => a - b)).toEqual(
-      [...ALLOWED_SPACING_VALUES].sort((a, b) => a - b)
+      [...ALLOWED_SPACING_VALUES].sort((a, b) => a - b),
     );
   });
 });
@@ -73,7 +73,7 @@ describe("TYPOGRAPHY", () => {
     const max = Math.max(
       TYPOGRAPHY.headingScale.level1,
       TYPOGRAPHY.headingScale.level2,
-      TYPOGRAPHY.headingScale.level3
+      TYPOGRAPHY.headingScale.level3,
     );
     expect(max / TYPOGRAPHY.bodySizePx).toBeLessThanOrEqual(1.4);
   });
@@ -94,7 +94,7 @@ describe("RADIUS", () => {
   it("exposes a frozen list of allowed values", () => {
     expect(ALLOWED_RADIUS_VALUES.length).toBeGreaterThan(0);
     expect(Object.values(RADIUS).sort((a, b) => a - b)).toEqual(
-      [...ALLOWED_RADIUS_VALUES].sort((a, b) => a - b)
+      [...ALLOWED_RADIUS_VALUES].sort((a, b) => a - b),
     );
   });
 });
@@ -130,7 +130,9 @@ describe("DENSITY_CEILINGS", () => {
   });
 
   it("max visible text levels matches typography cap", () => {
-    expect(DENSITY_CEILINGS.maxVisibleTextLevels).toBe(TYPOGRAPHY.maxVisibleLevels);
+    expect(DENSITY_CEILINGS.maxVisibleTextLevels).toBe(
+      TYPOGRAPHY.maxVisibleLevels,
+    );
   });
 });
 
@@ -150,7 +152,9 @@ describe("AUTHORIZED_COMPONENTS", () => {
   });
 
   it("has no duplicates", () => {
-    expect(new Set(AUTHORIZED_COMPONENTS).size).toBe(AUTHORIZED_COMPONENTS.length);
+    expect(new Set(AUTHORIZED_COMPONENTS).size).toBe(
+      AUTHORIZED_COMPONENTS.length,
+    );
   });
 });
 

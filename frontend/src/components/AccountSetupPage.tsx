@@ -18,12 +18,7 @@ import { useState, useEffect } from "react";
 import { apiClient } from "../api/client";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
-import {
-  COLORS,
-  MOTION,
-  RADIUS,
-  SPACING,
-} from "../design/tokens";
+import { COLORS, MOTION, RADIUS, SPACING } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
   ALERT_TEXT,
@@ -56,7 +51,11 @@ interface ProfileData {
   };
 }
 
-export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Props) {
+export default function AccountSetupPage({
+  onContinue,
+  onBack,
+  onSignOut,
+}: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +88,10 @@ export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Prop
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handlePreferenceChange = (pref: keyof ProfileData["preferences"], value: string) => {
+  const handlePreferenceChange = (
+    pref: keyof ProfileData["preferences"],
+    value: string,
+  ) => {
     setFormData((prev) => ({
       ...prev,
       preferences: { ...prev.preferences, [pref]: value },
@@ -115,7 +117,7 @@ export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Prop
       setTimeout(() => {
         onContinue(); // This now goes to getting-started
       }, 2000);
-    } catch (err) {
+    } catch {
       // EPIC-002 Phase 4: Track error
       onboardingTelemetry.trackError("profile_update_failed", "account_setup");
       setError("Please check your information and try again.");
@@ -182,8 +184,8 @@ export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Prop
         <main style={PAGE}>
           <h1 style={H1}>Account setup complete</h1>
           <p style={SUCCESS_TEXT}>
-            Your account has been set up successfully. You will be redirected
-            to the curriculum in a moment.
+            Your account has been set up successfully. You will be redirected to
+            the curriculum in a moment.
           </p>
         </main>
       </RenderGuard>
@@ -197,7 +199,8 @@ export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Prop
 
         <p style={BODY}>
           Please provide your name and preferences. This information helps us
-          personalize your experience. You can change these settings at any time.
+          personalize your experience. You can change these settings at any
+          time.
         </p>
 
         <form onSubmit={handleSubmit} style={STACK} aria-busy={submitting}>
@@ -215,7 +218,9 @@ export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Prop
                 minLength={1}
                 maxLength={50}
                 value={formData.displayName}
-                onChange={(e) => handleInputChange("displayName", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("displayName", e.target.value)
+                }
                 style={FIELD}
                 disabled={submitting}
                 aria-invalid={error ? true : undefined}
@@ -230,7 +235,7 @@ export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Prop
 
           <div style={CARD}>
             <h2 style={H2}>Your preferences</h2>
-            
+
             <div>
               <label htmlFor="font-size" style={FIELD_LABEL}>
                 Text size
@@ -238,7 +243,9 @@ export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Prop
               <select
                 id="font-size"
                 value={formData.preferences.fontSize}
-                onChange={(e) => handlePreferenceChange("fontSize", e.target.value)}
+                onChange={(e) =>
+                  handlePreferenceChange("fontSize", e.target.value)
+                }
                 style={FIELD}
                 disabled={submitting}
               >
@@ -271,11 +278,7 @@ export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Prop
           </div>
 
           <div style={STACK}>
-            <button
-              type="submit"
-              style={PRIMARY_BTN}
-              disabled={submitting}
-            >
+            <button type="submit" style={PRIMARY_BTN} disabled={submitting}>
               {submitting ? "Saving your information…" : "Complete setup"}
             </button>
             <button
@@ -305,9 +308,9 @@ export default function AccountSetupPage({ onContinue, onBack, onSignOut }: Prop
 
         <hr style={DIVIDER} />
         <p style={BODY}>
-          You can change these settings at any time from your account page.
-          Your information is stored securely and used only to personalize
-          your experience.
+          You can change these settings at any time from your account page. Your
+          information is stored securely and used only to personalize your
+          experience.
         </p>
       </main>
     </RenderGuard>

@@ -396,5 +396,14 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `SRC-B2B2C-IMPL-001-PREFLIGHT` is `.ai/process/PREFLIGHT_B2B2C_IMPL_001.md`.
 - `SRC-B2B2C-IMPL-001-PHASE` is `.ai/process/PHASE_INVENTORY_B2B2C_IMPL_001.md`.
 - `DEC-B2B2C-IMPL-001` is go-ahead: implement data model + backend API + frontend paywall entry.
-- `CAP-B2B2C-IMPL-001` status is `preflight-completed`.
+- `CAP-B2B2C-IMPL-001` status is `completed`.
+
+## TOOLING-QUALITY-001 frontend tooling and knowledge continuity (2026-08-27)
+
+- `ONTO-TQ-001` is `.ai/process/TOOLING_QUALITY_ONTOLOGY_001.md`.
+- `SRC-TQ-001-INTAKE` is `.ai/intake/2026-08-27-tooling-quality-001.md`.
+- `SRC-TQ-001-PREFLIGHT` is `.ai/process/PREFLIGHT_TOOLING_QUALITY_001.md`.
+- `SRC-TQ-001-PHASE` is `.ai/process/PHASE_INVENTORY_TOOLING_QUALITY_001.md`.
+- `DEC-TQ-001` is go-ahead: close the 8 tooling gaps in Phase 0.
+- `CAP-TQ-001` status is `in_progress`.
 

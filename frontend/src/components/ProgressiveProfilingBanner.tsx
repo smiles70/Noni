@@ -14,24 +14,18 @@
  * - Respects user pacing
  */
 import { useState } from "react";
-import {
-  COLORS,
-  RADIUS,
-  SPACING,
-} from "../design/tokens";
-import {
-  BODY,
-  PRIMARY_BTN,
-  SECONDARY_BTN,
-  STACK,
-} from "./AccountStyles";
+import { COLORS, RADIUS, SPACING } from "../design/tokens";
+import { BODY, PRIMARY_BTN, SECONDARY_BTN, STACK } from "./AccountStyles";
 
 interface Props {
   onDismiss: () => void;
   onComplete: () => void;
 }
 
-export default function ProgressiveProfilingBanner({ onDismiss, onComplete }: Props) {
+export default function ProgressiveProfilingBanner({
+  onDismiss,
+  onComplete,
+}: Props) {
   const [dismissed, setDismissed] = useState(false);
   const [submitting] = useState(false);
 
@@ -70,8 +64,8 @@ export default function ProgressiveProfilingBanner({ onDismiss, onComplete }: Pr
         Personalize your experience
       </h3>
       <p style={BODY}>
-        We can show you content that better matches how you like to learn.
-        This takes about 1 minute and is optional.
+        We can show you content that better matches how you like to learn. This
+        takes about 1 minute and is optional.
       </p>
       <div style={STACK}>
         <button

@@ -25,7 +25,11 @@
  */
 import { CSSProperties, ReactNode } from "react";
 
-import type { CurriculumPage, RetrievalBlock, ExampleBlock } from "../../api/curriculum";
+import type {
+  CurriculumPage,
+  RetrievalBlock,
+  ExampleBlock,
+} from "../../api/curriculum";
 import {
   COLORS,
   SPACING,
@@ -162,7 +166,11 @@ export function ExamplePage({
         {page.title}
       </h1>
       {renderContent(page.content)}
-      <div style={CARD} data-component="Card" aria-label="What it might look like">
+      <div
+        style={CARD}
+        data-component="Card"
+        aria-label="What it might look like"
+      >
         <p style={CARD_HEADER}>The situation:</p>
         <p style={PARA} data-component="Body">
           {example.situation}
@@ -195,7 +203,7 @@ export function RetrievalPage({
   answered: string | null;
 }) {
   const chosen = answered
-    ? retrieval.choices.find((c) => c.id === answered) ?? null
+    ? (retrieval.choices.find((c) => c.id === answered) ?? null)
     : null;
   const isCorrect = answered ? answered === retrieval.correct_id : null;
 
@@ -220,8 +228,7 @@ export function RetrievalPage({
             {isCorrect ? "That fits the rule." : "Take another look."}
           </p>
           <p style={PARA} data-component="Body">
-            You chose:{" "}
-            <em style={{ fontStyle: "italic" }}>{chosen.text}</em>
+            You chose: <em style={{ fontStyle: "italic" }}>{chosen.text}</em>
           </p>
           <hr style={DIVIDER} data-component="Divider" />
           <p style={CARD_HEADER}>Why:</p>

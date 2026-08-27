@@ -31,8 +31,9 @@ The design philosophy centers on:
 - **Passive rendering only** — no business logic, no client-side state machines
 
 ### Tooling
-- **ruff + black** — lint + format
-- **pre-commit** — local quality gate before every commit
+- **ruff + black** — backend lint + format
+- **ESLint + Prettier** — frontend lint + format
+- **Husky** — pre-push type-check and tests, pre-commit formatting/linting
 - **Alembic** — schema migrations (replaces `Base.metadata.create_all()`)
 - **Playwright + axe-playwright** — end-to-end and automated WCAG 2.1 AA checks
 - **GitHub Actions** — CI on push/PR (Postgres service container, full test matrix)
@@ -132,10 +133,13 @@ uvicorn backend.app.main:app --reload
 ```bash
 cd frontend
 
-# 1. Install deps
+# 1. Use the project Node version
+nvm use          # if you use nvm; reads .nvmrc
+
+# 2. Install deps
 npm install
 
-# 2. Run dev server (proxies API at 127.0.0.1:8000)
+# 3. Run dev server (proxies API at 127.0.0.1:8000)
 npm run dev
 ```
 
@@ -159,8 +163,13 @@ curl http://127.0.0.1:8000/health
 # Backend tests
 pytest backend/tests/ -v
 
-# Frontend type-check + build
-cd frontend && npm run type-check && npm run build
+# Frontend quality gates
+cd frontend
+npm run type-check
+npm run build
+npm run lint
+npm run format:check
+npm run test:unit
 ```
 
 ---

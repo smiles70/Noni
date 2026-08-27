@@ -21,12 +21,7 @@ import {
 } from "../../../design/RenderGuard";
 import type { UIStateEnvelope } from "../../../design/envelope";
 import type { CurriculumPage } from "../../../api/curriculum";
-import {
-  COLORS,
-  SPACING,
-  RADIUS,
-  MOTION,
-} from "../../../design/tokens";
+import { COLORS, SPACING, RADIUS, MOTION } from "../../../design/tokens";
 
 // ---- Fixture: the production curriculum.unit envelope -----------------------
 //
@@ -303,7 +298,12 @@ describe("buildPageProposalContribution invariants", () => {
   });
 
   it("non-retrieval pages contribute 0 page-body primary actions", () => {
-    for (const page_type of ["recap", "context", "principle", "example"] as const) {
+    for (const page_type of [
+      "recap",
+      "context",
+      "principle",
+      "example",
+    ] as const) {
       const p = makePage({ page_type });
       if (page_type === "example") {
         p.example = { situation: "s", claude_says: "c", takeaway: "t" };

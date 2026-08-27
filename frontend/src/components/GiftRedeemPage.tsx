@@ -14,13 +14,7 @@ import { useEffect, useState } from "react";
 import { claimGift, previewGift } from "../api/billing";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
-import {
-  COLORS,
-  MOTION,
-  RADIUS,
-  SPACING,
-  TYPOGRAPHY,
-} from "../design/tokens";
+import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
   ALERT_TEXT,
@@ -57,7 +51,11 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
   useEffect(() => {
     loadEnvelope("account.gift_redeem")
       .then(setEnvelope)
-      .catch(() => setError("We’re having trouble loading this page. Refresh in a moment."));
+      .catch(() =>
+        setError(
+          "We’re having trouble loading this page. Refresh in a moment.",
+        ),
+      );
   }, []);
 
   if (!envelope) {
@@ -216,8 +214,8 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
           <section style={CARD}>
             <h2 style={H2}>Done</h2>
             <p style={SUCCESS_TEXT}>
-              The gift has been added to your account. You can continue to
-              the next module whenever you are ready.
+              The gift has been added to your account. You can continue to the
+              next module whenever you are ready.
             </p>
             <hr style={DIVIDER} />
             <button type="button" style={PRIMARY_BTN} onClick={onClaimed}>

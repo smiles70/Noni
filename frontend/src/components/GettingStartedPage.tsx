@@ -16,12 +16,7 @@
 import { useState, useEffect } from "react";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
-import {
-  COLORS,
-  MOTION,
-  RADIUS,
-  SPACING,
-} from "../design/tokens";
+import { COLORS, MOTION, RADIUS, SPACING } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
   BODY,
@@ -43,7 +38,11 @@ interface Props {
   onSignOut: () => Promise<void>;
 }
 
-export default function GettingStartedPage({ onContinue, onBack, onSignOut }: Props) {
+export default function GettingStartedPage({
+  onContinue,
+  onBack,
+  onSignOut,
+}: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,17 +52,20 @@ export default function GettingStartedPage({ onContinue, onBack, onSignOut }: Pr
   const steps = [
     {
       title: "Welcome to your learning journey",
-      description: "You are about to start Module 1, which introduces the basics of AI. This module is designed for beginners and takes about 30 minutes to complete.",
+      description:
+        "You are about to start Module 1, which introduces the basics of AI. This module is designed for beginners and takes about 30 minutes to complete.",
       action: "Start Module 1",
     },
     {
       title: "How to navigate",
-      description: "Use the Next button to move through each lesson. You can go back to review previous lessons at any time. Your progress is saved automatically.",
+      description:
+        "Use the Next button to move through each lesson. You can go back to review previous lessons at any time. Your progress is saved automatically.",
       action: "Continue",
     },
     {
       title: "Your first lesson",
-      description: "The first lesson explains what AI is and how it works. You will learn at your own pace with clear explanations and examples.",
+      description:
+        "The first lesson explains what AI is and how it works. You will learn at your own pace with clear explanations and examples.",
       action: "Begin learning",
     },
   ];
@@ -193,25 +195,13 @@ export default function GettingStartedPage({ onContinue, onBack, onSignOut }: Pr
         </div>
 
         <div style={STACK}>
-          <button
-            type="button"
-            style={PRIMARY_BTN}
-            onClick={handleNextStep}
-          >
+          <button type="button" style={PRIMARY_BTN} onClick={handleNextStep}>
             {currentStepData.action}
           </button>
-          <button
-            type="button"
-            style={SECONDARY_BTN}
-            onClick={handleBack}
-          >
+          <button type="button" style={SECONDARY_BTN} onClick={handleBack}>
             {currentStep === 0 ? "Go back" : "Previous step"}
           </button>
-          <button
-            type="button"
-            style={SECONDARY_BTN}
-            onClick={handleSignOut}
-          >
+          <button type="button" style={SECONDARY_BTN} onClick={handleSignOut}>
             Sign out
           </button>
         </div>

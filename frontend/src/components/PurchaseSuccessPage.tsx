@@ -86,8 +86,8 @@ export default function PurchaseSuccessPage() {
             <section style={CARD}>
               <h2 style={H2}>Give this code to the learner</h2>
               <p style={BODY}>
-                They can use the "I have a gift code to redeem" option on
-                the paywall to activate their access.
+                They can use the "I have a gift code to redeem" option on the
+                paywall to activate their access.
               </p>
               <p style={SUCCESS_TEXT}>
                 Gift code: <code>{giftCode ?? "—"}</code>
@@ -101,8 +101,8 @@ export default function PurchaseSuccessPage() {
               </p>
               {completed && (
                 <p style={SUCCESS_TEXT}>
-                  Your access has been activated. You can continue to the
-                  next module whenever you are ready.
+                  Your access has been activated. You can continue to the next
+                  module whenever you are ready.
                 </p>
               )}
             </section>

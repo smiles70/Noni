@@ -39,7 +39,9 @@ describe("P11/P23 regression guard", () => {
     const clearSpy = vi.spyOn(globalThis, "clearTimeout");
 
     const origFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn(() => Promise.reject(new Error("network"))) as unknown as typeof fetch;
+    globalThis.fetch = vi.fn(() =>
+      Promise.reject(new Error("network")),
+    ) as unknown as typeof fetch;
 
     const { apiClient } = await import("../api/client.ts");
     try {

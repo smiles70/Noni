@@ -73,7 +73,9 @@ export default function AccountSettingsPage({
     loadEnvelope("account.settings")
       .then(setEnvelope)
       .catch(() =>
-        setError("We’re having trouble loading this page. Please wait and try again."),
+        setError(
+          "We’re having trouble loading this page. Please wait and try again.",
+        ),
       );
   }, []);
 
@@ -152,10 +154,7 @@ export default function AccountSettingsPage({
         <section style={CARD}>
           <h2 style={H2}>Signed in as</h2>
           <p style={BODY}>{me?.email ?? "—"}</p>
-          <SignOutButton
-            onSignedOut={handleSignOut}
-            disabled={submitting}
-          />
+          <SignOutButton onSignedOut={handleSignOut} disabled={submitting} />
         </section>
 
         <section style={CARD}>

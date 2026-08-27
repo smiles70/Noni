@@ -89,7 +89,7 @@ export function useAuthSession(
           {},
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
 
         setState({
@@ -105,8 +105,7 @@ export function useAuthSession(
 
     async function handleError(err: unknown) {
       const apiErr = err as
-        | { response?: ApiErrorResponse & { status?: number } }
-        | undefined;
+        { response?: ApiErrorResponse & { status?: number } } | undefined;
       const status = apiErr?.response?.status;
       // FastAPI wraps error bodies in "detail"; deps.py uses "envelope_id".
       const code =

@@ -54,7 +54,9 @@ export interface GiftPreview {
 }
 
 export async function previewGift(token: string): Promise<GiftPreview> {
-  const res = await apiClient.post<GiftPreview>("/api/gifts/preview", { token });
+  const res = await apiClient.post<GiftPreview>("/api/gifts/preview", {
+    token,
+  });
   return res.data;
 }
 
@@ -70,6 +72,9 @@ export async function claimGift(token: string): Promise<GiftClaim> {
 }
 
 export async function redeemOrgCode(code: string): Promise<OrgRedeemResponse> {
-  const res = await apiClient.post<OrgRedeemResponse>("/api/v1/billing/org/redeem", { code });
+  const res = await apiClient.post<OrgRedeemResponse>(
+    "/api/v1/billing/org/redeem",
+    { code },
+  );
   return res.data;
 }

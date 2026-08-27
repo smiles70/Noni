@@ -9,10 +9,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import {
-  evaluateProposal,
-  type RenderProposal,
-} from "../RenderGuard";
+import { evaluateProposal, type RenderProposal } from "../RenderGuard";
 import type { UIStateEnvelope } from "../envelope";
 
 // ---- Fixtures ---------------------------------------------------------------
@@ -95,7 +92,12 @@ describe("RenderGuard — each check fails closed", () => {
   it("check 5: unauthorized component fails", () => {
     const p = {
       ...compliantProposal,
-      components: ["Heading", "Body", "Button", "Card"] as RenderProposal["components"],
+      components: [
+        "Heading",
+        "Body",
+        "Button",
+        "Card",
+      ] as RenderProposal["components"],
     };
     // Card is not in envelope.authorized_components for this fixture.
     const v = evaluateProposal(p, envelope);

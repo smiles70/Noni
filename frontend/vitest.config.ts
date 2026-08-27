@@ -12,5 +12,15 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     exclude: ["e2e/**", "node_modules/**", "dist/**"],
     environment: "jsdom",
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "lcov"],
+      thresholds: {
+        lines: 1,
+        functions: 1,
+        branches: 1,
+        statements: 1,
+      },
+    },
   },
 });

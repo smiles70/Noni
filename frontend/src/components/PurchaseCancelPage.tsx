@@ -5,7 +5,14 @@
  * This is also the final stop for the mock "Cancel" button.
  */
 import { useNavigate } from "react-router-dom";
-import { BODY, H1, PAGE, PRIMARY_BTN, SECONDARY_BTN, STACK } from "./AccountStyles";
+import {
+  BODY,
+  H1,
+  PAGE,
+  PRIMARY_BTN,
+  SECONDARY_BTN,
+  STACK,
+} from "./AccountStyles";
 
 export default function PurchaseCancelPage() {
   const navigate = useNavigate();
@@ -14,8 +21,8 @@ export default function PurchaseCancelPage() {
     <main style={PAGE}>
       <h1 style={H1}>Payment not completed</h1>
       <p style={BODY}>
-        You can keep using the free modules for as long as you like, and you
-        can choose to purchase again at any time.
+        You can keep using the free modules for as long as you like, and you can
+        choose to purchase again at any time.
       </p>
 
       <div style={STACK}>

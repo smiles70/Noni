@@ -23,7 +23,9 @@ export default function MockCheckoutPage() {
   const purchase = searchParams.get("purchase") ?? "";
   const product = searchParams.get("product") ?? "";
   const isGift = searchParams.get("is_gift") === "true";
-  const successPath = decodeURIComponent(searchParams.get("success_path") ?? "");
+  const successPath = decodeURIComponent(
+    searchParams.get("success_path") ?? "",
+  );
   const cancelPath = decodeURIComponent(searchParams.get("cancel_path") ?? "");
   const giftToken = searchParams.get("gift_token");
 
@@ -36,14 +38,15 @@ export default function MockCheckoutPage() {
     window.location.href = url;
   };
 
-  const price = product === "modules_4_5" ? (isGift ? "$59" : "$39") : "the listed price";
+  const price =
+    product === "modules_4_5" ? (isGift ? "$59" : "$39") : "the listed price";
 
   return (
     <main style={PAGE}>
       <h1 style={H1}>Test checkout</h1>
       <p style={BODY}>
-        This is a simulated payment screen for local development. No real
-        money is charged.
+        This is a simulated payment screen for local development. No real money
+        is charged.
       </p>
 
       <section style={CARD}>

@@ -23,20 +23,32 @@ import { ViewportProvider } from "./context/ViewportContext";
 import { ResponsiveContainer } from "./components/ResponsiveContainer";
 
 // Sprint 28-B.1: lazy-load non-landing views to reduce initial bundle.
-const CurriculumRenderer = lazy(() => import("./components/CurriculumRenderer"));
-const PaidLessonRenderer = lazy(() => import("./components/PaidLessonRenderer"));
+const CurriculumRenderer = lazy(
+  () => import("./components/CurriculumRenderer"),
+);
+const PaidLessonRenderer = lazy(
+  () => import("./components/PaidLessonRenderer"),
+);
 const CurriculumMenu = lazy(() => import("./components/CurriculumMenu"));
 const PaywallPage = lazy(() => import("./components/PaywallPage"));
 const GiftRedeemPage = lazy(() => import("./components/GiftRedeemPage"));
 const MockCheckoutPage = lazy(() => import("./components/MockCheckoutPage"));
-const PurchaseSuccessPage = lazy(() => import("./components/PurchaseSuccessPage"));
-const PurchaseCancelPage = lazy(() => import("./components/PurchaseCancelPage"));
-const AccountSettingsPage = lazy(() => import("./components/AccountSettingsPage"));
+const PurchaseSuccessPage = lazy(
+  () => import("./components/PurchaseSuccessPage"),
+);
+const PurchaseCancelPage = lazy(
+  () => import("./components/PurchaseCancelPage"),
+);
+const AccountSettingsPage = lazy(
+  () => import("./components/AccountSettingsPage"),
+);
 const HelpPage = lazy(() => import("./components/HelpPage"));
 // EPIC-002 Phase 2-3: Add WelcomePage, AccountSetupPage, and GettingStartedPage
 const WelcomePage = lazy(() => import("./components/WelcomePage"));
 const AccountSetupPage = lazy(() => import("./components/AccountSetupPage"));
-const GettingStartedPage = lazy(() => import("./components/GettingStartedPage"));
+const GettingStartedPage = lazy(
+  () => import("./components/GettingStartedPage"),
+);
 
 // Step 3 of the FE cutover plan: temporary debug surface that prints
 // the AuthProvider state in the corner of every page so we can watch
@@ -141,7 +153,11 @@ const App: React.FC = () => {
   const goAccount = () => requireAuth("/account");
 
   const handleSelectUnit = (module: number, unitId: string) => {
-    writeProgress({ module: module as 0 | 1 | 2 | 3 | 4 | 5, unitId, pageIdx: 0 });
+    writeProgress({
+      module: module as 0 | 1 | 2 | 3 | 4 | 5,
+      unitId,
+      pageIdx: 0,
+    });
     goCurriculum();
   };
 

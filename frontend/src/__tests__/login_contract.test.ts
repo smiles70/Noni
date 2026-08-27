@@ -160,18 +160,15 @@ describe("login_contract — C. state transitions", () => {
     },
   );
 
-  it.fails(
-    "T-C2 — OAUTH_FINISHING is unreachable or removed",
-    async () => {
-      /**
-       * Expected: state unreachable (or removed from enum).
-       * Forbidden: state reachable but has no exit transition.
-       * Validates: B9
-       * Prevents:  F9
-       */
-      throw new Error("redesign-pending: T-C2");
-    },
-  );
+  it.fails("T-C2 — OAUTH_FINISHING is unreachable or removed", async () => {
+    /**
+     * Expected: state unreachable (or removed from enum).
+     * Forbidden: state reachable but has no exit transition.
+     * Validates: B9
+     * Prevents:  F9
+     */
+    throw new Error("redesign-pending: T-C2");
+  });
 
   it.fails(
     "T-C3 — FC1 chain (provider signed-in + whoami 401) is bounded",
@@ -297,22 +294,19 @@ describe("login_contract — F. geragogy", () => {
 // ---------------------------------------------------------------------------
 
 describe("login_contract — H. hygiene & observability", () => {
-  it.fails(
-    "T-H2 — at most one whoami-equivalent call per boot",
-    async () => {
-      /**
-       * Action: boot the app; observe whoami-equivalent call count
-       *   from the network panel.
-       * Expected: at most one such call per boot.
-       * Forbidden: NavBar (or any other component) issuing its own
-       *   whoami; any component reading auth state by network call
-       *   instead of from the single owner.
-       * Validates: B1, T7 ; I-G
-       * Prevents:  F8, audit §17 duplicate whoami
-       */
-      throw new Error("redesign-pending: T-H2");
-    },
-  );
+  it.fails("T-H2 — at most one whoami-equivalent call per boot", async () => {
+    /**
+     * Action: boot the app; observe whoami-equivalent call count
+     *   from the network panel.
+     * Expected: at most one such call per boot.
+     * Forbidden: NavBar (or any other component) issuing its own
+     *   whoami; any component reading auth state by network call
+     *   instead of from the single owner.
+     * Validates: B1, T7 ; I-G
+     * Prevents:  F8, audit §17 duplicate whoami
+     */
+    throw new Error("redesign-pending: T-H2");
+  });
 
   // T-H1 (no credential leakage in logs) and T-H3 (no writes on read
   // endpoints) are backend tests; see backend/tests/test_login_constraints.py.

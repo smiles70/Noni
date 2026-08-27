@@ -90,7 +90,9 @@ describe("loadPaidUnit", () => {
 
     expect(res.kind).toBe("paywall");
     if (res.kind === "paywall") {
-      expect(res.signal.envelope_id).toBe("billing.signin_or_purchase_required");
+      expect(res.signal.envelope_id).toBe(
+        "billing.signin_or_purchase_required",
+      );
       expect(res.signal.product_code).toBe("modules_4_5");
     }
   });
@@ -246,9 +248,7 @@ describe("loadFreeLesson", () => {
 
     const lesson = await loadFreeLesson(1, "unit-2");
 
-    expect(mockGet).toHaveBeenCalledWith(
-      "/api/curriculum/units/unit-2/lesson",
-    );
+    expect(mockGet).toHaveBeenCalledWith("/api/curriculum/units/unit-2/lesson");
     expect(lesson.module).toBe(1);
     expect(lesson.unit_id).toBe("unit-2");
     expect(lesson.pages).toHaveLength(2);
@@ -262,9 +262,7 @@ describe("loadFreeLesson", () => {
         module: 2,
         unit_id: "module2-unit-1",
         unit_title: "T",
-        pages: [
-          { id: "p", title: "T", content: [], complexity: 1 },
-        ],
+        pages: [{ id: "p", title: "T", content: [], complexity: 1 }],
         stability: 0.2,
       },
     });
@@ -326,16 +324,13 @@ describe("recordRetrievalChoice", () => {
       correct: true,
     });
 
-    expect(mockPost).toHaveBeenCalledWith(
-      "/api/curriculum/retrieval-choice",
-      {
-        module: 1,
-        unit_id: "unit-2",
-        page_id: "u2-retrieval",
-        chosen_id: "a",
-        correct: true,
-      },
-    );
+    expect(mockPost).toHaveBeenCalledWith("/api/curriculum/retrieval-choice", {
+      module: 1,
+      unit_id: "unit-2",
+      page_id: "u2-retrieval",
+      chosen_id: "a",
+      correct: true,
+    });
   });
 
   it("swallows network failures (fire-and-forget)", async () => {
@@ -419,7 +414,9 @@ describe("loadPaidLesson", () => {
     const res = await loadPaidLesson(4, "module4-unit-1");
     expect(res.kind).toBe("paywall");
     if (res.kind === "paywall") {
-      expect(res.signal.envelope_id).toBe("billing.signin_or_purchase_required");
+      expect(res.signal.envelope_id).toBe(
+        "billing.signin_or_purchase_required",
+      );
       expect(res.signal.product_code).toBe("modules_4_5");
     }
   });
@@ -469,9 +466,7 @@ describe("loadCurriculumMenu (S25.1)", () => {
           {
             id: 1,
             title: "Module 1 — Meeting Claude",
-            units: [
-              { id: "unit-1", title: "Meet Claude", description: "..." },
-            ],
+            units: [{ id: "unit-1", title: "Meet Claude", description: "..." }],
           },
           {
             id: 2,
