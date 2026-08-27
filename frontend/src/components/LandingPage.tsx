@@ -252,7 +252,7 @@ export default function LandingPage({
         >
           {/* Full-bleed hero image */}
           <img
-            src="/nonisplash.jpg"
+            src="/hero-pexels.jpg"
             alt=""
             loading="eager"
             style={{
@@ -262,7 +262,7 @@ export default function LandingPage({
               width: "100%",
               height: "100%",
               objectFit: "cover",
-              objectPosition: "left center",
+              objectPosition: "center",
               zIndex: 0,
             }}
           />
