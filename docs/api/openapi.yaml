@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
-  title: Noni API
+  title: Mynaani API
   description: Geragogy-compliant learning platform API
   version: 1.0.0
   contact:
-    name: Noni Engineering
+    name: Mynaani Engineering
 servers:
   - url: https://noni-api.fly.dev/api/v1
     description: Production
