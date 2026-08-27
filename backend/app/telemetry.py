@@ -76,12 +76,6 @@ _request_count = Counter(
 )
 
 
-_clerk_jwks_rotations = Counter(
-    "clerk_jwks_rotation_events_total",
-    "Clerk JWKS key rotation events detected",
-)
-
-
 # ---------------------------------------------------------------------------
 
 # Public recording helpers — call these from routes/services.

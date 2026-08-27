@@ -4,8 +4,8 @@ See `docs/architecture/SCHEMA.md` and ADR 0023.
 
 Design notes:
 - `accounts.auth_user_id` is a logical UUID reference to the identity
-  provider's user id (today Clerk's `sub` — see ADR 0024). Intentionally
-  NOT a foreign key, so the IdP can be swapped without schema migration.
+  provider's user id. Intentionally NOT a foreign key, so the IdP can be
+  swapped without schema migration.
 - `accounts.email` is CITEXT (case-insensitive) in Postgres.
 - `learners` records the relationship between an account and a learner
   identity; for adult learners this is typically `relationship='self'`.

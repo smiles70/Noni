@@ -9,8 +9,10 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Cache deps separately from source.
-COPY package.json package-lock.json ./
-RUN npm ci
+# package-lock.json is managed at the monorepo root; install from
+# package.json in the standalone frontend image.
+COPY package.json ./
+RUN npm install
 
 COPY . .
 

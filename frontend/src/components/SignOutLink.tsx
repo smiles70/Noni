@@ -1,14 +1,12 @@
 /**
  * SignOutLink — landing-surface sign-out button (ADR 0024 / B6).
  *
- * Pure delegator: this component owns no provider knowledge, no
- * credential reads, and no `useClerk()` call. It triggers sign-out
- * exclusively via AuthProvider's `signOut()` (B6 single sign-out
- * routine), which in turn drives the Clerk SDK in clerk mode and
- * clears the mock token in mock mode.
+ * Pure delegator: this component owns no provider knowledge and no
+ * credential reads. It triggers sign-out exclusively via AuthProvider's
+ * `signOut()` (B6 single sign-out routine), which clears the mock token.
  *
- * Errors are swallowed (matches ClerkSignOutButton): a transient
- * provider failure shouldn't trap the user signed in. The leftover
+ * Errors are swallowed: a transient provider failure shouldn't
+ * trap the user signed in. The leftover
  * server-side token expires on its own.
  *
  * The `onSignedOut` prop is retained for LandingPage back-compat: the
@@ -59,7 +57,7 @@ export default function SignOutLink({ onSignedOut }: Props) {
     }
     // Do not reset submitting: this component typically unmounts after
     // the post-signout state transition; setState on an unmounted
-    // component is a React anti-pattern (matches ClerkSignOutButton).
+    // component is a React anti-pattern.
   };
 
   return (

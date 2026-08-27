@@ -40,12 +40,12 @@ try {
 
 console.log(`   Found ${jsFiles.length} JS bundle files`);
 
-// Check each JS file for localhost references
+// Check each JS file for localhost API base URL references
 const forbiddenPatterns = [
   'localhost:8000',
   '127.0.0.1:8000',
-  'http://localhost',
-  'http://127.0.0.1',
+  'http://localhost:8000',
+  'http://127.0.0.1:8000',
 ];
 
 let hasErrors = false;

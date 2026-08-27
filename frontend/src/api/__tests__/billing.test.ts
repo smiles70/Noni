@@ -8,25 +8,17 @@
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const { mockGet, mockPost, mockUse } = vi.hoisted(() => ({
+const { mockGet, mockPost } = vi.hoisted(() => ({
   mockGet: vi.fn(),
   mockPost: vi.fn(),
-  mockUse: vi.fn(),
 }));
 
-// client.ts (imported transitively via billing.ts) registers a Bearer
-// interceptor at module load. The mocked axios.create must therefore
-// include `interceptors.request.use` or the import would crash.
-vi.mock("axios", () => ({
-  default: {
-    create: () => ({
-      get: mockGet,
-      post: mockPost,
-      interceptors: { request: { use: mockUse } },
-    }),
-    isAxiosError: vi.fn(),
+// Mock the native-fetch apiClient used by billing.ts.
+vi.mock("../client", () => ({
+  apiClient: {
+    get: mockGet,
+    post: mockPost,
   },
-  AxiosHeaders: class {},
 }));
 
 import { claimGift, previewGift, startCheckout } from "../billing";

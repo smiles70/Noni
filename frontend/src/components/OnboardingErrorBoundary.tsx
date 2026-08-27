@@ -13,13 +13,7 @@
  * - Preserves visual context during errors
  * - Errors presented as system states, not user failures
  */
-import React, { Component, ErrorInfo, ReactNode } from "react";
-import {
-  COLORS,
-  RADIUS,
-  SPACING,
-  TYPOGRAPHY,
-} from "../design/tokens";
+import * as React from "react";
 import {
   BODY,
   CARD,
@@ -32,19 +26,19 @@ import {
 } from "./AccountStyles";
 
 interface Props {
-  children: ReactNode;
+  children: React.ReactNode;
   onRetry?: () => void;
   onSkip?: () => void;
-  fallbackComponent?: ReactNode;
+  fallbackComponent?: React.ReactNode;
 }
 
 interface State {
   hasError: boolean;
   error: Error | null;
-  errorInfo: ErrorInfo | null;
+  errorInfo: React.ErrorInfo | null;
 }
 
-export default class OnboardingErrorBoundary extends Component<Props, State> {
+export default class OnboardingErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -62,7 +56,7 @@ export default class OnboardingErrorBoundary extends Component<Props, State> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     this.setState({
       error,
       errorInfo,

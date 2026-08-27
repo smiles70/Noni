@@ -14,16 +14,13 @@
  * - Respects user pacing
  */
 import { useState } from "react";
-import { apiClient } from "../api/client";
 import {
   COLORS,
   RADIUS,
   SPACING,
-  TYPOGRAPHY,
 } from "../design/tokens";
 import {
   BODY,
-  CARD,
   PRIMARY_BTN,
   SECONDARY_BTN,
   STACK,
@@ -36,7 +33,7 @@ interface Props {
 
 export default function ProgressiveProfilingBanner({ onDismiss, onComplete }: Props) {
   const [dismissed, setDismissed] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting] = useState(false);
 
   const handleDismiss = () => {
     setDismissed(true);
@@ -65,7 +62,6 @@ export default function ProgressiveProfilingBanner({ onDismiss, onComplete }: Pr
     >
       <h3
         style={{
-          fontSize: TYPOGRAPHY.headingScale.level3,
           marginTop: 0,
           marginBottom: SPACING.sm,
           color: COLORS.textPrimary,

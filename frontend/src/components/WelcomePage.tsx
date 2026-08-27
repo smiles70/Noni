@@ -22,7 +22,6 @@ import {
   MOTION,
   RADIUS,
   SPACING,
-  TYPOGRAPHY,
 } from "../design/tokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {

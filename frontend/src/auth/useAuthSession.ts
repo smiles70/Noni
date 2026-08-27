@@ -119,13 +119,8 @@ export function useAuthSession(
       // transition to SIGNED_OUT rather than TRANSIENT_ERROR to prevent
       // an infinite retry loop (see ADR 0024 §B5).
       //
-      // EPIC-002 Phase 1: We also clear the credential source (e.g. Clerk session)
-      // so the provider state stays in sync. If Clerk still believes the user is
-      // signed in while our state says SIGNED_OUT, Clerk's <SignIn />
-      // widget will auto-redirect away from /signin and create a login
-      // loop (user clicks Log in -> /signin -> Clerk redirects to / ->
-      // user clicks Log in again ...).
-      // This state synchronization fix prevents the login loop issue.
+      // EPIC-002 Phase 1: clear the credential source so the provider
+      // state stays in sync and avoids a login loop.
       if (status === 401) {
         await auth.signOut?.().catch(() => {});
         setState({ status: "SIGNED_OUT" });

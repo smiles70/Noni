@@ -13,24 +13,18 @@
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const { mockGet, mockPost, mockUse } = vi.hoisted(() => ({
+const { mockGet, mockPost } = vi.hoisted(() => ({
   mockGet: vi.fn(),
   mockPost: vi.fn(),
-  mockUse: vi.fn(),
 }));
 
-// client.ts (imported transitively) registers a Bearer interceptor
-// at module load. The mock must accept the registration call.
-vi.mock("axios", () => ({
-  default: {
-    create: () => ({
-      get: mockGet,
-      post: mockPost,
-      interceptors: { request: { use: mockUse } },
-    }),
-    isAxiosError: vi.fn(),
+// The FetchClient in ../client uses native fetch, but the contract tests
+// only need to verify the URL path and validateStatus handling.
+vi.mock("../client", () => ({
+  apiClient: {
+    get: mockGet,
+    post: mockPost,
   },
-  AxiosHeaders: class {},
 }));
 
 import {

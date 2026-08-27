@@ -2,7 +2,7 @@
  * AuthProvider mock-mode unit tests.
  *
  * Validates the BOOT → SIGNED_OUT → AUTHENTICATING → READY flow
- * without requiring the Clerk SDK or network mocks.
+ * without requiring a real identity provider SDK or network mocks.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
@@ -11,12 +11,11 @@ import { createRoot } from "react-dom/client";
 import { AuthProvider, useAuth } from "../AuthProvider";
 import type { AuthContextValue } from "../AuthProvider";
 
-// Force mock mode so Clerk is never loaded.
+// Force mock mode.
 vi.mock("../../lib/env", () => ({
   AUTH_PROVIDER: "mock",
   IS_DEV: false,
   API_BASE_URL: "http://localhost:8000",
-  CLERK_PUBLISHABLE_KEY: "",
   LOG_LEVEL: "info",
   IS_PROD: false,
 }));

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typing import Optional
 from fastapi import APIRouter, Depends, Header, HTTPException, status
+from pydantic import BaseModel
 from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_db

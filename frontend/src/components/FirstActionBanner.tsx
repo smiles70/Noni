@@ -18,11 +18,9 @@ import {
   COLORS,
   RADIUS,
   SPACING,
-  TYPOGRAPHY,
 } from "../design/tokens";
 import {
   BODY,
-  CARD,
   PRIMARY_BTN,
   SECONDARY_BTN,
   SUCCESS_TEXT,
@@ -60,8 +58,7 @@ export default function FirstActionBanner({ onStart, onDismiss, completed = fals
       >
         <h3
           style={{
-            fontSize: TYPOGRAPHY.headingScale.level3,
-            marginTop: 0,
+              marginTop: 0,
             marginBottom: SPACING.sm,
             color: COLORS.textPrimary,
           }}
@@ -97,7 +94,6 @@ export default function FirstActionBanner({ onStart, onDismiss, completed = fals
     >
       <h3
         style={{
-          fontSize: TYPOGRAPHY.headingScale.level3,
           marginTop: 0,
           marginBottom: SPACING.sm,
           color: COLORS.textPrimary,

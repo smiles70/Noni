@@ -20,7 +20,6 @@ from backend.api.routes.onboarding_telemetry import router as onboarding_telemet
 from backend.api.routes.session_validation import router as session_validation_router
 from backend.api.routes.auth import router as auth_router
 from backend.api.routes.billing import router as billing_router
-from backend.api.routes.clerk_telemetry import router as clerk_telemetry_router
 from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.gifts import router as gifts_router
 from backend.api.routes.landing import router as landing_router
@@ -37,23 +36,14 @@ from backend.core.config import settings, validate_settings
 
 
 def _verify_crypto_dependency() -> None:
-    """F10: fail loud at startup if PyJWT's RS256 support is unavailable.
-
-    PyJWT 2.10.1 (our pin) does not raise an explicit ImportError when
-    `cryptography` is missing; instead RS256 verification silently
-    fails at first request, causing the auth-redirect loop G1 we hit
-    on 2026-05-17. Force the failure at boot so ops sees it before
-    any user does.
-    """
-    if settings.AUTH_PROVIDER.strip().lower() != "clerk":
-        return
+    """F10: fail loud at startup if PyJWT's RS256 support is unavailable."""
     try:
         import cryptography  # noqa: F401
         from jwt.algorithms import RSAAlgorithm  # noqa: F401
     except ImportError as exc:  # pragma: no cover - boot-time guard
         raise RuntimeError(
-            "AUTH_PROVIDER=clerk requires `cryptography` for RS256 JWT "
-            "verification. Install it: `pip install cryptography` (or "
+            "RS256 JWT verification requires `cryptography`. "
+            "Install it: `pip install cryptography` (or "
             "`pip install 'pyjwt[crypto]'`). See docs/gotchas.md G1."
         ) from exc
 
@@ -63,18 +53,15 @@ def _verify_production_secrets() -> None:
     if settings.ENVIRONMENT != "production":
         return
 
-    # Process v9 Knowledge Graph: Mock provider as temporary bridge
-    # Intent: Decompose Clerk, use mock as bridge, migrate to real provider later
-    # Security consideration: Mock is acceptable as temporary production bridge
-    # Warning added but NOT blocked - allows transition period
+    # Process v9: Mock provider is the only supported provider while the
+    # production identity provider is deferred per docs/deferred-decisions.md.
     if settings.AUTH_PROVIDER.strip().lower() == "mock":
         import logging
         logger = logging.getLogger("noni.security")
         logger.warning(
             "Running with AUTH_PROVIDER=mock in production. "
-            "This is intended as a temporary bridge during Clerk decommission. "
-            "Plan migration to production auth provider (NextAuth.js recommended). "
-            "See docs/ops/authentication-provider-alternatives.md for options."
+            "This is intended as a temporary bridge while a real provider is selected. "
+            "See docs/deferred-decisions.md and docs/ops/authentication-provider-alternatives.md."
         )
 
     for name, value in (
@@ -243,12 +230,7 @@ app.add_middleware(
     allow_origins=_cors_origins,
     allow_origin_regex=_cors_origin_regex,
     # ADR 0024: stateless Bearer auth. We do not read or write cookies
-    # on cross-origin requests, so `allow_credentials=False` is correct
-    # AND has a useful side effect: with credentials disabled the CORS
-    # spec treats `allow_headers="*"` as a true wildcard (Clerk's SDK
-    # sends `x-client-version` and friends without any explicit
-    # allowlist). With credentials enabled, the wildcard does not match
-    # any header per the Fetch spec.
+    # on cross-origin requests, so `allow_credentials=False` is correct.
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -293,7 +275,6 @@ async def _http_exception_handler(request: Request, exc: HTTPException) -> JSONR
 app.include_router(curriculum_router, prefix="/api/v1/curriculum", tags=["curriculum"])
 app.include_router(signals_router, prefix="/api/v1/signals", tags=["signals"])
 app.include_router(landing_router, prefix="/api/v1/landing", tags=["landing"])
-app.include_router(clerk_telemetry_router, prefix="/api/v1", tags=["telemetry"])
 app.include_router(
     telemetry_export_router, prefix="/api/v1/telemetry", tags=["telemetry"]
 )

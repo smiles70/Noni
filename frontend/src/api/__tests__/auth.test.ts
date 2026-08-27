@@ -17,27 +17,20 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockGet, mockPost, mockUse, isAxiosError } = vi.hoisted(() => ({
+const { mockGet, mockPost } = vi.hoisted(() => ({
   mockGet: vi.fn(),
   mockPost: vi.fn(),
-  mockUse: vi.fn(),
-  isAxiosError: vi.fn(),
 }));
 
-vi.mock("axios", () => ({
-  default: {
-    create: () => ({
-      get: mockGet,
-      post: mockPost,
-      interceptors: { request: { use: mockUse } },
-    }),
-    isAxiosError,
+vi.mock("../client", () => ({
+  apiClient: {
+    get: mockGet,
+    post: mockPost,
   },
-  // Named export — client.ts does `import { AxiosHeaders } from "axios"`.
-  // The interceptor never runs in unit tests so the value is unused;
-  // we just need the import to resolve to something truthy.
-  AxiosHeaders: class {},
-  isAxiosError,
+  setMockToken: (email: string) =>
+    localStorage.setItem("noni.mock_token", `mock:${email}`),
+  clearMockToken: () => localStorage.removeItem("noni.mock_token"),
+  API_BASE_URL: "https://mock",
 }));
 
 // Import AFTER vi.mock so the module captures the mocked axios.
@@ -70,7 +63,6 @@ beforeEach(() => {
 afterEach(() => {
   mockGet.mockReset();
   mockPost.mockReset();
-  isAxiosError.mockReset();
 });
 
 describe("account deletion", () => {
