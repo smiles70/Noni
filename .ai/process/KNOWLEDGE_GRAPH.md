@@ -218,3 +218,10 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - Capabilities `CAP-RAILWAY-*` are pending.
 - `GAP-RAILWAY-TOKEN` tracks the missing `RAILWAY_TOKEN`.
 - `EVI-RAILWAY-PLAN` is the migration plan.
+
+
+## Railway migration verification (2026-08-27)
+
+- `CAP-RAILWAY-DEPLOY`, `CAP-RAILWAY-SECRETS`, `CAP-RAILWAY-ENV`, `CAP-RAILWAY-SMOKE` marked `implemented`.
+- `GAP-RAILWAY-TOKEN` remains open until `RAILWAY_TOKEN` is configured.
+- `EVI-RAILWAY-CODE` records the code changes.

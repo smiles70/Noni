@@ -38,8 +38,8 @@
   "metadata": {
     "repo": "smiles70/Noni",
     "date": "2026-08-27",
-    "node_count": 150,
-    "edge_count": 169
+    "node_count": 151,
+    "edge_count": 172
   },
   "nodes": [
     {
@@ -988,35 +988,35 @@
       "kind": "Epic",
       "id": "EPIC-RAILWAY-MIGRATION",
       "name": "Railway backend migration",
-      "status": "in_progress"
+      "status": "implemented (pending live token)"
     },
     {
       "kind": "Capability",
       "id": "CAP-RAILWAY-DEPLOY",
       "name": "Deploy backend to Railway via GitHub Actions",
       "path": ".github/workflows/deploy.yml",
-      "status": "pending"
+      "status": "implemented"
     },
     {
       "kind": "Capability",
       "id": "CAP-RAILWAY-SECRETS",
       "name": "Sync secrets to Railway via CLI",
       "path": "infra/scripts/secrets-sync.sh",
-      "status": "pending"
+      "status": "implemented"
     },
     {
       "kind": "Capability",
       "id": "CAP-RAILWAY-ENV",
       "name": "Configure Railway environment in .env.prod.sops.yaml",
       "path": "infra/.env.prod.sops.yaml",
-      "status": "pending"
+      "status": "implemented"
     },
     {
       "kind": "Capability",
       "id": "CAP-RAILWAY-SMOKE",
       "name": "Smoke test against Railway backend",
       "path": "infra/scripts/smoke-prod.sh",
-      "status": "pending"
+      "status": "implemented"
     },
     {
       "kind": "Test",
@@ -1034,13 +1034,21 @@
       "kind": "Gap",
       "id": "GAP-RAILWAY-TOKEN",
       "name": "RAILWAY_TOKEN not yet configured",
-      "reason": "needs GitHub Actions secret and SOPS update"
+      "reason": "needs GitHub Actions secret and SOPS update",
+      "status": "open"
     },
     {
       "kind": "Evidence",
       "id": "EVI-RAILWAY-PLAN",
       "name": "Railway migration plan created",
       "artifact": ".ai/process/RAILWAY_MIGRATION_PLAN.md"
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-RAILWAY-CODE",
+      "name": "Railway migration code changes",
+      "artifact": ".github/workflows/deploy.yml, infra/scripts/secrets-sync.sh, docs/",
+      "date": "2026-08-27"
     }
   ],
   "edges": [
@@ -2218,6 +2226,27 @@
       "relationship": "informs",
       "target": "ADR 0027",
       "provenance": "no auth impact",
+      "status": "active"
+    },
+    {
+      "source": "CAP-RAILWAY-DEPLOY",
+      "relationship": "evidenced_by",
+      "target": "EVI-RAILWAY-CODE",
+      "provenance": "Phase 1 commit",
+      "status": "active"
+    },
+    {
+      "source": "CAP-RAILWAY-SECRETS",
+      "relationship": "evidenced_by",
+      "target": "EVI-RAILWAY-CODE",
+      "provenance": "Phase 2 commit",
+      "status": "active"
+    },
+    {
+      "source": "CAP-RAILWAY-SMOKE",
+      "relationship": "evidenced_by",
+      "target": "EVI-RAILWAY-CODE",
+      "provenance": "Phase 3 commit",
       "status": "active"
     }
   ]
