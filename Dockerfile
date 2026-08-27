@@ -51,6 +51,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
     CMD curl -fsS http://127.0.0.1:${PORT}/health || exit 1
 
-# Migrations run via lifespan in backend.app.main; Gunicorn + Uvicorn workers boot the API.
-# WEB_CONCURRENCY drives worker count (set in fly.toml [env] or docker-compose).
-CMD ["sh", "-c", "gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT} backend.app.main:app"]
+# Migrations run once before gunicorn boots; workers must not run alembic
+# concurrently. WEB_CONCURRENCY drives the gunicorn worker count.
+CMD ["sh", "-c", "alembic upgrade head && gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT} backend.app.main:app"]
