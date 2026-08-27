@@ -10,13 +10,13 @@
 
 - `SourceArtifact`: `SRC-KHAN-AR-24`, `SRC-OATS-AT&T`, `SRC-OATS-JPM`, `SRC-GETSETUP-GSB`, `SRC-AARP-2025`, `SRC-DUOLINGO-10K`, `SRC-EY-2026`, `SRC-ELDERCLASS`, `SRC-RENDEVER`, `SRC-SENIOR-SHIELD`
 - `Requirement`: `REQ-MON-001` (free core), `REQ-MON-002` (sustainable revenue), `REQ-MON-003` (B2B2C/sponsorship), `REQ-MON-004` (no ads), `REQ-MON-005` (no subscription dark patterns)
-- `Persona`: `PERSONA-Sponsor-Org`, `PERSONA-Learner-LowIncome`
-- `Journey`: `JOURNEY-SponsoredAccess`
-- `Capability`: `CAP-SponsorCode`, `CAP-InstitutionalBilling`
-- `Decision`: `DEC-MON-001` (hybrid model recommendation)
+- `Persona`: `PERSONA-B2B-Buyer`, `PERSONA-Learner-LowIncome`
+- `Journey`: `JOURNEY-B2B2C-Access`
+- `Capability`: `CAP-OrgLicense`, `CAP-AccessCode`, `CAP-InstitutionalBilling`
+- `Decision`: `DEC-MON-001` (for-profit B2B2C-first hybrid)
 - `Evidence`: `EVI-MON-001`–`EVI-MON-012`
-- `Assumption`: `ASM-MON-001` (sponsors exist), `ASM-MON-002` (per-seat price viable)
-- `Gap`: `GAP-MON-001` (no sponsor pricing), `GAP-MON-002` (no 501c3 status), `GAP-MON-003` (no pilot partner)
+- `Assumption`: `ASM-MON-001` (B2B buyers exist), `ASM-MON-002` (per-seat price viable)
+- `Gap`: `GAP-MON-001` (no B2B pricing), `GAP-MON-002` (no sales/pilot partner), `GAP-MON-003` (no unit economics model)
 
 ## Traceability summary
 

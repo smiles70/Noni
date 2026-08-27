@@ -9,16 +9,15 @@
 
 ## 1. Bottom-line answer
 
-**No, Mynaani cannot be *self-sustaining* as an entirely free consumer product without a committed funder.**
+**No, Mynaani cannot be *self-sustaining* as an entirely free product.**
 
-Best-in-class players in older-adult digital learning (OATS/Senior Planet, GetSetUp, Khan Academy) do not rely on consumer payments alone. They use a **hybrid model**: a generous free or low-cost learner-facing layer funded by a mix of **institutional contracts, corporate sponsorships, grants, and a small paid/upsell path**.
+For a **for-profit** older-adult AI learning product, the best-in-class model is not charitable grants or consumer subscriptions. It is a **B2B2C-first hybrid**:
 
-For Mynaani, the best-in-class approach is:
-
-- **Keep Modules 1-3 free and complete.** They are the trust-building, digital-inclusion front door.
-- **Keep Modules 4-5 as a one-time $39/$59 purchase** for learners who can pay and want to build Skills/Agents.
-- **Add a B2B2C / sponsorship layer** (senior centers, Medicare Advantage, employers, corporate digital-equity programs) so that learners who cannot pay still get sponsored access to the full curriculum.
-- **Do not use ads or ad-supported freemium.** Ads contradict geragogy, create cognitive load, and erode the trust this audience requires.
+- **Keep Modules 1-3 free to the learner.** They are the trust-building, digital-inclusion front door and the conversion funnel.
+- **Offer Modules 4-5 as a one-time $39 purchase (or $59 caregiver gift)** for self-purchasers.
+- **Sell bulk / sponsored access to employers, insurers, senior living, healthcare, and corporate wellness programs** so their members/employees use Mynaani at no cost.
+- **Do not use ads or ad-supported freemium.** Ads contradict geragogy and erode the trust this audience requires.
+- **Avoid recurring consumer subscriptions.** AARP 2025 and CHI 2024 evidence show this audience distrusts auto-renew and hard-to-cancel billing.
 
 ---
 
@@ -111,14 +110,14 @@ Scoring: 1 (poor) to 5 (excellent) across **Sustainability**, **Learner Accessib
 - **Why:** Avoids the subscription dark patterns this audience distrusts. $39 is below the annual cost of comparable subscriptions and converts to ~$3.25/mo over a year, near the telecare WTP anchor. $59 gift opens a higher-WTP caregiver channel.
 - **Evidence:** CHI 2024 found hidden costs and hard-to-cancel are the top concerns for older adults. One-time purchase is the opposite of those patterns.
 
-### 4.3 Add a B2B2C / sponsorship capability
+### 4.3 Add a B2B2C / institutional contract capability
 
-This is the **new recommendation** and the best-in-class addition.
+This is the **new recommendation** and the best-in-class addition for a for-profit model.
 
-- **Sponsor codes / institutional grants:** A senior center, employer, Medicare Advantage plan, or corporate digital-equity program (e.g., AT&T, Verizon, T-Mobile) purchases bulk access codes and distributes them to learners.
-- **Caregiver / family gifting:** Already in place ($59 gift).
-- **Free-to-paid bridge for low-income learners:** If a learner cannot pay, they can enter a sponsor code to unlock Modules 4-5 at no cost. The sponsor is billed.
-- **Implementation:** A new `sponsor_purchase` or `access_code` flow. A sponsor buys N seats at a discounted per-seat rate (e.g., $30). Each learner enters a code at the paywall and receives the same entitlement.
+- **B2B2C bulk licenses:** Employers, insurers, senior living operators, healthcare providers, and corporate wellness programs purchase bulk or per-seat licenses and offer Mynaani to their members/employees at no cost.
+- **Sponsored individual codes:** A learner who cannot or will not pay receives an access code from their sponsoring organization. Mynaani is paid by the organization, not the learner.
+- **Caregiver / family gifting:** Already in place ($59 gift) for direct consumer purchase.
+- **Implementation:** A new `sponsor_purchase` or `access_code` flow. An organization buys N seats at a discounted per-seat rate (e.g., $25–$35). Each learner enters a code at the paywall and receives the same `modules_4_5` entitlement.
 
 ### 4.4 Do NOT
 
@@ -152,9 +151,37 @@ This is the **new recommendation** and the best-in-class addition.
 
 ---
 
-## 6. Open questions
+## 7. For-profit constraint (amendment)
 
-1. What is the per-seat discount and minimum seat count for institutional sponsors?
-2. Which institutional payer segments should Mynaani pilot with first (senior centers, Medicare Advantage, employers)?
-3. Does Mynaani need 501(c)(3) status, or can sponsorship be treated as a B2B commercial contract?
-4. What is the marginal cost per sponsored learner (Claude API, support), and what minimum price keeps the sponsor program unit-economically viable?
+Mynaani is a for-profit entity. This eliminates the donor/grant-funded path as the primary business model and makes institutional **contracts**, not **donations**, the best-in-class revenue engine.
+
+### 7.1 Implications
+
+- **No reliance on charitable contributions.** Khan Academy's 77% contribution model and OATS's grant-funded model are not directly applicable.
+- **B2B2C contracts become the core revenue.** The payer is an organization (employer, insurer, senior living, healthcare provider, corporate wellness program) that pays Mynaani to offer the curriculum to its members/employees/customers for free.
+- **Consumer one-time purchase becomes a profitable upsell, not the main engine.** Direct consumer revenue is capped by the AARP 60% unwilling-to-pay data; it is best treated as a high-margin, low-friction option for self-purchasers and caregivers.
+- **Sponsorships must be structured as sponsorship / B2B contracts** (e.g., CSR marketing, benefit fulfillment, member acquisition) rather than tax-deductible charitable gifts.
+
+### 7.2 Revised for-profit recommendation
+
+| Tier | Payer | Learner cost | Mynaani revenue source |
+|------|-------|--------------|----------------------|
+| **Free core (Modules 1-3)** | Mynaani (cost of acquisition) | Free | N/A — trust building, conversion funnel |
+| **Advanced (Modules 4-5)** | Learner / caregiver | $39 / $59 gift | Direct one-time purchase |
+| **Sponsored / bulk access** | Employer, insurer, senior living, healthcare, corporate wellness | Free to learner | B2B contract / per-seat or flat fee |
+| **Institutional license** | Senior center, library, community org | Free/discounted to members | Bulk license fee |
+
+### 7.3 For-profit force-rank adjustment
+
+For a for-profit entity, the top three models are:
+
+1. **B2B2C / institutional contracts** — highest revenue, sustainable, scales to fixed-income audience.
+2. **Hybrid: free core + one-time paid + B2B2C** — still the best overall, with B2B as the dominant revenue line.
+3. **One-time paid only** — viable but limited by low consumer WTP.
+
+### 7.4 Key open questions for a for-profit path
+
+1. What is the B2B2C per-seat price and minimum contract size?
+2. Which vertical has the fastest sales cycle: employer wellness, Medicare Advantage, senior living, or healthcare?
+3. Does the one-time $39 consumer price need to rise to offset the cost of free-tier users?
+4. What unit economics (Claude API cost per user, support cost) make the B2B2C price defensible?

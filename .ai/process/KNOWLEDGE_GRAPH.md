@@ -376,6 +376,6 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `SRC-MON-001-INTAKE` is `.ai/intake/2026-08-27-monetization-001.md`.
 - `SRC-MON-001-PREFLIGHT` is `.ai/process/PREFLIGHT_MONETIZATION_001.md`.
 - `SRC-MON-001-PHASE` is `.ai/process/PHASE_INVENTORY_MONETIZATION_001.md`.
-- `DEC-MON-001` is recommendation: hybrid free core + one-time paid + B2B2C sponsorship.
+- `DEC-MON-001` is recommendation: for-profit B2B2C-first hybrid (free core + one-time paid + B2B2C contracts).
 - `CAP-MON-001` status is `completed`.
 
