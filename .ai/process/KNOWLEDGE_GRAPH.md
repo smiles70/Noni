@@ -268,3 +268,15 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `EVI-HERO-002-PREFLIGHT` is `PREFLIGHT_HERO_EXEMPT.md` with `GO` status.
 - `EVI-HERO-002-DEPLOY` is live bundle `https://noni-web.pages.dev/assets/index-BQ6GAP4z.js`.
 - `CAP-HERO-LANDING-EXEMPT` status is `implemented`.
+
+## HERO-003 full-page hero image update (2026-08-27)
+
+- `SRC-HERO-003-INTAKE` is `.ai/intake/2026-08-27-landing-hero-image-update.md`.
+- `SRC-PHASE-HERO-IMAGE` is `.ai/process/PHASE_INVENTORY_HERO_IMAGE.md`.
+- `SRC-PREFLIGHT-HERO-IMAGE` is `.ai/process/PREFLIGHT_HERO_IMAGE.md`.
+- `SRC-LESSONS-HERO-IMAGE` is `.ai/process/LESSONS_LEARNED_HERO_IMAGE.md`.
+- `GAP-HERO-IMAGE-LEFT` resolution path: use `object-position: left center`.
+- `CAP-HERO-LANDING-EXEMPT` `refines` to `CAP-HERO-LANDING-FULLPAGE`.
+- `EVI-HERO-003-PREFLIGHT` is `PREFLIGHT_HERO_IMAGE.md` with `GO` status.
+- `EVI-HERO-003-DEPLOY` is live bundle `https://noni-web.pages.dev/assets/index-BDTGBJ7j.js`.
+- `CAP-HERO-LANDING-FULLPAGE` status is `implemented`.

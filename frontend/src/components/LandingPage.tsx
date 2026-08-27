@@ -262,16 +262,18 @@ export default function LandingPage({
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              objectPosition: "left center",
               zIndex: 0,
             }}
           />
 
-          {/* Dark overlay for text and card contrast */}
+          {/* Light right-side gradient so the white card reads cleanly
+              without dimming the main subject. */}
           <div
             style={{
               position: "absolute",
               inset: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.25)",
+              background: "linear-gradient(to right, transparent 40%, rgba(0, 0, 0, 0.18) 100%)",
               zIndex: 1,
             }}
           />
@@ -282,11 +284,11 @@ export default function LandingPage({
             style={{
               position: "absolute",
               top: "50%",
-              right: "5%",
+              right: "8%",
               transform: "translateY(-50%)",
               zIndex: 2,
               width: "90%",
-              maxWidth: 420,
+              maxWidth: 360,
             }}
           >
             <div style={CARD}>
