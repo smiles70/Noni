@@ -1,7 +1,7 @@
 # Pinned runtime dependencies for the Noni backend container.
 # Keep in sync with pyproject.toml [project].dependencies.
 fastapi==0.136.1
-magic-admin==2.5.1
+magic-admin==2.5.0
 uvicorn[standard]==0.46.0
 gunicorn==23.0.0
 prometheus-client==0.20.0
