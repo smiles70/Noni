@@ -28,6 +28,9 @@ const PaidLessonRenderer = lazy(() => import("./components/PaidLessonRenderer"))
 const CurriculumMenu = lazy(() => import("./components/CurriculumMenu"));
 const PaywallPage = lazy(() => import("./components/PaywallPage"));
 const GiftRedeemPage = lazy(() => import("./components/GiftRedeemPage"));
+const MockCheckoutPage = lazy(() => import("./components/MockCheckoutPage"));
+const PurchaseSuccessPage = lazy(() => import("./components/PurchaseSuccessPage"));
+const PurchaseCancelPage = lazy(() => import("./components/PurchaseCancelPage"));
 const AccountSettingsPage = lazy(() => import("./components/AccountSettingsPage"));
 const HelpPage = lazy(() => import("./components/HelpPage"));
 // EPIC-002 Phase 2-3: Add WelcomePage, AccountSetupPage, and GettingStartedPage
@@ -359,6 +362,36 @@ const App: React.FC = () => {
                         onBack={() => navigate("/paywall")}
                         onHelp={goHelp}
                       />
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/mock-checkout"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <MockCheckoutPage />
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/purchase/success"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <PurchaseSuccessPage />
+                    </Suspense>
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/purchase/cancel"
+                element={
+                  <RequireAuth>
+                    <Suspense fallback={loadFallback}>
+                      <PurchaseCancelPage />
                     </Suspense>
                   </RequireAuth>
                 }

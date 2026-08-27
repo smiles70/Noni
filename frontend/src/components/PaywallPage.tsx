@@ -79,9 +79,16 @@ export default function PaywallPage({
     setSubmitting(true);
     setError(null);
     try {
-      const { checkout_url } = await startCheckout(productCode, isGift);
+      const { checkout_url, gift_token } = await startCheckout(productCode, isGift);
       // Server-controlled URL; in prod this is Stripe; in dev it's a mock.
-      window.location.href = checkout_url;
+      // For mock gift checkout, append the plaintext token so the recipient
+      // can redeem it.
+      let url = checkout_url;
+      if (isGift && gift_token) {
+        const separator = url.includes("?") ? "&" : "?";
+        url = `${url}${separator}gift_token=${encodeURIComponent(gift_token)}`;
+      }
+      window.location.href = url;
     } catch {
       setError("We could not start checkout. Please try again in a moment.");
       setSubmitting(false);

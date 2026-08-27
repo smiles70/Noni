@@ -10,6 +10,7 @@ export interface CheckoutResponse {
   purchase_id: string;
   checkout_url: string;
   provider_session_id: string;
+  gift_token: string | null;
 }
 
 export async function startCheckout(
@@ -20,6 +21,24 @@ export async function startCheckout(
     product_code: productCode,
     is_gift: isGift,
   });
+  return res.data;
+}
+
+export interface MockCheckoutCompleteResponse {
+  outcome: string;
+  purchase_id: string;
+  product_code: string;
+  is_gift: boolean;
+  granted: boolean;
+}
+
+export async function mockCheckoutComplete(
+  purchaseId: string,
+): Promise<MockCheckoutCompleteResponse> {
+  const res = await apiClient.post<MockCheckoutCompleteResponse>(
+    "/api/billing/mock-checkout-complete",
+    { purchase_id: purchaseId },
+  );
   return res.data;
 }
 

@@ -48,6 +48,38 @@ def _verify_crypto_dependency() -> None:
         ) from exc
 
 
+def _seed_dev_products() -> None:
+    """Ensure the paid-bundle product exists in dev/mock mode.
+
+    Real production data is seeded through migrations and vendor setup.
+    This dev-only guard lets the mock checkout flow work locally.
+    """
+    if settings.PAYMENT_PROVIDER != "mock":
+        return
+    from backend.core.database import SessionLocal
+    from backend.models.billing import Product
+
+    db = SessionLocal()
+    try:
+        existing = (
+            db.query(Product).filter(Product.code == "modules_4_5").one_or_none()
+        )
+        if existing is None:
+            db.add(
+                Product(
+                    code="modules_4_5",
+                    display_name="Modules 4 and 5: Build Skills and Agents",
+                    price_cents=3900,
+                    currency="usd",
+                    active=True,
+                    content_version=1,
+                )
+            )
+            db.commit()
+    finally:
+        db.close()
+
+
 def _verify_production_secrets() -> None:
     """Sprint 22 I3: crash on boot if production secrets are weak or blank."""
     if settings.ENVIRONMENT != "production":
@@ -112,6 +144,7 @@ async def lifespan(app: FastAPI):
     validate_settings()
     _verify_crypto_dependency()
     _verify_production_secrets()
+    _seed_dev_products()
     # Migrations run via fly.toml deploy.release_command before
     # any web workers boot. Calling alembic here would cause
     # concurrent upgrades when gunicorn spawns multiple workers.

@@ -22,6 +22,7 @@ from backend.services.payment_provider import (
     WebhookVerificationError,
     get_payment_provider,
 )
+from backend.services.webhook_handler import process_event
 from backend.services.rate_limit import RateLimit, client_ip, enforce
 from backend.tasks.webhook_tasks import process_stripe_webhook
 
@@ -42,11 +43,24 @@ class CheckoutCreateResponse(BaseModel):
     purchase_id: str
     checkout_url: str
     provider_session_id: str
+    gift_token: str | None = None
 
 
 class BillingHealthResponse(BaseModel):
     provider: str
     stripe_mode: str  # 'test' | 'live' | 'mock' | 'unknown'
+
+
+class MockCheckoutCompleteRequest(BaseModel):
+    purchase_id: uuid.UUID
+
+
+class MockCheckoutCompleteResponse(BaseModel):
+    outcome: str
+    purchase_id: str
+    product_code: str
+    is_gift: bool
+    granted: bool
 
 
 # ---------- Routes ----------
@@ -111,10 +125,11 @@ def create_checkout(
         status="pending",
     )
 
+    gift_token: str | None = None
     if body.is_gift:
         # Issue token immediately so we can return it to the buyer if needed
         # (kept opaque server-side; only revealed in success page / receipt).
-        gifts.issue_token(db, purchase)
+        gift_token = gifts.issue_token(db, purchase)
 
     db.add(purchase)
     db.flush()
@@ -145,6 +160,7 @@ def create_checkout(
         purchase_id=str(purchase.id),
         checkout_url=session_obj.url,
         provider_session_id=session_obj.provider_session_id,
+        gift_token=gift_token if body.is_gift else None,
     )
 
     # Sprint 27 M1: cache outcome for 24h idempotency.
@@ -199,3 +215,71 @@ async def stripe_webhook(
         "task_id": task.id,
         "status": "accepted",
     }
+
+
+@router.post("/mock-checkout-complete", response_model=MockCheckoutCompleteResponse)
+def mock_checkout_complete(
+    body: MockCheckoutCompleteRequest,
+    account: Account = Depends(get_current_account),
+    db: DbSession = Depends(get_db),
+) -> MockCheckoutCompleteResponse:
+    """Dev-only: simulate a successful Stripe checkout for a mock purchase.
+
+    Only available when the configured payment provider is `mock`.
+    """
+    provider = get_payment_provider()
+    if provider.name != "mock":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"envelope_id": "billing.mock_only"},
+        )
+
+    purchase = db.query(Purchase).filter(Purchase.id == body.purchase_id).one_or_none()
+    if purchase is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"envelope_id": "billing.purchase_not_found"},
+        )
+    if str(purchase.buyer_account_id) != str(account.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"envelope_id": "billing.purchase_not_owner"},
+        )
+    if purchase.status != "pending":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"envelope_id": "billing.purchase_not_pending"},
+        )
+
+    # Build the same WebhookEvent the webhook task would receive for a
+    # completed checkout session, then process it synchronously.
+    from backend.services.payment_provider import WebhookEvent
+
+    payload = {
+        "id": purchase.stripe_checkout_session_id,
+        "payment_intent": f"pi_mock_{purchase.id.hex[:12]}",
+        "metadata": {
+            "purchase_id": str(purchase.id),
+            "product_code": purchase.product_code,
+            "is_gift": "true" if purchase.gift_claim_token_hash is not None else "false",
+        },
+    }
+    event = WebhookEvent(
+        event_id=f"evt_mock_{purchase.id.hex[:12]}",
+        event_type="checkout.session.completed",
+        payload=payload,
+    )
+    outcome = process_event(db, event)
+    db.commit()
+
+    # Determine if an entitlement was actually granted to the current user.
+    is_gift = purchase.gift_claim_token_hash is not None
+    granted = not is_gift and outcome == "granted"
+
+    return MockCheckoutCompleteResponse(
+        outcome=outcome,
+        purchase_id=str(purchase.id),
+        product_code=purchase.product_code,
+        is_gift=is_gift,
+        granted=granted,
+    )

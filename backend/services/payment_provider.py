@@ -126,9 +126,36 @@ class MockPaymentProvider:
         is_gift: bool,
     ) -> CheckoutSession:
         session_id = f"cs_mock_{purchase_id.hex[:12]}"
+        # For mock mode we show a local test checkout page where the user
+        # can choose to complete or cancel. The success/cancel paths are
+        # encoded in the query so the mock checkout can route the browser
+        # to the same final URLs a real Stripe checkout would use.
+        from urllib.parse import quote, urlparse
+
+        success_path = urlparse(success_url).path or "/purchase/success"
+        cancel_path = urlparse(cancel_url).path or "/purchase/cancel"
+
+        # Build the final destination paths (relative). The frontend
+        # mock-checkout page will append the same parameters we use here.
+        success_dest = (
+            f"{success_path}?purchase={purchase_id}"
+            f"&product={product_code}"
+            f"&provider=mock"
+            f"&is_gift={'true' if is_gift else 'false'}"
+        )
+        cancel_dest = (
+            f"{cancel_path}?purchase={purchase_id}"
+            f"&product={product_code}"
+            f"&provider=mock"
+            f"&is_gift={'true' if is_gift else 'false'}"
+        )
+
         url = (
-            f"https://mock-stripe.local/c/{session_id}"
-            f"?purchase={purchase_id}&product={product_code}"
+            f"/mock-checkout?purchase={purchase_id}"
+            f"&product={product_code}"
+            f"&is_gift={'true' if is_gift else 'false'}"
+            f"&success_path={quote(success_dest, safe='/')}"
+            f"&cancel_path={quote(cancel_dest, safe='/')}"
         )
         return CheckoutSession(provider_session_id=session_id, url=url)
 
