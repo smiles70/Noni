@@ -115,13 +115,12 @@ jobs:
         working-directory: frontend
         env:
           VITE_API_BASE_URL: 'https://noni-api.fly.dev'
-          # Pinned, deterministic auth config. These are PUBLIC values (provider
-          # name + Clerk publishable key) and MUST match the backend's Clerk
-          # instance: improved-pheasant-38.clerk.accounts.dev (CLERK_ISSUER).
-          # Not sourced from the VITE_AUTH_PROVIDER secret, which was corrupted
-          # ("mock" + trailing whitespace) and caused the production outage.
-          VITE_AUTH_PROVIDER: 'clerk'
-          VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_aW1wcm92ZWQtcGhlYXNhbnQtMzguY2xlcmsuYWNjb3VudHMuZGV2JA'
+          # Process v9: Decomposed Clerk, using mock as temporary bridge
+          # Previous hardcoded Clerk configuration caused login loop
+          # Now using mock provider until NextAuth.js migration complete
+          VITE_AUTH_PROVIDER: 'mock'
+          # Clerk configuration disabled during decommission
+          # VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_aW1wcm92ZWQtcGhlYXNhbnQtMzguY2xlcmsuYWNjb3VudHMuZGV2JA'
           CI: true
           NODE_ENV: production
         run: npm run prebuild
@@ -130,14 +129,12 @@ jobs:
         working-directory: frontend
         env:
           VITE_API_BASE_URL: 'https://noni-api.fly.dev'
-          # Pinned, deterministic auth config. These are PUBLIC values (provider
-          # name + Clerk publishable key) and MUST match the backend's Clerk
-          # instance: improved-pheasant-38.clerk.accounts.dev (CLERK_ISSUER).
-          # The VITE_AUTH_PROVIDER secret previously held "mock" with trailing
-          # whitespace -> a mock frontend against a Clerk backend (401 login
-          # loop) plus a provider-desync crash. Pinning eliminates that class.
-          VITE_AUTH_PROVIDER: 'clerk'
-          VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_aW1wcm92ZWQtcGhlYXNhbnQtMzguY2xlcmsuYWNjb3VudHMuZGV2JA'
+          # Process v9: Decomposed Clerk, using mock as temporary bridge
+          # Previous hardcoded Clerk configuration caused login loop
+          # Now using mock provider until NextAuth.js migration complete
+          VITE_AUTH_PROVIDER: 'mock'
+          # Clerk configuration disabled during decommission
+          # VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_aW1wcm92ZWQtcGhlYXNhbnQtMzguY2xlcmsuYWNjb3VudHMuZGV2JA'
           CI: true
           NODE_ENV: production
         run: npm run build
