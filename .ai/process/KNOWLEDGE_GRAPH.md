@@ -254,3 +254,15 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `SRC-HERO-GAP` identifies `GAP-HERO-BENEFITS` (no benefit cards above fold).
 - `SRC-HERO-GAP` identifies `GAP-HERO-TRUST` (missing explicit trust signal).
 - `DEC-0029` proposes partial contract exemption for `LandingPage.tsx`.
+
+## HERO-002 contract-exempt landing hero redesign (2026-08-27)
+
+- `SRC-HERO-002-INTAKE` is `.ai/intake/2026-08-27-landing-hero-exemption-redesign.md`.
+- `DEC-0029` status updated to `Accepted`.
+- `SRC-PHASE-HERO-EXEMPT` is `.ai/process/PHASE_INVENTORY_HERO_EXEMPT.md`.
+- `SRC-PREFLIGHT-HERO-EXEMPT` is `.ai/process/PREFLIGHT_HERO_EXEMPT.md`.
+- `SRC-LESSONS-HERO` is `.ai/process/LESSONS_LEARNED_HERO.md`.
+- `GAP-HERO-HEADLINE` resolution path: increase `LandingPage.tsx` H1 via `ADR 0029`.
+- `GAP-HERO-TRUST` resolution path: add "Free. No card needed." note to primary CTA.
+- `CAP-HERO-LANDING-EXEMPT` depends_on `DEP-HERO-IMAGE` (placeholder `nonisplash.jpg`).
+- `EVI-HERO-002-PREFLIGHT` is `PREFLIGHT_HERO_EXEMPT.md` with `GO` status.

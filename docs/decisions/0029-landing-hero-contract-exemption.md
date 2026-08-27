@@ -1,6 +1,6 @@
 # ADR 0029 — Landing Page Contract Exemption (Proposed)
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-08-27
 **Process:** v9.51
 **Owner:** Product
