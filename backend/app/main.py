@@ -61,7 +61,25 @@ def _verify_crypto_dependency() -> None:
 def _verify_production_secrets() -> None:
     """Sprint 22 I3: crash on boot if production secrets are weak or blank."""
     if settings.ENVIRONMENT != "production":
+        # WI-004: Warn about mock provider in development
+        if settings.AUTH_PROVIDER.strip().lower() == "mock":
+            import logging
+            logger = logging.getLogger("noni.security")
+            logger.warning(
+                "Running with AUTH_PROVIDER=mock (development mode only). "
+                "This provider is not suitable for production. "
+                "See docs/ops/authentication-provider-alternatives.md for production options."
+            )
         return
+
+    # WI-004: Prevent mock provider in production
+    if settings.AUTH_PROVIDER.strip().lower() == "mock":
+        raise RuntimeError(
+            "AUTH_PROVIDER=mock is not allowed in production. "
+            "Set AUTH_PROVIDER=clerk or another production provider. "
+            "See docs/ops/authentication-provider-alternatives.md for options."
+        )
+
     for name, value in (
         ("SECRET_KEY", settings.SECRET_KEY),
         ("SESSION_SECRET", settings.SESSION_SECRET),
