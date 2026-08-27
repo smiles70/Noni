@@ -106,8 +106,15 @@ export default function WelcomePage({ onContinue, onAccount, onAccountSetup, onS
   if (error) {
     return (
       <main style={PAGE} role="alert" data-component="BlockedNotice">
-        <h1 style={H1}>This page is paused.</h1>
+        <h1 style={H1}>We’re having trouble loading this page.</h1>
         <p style={BODY}>{error}</p>
+        <button
+          type="button"
+          style={PRIMARY_BTN}
+          onClick={() => window.location.reload()}
+        >
+          Try again
+        </button>
       </main>
     );
   }

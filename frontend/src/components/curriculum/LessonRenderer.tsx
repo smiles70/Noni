@@ -216,7 +216,7 @@ function BlockedLoad({
       data-component="BlockedNotice"
     >
       {nav}
-      <h1 style={H1}>This lesson is paused.</h1>
+      <h1 style={H1}>We’re having trouble loading this lesson.</h1>
       <p style={PARA}>{message}</p>
       {detail ? <p style={ERROR_DETAIL}>{detail}</p> : null}
     </main>

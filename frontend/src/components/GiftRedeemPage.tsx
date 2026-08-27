@@ -57,7 +57,7 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
   useEffect(() => {
     loadEnvelope("account.gift_redeem")
       .then(setEnvelope)
-      .catch(() => setError("This page is paused. Refresh in a moment."));
+      .catch(() => setError("We’re having trouble loading this page. Refresh in a moment."));
   }, []);
 
   if (!envelope) {

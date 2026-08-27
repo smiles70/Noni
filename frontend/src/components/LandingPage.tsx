@@ -108,7 +108,7 @@ function BlockedLoad({ message }: { message: string }) {
       aria-live="polite"
       data-component="BlockedNotice"
     >
-      <h1 style={H1}>This page is paused.</h1>
+      <h1 style={H1}>We’re having trouble loading this page.</h1>
       <p>{message}</p>
     </main>
   );

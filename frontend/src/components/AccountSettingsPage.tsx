@@ -73,7 +73,7 @@ export default function AccountSettingsPage({
     loadEnvelope("account.settings")
       .then(setEnvelope)
       .catch(() =>
-        setError("This page is paused. Please refresh in a moment."),
+        setError("We’re having trouble loading this page. Please wait and try again."),
       );
   }, []);
 

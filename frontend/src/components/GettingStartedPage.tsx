@@ -119,7 +119,7 @@ export default function GettingStartedPage({ onContinue, onBack, onSignOut }: Pr
   if (error && !envelope) {
     return (
       <main style={PAGE} role="alert" data-component="BlockedNotice">
-        <h1 style={H1}>This page is paused.</h1>
+        <h1 style={H1}>We’re having trouble loading this page.</h1>
         <p style={BODY}>{error}</p>
       </main>
     );

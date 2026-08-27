@@ -301,7 +301,7 @@ export function RenderGuard({
       }}
     >
       <h2 style={{ fontSize: TYPOGRAPHY.headingScale.level2, margin: 0 }}>
-        This screen is paused.
+        We’re having trouble showing this screen.
       </h2>
       <p style={{ marginTop: 16, marginBottom: 0 }}>
         The interface cannot continue safely right now. You can go back to

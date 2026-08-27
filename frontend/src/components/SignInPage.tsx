@@ -50,13 +50,13 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
   useEffect(() => {
     loadEnvelope("account.signin")
       .then(setEnvelope)
-      .catch(() => setError("Please wait a moment and refresh the page."));
+      .catch(() => setError("Something went wrong. Please wait a moment and try again."));
   }, []);
 
   if (error) {
     return (
       <main style={PAGE} role="alert" data-component="BlockedNotice">
-        <h1 style={H1}>This page is paused.</h1>
+        <h1 style={H1}>We’re having trouble loading this page.</h1>
         <p style={BODY}>{error}</p>
       </main>
     );

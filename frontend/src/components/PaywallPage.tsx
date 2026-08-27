@@ -56,13 +56,13 @@ export default function PaywallPage({
   useEffect(() => {
     loadEnvelope("account.paywall")
       .then(setEnvelope)
-      .catch(() => setError("This page is paused. Refresh in a moment."));
+      .catch(() => setError("We’re having trouble loading this page. Refresh in a moment."));
   }, []);
 
   if (error && !envelope) {
     return (
       <main style={PAGE} role="alert" data-component="BlockedNotice">
-        <h1 style={H1}>This page is paused.</h1>
+        <h1 style={H1}>We’re having trouble loading this page.</h1>
         <p style={BODY}>{error}</p>
       </main>
     );
