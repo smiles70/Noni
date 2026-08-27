@@ -220,9 +220,8 @@ export default function LandingPage({
         <section
           data-contract-exemption="landing.hero"
           style={{
-            position: "relative",
-            minHeight: "100vh",
-            width: "100%",
+            position: "fixed",
+            inset: 0,
             overflow: "hidden",
             fontFamily: TYPOGRAPHY.fontFamily,
             color: COLORS.textPrimary,
