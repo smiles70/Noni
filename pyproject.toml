@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Proprietary"}
 authors = [
-    {name = "Noni Engineering Team"}
+    {name = "Mynaani Engineering Team"}
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",

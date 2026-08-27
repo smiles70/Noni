@@ -1,4 +1,4 @@
-# Noni backend — Fly.io configuration.
+# Mynaani backend — Fly.io configuration.
 #
 # Built from the repo-root Dockerfile (multi-stage Python 3.12 + FastAPI).
 # Migrations run via [deploy] release_command BEFORE any web workers boot.

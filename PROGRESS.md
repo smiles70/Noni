@@ -1,4 +1,4 @@
-# Noni - Progress
+# Mynaani - Progress
 
 ## Deferred Decisions
 

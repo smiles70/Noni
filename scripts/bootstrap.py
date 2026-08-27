@@ -1,5 +1,5 @@
 """
-Noni Bootstrap Script.
+Mynaani Bootstrap Script.
 Environment setup and verification.
 """
 import sys
@@ -19,7 +19,7 @@ def check_python_version():
 def main():
     """Main bootstrap process."""
     print("=" * 50)
-    print("Noni Bootstrap")
+    print("Mynaani Bootstrap")
     print("=" * 50)
 
     check_python_version()

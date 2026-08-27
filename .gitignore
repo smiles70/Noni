@@ -67,3 +67,4 @@ Enterprise Grade USer Atuh_Login assessment.txt
 
 # Supabase CLI temp dir
 supabase/.temp/
+.tools/

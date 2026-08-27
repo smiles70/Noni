@@ -1,5 +1,5 @@
 /**
- * Noni Load Test — k6 curriculum endpoint baseline
+ * Mynaani Load Test — k6 curriculum endpoint baseline
  *
  * Run locally against the docker-compose stack:
  *   k6 run --env API_BASE=http://localhost:8000 tests/load/k6-curriculum.js

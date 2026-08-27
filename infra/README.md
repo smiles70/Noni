@@ -1,6 +1,6 @@
-# Noni Infrastructure
+# Mynaani Infrastructure
 
-This directory holds everything required to operate Noni across the five-vendor topology defined in ADR 0022:
+This directory holds everything required to operate Mynaani across the five-vendor topology defined in ADR 0022:
 
 ```
 infra/

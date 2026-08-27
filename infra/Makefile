@@ -1,4 +1,4 @@
-# Noni — Operator Makefile
+# Mynaani — Operator Makefile
 #
 # Single command surface for development, deploy, secrets, and ops.
 # Every target either works locally (no vendor secrets required) or
@@ -26,7 +26,7 @@ ENV_EXAMPLE := $(INFRA)/.env.example
 
 .PHONY: help
 help:
-	@echo "Noni operator targets:"
+	@echo "Mynaani operator targets:"
 	@echo ""
 	@echo "  Local dev:"
 	@echo "    bootstrap            One-time local setup (deps, hooks, local age key)"

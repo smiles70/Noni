@@ -1,4 +1,4 @@
-# Security Policy — Noni
+# Security Policy — Mynaani
 
 ## Supported versions
 

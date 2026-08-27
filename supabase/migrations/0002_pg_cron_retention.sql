@@ -1,4 +1,4 @@
--- Noni — Supabase-managed migration: scheduled retention jobs
+-- Mynaani — Supabase-managed migration: scheduled retention jobs
 --
 -- See ADR 0024. Telemetry retention defaults:
 --   - Default expires_at is set by the application at insert time.

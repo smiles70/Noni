@@ -1,7 +1,7 @@
 #!/bin/bash
 # BetterStack Uptime Monitor Setup Script
 # 
-# This script helps configure uptime monitors for the Noni platform
+# This script helps configure uptime monitors for the Mynaani platform
 # according to the specifications in docs/ops/betterstack-setup.md
 #
 # Usage: ./setup-betterstack-monitors.sh <BETTERSTACK_API_KEY>
@@ -23,7 +23,7 @@ echo ""
 # Monitor configurations
 MONITORS=(
   {
-    "name": "Noni API Health"
+    "name": "Mynaani API Health"
     "url": "https://noni-api.fly.dev/health"
     "method": "GET"
     "expected_status": 200
@@ -32,7 +32,7 @@ MONITORS=(
     "alert_threshold": 2
   }
   {
-    "name": "Noni Frontend"
+    "name": "Mynaani Frontend"
     "url": "https://noni-web.pages.dev"
     "method": "GET"
     "expected_status": 200
@@ -41,7 +41,7 @@ MONITORS=(
     "alert_threshold": 3
   }
   {
-    "name": "Noni Auth Config"
+    "name": "Mynaani Auth Config"
     "url": "https://noni-api.fly.dev/api/v1/auth/config"
     "method": "GET"
     "expected_status": 200
@@ -50,7 +50,7 @@ MONITORS=(
     "alert_threshold": 2
   }
   {
-    "name": "Noni Curriculum"
+    "name": "Mynaani Curriculum"
     "url": "https://noni-api.fly.dev/api/v1/curriculum/units"
     "method": "GET"
     "expected_status": 200

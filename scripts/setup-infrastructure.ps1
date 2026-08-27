@@ -2,7 +2,7 @@
 #requires -Version 7
 <#
 .SYNOPSIS
-    Automated Infrastructure Setup for Noni Project
+    Automated Infrastructure Setup for Mynaani Project
 .DESCRIPTION
     Following "The Process" - Enterprise-grade infrastructure setup script
     Installs and configures: Git, Fly.io CLI (flyctl), Node.js/npm, GitHub CLI (gh)

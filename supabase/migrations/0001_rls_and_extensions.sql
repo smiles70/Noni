@@ -1,4 +1,4 @@
--- Noni — Supabase-managed migration: extensions + RLS policies
+-- Mynaani — Supabase-managed migration: extensions + RLS policies
 --
 -- Applied by `supabase db push` during `make deploy-prod`.
 -- Harmless to run on plain Postgres (statements use IF NOT EXISTS).

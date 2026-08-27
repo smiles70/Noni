@@ -16,7 +16,7 @@ require stripe
 require sops
 require jq
 
-PRODUCT_NAME="Noni Modules 4-5"
+PRODUCT_NAME="Mynaani Modules 4-5"
 PRICE_CENTS="${STRIPE_BOOTSTRAP_PRICE_CENTS:-4900}"   # default $49 — change in ADR 0021 if needed
 CURRENCY="${STRIPE_BOOTSTRAP_CURRENCY:-usd}"
 WEBHOOK_URL="${PROD_WEBHOOK_URL:-https://noni-api.fly.dev/api/billing/stripe-webhook}"

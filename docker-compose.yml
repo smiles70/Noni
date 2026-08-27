@@ -1,4 +1,4 @@
-# Noni local stack: postgres + backend api + frontend (nginx-served Vite build).
+# Mynaani local stack: postgres + backend api + frontend (nginx-served Vite build).
 # For staging deploys see docs/staging-deploy.md.
 
 services:

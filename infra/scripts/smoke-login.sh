@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env bash
 # infra/scripts/smoke-login.sh
 #
-# End-to-end login smoke against a deployed Noni backend. Runs the
+# End-to-end login smoke against a deployed Mynaani backend. Runs the
 # rejection paths from the 5 audit scenarios that don't require a real
 # Clerk JWT (S4a/b/c, S5 terminal-deletion shape) plus the SLA timing
 # checks an 80-year-old user actually feels.

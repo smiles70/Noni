@@ -124,7 +124,7 @@ class GitHubAutomation:
         self.headers = {
             "Authorization": f"token {token}",
             "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "Noni-AutoDeploy/1.0"
+            "User-Agent": "Mynaani-AutoDeploy/1.0"
         }
     
     def verify_token(self) -> bool:

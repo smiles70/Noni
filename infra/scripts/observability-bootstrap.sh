@@ -37,9 +37,9 @@ create_monitor() {
     | jq -r '.data.id'
 }
 
-create_monitor "Noni API health"        "$API_URL/health"
-create_monitor "Noni envelope landing"  "$API_URL/api/ui-envelope/landing.intro"
-create_monitor "Noni billing health"    "$API_URL/api/billing/health"
+create_monitor "Mynaani API health"        "$API_URL/health"
+create_monitor "Mynaani envelope landing"  "$API_URL/api/ui-envelope/landing.intro"
+create_monitor "Mynaani billing health"    "$API_URL/api/billing/health"
 
 echo ""
 echo "OK. Observability bootstrap complete. Configure alert routing in BetterStack dashboard."

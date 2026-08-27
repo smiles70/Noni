@@ -1,4 +1,4 @@
-# Noni development dependencies (Sprint 14, ADR 0012).
+# Mynaani development dependencies (Sprint 14, ADR 0012).
 # Pulls in the runtime set, then adds tooling.
 -r requirements.txt
 

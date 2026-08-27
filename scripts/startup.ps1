@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Noni local startup script. Boots backend (FastAPI/uvicorn) and frontend (Vite dev server) in parallel.
+    Mynaani local startup script. Boots backend (FastAPI/uvicorn) and frontend (Vite dev server) in parallel.
 
 .USAGE
     From repo root:
@@ -29,7 +29,7 @@ param(
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 
-Write-Host "=== Noni Startup ===" -ForegroundColor Cyan
+Write-Host "=== Mynaani Startup ===" -ForegroundColor Cyan
 Write-Host "Repo:     $RepoRoot"
 Write-Host "Backend:  http://localhost:$BackendPort"
 Write-Host "Frontend: http://localhost:$FrontendPort"

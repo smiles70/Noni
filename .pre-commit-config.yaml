@@ -1,4 +1,4 @@
-# Pre-commit hooks for Noni backend.
+# Pre-commit hooks for Mynaani backend.
 # Install once with: pre-commit install
 # Frontend hooks (prettier/tsc) run in CI rather than pre-commit
 # to keep local commits fast.

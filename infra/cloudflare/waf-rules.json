@@ -1,5 +1,5 @@
 {
-  "_comment": "Cloudflare WAF rate-limit rules for Noni. Applied via wrangler in deploy-prod.",
+  "_comment": "Cloudflare WAF rate-limit rules for Mynaani. Applied via wrangler in deploy-prod.",
   "_applied_via": "wrangler (TODO: implement in infra/scripts/deploy-prod.sh once Cloudflare zone exists)",
   "rules": [
     {

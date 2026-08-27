@@ -96,7 +96,7 @@ class GitHubWorkflowFixer:
         self.headers = {
             "Authorization": f"token {token}",
             "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "Noni-WorkflowFixer/1.0"
+            "User-Agent": "Mynaani-WorkflowFixer/1.0"
         }
     
     def verify_token(self):

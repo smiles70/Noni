@@ -1,6 +1,6 @@
-# Noni Architecture: Non-Negotiable Rules
+# Mynaani Architecture: Non-Negotiable Rules
 
-This document defines the foundational architectural constraints for Noni. These rules are **immutable** and apply to all code, content, and system evolution.
+This document defines the foundational architectural constraints for Mynaani. These rules are **immutable** and apply to all code, content, and system evolution.
 
 ---
 

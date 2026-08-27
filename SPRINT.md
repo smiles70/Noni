@@ -16,7 +16,7 @@ Triggered by ADR 0017: *"If a 5th module is proposed, the refactor lands first."
 
 # Sprint 21: 100 Concurrent Users (CLOSED)
 
-Tag: `sprint-21-100-concurrent-users`. Addresses the 4 CRITICAL SRE blockers from `docs/audits/sre-go-live-readiness-2026-05-25.md` to get Noni from ~15 concurrent users to 100 concurrent users.
+Tag: `sprint-21-100-concurrent-users`. Addresses the 4 CRITICAL SRE blockers from `docs/audits/sre-go-live-readiness-2026-05-25.md` to get Mynaani from ~15 concurrent users to 100 concurrent users.
 
 ## Phases
 
@@ -58,7 +58,7 @@ Tag: `sprint-21-100-concurrent-users`. Addresses the 4 CRITICAL SRE blockers fro
 | Max VUs | 100 | 100 |
 | Duration | 15 min | 15m03s |
 
-**Verdict: Noni validated for 100 concurrent users.**
+**Verdict: Mynaani validated for 100 concurrent users.**
 
 ## Blockers Remaining for Full Production
 
@@ -292,7 +292,7 @@ Sprint 23 ─┬─ Backend: Security headers (H1) ─────────�
 | Testing | Chaos test passes. Container scan clean. E2E tests pass on every PR. |
 | Score | **≥ 75 / 100** on the 100-point audit. |
 
-**After Sprint 26, Noni is cleared for general availability and paid marketing campaigns.**
+**After Sprint 26, Mynaani is cleared for general availability and paid marketing campaigns.**
 
 ---
 

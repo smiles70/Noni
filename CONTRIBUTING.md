@@ -1,4 +1,4 @@
-# Contributing to Noni
+# Contributing to Mynaani
 
 This document covers the development conventions used in this repository. Read this once before making your first commit.
 
