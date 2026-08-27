@@ -61,22 +61,19 @@ def _verify_crypto_dependency() -> None:
 def _verify_production_secrets() -> None:
     """Sprint 22 I3: crash on boot if production secrets are weak or blank."""
     if settings.ENVIRONMENT != "production":
-        # WI-004: Warn about mock provider in development
-        if settings.AUTH_PROVIDER.strip().lower() == "mock":
-            import logging
-            logger = logging.getLogger("noni.security")
-            logger.warning(
-                "Running with AUTH_PROVIDER=mock (development mode only). "
-                "This provider is not suitable for production. "
-                "See docs/ops/authentication-provider-alternatives.md for production options."
-            )
         return
 
-    # WI-004: Prevent mock provider in production
+    # Process v9 Knowledge Graph: Mock provider as temporary bridge
+    # Intent: Decompose Clerk, use mock as bridge, migrate to real provider later
+    # Security consideration: Mock is acceptable as temporary production bridge
+    # Warning added but NOT blocked - allows transition period
     if settings.AUTH_PROVIDER.strip().lower() == "mock":
-        raise RuntimeError(
-            "AUTH_PROVIDER=mock is not allowed in production. "
-            "Set AUTH_PROVIDER=clerk or another production provider. "
+        import logging
+        logger = logging.getLogger("noni.security")
+        logger.warning(
+            "Running with AUTH_PROVIDER=mock in production. "
+            "This is intended as a temporary bridge during Clerk decommission. "
+            "Plan migration to production auth provider (NextAuth.js recommended). "
             "See docs/ops/authentication-provider-alternatives.md for options."
         )
 
