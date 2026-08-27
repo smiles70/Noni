@@ -280,3 +280,16 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `EVI-HERO-003-PREFLIGHT` is `PREFLIGHT_HERO_IMAGE.md` with `GO` status.
 - `EVI-HERO-003-DEPLOY` is live bundle `https://noni-web.pages.dev/assets/index-BDTGBJ7j.js`.
 - `CAP-HERO-LANDING-FULLPAGE` status is `implemented`.
+
+## HERO-004 mynaani hero image swap (2026-08-27)
+
+- `SRC-HERO-004-INTAKE` is `.ai/intake/2026-08-27-landing-hero-mynaani-image.md`.
+- `SRC-PHASE-HERO-MYNAAANI` is `.ai/process/PHASE_INVENTORY_HERO_MYNAAANI.md`.
+- `SRC-PREFLIGHT-HERO-MYNAAANI` is `.ai/process/PREFLIGHT_HERO_MYNAAANI.md`.
+- `SRC-LESSONS-HERO-MYNAAANI` is `.ai/process/LESSONS_LEARNED_HERO_MYNAAANI.md`.
+- `DEP-HERO-MYNAAANI-IMAGE` is `/home/hazbyn/Downloads/formynaani.png`.
+- `CAP-HERO-LANDING-FULLPAGE` `uses_asset` `public/hero-mynaani.png`.
+- `EVI-HERO-004-PREFLIGHT` is `PREFLIGHT_HERO_MYNAAANI.md` with `GO` status.
+- `GAP-HERO-COPYRIGHT` notes the screenshot is a placeholder, not production-cleared.
+- `EVI-HERO-004-BUILD` is `npm run type-check` and `npm run build` passing.
+- `CAP-HERO-MYNAAANI` depends_on `public/hero-mynaani.png` and is implemented in `LandingPage.tsx`.

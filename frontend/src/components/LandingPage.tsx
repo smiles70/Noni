@@ -252,29 +252,18 @@ export default function LandingPage({
         >
           {/* Full-bleed hero image */}
           <img
-            src="/nonisplash.jpg"
+            src="/hero-mynaani.png"
             alt=""
             loading="eager"
             style={{
               position: "absolute",
-              top: 0,
+              top: "-12.5%",
               left: 0,
               width: "100%",
-              height: "100%",
+              height: "125%",
               objectFit: "cover",
               objectPosition: "left center",
               zIndex: 0,
-            }}
-          />
-
-          {/* Light right-side gradient so the white card reads cleanly
-              without dimming the main subject. */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: "linear-gradient(to right, transparent 40%, rgba(0, 0, 0, 0.18) 100%)",
-              zIndex: 1,
             }}
           />
 
