@@ -8,10 +8,10 @@
 | Phase | Name | Status | Owner | Exit gate |
 |---|---|---|---|---|
 | 0 | Pre-flight | GO | Engineering | Intake + preflight signed |
-| 1 | Content update | Pending | Engineering | `backend/content/landing_page.py` updated |
-| 2 | Component update | Pending | Engineering | `LandingPage.tsx` has single "How it works" CTA |
-| 3 | Build + deploy | Pending | Engineering | `npm run build` passes and live smoke passes |
-| 4 | Closeout | Pending | Engineering | Knowledge graph and lessons learned updated |
+| 1 | Content update | Completed | Engineering | `backend/content/landing_page.py` updated |
+| 2 | Component update | Completed | Engineering | `LandingPage.tsx` has single "How it works" CTA |
+| 3 | Build + deploy | Completed | Engineering | `npm run build` passed and deployed |
+| 4 | Closeout | Completed | Engineering | Knowledge graph and lessons learned updated |
 
 ## Traceability
 

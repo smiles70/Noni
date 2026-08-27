@@ -306,3 +306,12 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
   `https://metlifeglobal.brand-portal.adobe.com/.../photography`.
 - `EVI-HERO-006-PORTAL` shows the original is behind MetLife Adobe Brand Portal.
 - `CAP-HERO-ORIGINAL-RESEARCH` status is `completed` with no public URL.
+
+## HERO-008 low-pressure hero CTA (2026-08-27)
+
+- `SRC-HERO-008-INTAKE` is `.ai/intake/2026-08-27-hero-low-pressure-cta.md`.
+- `SRC-PHASE-HERO-008` is `.ai/process/PHASE_INVENTORY_HERO_008.md`.
+- `SRC-PREFLIGHT-HERO-008` is `.ai/process/PREFLIGHT_HERO_008.md`.
+- `EVI-HERO-008-BUILD` is `npm run type-check` and `npm run build` passing.
+- `EVI-HERO-008-DEPLOY` is GitHub Actions deploy `33112574993`.
+- `CAP-HERO-008` status is `deployed`.
