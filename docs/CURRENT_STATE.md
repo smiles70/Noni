@@ -7,7 +7,7 @@
 - Full-stack geragogy-grounded AI learning platform for older adults.
 - **Backend:** FastAPI, SQLAlchemy + Alembic, PostgreSQL, Pydantic, structured logging, Prometheus metrics.
 - **Frontend:** React 18, Vite 6, TypeScript, Playwright + axe-playwright for WCAG 2.1 AA.
-- **Integrations:** Mock auth (dev/tests); **Magic.link integrated** as production auth provider (ADR 0027). Mock remains the default for CI/local; Magic is opt-in via `AUTH_PROVIDER=magic` + `MAGIC_API_SECRET_KEY`. Stripe (payments), **Railway** backend migration in progress (replacing Fly.io), Cloudflare Pages (frontend).
+- **Integrations:** Mock auth (dev/tests); **Magic.link integrated** as production auth provider (ADR 0027). Mock remains the default for CI/local; Magic is opt-in via `AUTH_PROVIDER=magic` + `MAGIC_API_SECRET_KEY`. Stripe (payments). **Backend:** `https://noni-api-production.up.railway.app` (Railway). **Frontend:** `https://noni-web.pages.dev` (Cloudflare Pages).
 - **CI/CD:** `.github/workflows/ci.yml` (lint, test, build, security scans), `deploy.yml`, `nightly-backup.yml`, `restore-drill.yml`, `secrets-drift.yml`.
 - **Documentation:** README, ARCHITECTURE, 27 ADRs, ops runbooks, runbook, rollback guide, test strategy, security policy, and v9.51 process artifacts.
 - **Local environment:** Python 3.14 venv at `.venv/`, Node 20.17.0 at `.tools/node/`, all Python and npm dependencies installed.
