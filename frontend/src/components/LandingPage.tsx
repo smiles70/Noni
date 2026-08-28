@@ -76,7 +76,7 @@ const PRIMARY_BTN: CSSProperties = {
 const CARD: CSSProperties = {
   position: "relative",
   zIndex: 2,
-  backgroundColor: "rgba(250, 250, 248, 0.65)",
+  backgroundColor: COLORS.surface,
   padding: SPACING.lg,
   borderRadius: RADIUS.lg,
   boxShadow: `0 ${SPACING.md}px ${SPACING.xl}px rgba(0, 0, 0, 0.12)`,
@@ -220,8 +220,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
   const cardPosition: CSSProperties = isMobile
     ? {
         position: "absolute",
-        top: "auto",
-        bottom: 180,
+        top: "60%",
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 2,
@@ -251,23 +250,34 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             color: COLORS.textPrimary,
           }}
         >
-          {/* Full-bleed hero image */}
-          <img
-            src="/hero-mynaani.jpg"
-            alt=""
-            loading="eager"
+          {/* Full-bleed hero image — art-directed for mobile */}
+          <picture
             style={{
               position: "absolute",
               top: 0,
               left: 0,
               width: "100%",
               height: "100%",
-              objectFit: "cover",
-              objectPosition: "left center",
-              transform: isMobile ? "scaleX(-1)" : "scaleX(1)",
               zIndex: 0,
             }}
-          />
+          >
+            <source
+              media="(max-width: 767px)"
+              srcSet="/hero-mobile.jpg"
+              type="image/jpeg"
+            />
+            <img
+              src="/hero-mynaani.jpg"
+              alt=""
+              loading="eager"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center center",
+              }}
+            />
+          </picture>
 
           {/* Floating action card, right side */}
           <div
