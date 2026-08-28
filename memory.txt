@@ -1,0 +1,42 @@
+Mobile Readiness Assessment and Changes — 2026-08-28
+
+Assessment status: BLOCK
+The responsive infrastructure exists (ViewportProvider, useViewport, ResponsiveContainer,
+GeragogySafeTap, responsiveTokens, viewport meta, reduced-motion media query), but
+full-page components either bypass it or have clear geragogy/contract violations.
+
+Critical mobile issues found
+- NavBar: horizontal flex with no flexWrap, overflowing on narrow viewports.
+- LessonRenderer action row: no flexWrap; PREVIOUS_BTN touch target too small.
+- CurriculumMenu unit/continue buttons: below 48 px touch target.
+- AccountStyles primary/secondary/destructive buttons: ~42 px height.
+- PaywallPage org-code input: custom style missing box-sizing, hardcoded color, and
+  the button is not full-width.
+- Paywall/GiftRedeem/AccountSettings help links: zero/insufficient padding.
+- HelpPage back button and TOC links: below 48 px touch target.
+- AuthPendingBanner: no flexWrap; retry button too small.
+- LandingPage: hero action card right-aligned, can clip on small screens; hero H1 does
+  not scale.
+- AccountSetupPage uses native <select> dropdowns (prohibited geragogy pattern).
+- HowItWorksDialog is a non-ConfirmDialog modal (contract violation).
+
+Changes applied in this session
+- NavBar.tsx: added flexWrap: "wrap".
+- AccountStyles.ts: added minHeight: 48 and whiteSpace: "normal" to all button styles.
+- PaywallPage.tsx: org-code input now uses tokenized FIELD, wrapped in STACK, and
+  help link is tappable.
+- AccountSettingsPage.tsx, GiftRedeemPage.tsx, HelpPage.tsx, AuthPendingBanner.tsx:
+  back/help/retry buttons and TOC links are 48 px tappable.
+- CurriculumMenu.tsx, curriculum/LessonRenderer.tsx: unit/continue/choice/previous/
+  continue buttons are 48 px; lesson action row wraps on narrow viewports.
+- LandingPage.tsx: hero card centers on mobile, H1 scales down, card becomes
+  scrollable if taller than viewport.
+
+Remaining blockers (need follow-up)
+- AccountSetupPage: replace <select> dropdowns with stacked button/radio choices.
+- HowItWorksDialog: convert to a route or inline expanding section.
+
+Verification
+- npm run type-check: pass
+- npm run lint: pass
+- npm run test:unit: 120 passed, 15 expected fail

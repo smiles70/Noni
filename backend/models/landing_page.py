@@ -41,7 +41,7 @@ class ClosingSection(BaseModel):
 class LandingPageContent(BaseModel):
     hero: HeroSection
     introduction: ProseSection
-    what_noni_does: ListSection
+    what_mynaani_does: ListSection
     how_it_feels: ListSection
     trust_and_safety: ProseSection
     call_to_action: CallToActionSection

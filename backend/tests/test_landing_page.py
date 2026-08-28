@@ -23,7 +23,7 @@ class TestContentIntegrity:
         expected = {
             "hero",
             "introduction",
-            "what_noni_does",
+            "what_mynaani_does",
             "how_it_feels",
             "trust_and_safety",
             "call_to_action",
