@@ -220,9 +220,10 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
   const cardPosition: CSSProperties = isMobile
     ? {
         position: "absolute",
-        top: "50%",
+        top: "auto",
+        bottom: 96,
         left: "50%",
-        transform: "translate(-50%, -50%)",
+        transform: "translateX(-50%)",
         zIndex: 2,
         width: "92%",
         maxWidth: 320,
