@@ -264,6 +264,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
               height: "100%",
               objectFit: "cover",
               objectPosition: "left center",
+              transform: isMobile ? "scaleX(-1)" : "scaleX(1)",
               zIndex: 0,
             }}
           />
