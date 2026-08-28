@@ -76,7 +76,7 @@ const PRIMARY_BTN: CSSProperties = {
 const CARD: CSSProperties = {
   position: "relative",
   zIndex: 2,
-  backgroundColor: COLORS.surface,
+  backgroundColor: "rgba(250, 250, 248, 0.85)",
   padding: SPACING.lg,
   borderRadius: RADIUS.lg,
   boxShadow: `0 ${SPACING.md}px ${SPACING.xl}px rgba(0, 0, 0, 0.12)`,
