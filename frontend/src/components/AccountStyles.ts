@@ -7,6 +7,7 @@
  */
 import { CSSProperties } from "react";
 import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 
 export const PAGE: CSSProperties = {
   padding: SPACING.xl,
@@ -47,6 +48,8 @@ export const PRIMARY_BTN: CSSProperties = {
   borderRadius: RADIUS.sm,
   fontWeight: 600,
   cursor: "pointer",
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  whiteSpace: "normal",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
 };
 
@@ -59,6 +62,8 @@ export const SECONDARY_BTN: CSSProperties = {
   borderRadius: RADIUS.sm,
   fontWeight: 600,
   cursor: "pointer",
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  whiteSpace: "normal",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
 };
 
@@ -71,6 +76,8 @@ export const DESTRUCTIVE_BTN: CSSProperties = {
   borderRadius: RADIUS.sm,
   fontWeight: 600,
   cursor: "pointer",
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  whiteSpace: "normal",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
 };
 

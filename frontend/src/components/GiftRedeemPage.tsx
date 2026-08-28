@@ -15,6 +15,7 @@ import { claimGift, previewGift } from "../api/billing";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
   ALERT_TEXT,
@@ -231,7 +232,8 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
               style={{
                 background: "none",
                 border: "none",
-                padding: 0,
+                padding: `${SPACING.md}px 0`,
+                minHeight: MIN_TOUCH_TARGET.mobile,
                 color: COLORS.accentMutedBlue,
                 textDecoration: "underline",
                 cursor: "pointer",

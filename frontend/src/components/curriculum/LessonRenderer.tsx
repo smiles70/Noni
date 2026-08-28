@@ -40,6 +40,7 @@ import {
   RADIUS,
   MOTION,
 } from "../../design/tokens";
+import { MIN_TOUCH_TARGET } from "../../styles/responsiveTokens";
 import type { UIStateEnvelope } from "../../design/envelope";
 import { RenderGuard, type RenderProposal } from "../../design/RenderGuard";
 import NavBar from "../NavBar";
@@ -124,6 +125,7 @@ const INDICATOR: CSSProperties = {
 
 const ACTIONS: CSSProperties = {
   display: "flex",
+  flexWrap: "wrap",
   justifyContent: "space-between",
   alignItems: "center",
   marginTop: SPACING.lg,
@@ -139,6 +141,8 @@ const CONTINUE_BTN: CSSProperties = {
   borderRadius: RADIUS.sm,
   fontWeight: 600,
   cursor: "pointer",
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  whiteSpace: "normal",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
 };
 
@@ -151,6 +155,8 @@ const PREVIOUS_BTN: CSSProperties = {
   borderRadius: RADIUS.sm,
   fontWeight: 500,
   cursor: "pointer",
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  whiteSpace: "normal",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
   fontFamily: TYPOGRAPHY.fontFamily,
 };
@@ -170,6 +176,8 @@ const CHOICE_BTN: CSSProperties = {
   borderRadius: RADIUS.sm,
   fontWeight: 600,
   cursor: "pointer",
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  whiteSpace: "normal",
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
   textAlign: "left",
   fontFamily: TYPOGRAPHY.fontFamily,

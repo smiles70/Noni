@@ -21,6 +21,8 @@ import {
   FOCUS,
   MOTION,
 } from "../design/tokens";
+import { TYPE_SCALE } from "../styles/responsiveTokens";
+import { useViewport } from "../hooks/useViewport";
 import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import HowItWorksDialog from "./HowItWorksDialog";
@@ -158,6 +160,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const { isMobile } = useViewport();
 
   useEffect(() => {
     Promise.all([loadEnvelope("landing.page"), loadLandingPage()])
@@ -208,6 +211,32 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
     usesOptimisticProgression: false,
   };
 
+  const h1Style: CSSProperties = isMobile
+    ? { ...H1, fontSize: TYPE_SCALE.mobile.h1 }
+    : H1;
+  const cardStyle: CSSProperties = isMobile
+    ? { ...CARD, padding: SPACING.md, maxHeight: "80%", overflowY: "auto" }
+    : CARD;
+  const cardPosition: CSSProperties = isMobile
+    ? {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 2,
+        width: "92%",
+        maxWidth: 320,
+      }
+    : {
+        position: "absolute",
+        top: "50%",
+        right: "4%",
+        transform: "translateY(-50%)",
+        zIndex: 2,
+        width: "90%",
+        maxWidth: 340,
+      };
+
   return (
     <>
       <RenderGuard envelope={envelope} proposal={proposal}>
@@ -241,18 +270,10 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
           {/* Floating action card, right side */}
           <div
             data-contract-exemption="landing.hero"
-            style={{
-              position: "absolute",
-              top: "50%",
-              right: "4%",
-              transform: "translateY(-50%)",
-              zIndex: 2,
-              width: "90%",
-              maxWidth: 340,
-            }}
+            style={cardPosition}
           >
-            <div style={CARD}>
-              <h1 id="hero-heading" style={H1}>
+            <div style={cardStyle}>
+              <h1 id="hero-heading" style={h1Style}>
                 {content.hero.headline}
               </h1>
               <h2 style={H2}>{content.hero.subheadline}</h2>

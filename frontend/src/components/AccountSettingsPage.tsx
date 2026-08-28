@@ -24,6 +24,7 @@ import {
   SPACING,
   TYPOGRAPHY,
 } from "../design/tokens";
+import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
   ALERT_TEXT,
@@ -232,7 +233,8 @@ export default function AccountSettingsPage({
               style={{
                 background: "none",
                 border: "none",
-                padding: 0,
+                padding: `${SPACING.md}px 0`,
+                minHeight: MIN_TOUCH_TARGET.mobile,
                 color: COLORS.accentMutedBlue,
                 textDecoration: "underline",
                 cursor: "pointer",

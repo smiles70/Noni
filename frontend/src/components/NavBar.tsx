@@ -30,6 +30,7 @@ interface Props {
 
 const NAV: React.CSSProperties = {
   display: "flex",
+  flexWrap: "wrap",
   justifyContent: "flex-end",
   gap: SPACING.sm,
   padding: `${SPACING.sm}px ${SPACING.md}px`,

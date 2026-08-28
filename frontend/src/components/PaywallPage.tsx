@@ -16,12 +16,14 @@ import { startCheckout, redeemOrgCode } from "../api/billing";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
   ALERT_TEXT,
   BODY,
   CARD,
   DIVIDER,
+  FIELD,
   H1,
   H2,
   PAGE,
@@ -209,30 +211,24 @@ export default function PaywallPage({
             If your employer, health plan, or community gave you an access code,
             enter it here.
           </p>
-          <input
-            type="text"
-            value={orgCode}
-            onChange={(e) => setOrgCode(e.target.value)}
-            placeholder="Paste your access code"
-            aria-label="Organization access code"
-            style={{
-              width: "100%",
-              padding: SPACING.sm,
-              border: "1px solid #d3d3d3",
-              borderRadius: RADIUS.sm,
-              marginBottom: SPACING.md,
-              fontSize: TYPOGRAPHY.bodySizePx,
-              fontFamily: TYPOGRAPHY.fontFamily,
-            }}
-          />
-          <button
-            type="button"
-            style={SECONDARY_BTN}
-            disabled={orgRedeeming || !orgCode.trim()}
-            onClick={handleRedeemOrg}
-          >
-            {orgRedeeming ? "Checking..." : "Continue with organization code"}
-          </button>
+          <div style={STACK}>
+            <input
+              type="text"
+              value={orgCode}
+              onChange={(e) => setOrgCode(e.target.value)}
+              placeholder="Paste your access code"
+              aria-label="Organization access code"
+              style={FIELD}
+            />
+            <button
+              type="button"
+              style={SECONDARY_BTN}
+              disabled={orgRedeeming || !orgCode.trim()}
+              onClick={handleRedeemOrg}
+            >
+              {orgRedeeming ? "Checking..." : "Continue with organization code"}
+            </button>
+          </div>
         </section>
 
         {error && (
@@ -259,7 +255,8 @@ export default function PaywallPage({
               style={{
                 background: "none",
                 border: "none",
-                padding: 0,
+                padding: `${SPACING.md}px 0`,
+                minHeight: MIN_TOUCH_TARGET.mobile,
                 color: COLORS.accentMutedBlue,
                 textDecoration: "underline",
                 cursor: "pointer",
