@@ -215,12 +215,18 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
     ? { ...H1, fontSize: TYPE_SCALE.mobile.h1 }
     : H1;
   const cardStyle: CSSProperties = isMobile
-    ? { ...CARD, padding: SPACING.md, maxHeight: "80%", overflowY: "auto" }
+    ? {
+        ...CARD,
+        padding: SPACING.md,
+        backgroundColor: "rgba(250, 250, 248, 0.65)",
+        maxHeight: "calc(45% - 96px)",
+        overflowY: "auto",
+      }
     : CARD;
   const cardPosition: CSSProperties = isMobile
     ? {
         position: "absolute",
-        top: "60%",
+        top: "55%",
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 2,
