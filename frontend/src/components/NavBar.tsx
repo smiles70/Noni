@@ -19,12 +19,7 @@ import { GeragogySafeTap } from "./GeragogySafeTap";
 
 interface Props {
   onSignIn?: () => void;
-  onContinuePaid?: () => void;
   onAccount?: () => void;
-  /** S25.1: open the lesson menu / table of contents. Optional so
-   *  callers whose envelope cannot accommodate an extra primary action
-   *  (e.g. LandingPage) can omit it. */
-  onOpenMenu?: () => void;
   onHelp?: () => void;
 }
 
@@ -58,9 +53,7 @@ const EMAIL: React.CSSProperties = {
 
 export default function NavBar({
   onSignIn,
-  onContinuePaid,
   onAccount,
-  onOpenMenu,
   onHelp,
 }: Props) {
   // B1: NavBar reads auth state from AuthProvider, never via its own
@@ -94,26 +87,10 @@ export default function NavBar({
         </GeragogySafeTap>
       )}
 
-      {signedIn && onContinuePaid && (
-        <GeragogySafeTap>
-          <button type="button" style={LINK_BTN} onClick={onContinuePaid}>
-            Upgrade — Modules 4 & 5
-          </button>
-        </GeragogySafeTap>
-      )}
-
       {signedIn && onAccount && (
         <GeragogySafeTap>
           <button type="button" style={LINK_BTN} onClick={onAccount}>
             Your account
-          </button>
-        </GeragogySafeTap>
-      )}
-
-      {onOpenMenu && (
-        <GeragogySafeTap>
-          <button type="button" style={LINK_BTN} onClick={onOpenMenu}>
-            Lessons
           </button>
         </GeragogySafeTap>
       )}

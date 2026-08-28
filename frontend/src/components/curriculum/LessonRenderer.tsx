@@ -75,9 +75,8 @@ export interface LessonRendererProps {
   onSignIn?: () => void;
   onOpenMenu?: () => void;
   onAccount?: () => void;
-  /** NavBar "Upgrade" button. Only provided by the free track; the
-   *  paid track omits it so the learner does not see an Upgrade button
-   *  while already inside paid content. */
+  /** Continue to the paywall, if provided by the parent. The paid track
+   *  omits this so the learner is not upsold while already inside paid content. */
   onContinuePaid?: () => void;
   /** Called when a paid lesson load returns 402. The parent should
    *  switch to the paywall view. Only used by the paid track. */
@@ -259,9 +258,7 @@ export default function LessonRenderer({
   loadLesson,
   onSequenceComplete,
   onSignIn,
-  onOpenMenu,
   onAccount,
-  onContinuePaid,
   onPaywall,
   onHelp,
   getContinueLabel = (isLastUnit, isLastPage) =>
@@ -408,9 +405,7 @@ export default function LessonRenderer({
   const nav = (
     <NavBar
       onSignIn={onSignIn}
-      onContinuePaid={onContinuePaid}
       onAccount={onAccount}
-      onOpenMenu={onOpenMenu}
       onHelp={onHelp}
     />
   );
@@ -441,7 +436,7 @@ export default function LessonRenderer({
   const continueLabel = getContinueLabel(isLastUnit, isLastPage);
 
   // ---- Proposal accounting ----
-  const NAVBAR_PRIMARY_ACTIONS = onOpenMenu ? 3 : 2;
+  const NAVBAR_PRIMARY_ACTIONS = 2;
   const contribution = buildPageProposalContribution(page, retrievalAnswered);
 
   const components = new Set<RenderProposal["components"][number]>(

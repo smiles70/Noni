@@ -134,7 +134,6 @@ export default function CurriculumMenu(props: Props) {
   const {
     onContinue,
     onSignIn,
-    onContinuePaid,
     onAccount,
     onSelectUnit,
     onHelp,
@@ -220,12 +219,11 @@ export default function CurriculumMenu(props: Props) {
       <main style={PAGE} data-component="Card">
         <NavBar
           onSignIn={onSignIn}
-          onContinuePaid={onContinuePaid}
           onAccount={onAccount}
           onHelp={onHelp}
         />
         <h1 style={HEADING} data-component="Heading">
-          Lessons
+          Course overview
         </h1>
         <p style={INTRO} data-component="Body">
           Here is the full course at a glance. Modules 0–2 are free. Modules 3–5
