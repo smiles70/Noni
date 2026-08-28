@@ -405,5 +405,14 @@ Capabilities `CAP-MAGIC-*` are now implemented. Evidence nodes link to test and 
 - `SRC-TQ-001-PREFLIGHT` is `.ai/process/PREFLIGHT_TOOLING_QUALITY_001.md`.
 - `SRC-TQ-001-PHASE` is `.ai/process/PHASE_INVENTORY_TOOLING_QUALITY_001.md`.
 - `DEC-TQ-001` is go-ahead: close the 8 tooling gaps in Phase 0.
-- `CAP-TQ-001` status is `in_progress`.
+- `CAP-TQ-001` status is `completed`.
+
+## STRIPE-LIVE-001: live Stripe + mynaani.com (2026-08-27)
+
+- `SRC-STRIPE-001-INTAKE` is `.ai/intake/2026-08-27-stripe-live-001.md`.
+- `SRC-STRIPE-001-PREFLIGHT` is `.ai/process/PREFLIGHT_STRIPE_LIVE_001.md`.
+- `SRC-STRIPE-001-PHASE` is `.ai/process/PHASE_INVENTORY_STRIPE_LIVE_001.md`.
+- `SRC-STRIPE-001-PLAN` is `.ai/process/STRIPE_LIVE_DOMAIN_PLAN_001.md`.
+- `DEC-STRIPE-001` is: go live with Stripe once Stripe account and mynaani.com DNS are ready.
+- `CAP-STRIPE-001` status is `preflight-completed`.
 
