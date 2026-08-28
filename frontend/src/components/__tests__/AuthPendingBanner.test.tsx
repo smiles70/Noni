@@ -14,7 +14,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { act } from "react";
 import AuthPendingBanner from "../AuthPendingBanner";
 
-const RETRY_STORAGE_KEY = "noni.auth_banner_retries";
+const RETRY_STORAGE_KEY = "mynaani.auth_banner_retries";
 
 describe("AuthPendingBanner", () => {
   let container: HTMLDivElement;

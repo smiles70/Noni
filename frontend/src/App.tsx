@@ -93,7 +93,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isReady) {
       try {
-        sessionStorage.removeItem("noni.auth_banner_retries");
+        sessionStorage.removeItem("mynaani.auth_banner_retries");
       } catch {
         /* ignore */
       }

@@ -64,7 +64,7 @@ const RETRY_BTN: CSSProperties = {
 
 const RETRY_AFTER_SECONDS = 15;
 const MAX_AUTO_RETRIES = 3;
-const RETRY_STORAGE_KEY = "noni.auth_banner_retries";
+const RETRY_STORAGE_KEY = "mynaani.auth_banner_retries";
 
 function getRetryCount(): number {
   try {
