@@ -219,7 +219,7 @@ const App: React.FC = () => {
     <ViewportProvider>
       <ResponsiveContainer>
         <>
-          <a href="#main-content" className="noni-skip-link">
+          <a href="#main-content" className="mynaani-skip-link">
             Skip to main content
           </a>
           {debug}
