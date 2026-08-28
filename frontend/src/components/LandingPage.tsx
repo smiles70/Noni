@@ -221,7 +221,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
     ? {
         position: "absolute",
         top: "auto",
-        bottom: 96,
+        bottom: 180,
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 2,
