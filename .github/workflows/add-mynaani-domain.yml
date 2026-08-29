@@ -1,0 +1,40 @@
+name: Add mynaani.com to Cloudflare Pages
+
+# One-shot workflow to wire the mynaani.com apex and www custom domains
+# to the existing noni-web Pages project.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  add-domain:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Add mynaani.com to Cloudflare Pages
+        run: |
+          set -e
+          curl -sS -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/noni-web/domains" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"name":"mynaani.com"}'
+
+      - name: Add www.mynaani.com to Cloudflare Pages
+        run: |
+          set -e
+          curl -sS -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/noni-web/domains" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"name":"www.mynaani.com"}'
+
+      - name: Verify mynaani.com is in the project
+        run: |
+          sleep 5
+          curl -sS -X GET \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/noni-web/domains/mynaani.com" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json"
