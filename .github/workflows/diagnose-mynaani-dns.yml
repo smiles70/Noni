@@ -1,25 +1,41 @@
-name: Diagnose mynaani.com DNS
+name: Setup mynaani.com Cloudflare zone
 
 on:
   workflow_dispatch:
 
 jobs:
-  diagnose:
+  setup:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - name: List zones for mynaani.com
+      - name: Check for existing mynaani.com zone
+        id: find
         run: |
+          set -e
           curl -sS -X GET \
-            "https://api.cloudflare.com/client/v4/zones?name=mynaani.com&status=active" \
+            "https://api.cloudflare.com/client/v4/zones?name=mynaani.com" \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json" > zone.json
+          cat zone.json
+          echo ""
+          echo "exists=$(jq '.result | length > 0' zone.json)" >> "$GITHUB_OUTPUT"
 
-      - name: List all zones in account
+      - name: Create mynaani.com zone if missing
+        if: steps.find.outputs.exists == 'false'
         run: |
-          curl -sS -X GET \
-            "https://api.cloudflare.com/client/v4/zones?per_page=50" \
+          set -e
+          curl -sS -X POST \
+            "https://api.cloudflare.com/client/v4/zones" \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json" \
+            --data "{
+              \"name\": \"mynaani.com\",
+              \"type\": \"full\",
+              \"account\": { \"id\": \"${CLOUDFLARE_ACCOUNT_ID}\" }
+            }" > new-zone.json
+          cat new-zone.json
+          echo ""
+          echo "nameservers:"
+          jq -r '.result.name_servers[]' new-zone.json
