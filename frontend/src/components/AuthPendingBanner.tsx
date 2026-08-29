@@ -20,6 +20,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 
 interface Props {
   onRetry?: () => void;
@@ -32,6 +33,7 @@ const BANNER: CSSProperties = {
   padding: `${SPACING.sm}px ${SPACING.md}px`,
   margin: SPACING.md,
   display: "flex",
+  flexWrap: "wrap",
   flexDirection: "row",
   alignItems: "center",
   gap: SPACING.md,
@@ -56,11 +58,13 @@ const RETRY_BTN: CSSProperties = {
   borderRadius: RADIUS.sm,
   fontWeight: 600,
   cursor: "pointer",
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  whiteSpace: "normal",
 };
 
 const RETRY_AFTER_SECONDS = 15;
 const MAX_AUTO_RETRIES = 3;
-const RETRY_STORAGE_KEY = "noni.auth_banner_retries";
+const RETRY_STORAGE_KEY = "mynaani.auth_banner_retries";
 
 function getRetryCount(): number {
   try {

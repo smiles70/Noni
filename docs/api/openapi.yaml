@@ -214,7 +214,7 @@ components:
       properties:
         hero: { type: object }
         introduction: { type: object }
-        what_noni_does: { type: object }
+        what_mynaani_does: { type: object }
         how_it_feels: { type: object }
         trust_and_safety: { type: object }
         call_to_action: { type: object }

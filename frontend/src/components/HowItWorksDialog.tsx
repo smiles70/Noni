@@ -187,10 +187,10 @@ export default function HowItWorksDialog({ content, onClose, onBegin }: Props) {
 
           <section aria-labelledby="dlg-what-heading" style={SECTION}>
             <h3 id="dlg-what-heading" style={H3}>
-              {content.what_noni_does.title}
+              {content.what_mynaani_does.title}
             </h3>
             <ul>
-              {content.what_noni_does.items.map((item, i) => (
+              {content.what_mynaani_does.items.map((item, i) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>

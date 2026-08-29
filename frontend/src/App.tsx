@@ -93,7 +93,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isReady) {
       try {
-        sessionStorage.removeItem("noni.auth_banner_retries");
+        sessionStorage.removeItem("mynaani.auth_banner_retries");
       } catch {
         /* ignore */
       }
@@ -219,7 +219,7 @@ const App: React.FC = () => {
     <ViewportProvider>
       <ResponsiveContainer>
         <>
-          <a href="#main-content" className="noni-skip-link">
+          <a href="#main-content" className="mynaani-skip-link">
             Skip to main content
           </a>
           {debug}

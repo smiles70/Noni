@@ -26,7 +26,7 @@ LANDING_PAGE_CONTENT: Dict[str, Any] = {
             "without clear guidance. You stay in control at every step."
         ),
     },
-    "what_noni_does": {
+    "what_mynaani_does": {
         "title": "What Mynaani helps you do",
         "items": [
             "Understand what AI is and what it is not",

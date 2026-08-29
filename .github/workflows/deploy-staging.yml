@@ -1,0 +1,122 @@
+name: Deploy Staging
+
+# Staging deploy pipeline. Pushes the `staging` branch to the Railway staging
+# environment and the Cloudflare Pages staging preview.
+#
+# Triggers:
+#   - push to staging
+#   - manual workflow_dispatch
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      cloudflare_ready: ${{ steps.check.outputs.cloudflare_ready }}
+      railway_ready: ${{ steps.check.outputs.railway_ready }}
+    steps:
+      - name: Check whether deploy secrets are present
+        id: check
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [[ -z "$RAILWAY_TOKEN" ]]; then
+            echo "::notice::Railway deploy skipped — missing: RAILWAY_TOKEN"
+            echo "railway_ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "railway_ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          cloudflare_missing=()
+          for k in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+            if [[ -z "${!k}" ]]; then cloudflare_missing+=("$k"); fi
+          done
+          if [[ ${#cloudflare_missing[@]} -gt 0 ]]; then
+            echo "::notice::Cloudflare deploy skipped — missing: ${cloudflare_missing[*]}"
+            echo "cloudflare_ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "cloudflare_ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  railway-deploy-backend:
+    needs: preflight
+    if: needs.preflight.outputs.railway_ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_SERVICE: noni-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+      - name: Deploy backend to Railway staging
+        run: railway up -y --detach --service "$RAILWAY_SERVICE" --environment staging
+
+  cloudflare-pages-deploy:
+    needs: [preflight]
+    if: needs.preflight.outputs.cloudflare_ready == 'true'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_PAGES_PROJECT: ${{ secrets.CLOUDFLARE_PAGES_PROJECT || 'noni-web' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Verify build environment
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          # ADR 0027: mock is the safe default for CI builds.
+          VITE_AUTH_PROVIDER: 'mock'
+          VITE_MAGIC_PUBLISHABLE_KEY: ''
+          CI: true
+          NODE_ENV: production
+        run: npm run prebuild
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          VITE_AUTH_PROVIDER: 'mock'
+          VITE_MAGIC_PUBLISHABLE_KEY: ''
+          CI: true
+          NODE_ENV: production
+        run: npm run build
+
+      - name: Verify bundle (G3 guard)
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+        run: npm run postbuild
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ env.CLOUDFLARE_PAGES_PROJECT }}
+          directory: frontend/dist
+          branch: staging

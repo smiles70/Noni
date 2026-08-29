@@ -17,8 +17,8 @@ import { API_BASE_URL } from "../lib/env";
 
 // Sprint 28: env variables now centralized in lib/env.ts.
 
-export const MOCK_TOKEN_KEY = "noni.mock_token";
-export const MAGIC_TOKEN_KEY = "noni.magic_token";
+export const MOCK_TOKEN_KEY = "mynaani.mock_token";
+export const MAGIC_TOKEN_KEY = "mynaani.magic_token";
 export { API_BASE_URL };
 
 function _generateRequestId(): string {

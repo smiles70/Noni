@@ -68,7 +68,7 @@ export function useAuth(): AuthContextValue {
 }
 
 export function notifyAuthChanged(): void {
-  window.dispatchEvent(new Event("noni:auth-changed"));
+  window.dispatchEvent(new Event("mynaani:auth-changed"));
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -109,8 +109,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     function handle() {
       forceRefresh((n) => n + 1);
     }
-    window.addEventListener("noni:auth-changed", handle);
-    return () => window.removeEventListener("noni:auth-changed", handle);
+    window.addEventListener("mynaani:auth-changed", handle);
+    return () => window.removeEventListener("mynaani:auth-changed", handle);
   }, []);
 
   useEffect(() => {

@@ -25,6 +25,7 @@ import { CSSProperties, useEffect, useState } from "react";
 import { loadEnvelope } from "../api/envelope";
 import { loadCurriculumMenu, type CurriculumMenu } from "../api/curriculum";
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
+import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import NavBar from "./NavBar";
@@ -97,6 +98,8 @@ const UNIT_BUTTON: CSSProperties = {
   border: `2px solid ${COLORS.accentMutedBlue}`,
   borderRadius: RADIUS.sm,
   cursor: "pointer",
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  whiteSpace: "normal",
   textAlign: "left",
   width: "100%",
   marginBottom: SPACING.xs,
@@ -122,6 +125,8 @@ const CONTINUE_BUTTON: CSSProperties = {
   fontSize: TYPOGRAPHY.bodySizePx,
   fontFamily: TYPOGRAPHY.fontFamily,
   cursor: "pointer",
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  whiteSpace: "normal",
   marginTop: SPACING.lg,
 };
 
@@ -129,7 +134,6 @@ export default function CurriculumMenu(props: Props) {
   const {
     onContinue,
     onSignIn,
-    onContinuePaid,
     onAccount,
     onSelectUnit,
     onHelp,
@@ -215,12 +219,11 @@ export default function CurriculumMenu(props: Props) {
       <main style={PAGE} data-component="Card">
         <NavBar
           onSignIn={onSignIn}
-          onContinuePaid={onContinuePaid}
           onAccount={onAccount}
           onHelp={onHelp}
         />
         <h1 style={HEADING} data-component="Heading">
-          Lessons
+          Course overview
         </h1>
         <p style={INTRO} data-component="Body">
           Here is the full course at a glance. Modules 0–2 are free. Modules 3–5

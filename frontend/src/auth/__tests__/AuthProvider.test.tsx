@@ -81,7 +81,7 @@ describe("AuthProvider — mock mode", () => {
   });
 
   it("signOut transitions to SIGNED_OUT and clears token", async () => {
-    localStorage.setItem("noni.mock_token", "mock:test@example.com");
+    localStorage.setItem("mynaani.mock_token", "mock:test@example.com");
     const captured: { current: AuthContextValue | null } = { current: null };
     const container = document.createElement("div");
     const root = createRoot(container);
@@ -101,7 +101,7 @@ describe("AuthProvider — mock mode", () => {
     await vi.waitFor(() => {
       expect(captured.current!.state.status).toBe("SIGNED_OUT");
     });
-    expect(localStorage.getItem("noni.mock_token")).toBeNull();
+    expect(localStorage.getItem("mynaani.mock_token")).toBeNull();
     root.unmount();
   });
 
@@ -127,7 +127,7 @@ describe("AuthProvider — mock mode", () => {
     const root = createRoot(container);
 
     // Seed a mock token so AuthProvider thinks the user is signed in.
-    localStorage.setItem("noni.mock_token", "mock:test@example.com");
+    localStorage.setItem("mynaani.mock_token", "mock:test@example.com");
 
     // Mock fetch to return 401 Unauthorized.
     const originalFetch = globalThis.fetch;
@@ -155,7 +155,7 @@ describe("AuthProvider — mock mode", () => {
     });
 
     // signOut is invoked on 401 so the credential source stays in sync.
-    expect(localStorage.getItem("noni.mock_token")).toBeNull();
+    expect(localStorage.getItem("mynaani.mock_token")).toBeNull();
 
     globalThis.fetch = originalFetch;
     root.unmount();

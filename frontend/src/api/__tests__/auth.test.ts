@@ -28,8 +28,8 @@ vi.mock("../client", () => ({
     post: mockPost,
   },
   setMockToken: (email: string) =>
-    localStorage.setItem("noni.mock_token", `mock:${email}`),
-  clearMockToken: () => localStorage.removeItem("noni.mock_token"),
+    localStorage.setItem("mynaani.mock_token", `mock:${email}`),
+  clearMockToken: () => localStorage.removeItem("mynaani.mock_token"),
   API_BASE_URL: "https://mock",
 }));
 
@@ -87,7 +87,7 @@ describe("mock token helpers", () => {
   // perpetually signed-out in mock mode.
   it("setMockToken writes 'mock:<email>' under the agreed key", () => {
     setMockToken("alice@example.test");
-    expect(localStorage.getItem("noni.mock_token")).toBe(
+    expect(localStorage.getItem("mynaani.mock_token")).toBe(
       "mock:alice@example.test",
     );
   });
@@ -95,6 +95,6 @@ describe("mock token helpers", () => {
   it("clearMockToken removes the key", () => {
     setMockToken("bob@example.test");
     clearMockToken();
-    expect(localStorage.getItem("noni.mock_token")).toBeNull();
+    expect(localStorage.getItem("mynaani.mock_token")).toBeNull();
   });
 });

@@ -54,7 +54,7 @@ button,
  * Linear/Stripe/Notion pattern: bounded image as a card, headline and
  * primary CTA as a separate text block beneath. Cleaner than overlaying
  * text on a photo whose composition we don't control. */
-.noni-hero {
+.mynaani-hero {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -66,7 +66,7 @@ button,
 /* Image card: native aspect preserved, capped width and height so the
  * picture sits comfortably without dominating the viewport. Soft
  * rounded corners + light shadow lift it off the page. */
-.noni-hero__frame {
+.mynaani-hero__frame {
   position: relative;
   display: block;
   width: 100%;
@@ -77,7 +77,7 @@ button,
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
-.noni-hero__image {
+.mynaani-hero__image {
   width: 100%;
   height: auto;
   max-height: min(50vh, 480px);
@@ -87,20 +87,20 @@ button,
 }
 
 @media (max-width: 640px) {
-  .noni-hero__frame {
+  .mynaani-hero__frame {
     max-width: 100%;
     border-radius: 12px;
   }
-  .noni-hero__image {
+  .mynaani-hero__image {
     max-height: 40vh;
   }
 }
 
 /* Headline + ghost button now live below the image as a normal text
- * block. The element keeps the .noni-hero__overlay class for backward
+ * block. The element keeps the .mynaani-hero__overlay class for backward
  * compatibility with existing JSX, but the styling is no longer an
  * absolutely-positioned overlay. */
-.noni-hero__overlay {
+.mynaani-hero__overlay {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -109,7 +109,7 @@ button,
   max-width: 640px;
 }
 
-.noni-hero__overlay-title {
+.mynaani-hero__overlay-title {
   margin: 0;
   font-size: 36px;
   line-height: 1.15;
@@ -117,7 +117,7 @@ button,
   color: #222222; /* tokens.COLORS.textPrimary */
 }
 
-.noni-hero__overlay-btn {
+.mynaani-hero__overlay-btn {
   display: inline-block;
   font-size: 16px;
   font-weight: 600;
@@ -130,7 +130,7 @@ button,
   transition: background-color 200ms ease-out, color 200ms ease-out;
 }
 
-.noni-hero__overlay-btn:hover {
+.mynaani-hero__overlay-btn:hover {
   background: #4a6fa5;
   color: #ffffff;
 }
@@ -138,7 +138,7 @@ button,
 /* Row directly under the photo: primary CTA + secondary Log in.
  * Evenly spaced and aligned along the top so the secondary button lines
  * up with the primary button (the reassurance note hangs below). */
-.noni-hero__auth-row {
+.mynaani-hero__auth-row {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -149,14 +149,14 @@ button,
   margin-bottom: 32px; /* SPACING.xl */
 }
 
-.noni-hero__primary-cta {
+.mynaani-hero__primary-cta {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px; /* SPACING.xs */
 }
 
-.noni-hero__cta-note {
+.mynaani-hero__cta-note {
   margin: 0;
   font-size: 14px;
   color: #5a5a55; /* tokens.COLORS.textSecondary-equivalent — calm, not loud */
@@ -164,14 +164,14 @@ button,
 
 /* Quiet utility row (Larger text toggle) lives below the auth row so it
  * does not compete with the primary actions. */
-.noni-hero__utility-row {
+.mynaani-hero__utility-row {
   display: flex;
   justify-content: center;
   width: 100%;
   margin-bottom: 32px; /* SPACING.xl */
 }
 
-.noni-hero__copy {
+.mynaani-hero__copy {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -182,7 +182,7 @@ button,
 }
 
 @media (max-width: 640px) {
-  .noni-hero__overlay-title {
+  .mynaani-hero__overlay-title {
     font-size: 28px;
   }
 }
@@ -199,7 +199,7 @@ body {
  *     place via clip-path / size collapse, not position translation.
  *   - Section I.B: 8px padding (grid-aligned), 8px border-radius.
  */
-.noni-skip-link {
+.mynaani-skip-link {
   position: absolute;
   top: 0;
   left: 0;
@@ -219,8 +219,8 @@ body {
   z-index: 100;
 }
 
-.noni-skip-link:focus,
-.noni-skip-link:focus-visible {
+.mynaani-skip-link:focus,
+.mynaani-skip-link:focus-visible {
   width: auto;
   height: auto;
   padding: 8px 16px;       /* tokens.SPACING.sm / .md */

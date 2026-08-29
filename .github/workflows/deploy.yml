@@ -90,6 +90,7 @@ jobs:
     needs: [preflight, supabase-db-push]
     if: (success() || needs.supabase-db-push.result == 'skipped') && needs.preflight.outputs.railway_ready == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       RAILWAY_SERVICE: noni-api
@@ -101,7 +102,7 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
       - name: Deploy backend to Railway
-        run: railway up --service "$RAILWAY_SERVICE"
+        run: railway up -y --detach --service "$RAILWAY_SERVICE"
 
   cloudflare-pages-deploy:
     needs: [preflight]  # DECOUPLED: backend already deployed

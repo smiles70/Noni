@@ -21,6 +21,8 @@ import {
   FOCUS,
   MOTION,
 } from "../design/tokens";
+import { TYPE_SCALE } from "../styles/responsiveTokens";
+import { useViewport } from "../hooks/useViewport";
 import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import HowItWorksDialog from "./HowItWorksDialog";
@@ -158,6 +160,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const { isMobile } = useViewport();
 
   useEffect(() => {
     Promise.all([loadEnvelope("landing.page"), loadLandingPage()])
@@ -208,6 +211,38 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
     usesOptimisticProgression: false,
   };
 
+  const h1Style: CSSProperties = isMobile
+    ? { ...H1, fontSize: TYPE_SCALE.mobile.h1 }
+    : H1;
+  const cardStyle: CSSProperties = isMobile
+    ? {
+        ...CARD,
+        padding: SPACING.md,
+        backgroundColor: "rgba(250, 250, 248, 0.65)",
+        maxHeight: "calc(45% - 96px)",
+        overflowY: "auto",
+      }
+    : CARD;
+  const cardPosition: CSSProperties = isMobile
+    ? {
+        position: "absolute",
+        top: "55%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 2,
+        width: "92%",
+        maxWidth: 320,
+      }
+    : {
+        position: "absolute",
+        top: "50%",
+        right: "4%",
+        transform: "translateY(-50%)",
+        zIndex: 2,
+        width: "90%",
+        maxWidth: 340,
+      };
+
   return (
     <>
       <RenderGuard envelope={envelope} proposal={proposal}>
@@ -221,38 +256,42 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             color: COLORS.textPrimary,
           }}
         >
-          {/* Full-bleed hero image */}
-          <img
-            src="/hero-mynaani.jpg"
-            alt=""
-            loading="eager"
+          {/* Full-bleed hero image — art-directed for mobile */}
+          <picture
             style={{
               position: "absolute",
               top: 0,
               left: 0,
               width: "100%",
               height: "100%",
-              objectFit: "cover",
-              objectPosition: "left center",
               zIndex: 0,
             }}
-          />
+          >
+            <source
+              media="(max-width: 767px)"
+              srcSet="/hero-mobile.jpg"
+              type="image/jpeg"
+            />
+            <img
+              src="/hero-mynaani.jpg"
+              alt=""
+              loading="eager"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center center",
+              }}
+            />
+          </picture>
 
           {/* Floating action card, right side */}
           <div
             data-contract-exemption="landing.hero"
-            style={{
-              position: "absolute",
-              top: "50%",
-              right: "4%",
-              transform: "translateY(-50%)",
-              zIndex: 2,
-              width: "90%",
-              maxWidth: 340,
-            }}
+            style={cardPosition}
           >
-            <div style={CARD}>
-              <h1 id="hero-heading" style={H1}>
+            <div style={cardStyle}>
+              <h1 id="hero-heading" style={h1Style}>
                 {content.hero.headline}
               </h1>
               <h2 style={H2}>{content.hero.subheadline}</h2>

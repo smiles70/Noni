@@ -11,7 +11,8 @@
  */
 
 import type { CSSProperties } from "react";
-import { COLORS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import { BODY, DIVIDER, H1, H2, PAGE } from "./AccountStyles";
 
 interface Props {
@@ -321,11 +322,12 @@ function YourAccountSection() {
 const BACK_BTN: CSSProperties = {
   fontSize: TYPOGRAPHY.bodySizePx,
   padding: `${SPACING.xs}px ${SPACING.md}px`,
+  minHeight: MIN_TOUCH_TARGET.mobile,
   marginBottom: SPACING.md,
   backgroundColor: COLORS.surface,
   color: COLORS.accentMutedBlue,
   border: `1px solid ${COLORS.accentMutedBlue}`,
-  borderRadius: 8,
+  borderRadius: RADIUS.sm,
   cursor: "pointer",
   fontFamily: TYPOGRAPHY.fontFamily,
 };
@@ -344,9 +346,12 @@ const TOC_LIST: CSSProperties = {
 };
 
 const TOC_LINK: CSSProperties = {
+  display: "block",
   fontSize: TYPOGRAPHY.bodySizePx,
   color: COLORS.accentMutedBlue,
   textDecoration: "underline",
+  padding: `${SPACING.sm}px 0`,
+  minHeight: MIN_TOUCH_TARGET.mobile,
   fontFamily: TYPOGRAPHY.fontFamily,
 };
 
