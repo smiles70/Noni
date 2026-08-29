@@ -1,0 +1,41 @@
+name: Configure Railway for mynaani.com
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Get noni-api production Railway URL
+        id: domain
+        run: |
+          railway domain list --service noni-api --environment production --json > domains.json
+          cat domains.json
+          URL=$(jq -r '.[0].domain' domains.json)
+          if [ -z "$URL" ]; then
+            echo "No Railway domain found for noni-api (production)"; exit 1
+          fi
+          if [[ "$URL" != https://* ]]; then URL="https://$URL"; fi
+          echo "railway_url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Set GitHub variables
+        run: |
+          gh variable set VITE_API_BASE_URL --body "${{ steps.domain.outputs.railway_url }}"
+          gh variable set PROD_API_BASE_URL --body "${{ steps.domain.outputs.railway_url }}"
+
+      - name: Redeploy
+        run: gh workflow run deploy.yml --ref main
