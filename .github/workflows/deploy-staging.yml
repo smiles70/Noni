@@ -52,7 +52,7 @@ jobs:
     needs: preflight
     if: needs.preflight.outputs.railway_ready == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       RAILWAY_SERVICE: noni-api
@@ -64,7 +64,7 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
       - name: Deploy backend to Railway staging
-        run: railway up -y --service "$RAILWAY_SERVICE" --environment staging
+        run: railway up -y --detach --service "$RAILWAY_SERVICE" --environment staging
 
   cloudflare-pages-deploy:
     needs: [preflight]
