@@ -235,17 +235,22 @@ app = FastAPI(
 )
 
 # Dev CORS: explicit allowlist for local Vite dev server.
-# Production deployments should override via reverse proxy / env-driven origins.
-_cors_origins = (
+# Production deployments can extend via CORS_ORIGINS env; mynaani.com and
+# preview domains are always allowed.
+_cors_defaults = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://noni-web.pages.dev",
+    "https://mynaani.com",
+    "https://www.mynaani.com",
+]
+_cors_env = (
     [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
     if settings.CORS_ORIGINS
-    else [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://noni-web.pages.dev",
-    ]
+    else []
 )
-_cors_origin_regex = r"https://.*\.noni-web\.pages\.dev"
+_cors_origins = list(dict.fromkeys(_cors_env + _cors_defaults))
+_cors_origin_regex = r"https://(.*\.noni-web\.pages\.dev|mynaani\.com|www\.mynaani\.com)"
 # Sprint 23 H1: Security headers must be outermost so they are present
 # even on error responses.
 app.add_middleware(SecurityHeadersMiddleware)
