@@ -20,14 +20,22 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Get noni-api production Railway URL
+      - name: Find noni-api production Railway domain
         id: domain
         run: |
-          railway domain list --service noni-api --environment production --json > domains.json
+          set -e
+          railway environment list --json > envs.json
+          cat envs.json
+          ENV_NAME=$(jq -r '.[] | select(.name != "staging") | .name' envs.json | head -1)
+          if [ -z "$ENV_NAME" ]; then
+            ENV_NAME=$(jq -r '.[0].name' envs.json)
+          fi
+          echo "Using environment: $ENV_NAME"
+          railway domain list --service noni-api --environment "$ENV_NAME" --json > domains.json
           cat domains.json
           URL=$(jq -r '.[0].domain' domains.json)
           if [ -z "$URL" ]; then
-            echo "No Railway domain found for noni-api (production)"; exit 1
+            echo "No Railway domain found for noni-api"; exit 1
           fi
           if [[ "$URL" != https://* ]]; then URL="https://$URL"; fi
           echo "railway_url=$URL" >> "$GITHUB_OUTPUT"
