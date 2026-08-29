@@ -2,7 +2,7 @@
  * Larger-text mode. Persists user preference in localStorage.
  * Reads on boot; toggle exposed for the LandingPage button.
  */
-const KEY = "noni_large_text";
+const KEY = "mynaani_large_text";
 
 export function applyLargeTextOnBoot(): void {
   try {

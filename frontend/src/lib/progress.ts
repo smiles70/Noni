@@ -10,7 +10,7 @@
  * curriculum view on mount.
  */
 
-const KEY = "noni_progress_v1";
+const KEY = "mynaani_progress_v1";
 
 export interface Progress {
   module: 0 | 1 | 2 | 3 | 4 | 5;
