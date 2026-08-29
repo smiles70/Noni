@@ -218,7 +218,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
     ? {
         ...CARD,
         padding: SPACING.md,
-        backgroundColor: "rgba(250, 250, 248, 0.65)",
+        backgroundColor: "rgba(250, 250, 248, 0.5)",
         maxHeight: "calc(45% - 96px)",
         overflowY: "auto",
       }
