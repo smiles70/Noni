@@ -1,0 +1,25 @@
+name: Diagnose mynaani.com DNS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: List zones for mynaani.com
+        run: |
+          curl -sS -X GET \
+            "https://api.cloudflare.com/client/v4/zones?name=mynaani.com&status=active" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json"
+
+      - name: List all zones in account
+        run: |
+          curl -sS -X GET \
+            "https://api.cloudflare.com/client/v4/zones?per_page=50" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json"
