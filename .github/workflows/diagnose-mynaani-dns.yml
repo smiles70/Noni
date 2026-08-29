@@ -1,41 +1,35 @@
-name: Setup mynaani.com Cloudflare zone
+name: Get mynaani.com DNS targets
 
 on:
   workflow_dispatch:
 
 jobs:
-  setup:
+  get-targets:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - name: Check for existing mynaani.com zone
-        id: find
+      - name: Get Pages project info
         run: |
           set -e
           curl -sS -X GET \
-            "https://api.cloudflare.com/client/v4/zones?name=mynaani.com" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/noni-web" \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            -H "Content-Type: application/json" > zone.json
-          cat zone.json
-          echo ""
-          echo "exists=$(jq '.result | length > 0' zone.json)" >> "$GITHUB_OUTPUT"
+            -H "Content-Type: application/json"
 
-      - name: Create mynaani.com zone if missing
-        if: steps.find.outputs.exists == 'false'
+      - name: Get custom domain details for mynaani.com
         run: |
           set -e
-          curl -sS -X POST \
-            "https://api.cloudflare.com/client/v4/zones" \
+          curl -sS -X GET \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/noni-web/domains/mynaani.com" \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            -H "Content-Type: application/json" \
-            --data "{
-              \"name\": \"mynaani.com\",
-              \"type\": \"full\",
-              \"account\": { \"id\": \"${CLOUDFLARE_ACCOUNT_ID}\" }
-            }" > new-zone.json
-          cat new-zone.json
-          echo ""
-          echo "nameservers:"
-          jq -r '.result.name_servers[]' new-zone.json
+            -H "Content-Type: application/json"
+
+      - name: Get custom domain details for www.mynaani.com
+        run: |
+          set -e
+          curl -sS -X GET \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/noni-web/domains/www.mynaani.com" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json"
