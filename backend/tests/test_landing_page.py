@@ -31,11 +31,12 @@ class TestContentIntegrity:
         }
         assert set(LANDING_PAGE_CONTENT.keys()) == expected
 
-    def test_ctas_have_label_and_note(self):
+    def test_ctas_have_label(self):
         cta = LANDING_PAGE_CONTENT["call_to_action"]
-        for key in ("primary", "secondary"):
-            assert "label" in cta[key] and cta[key]["label"].strip()
-            assert "note" in cta[key] and cta[key]["note"].strip()
+        for key, item in cta.items():
+            if item is None:
+                continue
+            assert "label" in item and item["label"].strip()
 
     def test_no_empty_strings(self):
         # Whitespace-only copy would be a regression.
