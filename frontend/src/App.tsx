@@ -18,7 +18,6 @@ import RequireAuth from "./components/RequireAuth";
 import OnboardingErrorBoundary from "./components/OnboardingErrorBoundary";
 import { useAuth } from "./auth/AuthProvider";
 import { readProgress, writeProgress } from "./lib/progress";
-import { IS_DEV } from "./lib/env";
 import { ViewportProvider } from "./context/ViewportContext";
 import { ResponsiveContainer } from "./components/ResponsiveContainer";
 
@@ -49,35 +48,6 @@ const AccountSetupPage = lazy(() => import("./components/AccountSetupPage"));
 const GettingStartedPage = lazy(
   () => import("./components/GettingStartedPage"),
 );
-
-// Step 3 of the FE cutover plan: temporary debug surface that prints
-// the AuthProvider state in the corner of every page so we can watch
-// the BOOT -> AUTHENTICATING -> READY (or REJECTED / TRANSIENT_ERROR)
-// transitions happen live. Removed in Step 12.
-function DebugAuth() {
-  const ctx = useAuth();
-  const state = ctx?.state ?? { status: "no-context" };
-  return (
-    <pre
-      style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        zIndex: 9999,
-        margin: 0,
-        padding: "6px 8px",
-        background: "rgba(0,0,0,0.75)",
-        color: "#0f0",
-        font: "11px/1.3 ui-monospace, monospace",
-        maxWidth: "40vw",
-        whiteSpace: "pre-wrap",
-        pointerEvents: "none",
-      }}
-    >
-      {JSON.stringify(state, null, 2)}
-    </pre>
-  );
-}
 
 const App: React.FC = () => {
   // AuthProvider is the ONLY source of auth truth (FE Step-4 cutover).
@@ -161,16 +131,11 @@ const App: React.FC = () => {
     goCurriculum();
   };
 
-  // Always-mounted debug surface so we can observe AuthProvider state
-  // even during BOOT / AUTHENTICATING / REJECTED early returns.
-  const debug = IS_DEV ? <DebugAuth /> : null;
-
   // Global gates: AuthProvider state takes precedence over routes.
   const status = state?.status;
   if (status === "BOOT" || status === "AUTHENTICATING") {
     return (
       <>
-        {debug}
         <main aria-live="polite" data-component="PendingBanner">
           <p>One moment — loading.</p>
         </main>
@@ -189,7 +154,6 @@ const App: React.FC = () => {
     };
     return (
       <>
-        {debug}
         <main data-component="BlockedNotice">
           <AuthBlockedNotice
             errorCode={state?.errorCode}
@@ -222,8 +186,7 @@ const App: React.FC = () => {
           <a href="#main-content" className="mynaani-skip-link">
             Skip to main content
           </a>
-          {debug}
-          {transientBanner}
+            {transientBanner}
           <div id="main-content">
             <Routes>
               <Route

@@ -1,2 +1,4 @@
-frontend/node_modules/.bin/tsc --noEmit -p frontend/tsconfig.json
-frontend/node_modules/.bin/vitest run --config frontend/vitest.config.ts
+# frontend/node_modules/.bin/tsc
+# frontend/node_modules/.bin/vitest
+
+

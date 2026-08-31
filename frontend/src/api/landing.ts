@@ -20,7 +20,6 @@ export interface ListSection {
 }
 export interface CTA {
   label: string;
-  note: string;
 }
 export interface CallToAction {
   primary: CTA;

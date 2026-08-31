@@ -26,7 +26,6 @@ class ListSection(BaseModel):
 
 class CTA(BaseModel):
     label: str
-    note: str
 
 
 class CallToActionSection(BaseModel):

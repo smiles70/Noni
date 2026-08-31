@@ -55,9 +55,9 @@ LANDING_PAGE_CONTENT: Dict[str, Any] = {
         ),
     },
     "call_to_action": {
-        "primary": {."
-            "label": "How it works", 
-
+        "primary": {
+            "label": "How it works",
+        },
     },
     "closing": {
         "body": (

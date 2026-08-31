@@ -53,12 +53,6 @@ const H2: CSSProperties = {
   fontWeight: 400,
 };
 
-const NOTE: CSSProperties = {
-  margin: 0,
-  fontSize: TYPOGRAPHY.bodySizePx,
-  color: COLORS.disabled,
-};
-
 const PRIMARY_BTN: CSSProperties = {
   fontSize: TYPOGRAPHY.bodySizePx,
   padding: `${SPACING.md}px ${SPACING.lg}px`,
@@ -301,16 +295,13 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
                     Continue learning →
                   </button>
                 ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => setShowHowItWorks(true)}
-                      style={PRIMARY_BTN}
-                    >
-                      {content.call_to_action.primary.label}
-                    </button>
-                    <p style={NOTE}>{content.call_to_action.primary.note}</p>
-                  </>
+                  <button
+                    type="button"
+                    onClick={() => setShowHowItWorks(true)}
+                    style={PRIMARY_BTN}
+                  >
+                    {content.call_to_action.primary.label}
+                  </button>
                 )}
               </div>
             </div>
