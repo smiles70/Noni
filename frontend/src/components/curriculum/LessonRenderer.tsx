@@ -403,11 +403,7 @@ export default function LessonRenderer({
   };
 
   const nav = (
-    <NavBar
-      onSignIn={onSignIn}
-      onAccount={onAccount}
-      onHelp={onHelp}
-    />
+    <NavBar onSignIn={onSignIn} onAccount={onAccount} onHelp={onHelp} />
   );
 
   if (error) {

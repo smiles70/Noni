@@ -27,8 +27,8 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log to telemetry with request_id if available
     const requestId =
-      (window as unknown as { __mynaani_request_id?: string }).__mynaani_request_id ??
-      "unknown";
+      (window as unknown as { __mynaani_request_id?: string })
+        .__mynaani_request_id ?? "unknown";
     logger.error("ErrorBoundary caught error", {
       requestId,
       error: error.message,

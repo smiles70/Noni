@@ -164,3 +164,36 @@ A PR for this work must score 5/5 to merge. One point per criterion:
 | 3 | Verification | QA×2 (tsc/lint/121 tests/build), UAT×2, staging deploy run 33987157059 success + asset HTTP 200 |
 | 4 | Test coverage | `LandingPage.brand.test.tsx` |
 | 5 | Honesty | RGB→RGBA fix disclosed; 784KB→126KB optimization disclosed; hook defects disclosed in commit + intake |
+
+---
+
+## Research protocol — rendered hero review (BRAND-LOGO-002, 2026-09-05)
+
+**Evidence:** production screenshot of www.mynaani.com post-merge (run
+d75bcda, live asset confirmed 200).
+
+### What is verified working
+
+- Logo renders top-left inside the hero (NN/g placement ✅).
+- Non-interactive, spatially stable, no motion, no density added ✅.
+- Alpha extraction clean — no white box artifact over the photo ✅.
+
+### Findings (deficits vs. geragogy audience)
+
+| # | Finding | Severity |
+|---|---|---|
+| F1 | **Legibility/contrast:** the muted green/blue mark sits over the photo's dark curtain region (top-left of frame). At 112px the wordmark and tagline are borderline-illegible for a presbyopic audience — and a faint brand mark undermines the *legitimacy signal* that scam-aware 55+ users look for. | High for this audience |
+| F2 | **Scale vs. intent:** the intake sized it as a "brand mark not a focal element," but on a full-bleed photo the mark reads as decoration rather than identification. NN/g's recall benefit presumes the logo is *seen*. | Medium |
+| F3 | **No separation device:** published practice for logos over imagery is a scrim or a surface-backed plate (same technique the action card already uses: `rgba(250,250,248,0.5)` surface). | Medium |
+
+### Recommended remediation (design-architect note)
+
+Add a **calm brand plate** behind the logo: `COLORS.surface` at ~85% opacity,
+`RADIUS.lg` corners, `SPACING.sm` internal padding — same treatment family as
+the floating action card, no new tokens, no motion. Optionally raise height to
+128px desktop / 96px mobile while staying on-grid. Keeps zero interaction
+density cost and converts the mark from ambient decoration into a legible
+identity signal.
+
+**Not yet implemented** — remediation is a follow-up decision, not part of
+BRAND-LOGO-001's merged scope.

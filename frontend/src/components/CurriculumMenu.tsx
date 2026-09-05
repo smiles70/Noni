@@ -131,13 +131,7 @@ const CONTINUE_BUTTON: CSSProperties = {
 };
 
 export default function CurriculumMenu(props: Props) {
-  const {
-    onContinue,
-    onSignIn,
-    onAccount,
-    onSelectUnit,
-    onHelp,
-  } = props;
+  const { onContinue, onSignIn, onAccount, onSelectUnit, onHelp } = props;
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [menu, setMenu] = useState<CurriculumMenu | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -217,11 +211,7 @@ export default function CurriculumMenu(props: Props) {
   return (
     <RenderGuard envelope={envelope} proposal={proposal}>
       <main style={PAGE} data-component="Card">
-        <NavBar
-          onSignIn={onSignIn}
-          onAccount={onAccount}
-          onHelp={onHelp}
-        />
+        <NavBar onSignIn={onSignIn} onAccount={onAccount} onHelp={onHelp} />
         <h1 style={HEADING} data-component="Heading">
           Course overview
         </h1>

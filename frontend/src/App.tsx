@@ -186,7 +186,7 @@ const App: React.FC = () => {
           <a href="#main-content" className="mynaani-skip-link">
             Skip to main content
           </a>
-            {transientBanner}
+          {transientBanner}
           <div id="main-content">
             <Routes>
               <Route

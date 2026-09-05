@@ -51,11 +51,7 @@ const EMAIL: React.CSSProperties = {
   marginRight: SPACING.sm,
 };
 
-export default function NavBar({
-  onSignIn,
-  onAccount,
-  onHelp,
-}: Props) {
+export default function NavBar({ onSignIn, onAccount, onHelp }: Props) {
   // B1: NavBar reads auth state from AuthProvider, never via its own
   // whoami() call (T-H2). It also never mounts an interceptor or fetches
   // /auth/session itself.
