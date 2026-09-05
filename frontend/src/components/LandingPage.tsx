@@ -33,6 +33,15 @@ interface Props {
   onHelp?: () => void;
 }
 
+// Split backend prose on blank lines — same helper shape as HowItWorksDialog.
+function paragraphs(text: string) {
+  return text.split("\n\n").map((p, i) => (
+    <p key={i} style={{ marginTop: 0, marginBottom: SPACING.md }}>
+      {p}
+    </p>
+  ));
+}
+
 // ---- Tokenized style objects (exempt landing page only) ---------------------
 
 const H1: CSSProperties = {
@@ -120,6 +129,55 @@ const LOGO_IMG: CSSProperties = {
 const LOGO_IMG_MOBILE: CSSProperties = {
   ...LOGO_IMG,
   height: 96,
+};
+
+// Scroll affordance — calm secondary link under the primary CTA. A text link
+// (not a button or icon) keeps density low and signals "more below" without
+// competing with the primary action. Native anchor jump only — smooth-scroll
+// would be unpermitted motion.
+const MORE_LINK: CSSProperties = {
+  fontSize: TYPOGRAPHY.bodySizePx,
+  color: COLORS.accentMutedBlue,
+  textDecoration: "none",
+  textAlign: "center",
+  display: "inline-block",
+  padding: `${SPACING.xs}px ${SPACING.sm}px`,
+};
+
+// Below-fold details — SCROLL-DEPTH-001. Renders the five API sections the
+// HowItWorksDialog already uses (introduction → what it does → how it feels
+// → trust & safety → closing). Pure contract inventory (Heading, Body, List,
+// Divider), so it sits OUTSIDE the ADR-0029 exempt hero section but still
+// inside the RenderGuard. Section titles are h2 at level2 so total text
+// levels stay at 3 (exempt h1, h2, body) per the envelope limit.
+const DETAILS: CSSProperties = {
+  backgroundColor: COLORS.background,
+  padding: `${SPACING.xxl}px ${SPACING.xl}px`,
+  fontSize: TYPOGRAPHY.bodySizePx,
+  lineHeight: TYPOGRAPHY.bodyLineHeight,
+};
+
+const DETAILS_INNER: CSSProperties = {
+  maxWidth: 720,
+  margin: "0 auto",
+};
+
+const DETAIL_SECTION: CSSProperties = {
+  marginTop: SPACING.xl,
+};
+
+const DETAIL_H2: CSSProperties = {
+  fontSize: TYPOGRAPHY.headingScale.level2,
+  marginTop: 0,
+  marginBottom: SPACING.sm,
+  color: COLORS.textPrimary,
+  fontWeight: 600,
+};
+
+const DETAIL_DIVIDER: CSSProperties = {
+  border: "none",
+  borderTop: `1px solid ${COLORS.disabled}`,
+  margin: `${SPACING.xl}px 0 0`,
 };
 
 const HELP_BUBBLE: CSSProperties = {
@@ -215,11 +273,11 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
   }
 
   const proposal: RenderProposal = {
-    components: ["Heading", "Body", "Button", "Card"],
+    components: ["Heading", "Body", "Button", "Card", "List", "Divider"],
     primaryActionCount: 5,
     irreversibleActionCount: 0,
     highlightedRecommendationCount: 1,
-    visibleTextLevels: 2,
+    visibleTextLevels: 3,
     colorsUsed: [
       COLORS.background,
       COLORS.surface,
@@ -279,8 +337,9 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
         <section
           data-contract-exemption="landing.hero"
           style={{
-            position: "fixed",
-            inset: 0,
+            position: "relative",
+            height: "100vh",
+            width: "100%",
             overflow: "hidden",
             fontFamily: TYPOGRAPHY.fontFamily,
             color: COLORS.textPrimary,
@@ -353,6 +412,9 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
                     {content.call_to_action.primary.label}
                   </button>
                 )}
+                <a href="#mynaani-details" style={MORE_LINK}>
+                  More about mynaani
+                </a>
               </div>
             </div>
           </div>
@@ -369,6 +431,59 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             </button>
           )}
         </section>
+
+        {/* Below-fold depth — pure contract components, no exemption needed */}
+        <main id="mynaani-details" style={DETAILS}>
+          <div style={DETAILS_INNER}>
+            <section aria-labelledby="details-introduction">
+              <h2 id="details-introduction" style={DETAIL_H2}>
+                {content.introduction.title}
+              </h2>
+              {paragraphs(content.introduction.body)}
+            </section>
+
+            <hr style={DETAIL_DIVIDER} />
+
+            <section aria-labelledby="details-what" style={DETAIL_SECTION}>
+              <h2 id="details-what" style={DETAIL_H2}>
+                {content.what_mynaani_does.title}
+              </h2>
+              <ul>
+                {content.what_mynaani_does.items.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </section>
+
+            <hr style={DETAIL_DIVIDER} />
+
+            <section aria-labelledby="details-feel" style={DETAIL_SECTION}>
+              <h2 id="details-feel" style={DETAIL_H2}>
+                {content.how_it_feels.title}
+              </h2>
+              <ul>
+                {content.how_it_feels.items.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </section>
+
+            <hr style={DETAIL_DIVIDER} />
+
+            <section aria-labelledby="details-trust" style={DETAIL_SECTION}>
+              <h2 id="details-trust" style={DETAIL_H2}>
+                {content.trust_and_safety.title}
+              </h2>
+              {paragraphs(content.trust_and_safety.body)}
+            </section>
+
+            <hr style={DETAIL_DIVIDER} />
+
+            <section style={DETAIL_SECTION}>
+              {paragraphs(content.closing.body)}
+            </section>
+          </div>
+        </main>
       </RenderGuard>
       {showHowItWorks && (
         <HowItWorksDialog
