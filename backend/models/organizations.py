@@ -51,9 +51,7 @@ class OrgLicense(Base):
         UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
     )
     product_code = Column(String(64), ForeignKey("products.code"), nullable=False)
-    purchase_id = Column(
-        UUID(as_uuid=True), ForeignKey("purchases.id"), nullable=False
-    )
+    purchase_id = Column(UUID(as_uuid=True), ForeignKey("purchases.id"), nullable=False)
     total_seats = Column(Integer, nullable=False, default=0)
     used_seats = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
@@ -66,9 +64,7 @@ class OrgLicense(Base):
 
 class AccessCode(Base):
     __tablename__ = "access_codes"
-    __table_args__ = (
-        UniqueConstraint("code_hash", name="uq_access_codes_code_hash"),
-    )
+    __table_args__ = (UniqueConstraint("code_hash", name="uq_access_codes_code_hash"),)
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     license_id = Column(

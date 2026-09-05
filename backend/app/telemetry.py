@@ -93,7 +93,9 @@ def record_auth_session_outcome(code: str, latency_ms: int | None = None) -> Non
         _auth_latency.observe(latency_ms / 1000.0)
 
     try:
-        logger.info("auth.session.outcome", extra={"code": code, "latency_ms": latency_ms})
+        logger.info(
+            "auth.session.outcome", extra={"code": code, "latency_ms": latency_ms}
+        )
     except Exception:
         pass
 

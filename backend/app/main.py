@@ -16,7 +16,9 @@ from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 
 from backend.api.routes.account import account_profile_router
-from backend.api.routes.onboarding_telemetry import router as onboarding_telemetry_router
+from backend.api.routes.onboarding_telemetry import (
+    router as onboarding_telemetry_router,
+)
 from backend.api.routes.session_validation import router as session_validation_router
 from backend.api.routes.auth import router as auth_router
 from backend.api.routes.billing import router as billing_router
@@ -62,9 +64,7 @@ def _seed_dev_products() -> None:
 
     db = SessionLocal()
     try:
-        existing = (
-            db.query(Product).filter(Product.code == "modules_4_5").one_or_none()
-        )
+        existing = db.query(Product).filter(Product.code == "modules_4_5").one_or_none()
         if existing is None:
             db.add(
                 Product(
@@ -90,6 +90,7 @@ def _verify_production_secrets() -> None:
     # production identity provider is deferred per docs/deferred-decisions.md.
     if settings.AUTH_PROVIDER.strip().lower() == "mock":
         import logging
+
         logger = logging.getLogger("noni.security")
         logger.warning(
             "Running with AUTH_PROVIDER=mock in production. "
@@ -160,7 +161,7 @@ async def lifespan(app: FastAPI):
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Sprint 23 H1: inject security headers on every response.
-    
+
     Enhanced with additional security headers for comprehensive protection.
     """
 
@@ -168,19 +169,19 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         self, request: StarletteRequest, call_next: RequestResponseEndpoint
     ) -> StarletteResponse:
         response = await call_next(request)
-        
+
         # Frame protection
         response.headers["X-Frame-Options"] = "DENY"
-        
+
         # MIME type sniffing protection
         response.headers["X-Content-Type-Options"] = "nosniff"
-        
+
         # XSS protection
         response.headers["X-XSS-Protection"] = "1; mode=block"
-        
+
         # Referrer policy
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        
+
         # Enhanced Content Security Policy
         csp_directives = [
             "default-src 'self'",
@@ -194,7 +195,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "form-action 'self'",
         ]
         response.headers["Content-Security-Policy"] = "; ".join(csp_directives)
-        
+
         # Permissions Policy (restrict browser features)
         permissions_policy = [
             "geolocation=()",
@@ -207,23 +208,23 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "accelerometer=()",
         ]
         response.headers["Permissions-Policy"] = ", ".join(permissions_policy)
-        
+
         # Cross-Origin Resource Policy
         response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
-        
+
         # Cross-Origin Opener Policy
         response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
-        
+
         # Cross-Origin Embedder Policy
         response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
-        
+
         # Production-specific headers
         if settings.ENVIRONMENT == "production":
             # HSTS with preload
             response.headers["Strict-Transport-Security"] = (
                 "max-age=31536000; includeSubDomains; preload"
             )
-            
+
         return response
 
 
@@ -250,7 +251,9 @@ _cors_env = (
     else []
 )
 _cors_origins = list(dict.fromkeys(_cors_env + _cors_defaults))
-_cors_origin_regex = r"https://(.*\.noni-web\.pages\.dev|mynaani\.com|www\.mynaani\.com)"
+_cors_origin_regex = (
+    r"https://(.*\.noni-web\.pages\.dev|mynaani\.com|www\.mynaani\.com)"
+)
 # Sprint 23 H1: Security headers must be outermost so they are present
 # even on error responses.
 app.add_middleware(SecurityHeadersMiddleware)
@@ -317,9 +320,7 @@ app.include_router(landing_router, prefix="/api/v1/landing", tags=["landing"])
 app.include_router(
     telemetry_export_router, prefix="/api/v1/telemetry", tags=["telemetry"]
 )
-app.include_router(
-    telemetry_summary_router, prefix="/api/v1", tags=["telemetry"]
-)
+app.include_router(telemetry_summary_router, prefix="/api/v1", tags=["telemetry"])
 app.include_router(
     ui_envelope_router, prefix="/api/v1/ui-envelope", tags=["ui-envelope"]
 )
@@ -327,8 +328,12 @@ app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 # EPIC-002 Phase 2: Account profile management endpoints
 app.include_router(account_profile_router, prefix="/api/v1/account", tags=["account"])
 # EPIC-002 Phase 4: Onboarding telemetry and session validation
-app.include_router(onboarding_telemetry_router, prefix="/api/v1/telemetry", tags=["telemetry"])
-app.include_router(session_validation_router, prefix="/api/v1/session", tags=["session"])
+app.include_router(
+    onboarding_telemetry_router, prefix="/api/v1/telemetry", tags=["telemetry"]
+)
+app.include_router(
+    session_validation_router, prefix="/api/v1/session", tags=["session"]
+)
 app.include_router(billing_router, prefix="/api/v1/billing", tags=["billing"])
 app.include_router(gifts_router, prefix="/api/v1/gifts", tags=["gifts"])
 app.include_router(organizations_router, prefix="/api/v1/billing", tags=["billing"])

@@ -203,9 +203,7 @@ def require_staff(
     """Require a staff/admin account for org management."""
     from backend.core.config import settings
 
-    allowed = {
-        s.strip() for s in settings.ADMIN_ACCOUNT_IDS.split(",") if s.strip()
-    }
+    allowed = {s.strip() for s in settings.ADMIN_ACCOUNT_IDS.split(",") if s.strip()}
     if str(account.id) not in allowed:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

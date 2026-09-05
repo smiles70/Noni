@@ -31,7 +31,6 @@ from backend.models.curriculum_units import (
     CurriculumUnit,
 )
 
-
 UNITS_MODULE_0 = [
     CurriculumUnit(
         id="module0-unit-1",
@@ -58,7 +57,7 @@ UNITS_MODULE_0 = [
                 content=[
                     "AI is not magic. It is not a person. It is a useful kind of program.",
                     "The name has been around for many decades. What is new is how good these programs have gotten with everyday language.",
-                    "When someone says \"the AI thinks\" or \"the AI feels\", they are using a shortcut. The program does not think and does not feel. It produces words.",
+                    'When someone says "the AI thinks" or "the AI feels", they are using a shortcut. The program does not think and does not feel. It produces words.',
                 ],
                 complexity=1,
             ),
@@ -149,7 +148,7 @@ UNITS_MODULE_0 = [
                 title="Trying a few short titles",
                 page_type="example",
                 content=[
-                    "Here is what \"trying many possibilities\" can look like for words instead of routes.",
+                    'Here is what "trying many possibilities" can look like for words instead of routes.',
                 ],
                 example=ExampleBlock(
                     situation=(
@@ -225,7 +224,7 @@ UNITS_MODULE_0 = [
                 content=[
                     "GPS suggests driving routes. Email sorts spam into a separate folder. The camera on your phone groups pictures by who is in them.",
                     "The TV remote that listens for spoken commands is using AI. So is the search box that finishes your sentence as you type.",
-                    "None of these announce themselves as \"AI\". They simply work.",
+                    'None of these announce themselves as "AI". They simply work.',
                 ],
                 complexity=1,
             ),
@@ -240,7 +239,7 @@ UNITS_MODULE_0 = [
                     situation=(
                         "You take a photograph of your grandchildren at a birthday party. "
                         "The next day, your phone has grouped all the pictures from that "
-                        "day into an album labeled \"Birthday\"."
+                        'day into an album labeled "Birthday".'
                     ),
                     claude_says=(
                         "(Nothing — Claude is not part of this. The phone's photo program "
@@ -320,7 +319,7 @@ UNITS_MODULE_0 = [
                 ],
                 example=ExampleBlock(
                     situation=(
-                        "You think back to how a grandchild first learned the word \"dog\". "
+                        'You think back to how a grandchild first learned the word "dog". '
                         "Picture books. Pointing at the neighbor's terrier. The dog at the park. "
                         "After a while, the child knew."
                     ),
@@ -390,7 +389,7 @@ UNITS_MODULE_0 = [
                 content=[
                     "Imagine a bucket brigade — a line of people passing buckets along.",
                     "Each person hands a slightly cleaner version of the message to the next. By the end, what started as a tangled question has become a clear answer.",
-                    "That chain of small steps is what people sometimes call a \"neural network\". The name sounds technical; the idea is simple.",
+                    'That chain of small steps is what people sometimes call a "neural network". The name sounds technical; the idea is simple.',
                 ],
                 complexity=1,
             ),
@@ -403,8 +402,8 @@ UNITS_MODULE_0 = [
                 ],
                 example=ExampleBlock(
                     situation=(
-                        "You type a question into Claude: \"What is a gentle activity for a "
-                        "Sunday afternoon?\""
+                        'You type a question into Claude: "What is a gentle activity for a '
+                        'Sunday afternoon?"'
                     ),
                     claude_says=(
                         "Some quiet ideas:\n\n"

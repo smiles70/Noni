@@ -10,7 +10,7 @@ Endpoints:
 from __future__ import annotations
 
 import json
-from typing import Optional, Any, Dict
+from typing import Optional
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session as DbSession
@@ -72,7 +72,12 @@ def update_profile(
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"error": {"code": "auth.no_credential", "message": "No credential provided"}},
+            detail={
+                "error": {
+                    "code": "auth.no_credential",
+                    "message": "No credential provided",
+                }
+            },
         )
 
     try:
@@ -86,7 +91,9 @@ def update_profile(
     if not claims.auth_user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"error": {"code": "auth.subject_missing", "message": "Subject missing"}},
+            detail={
+                "error": {"code": "auth.subject_missing", "message": "Subject missing"}
+            },
         )
 
     # Get account
@@ -100,13 +107,17 @@ def update_profile(
     if not account:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": {"code": "account.not_found", "message": "Account not found"}},
+            detail={
+                "error": {"code": "account.not_found", "message": "Account not found"}
+            },
         )
 
     # Update profile
     account.display_name = profile_data.displayName.strip()
     # EPIC-002 Phase 2: Store preferences as JSON string
-    account.preferences = json.dumps(profile_data.preferences) if profile_data.preferences else None
+    account.preferences = (
+        json.dumps(profile_data.preferences) if profile_data.preferences else None
+    )
 
     db.commit()
     db.refresh(account)
@@ -140,7 +151,9 @@ class OnboardingStatusResponse(BaseModel):
     preferences_set: bool = False
 
 
-@account_profile_router.get("/onboarding-status", response_model=OnboardingStatusResponse)
+@account_profile_router.get(
+    "/onboarding-status", response_model=OnboardingStatusResponse
+)
 def get_onboarding_status(
     authorization: Optional[str] = Header(default=None),
     db: DbSession = Depends(get_db),
@@ -168,7 +181,12 @@ def get_onboarding_status(
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"error": {"code": "auth.no_credential", "message": "No credential provided"}},
+            detail={
+                "error": {
+                    "code": "auth.no_credential",
+                    "message": "No credential provided",
+                }
+            },
         )
 
     try:
@@ -182,7 +200,9 @@ def get_onboarding_status(
     if not claims.auth_user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"error": {"code": "auth.subject_missing", "message": "Subject missing"}},
+            detail={
+                "error": {"code": "auth.subject_missing", "message": "Subject missing"}
+            },
         )
 
     # Get account
@@ -196,7 +216,9 @@ def get_onboarding_status(
     if not account:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": {"code": "account.not_found", "message": "Account not found"}},
+            detail={
+                "error": {"code": "account.not_found", "message": "Account not found"}
+            },
         )
 
     # Determine onboarding status

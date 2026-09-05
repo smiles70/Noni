@@ -10,16 +10,14 @@ import hashlib
 import secrets
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_current_account, get_db, require_staff
-from backend.core.config import settings
 from backend.models.accounts import Account
-from backend.models.billing import Product, Purchase, Entitlement
+from backend.models.billing import Product, Purchase
 from backend.models.organizations import AccessCode, Organization, OrgLicense
 from backend.services import entitlements
 
@@ -162,9 +160,7 @@ def generate_codes(
     db: DbSession = Depends(get_db),
     staff: Account = Depends(require_staff),
 ) -> dict:
-    license_ = (
-        db.query(OrgLicense).filter(OrgLicense.id == license_id).one_or_none()
-    )
+    license_ = db.query(OrgLicense).filter(OrgLicense.id == license_id).one_or_none()
     if license_ is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -172,9 +168,7 @@ def generate_codes(
         )
 
     existing_count = (
-        db.query(AccessCode)
-        .filter(AccessCode.license_id == license_id)
-        .count()
+        db.query(AccessCode).filter(AccessCode.license_id == license_id).count()
     )
     if existing_count + body.count > license_.total_seats:
         raise HTTPException(
@@ -202,9 +196,7 @@ def org_usage(
     db: DbSession = Depends(get_db),
     staff: Account = Depends(require_staff),
 ) -> dict:
-    licenses = db.query(OrgLicense).filter(
-        OrgLicense.organization_id == org_id
-    ).all()
+    licenses = db.query(OrgLicense).filter(OrgLicense.organization_id == org_id).all()
     if not licenses:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -246,9 +238,7 @@ def redeem_code(
 ) -> dict:
     code_hash = _hash_code(body.code)
     access = (
-        db.query(AccessCode)
-        .filter(AccessCode.code_hash == code_hash)
-        .one_or_none()
+        db.query(AccessCode).filter(AccessCode.code_hash == code_hash).one_or_none()
     )
     if access is None:
         raise HTTPException(

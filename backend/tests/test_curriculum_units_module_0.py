@@ -61,7 +61,9 @@ class TestModule0Data:
         for u in UNITS_MODULE_0:
             for p in u.pages:
                 if p.page_type == "retrieval":
-                    assert p.retrieval is not None, f"{u.id}/{p.id} missing RetrievalBlock"
+                    assert (
+                        p.retrieval is not None
+                    ), f"{u.id}/{p.id} missing RetrievalBlock"
                     choice_ids = {c.id for c in p.retrieval.choices}
                     assert (
                         p.retrieval.correct_id in choice_ids
@@ -75,9 +77,9 @@ class TestModule0Data:
 
     def test_subsequent_units_open_with_recap(self):
         for u in UNITS_MODULE_0[1:]:
-            assert u.pages[0].page_type == "recap", (
-                f"{u.id} should open with a recap page"
-            )
+            assert (
+                u.pages[0].page_type == "recap"
+            ), f"{u.id} should open with a recap page"
 
     def test_get_module_0_unit_helper(self):
         assert get_module_0_unit("module0-unit-1").title == (

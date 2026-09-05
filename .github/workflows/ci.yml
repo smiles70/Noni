@@ -55,7 +55,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install
         run: npm ci
         working-directory: frontend
@@ -141,7 +141,7 @@ jobs:
         with:
           node-version-file: "frontend/.nvmrc"
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install frontend deps
         run: npm ci
         working-directory: frontend
@@ -201,7 +201,7 @@ jobs:
         with:
           node-version-file: "frontend/.nvmrc"
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install Python security tools
         run: |
           python -m pip install --upgrade pip
@@ -255,7 +255,7 @@ jobs:
       - name: Build backend image for scan
         run: docker build -t noni-api:scan -f Dockerfile .
       - name: Trivy backend image scan
-        uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@v0.30.0
         with:
           image-ref: noni-api:scan
           severity: CRITICAL,HIGH
@@ -264,7 +264,7 @@ jobs:
       - name: Build frontend image for scan
         run: docker build -t noni-frontend:scan -f frontend/Dockerfile frontend
       - name: Trivy frontend image scan
-        uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@v0.30.0
         with:
           image-ref: noni-frontend:scan
           severity: CRITICAL,HIGH

@@ -10,11 +10,8 @@ Replaces v2's remaining weak tests with actual assertions.
 
 from __future__ import annotations
 
-import ast
 import json
-import os
 import re
-import uuid
 from pathlib import Path
 
 import pytest
@@ -71,13 +68,17 @@ def test_single_region_has_redundancy():
     text = fly_path.read_text(encoding="utf-8")
 
     # Count declared primary regions
-    region_matches = re.findall(r'^\s*primary_region\s*=\s*"([^"]+)"', text, re.MULTILINE)
+    region_matches = re.findall(
+        r'^\s*primary_region\s*=\s*"([^"]+)"', text, re.MULTILINE
+    )
     if len(region_matches) == 0:
         pytest.fail("No primary_region declared in fly.toml")
 
     if len(region_matches) == 1:
         # Single region — enforce redundancy
-        min_machines = re.search(r'^\s*min_machines_running\s*=\s*(\d+)', text, re.MULTILINE)
+        min_machines = re.search(
+            r"^\s*min_machines_running\s*=\s*(\d+)", text, re.MULTILINE
+        )
         if not min_machines:
             pytest.fail(
                 "Single-region deployment but no min_machines_running declared. "
@@ -279,7 +280,9 @@ def test_mock_verifier_constants_parity():
     auth_provider_path = Path("backend/services/auth_provider.py")
     auth_verifier_path = Path("backend/services/auth_verifier.py")
 
-    if not all(p.exists() for p in (mock_parser_path, auth_provider_path, auth_verifier_path)):
+    if not all(
+        p.exists() for p in (mock_parser_path, auth_provider_path, auth_verifier_path)
+    ):
         pytest.skip("Required files not present")
 
     mock_parser_text = mock_parser_path.read_text(encoding="utf-8")
@@ -292,30 +295,28 @@ def test_mock_verifier_constants_parity():
         mock_parser_text,
     )
     assert mp_uuid_match, "MOCK_NAMESPACE not found in mock_parser.py"
-    expected_uuid = mp_uuid_match.group(1)
 
     mp_prefix_match = re.search(
         r'MOCK_PREFIX\s*=\s*"([^"]+)"',
         mock_parser_text,
     )
     assert mp_prefix_match, "MOCK_PREFIX not found in mock_parser.py"
-    expected_prefix = mp_prefix_match.group(1)
 
     # Both consumers must import from the shared module
-    assert "from backend.services.mock_parser import" in auth_provider_text, (
-        "auth_provider.py must import mock constants from mock_parser.py"
-    )
-    assert "from backend.services.mock_parser import" in auth_verifier_text, (
-        "auth_verifier.py must import mock constants from mock_parser.py"
-    )
+    assert (
+        "from backend.services.mock_parser import" in auth_provider_text
+    ), "auth_provider.py must import mock constants from mock_parser.py"
+    assert (
+        "from backend.services.mock_parser import" in auth_verifier_text
+    ), "auth_verifier.py must import mock constants from mock_parser.py"
 
     # Optional: verify legacy inline constants were removed
-    assert "uuid.UUID(\"00000000-0000-0000-0000-000000000001\")" not in auth_provider_text, (
-        "auth_provider.py should not duplicate the mock namespace UUID"
-    )
-    assert "uuid.UUID(\"00000000-0000-0000-0000-000000000001\")" not in auth_verifier_text, (
-        "auth_verifier.py should not duplicate the mock namespace UUID"
-    )
+    assert (
+        'uuid.UUID("00000000-0000-0000-0000-000000000001")' not in auth_provider_text
+    ), "auth_provider.py should not duplicate the mock namespace UUID"
+    assert (
+        'uuid.UUID("00000000-0000-0000-0000-000000000001")' not in auth_verifier_text
+    ), "auth_verifier.py should not duplicate the mock namespace UUID"
 
 
 # =============================================================================
@@ -338,18 +339,18 @@ def test_metrics_endpoint_returns_valid_format():
     client = TestClient(app)
     res = client.get("/metrics")
 
-    assert res.status_code == 200, (
-        f"/metrics returned {res.status_code}. Must be 200 for Prometheus scrape."
-    )
+    assert (
+        res.status_code == 200
+    ), f"/metrics returned {res.status_code}. Must be 200 for Prometheus scrape."
     content_type = res.headers.get("content-type", "")
     assert "text/plain" in content_type or "application/openmetrics" in content_type, (
         f"/metrics content-type is '{content_type}'. "
         f"Expected text/plain or application/openmetrics for Prometheus."
     )
     body = res.text
-    assert "# HELP" in body or "# TYPE" in body or "_" in body, (
-        "/metrics body does not appear to be valid Prometheus exposition format."
-    )
+    assert (
+        "# HELP" in body or "# TYPE" in body or "_" in body
+    ), "/metrics body does not appear to be valid Prometheus exposition format."
 
 
 # =============================================================================
@@ -567,12 +568,12 @@ def test_g2_cascade_failure_regression():
         "Either the formatter silently failed or the handler swallowed it."
     )
     record = json.loads(raw)
-    assert record.get("level") == "INFO", (
-        f"rename_fields did not rename 'levelname' → 'level': {record}"
-    )
-    assert "timestamp" in record, (
-        f"rename_fields did not rename 'asctime' → 'timestamp': {record}"
-    )
+    assert (
+        record.get("level") == "INFO"
+    ), f"rename_fields did not rename 'levelname' → 'level': {record}"
+    assert (
+        "timestamp" in record
+    ), f"rename_fields did not rename 'asctime' → 'timestamp': {record}"
 
     # --- Component 2: PyJWKClient with production parameter ---
     # PyJWKClient.__init__ does NOT fetch JWKS; it only stores the URL.

@@ -16,7 +16,12 @@ import uuid
 from typing import Optional
 
 from magic_admin import Magic
-from magic_admin.error import DIDTokenExpired, DIDTokenInvalid, DIDTokenMalformed, MagicError
+from magic_admin.error import (
+    DIDTokenExpired,
+    DIDTokenInvalid,
+    DIDTokenMalformed,
+    MagicError,
+)
 
 from backend.core.config import settings
 

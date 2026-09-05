@@ -10,9 +10,7 @@ user journey analytics.
 from __future__ import annotations
 
 import logging
-import os
 from typing import Optional
-from fastapi import Header
 
 from backend.core.config import settings
 
@@ -24,7 +22,9 @@ class BetterStackOnboardingClient:
 
     def __init__(self):
         self.api_key = getattr(settings, "BETTERSTACK_API_KEY", None)
-        self.source_name = getattr(settings, "BETTERSTACK_ONBOARDING_SOURCE_NAME", "noni-onboarding")
+        self.source_name = getattr(
+            settings, "BETTERSTACK_ONBOARDING_SOURCE_NAME", "noni-onboarding"
+        )
         self.enabled = bool(self.api_key)
 
     def send_event(self, event_data: dict) -> bool:

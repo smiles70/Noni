@@ -59,7 +59,9 @@ def track_onboarding_event(
     if not event_data.event:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"error": {"code": "invalid_event", "message": "Event name is required"}},
+            detail={
+                "error": {"code": "invalid_event", "message": "Event name is required"}
+            },
         )
 
     # Record the event using the telemetry system

@@ -81,7 +81,9 @@ def test_session_without_header_returns_401(client):
 
 def test_session_with_malformed_header_returns_401(client):
     # Wrong scheme.
-    r1 = client.get("/api/v1/auth/session", headers={"Authorization": "Basic mock:x@y.z"})
+    r1 = client.get(
+        "/api/v1/auth/session", headers={"Authorization": "Basic mock:x@y.z"}
+    )
     assert r1.status_code == 401
     # Bearer but no token.
     r2 = client.get("/api/v1/auth/session", headers={"Authorization": "Bearer "})
@@ -92,7 +94,9 @@ def test_session_with_malformed_header_returns_401(client):
 
 
 def test_session_with_invalid_credential_returns_401(client):
-    r = client.get("/api/v1/auth/session", headers={"Authorization": "Bearer not-a-mock-token"})
+    r = client.get(
+        "/api/v1/auth/session", headers={"Authorization": "Bearer not-a-mock-token"}
+    )
     assert r.status_code == 401
     assert r.json()["error"]["code"] == "auth.malformed"
 

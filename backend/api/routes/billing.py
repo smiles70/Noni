@@ -261,7 +261,9 @@ def mock_checkout_complete(
         "metadata": {
             "purchase_id": str(purchase.id),
             "product_code": purchase.product_code,
-            "is_gift": "true" if purchase.gift_claim_token_hash is not None else "false",
+            "is_gift": (
+                "true" if purchase.gift_claim_token_hash is not None else "false"
+            ),
         },
     }
     event = WebhookEvent(
