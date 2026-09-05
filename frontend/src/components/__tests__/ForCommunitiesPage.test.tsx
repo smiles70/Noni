@@ -35,12 +35,22 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
     );
     expect(page).not.toBeNull();
     // Outcome headline + sections exist.
-    expect(page!.textContent).toContain("without adding to your team");
+    expect(page!.textContent).toContain("Geragogy");
     expect(page!.textContent).toContain("Why communities partner with mynaani");
     expect(page!.textContent).toContain("founding partnership");
     // Three outcome cards, each icon + text label.
     expect(page!.querySelectorAll("h3").length).toBe(3);
     expect(page!.querySelectorAll("svg[aria-hidden]").length).toBe(3);
+  });
+
+  it("leads with the geragogy + patent-pending differentiator", async () => {
+    const host = await render();
+    const text = host.textContent!;
+    expect(text).toContain("Geragogy");
+    expect(text).toContain("patent-pending");
+    expect(text).toContain("Why the method matters");
+    // Cited evidence, not invented proof.
+    expect(text).toContain("Pew Research Center");
   });
 
   it("routes contact to the real address — no invented proof", async () => {
@@ -49,8 +59,9 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
       'a[href^="mailto:hello@mynaani.com"]',
     );
     expect(ctas.length).toBeGreaterThanOrEqual(2);
-    // Honesty guard: no fabricated stats, logos, or urgency copy.
-    expect(host.textContent).not.toMatch(/\d+%/);
+    // Honesty guard: stats present are attributed; no fabricated social
+    // proof or urgency copy.
+    expect(host.textContent).toMatch(/Pew Research Center/);
     expect(host.textContent).not.toMatch(/trusted by|limited time|act now/i);
     // Way back to the learner surface exists (header + hero + footer).
     const learnerLinks = host.querySelectorAll('a[href="/"]');

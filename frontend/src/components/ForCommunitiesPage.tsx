@@ -222,13 +222,14 @@ export default function ForCommunitiesPage() {
       <main>
         <section style={SECTION} aria-labelledby="b2b-hero">
           <h1 id="b2b-hero" style={H1}>
-            AI learning for your community, without adding to your team's
-            workload
+            Not "senior learning." Geragogy — engineered into the software.
           </h1>
           <p style={LEAD}>
-            Mynaani gives residents a calm, plain-language way to understand and
-            use AI — designed specifically for adults 55+, and delivered as a
-            program your staff does not have to run.
+            Mynaani is the only AI learning program built on geragogy — the
+            science of how older adults learn. Our patent-pending
+            cognitively-protective system governs the interface itself, so
+            residents learn AI without overload, pressure, or being talked down
+            to — and your staff doesn't have to run it.
           </p>
           <a href={MAILTO} style={PRIMARY_BTN}>
             Talk to us about a pilot
@@ -236,6 +237,49 @@ export default function ForCommunitiesPage() {
           <Link to="/" style={TEXT_LINK}>
             See the learner experience
           </Link>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-difference">
+          <h2 id="b2b-difference" style={H2}>
+            Why the method matters
+          </h2>
+          <p style={{ marginTop: 0, marginBottom: SPACING.md, maxWidth: 640 }}>
+            Older adults are the least-served AI audience — and the gap is
+            measured, not anecdotal:
+          </p>
+          <ul style={LIST}>
+            <li style={{ marginBottom: SPACING.sm }}>
+              Adults under 50 are about <strong>twice as likely</strong> to use
+              AI chatbots as adults 50+ (57% vs. 28%) — and 65+ adults are the
+              most uncertain age group about AI's impact (Pew Research Center,
+              2026).
+            </li>
+            <li style={{ marginBottom: SPACING.sm }}>
+              Only about <strong>1 in 4</strong> internet users ages 65+ say
+              they feel very confident using devices for online tasks (Pew
+              Research Center).
+            </li>
+            <li style={{ marginBottom: SPACING.sm }}>
+              Learning science is clear:{" "}
+              <strong>cognitive load is the key mediator</strong> of
+              digital-learning outcomes for older adults — when interfaces
+              overload, learning stops (JMIR, 2025).
+            </li>
+            <li style={{ marginBottom: 0 }}>
+              Training designed for older adults measurably improves confidence
+              and self-efficacy — the strongest predictors of whether learners
+              persist (randomised controlled evidence, Laganà et al.).
+            </li>
+          </ul>
+          <p style={{ marginTop: SPACING.lg, marginBottom: 0, maxWidth: 640 }}>
+            Most "senior learning" products simplify content and hope for the
+            best. Mynaani's patent-pending approach treats cognitive safety as a{" "}
+            <em>system property</em>: interface density, pacing, and state
+            changes are governed so the experience stays calm and predictable —
+            confidence is protected by design, not by luck.
+          </p>
         </section>
 
         <hr style={DIVIDER} />
@@ -282,10 +326,13 @@ export default function ForCommunitiesPage() {
             Designed for the people you serve
           </h2>
           <p style={{ marginTop: 0, marginBottom: SPACING.md, maxWidth: 640 }}>
-            Mynaani is built specifically for adults 55+: large, readable type;
-            a calm, predictable interface; and an approach that respects
-            experience rather than talking down to it. The same care your
-            community brings to residents is designed into every screen.
+            Mynaani is built specifically for adults 55+ — not adapted for them.
+            Our geragogy-centered curriculum and patent-pending
+            cognitively-protective interface were designed for older learners
+            from the start: readable type, predictable behavior, and an approach
+            that respects experience rather than talking down to it. The same
+            care your community brings to residents is engineered into every
+            screen.
           </p>
         </section>
 

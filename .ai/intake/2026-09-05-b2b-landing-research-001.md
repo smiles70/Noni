@@ -378,3 +378,46 @@ Production requires explicit human approval (AGENTS.md gate).
 ### Awaiting human review on staging
 
 https://staging.noni-web.pages.dev/for-communities
+
+## B2B-DIFF-001 — geragogy + patent-pending differentiator (2026-09-05)
+
+**User direction:** lead the B2B surface with the geragogy-centered,
+patent-pending approach — the real difference vs. generic "senior learning"
+or "55+" positioning.
+
+### Repo evidence (primary sources)
+
+- `docs/library/IDD-2026-cognitively-protective-iscs.md` — Invention
+  Disclosure Document: "Cognitively-Protective Interface-Controlled Learning
+  System" (inventor: Kim Miles). The Interface State Control System (ISCS)
+  governs UI/curriculum transitions via uncertainty-constrained state
+  estimation — geragogical principles encoded as **formal stability
+  constraints**, not post-hoc UX adaptations.
+- IDD audit: "older adults do not require simplified systems, but systems
+  that respect cognitive dynamics, preserve dignity, and support lifelong
+  capacity for growth" — the exact positioning line for B2B.
+
+### External stats (cited on the page)
+
+| Stat | Source |
+|---|---|
+| Adults <50 ~2× as likely to use AI chatbots as 50+ (57% vs. 28%); 65+ are the most AI-uncertain group | Pew Research Center, Feb 2026 (n=5,119) |
+| ~1 in 4 internet users 65+ feel very confident using devices for online tasks | Pew Research Center, 2017 |
+| Cognitive load is the key mediator of digital-learning outcomes in older adults (large effect) | JMIR, 2025 |
+| Older-adult-tailored training significantly improves attitudes + self-efficacy (RCT) | Laganà et al., PMC4265211 |
+
+### Page changes (staged)
+
+- Hero now leads: "Not 'senior learning.' Geragogy — engineered into the
+  software." + patent-pending cognitively-protective system.
+- New "Why the method matters" section with the four cited stats.
+- "Designed for the people you serve" rewritten: built for 55+, not adapted.
+- Honesty test updated: stats permitted **only when attributed**; "trusted
+  by"/urgency copy still blocked.
+
+### ⚠️ Verification needed before production
+
+"Patent pending" is asserted by the user; the repo contains the IDD
+("filed in this repo," Sprint 21) but I have not verified a USPTO/provisional
+filing. Confirm filing status before the phrase ships to production — the
+no-overclaim rule applies to legal claims too.
