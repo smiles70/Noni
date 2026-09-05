@@ -579,3 +579,19 @@ the *problem*; this one sells the *method*.
 - Rubric: Draft 1 ~96/100 (unsourced disciplinary distinction); Draft 2
   ~10/10 after sourcing §2 and reaching 16 references.
 - "Patent pending" caveat from B2B-WHITEPAPER-001 still applies.
+
+## B2B-WHITEPAPER-004 — PDF design pass (2026-09-05)
+
+User challenge: the first PDFs were content-correct but designed by
+intuition. Design research (Uplift Content, madegooddesigns, helion360,
+Verdigris design-system docs) then drove a real spec:
+
+- Dedicated cover page: brand rule, uppercase tag, display title (34pt),
+  subtitle, byline — cover does one job.
+- US Letter, 1in margins, ~62ch measure, 11.5pt/1.5 serif body (Georgia)
+  for long-form research feel + brand sans headings — "persuasion dressed
+  as research."
+- Running footer: `mynaani — <title>` + `N / total` page numbers.
+- Regenerated: the-ai-gap.pdf (10pp), geragogy-the-key-to-learning.pdf
+  (8pp). Generator: scripts/build-whitepapers.mjs (Playwright, local only).
+- Verified visually via pdftoppm render of cover + interior pages.
