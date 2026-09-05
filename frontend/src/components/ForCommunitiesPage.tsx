@@ -109,6 +109,17 @@ const PRIMARY_BTN: CSSProperties = {
   textDecoration: "none",
 };
 
+const SECONDARY_BTN: CSSProperties = {
+  display: "inline-block",
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.sm}px ${SPACING.lg}px`,
+  backgroundColor: COLORS.accentDesatGreen,
+  color: COLORS.surface,
+  borderRadius: RADIUS.lg,
+  fontWeight: 600,
+  textDecoration: "none",
+};
+
 const TEXT_LINK: CSSProperties = {
   color: COLORS.accentMutedBlue,
   fontSize: TYPOGRAPHY.bodySizePx,
@@ -445,7 +456,7 @@ export default function ForCommunitiesPage() {
                 href="/whitepapers/the-ai-gap.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: COLORS.accentMutedBlue, fontWeight: 600 }}
+                style={SECONDARY_BTN}
               >
                 Download the PDF
               </a>
@@ -462,7 +473,7 @@ export default function ForCommunitiesPage() {
                 href="/whitepapers/geragogy-the-key-to-learning.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: COLORS.accentMutedBlue, fontWeight: 600 }}
+                style={SECONDARY_BTN}
               >
                 Download the PDF
               </a>
