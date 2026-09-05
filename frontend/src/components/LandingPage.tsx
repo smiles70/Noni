@@ -85,24 +85,41 @@ const ACTION_STACK: CSSProperties = {
   gap: SPACING.md,
 };
 
-// Brand mark — top-left of the hero. Stacked ~1:1 lockup, so height is fixed
-// and width derives from the asset (921×957). Sizes honour the 8px grid:
-// 112px desktop (14×8) / 88px mobile (11×8). Non-interactive: this page is
-// already home, and adding a link would add an actionable element for no gain.
-const LOGO: CSSProperties = {
+// Brand plate — top-left of the hero. The muted mark needs separation from
+// the photo's dark region to remain legible for presbyopic users and to read
+// as an identity/legitimacy signal (BRAND-LOGO-002 findings F1–F3). The plate
+// reuses the action card's surface family (COLORS.surface at 85% opacity),
+// RADIUS.lg corners, SPACING.sm clear space — no new tokens, no shadow, no
+// motion. Position stays the NN/g-validated top-left landmark.
+const LOGO_PLATE: CSSProperties = {
   position: "absolute",
   top: SPACING.xl,
   left: SPACING.xl,
   zIndex: 1,
-  height: 112,
+  padding: SPACING.sm,
+  backgroundColor: "rgba(250, 250, 248, 0.85)",
+  borderRadius: RADIUS.lg,
+};
+
+const LOGO_PLATE_MOBILE: CSSProperties = {
+  ...LOGO_PLATE,
+  top: SPACING.lg,
+  left: SPACING.lg,
+};
+
+// Stacked ~1:1 lockup, so height is fixed and width derives from the asset
+// (921×957). Sizes honour the 8px grid: 128px desktop (16×8) / 96px mobile
+// (12×8). Non-interactive: this page is already home, and adding a link would
+// add an actionable element for no gain.
+const LOGO_IMG: CSSProperties = {
+  display: "block",
+  height: 128,
   width: "auto",
 };
 
-const LOGO_MOBILE: CSSProperties = {
-  ...LOGO,
-  top: SPACING.lg,
-  left: SPACING.lg,
-  height: 88,
+const LOGO_IMG_MOBILE: CSSProperties = {
+  ...LOGO_IMG,
+  height: 96,
 };
 
 const HELP_BUBBLE: CSSProperties = {
@@ -298,15 +315,21 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             />
           </picture>
 
-          {/* Brand mark — upper-left landmark position */}
-          <img
-            src="/mynaani-logo.webp"
-            alt="mynaani"
-            width={108}
-            height={112}
-            style={isMobile ? LOGO_MOBILE : LOGO}
+          {/* Brand mark on a calm surface plate — upper-left landmark */}
+          <div
+            style={isMobile ? LOGO_PLATE_MOBILE : LOGO_PLATE}
             data-contract-exemption="landing.hero"
-          />
+            data-brand-plate="landing.hero"
+          >
+            <img
+              src="/mynaani-logo.webp"
+              alt="mynaani"
+              width={123}
+              height={128}
+              style={isMobile ? LOGO_IMG_MOBILE : LOGO_IMG}
+              data-contract-exemption="landing.hero"
+            />
+          </div>
 
           {/* Floating action card, right side */}
           <div data-contract-exemption="landing.hero" style={cardPosition}>

@@ -75,13 +75,34 @@ describe("LandingPage — brand logo (BRAND-LOGO-001)", () => {
     const logo = host.querySelector<HTMLImageElement>('img[alt="mynaani"]');
     expect(logo).not.toBeNull();
     expect(logo!.src).toContain("/mynaani-logo.webp");
-    expect(logo!.style.position).toBe("absolute");
-    expect(logo!.style.top).toBe("32px");
-    expect(logo!.style.left).toBe("32px");
     // Non-interactive: not wrapped in a link or button.
     expect(logo!.closest("a")).toBeNull();
     expect(logo!.closest("button")).toBeNull();
     // Marked inside the ADR-0029 contract exemption for audit.
     expect(logo!.dataset.contractExemption).toBe("landing.hero");
+  });
+});
+
+describe("LandingPage — brand plate (BRAND-LOGO-002)", () => {
+  it("sits the logo on a calm surface plate in the upper-left landmark", async () => {
+    const host = await render();
+    const logo = host.querySelector<HTMLImageElement>('img[alt="mynaani"]');
+    expect(logo).not.toBeNull();
+    const plate = logo!.closest<HTMLElement>(
+      '[data-brand-plate="landing.hero"]',
+    );
+    expect(plate).not.toBeNull();
+    // Landmark position preserved (NN/g top-left).
+    expect(plate!.style.position).toBe("absolute");
+    expect(plate!.style.top).toBe("32px");
+    expect(plate!.style.left).toBe("32px");
+    // Surface plate: COLORS.surface (#FAFAF8) at 85% opacity, RADIUS.lg.
+    expect(plate!.style.backgroundColor).toBe("rgba(250, 250, 248, 0.85)");
+    expect(plate!.style.borderRadius).toBe("12px");
+    // Contract audit markers retained on plate and mark.
+    expect(plate!.dataset.contractExemption).toBe("landing.hero");
+    // Plate is non-interactive too.
+    expect(plate!.closest("a")).toBeNull();
+    expect(plate!.closest("button")).toBeNull();
   });
 });
