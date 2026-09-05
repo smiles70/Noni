@@ -272,3 +272,75 @@ Verified by direct inspection of competitor homepages.
    audience-selector section — e.g., a calm "For senior living
    communities" link, or Candoo-style selector cards (Card component is
    authorized).
+
+## B2B-DESIGN-001 — should the geragogy contract govern B2B surfaces?
+
+**Question (user-raised):** the contract exists to protect 55+ *learners* in
+the curriculum. Enterprise/institutional signers are professionals who
+expect a high-quality marketing UI — could strict contract compliance on
+B2B surfaces read as a low-quality vendor and discourage them?
+
+### Contract scope (verified)
+
+`CONTRACT.md` claims authority over *"all UI design, React rendering
+behavior, and AI-assisted UI reasoning within this system"* — broad by
+default. But **ADR-0029 already established the legal mechanism**: a
+controlled, page-scoped exemption (landing hero: 32px headings, 16px
+radius, card shadow) gated by its own ADR + `data-contract-exemption`
+audit markers. The governance model *anticipates* exceptions — they
+require an ADR, not defiance.
+
+### External evidence
+
+- **NN/g, "B2B vs. B2C Websites"**: nearly all standard UX principles apply
+  to both — but B2B adds long-cycle, multi-stakeholder needs: content for
+  decision-makers *and* end users, integration details, representative
+  pricing, vertical-specific language. B2B buyers explicitly "lament the
+  usability gap" vs. the consumer sites they use after hours.
+- **DevriX / Raze enterprise-buyer research**: the website is a *trust
+  system*, not a brochure — buyers shortlist on "credible, deliberate,
+  operationally mature" signals. Design quality is a legitimacy gate.
+- **everything.design, 2026**: surface polish alone no longer persuades;
+  what survives buyer scepticism is *structural* trust — compliance pages,
+  security posture, outcome-anchored proof, stakeholder-specific paths.
+- **Inchoo/industry consensus**: today's B2B buyers bring consumer-app
+  expectations to work; a dated or threadbare UI loses the vendor before
+  the sales call.
+- **Competitor check**: Candoo, GetSetUp, and Papa all run *richer*
+  marketing sites (hero photography, stat blocks, logo walls, multi-column
+  footers, audience selectors) than the deliberately simple product
+  surfaces their end users see. The two-surface split is the industry norm.
+
+### Assessment — the user's hypothesis is largely correct, with one reframe
+
+- **Correct:** the contract's protections (low arousal, ≤5 actions, ≤3
+  text levels, closed palette, no dropdowns) exist for the *learner*, not
+  the buyer. Applying them verbatim to a B2B marketing surface would
+  produce a page that reads as an immature vendor — the wrong kind of
+  "plain."
+- **Reframe:** "high quality" ≠ "high arousal." The geragogy prohibitions
+  target *cognitive overload for older learners* — not visual quality per
+  se. A B2B page can be rich (real photography, logo wall, outcome stats,
+  structured sections, richer type scale, marketing nav + footer) while
+  still calm. The brand promise IS calm credibility; a hype-y B2B page
+  would contradict the product.
+- **Non-negotiables that should NOT be relaxed** on B2B surfaces:
+  WCAG 2.2 AA (procurement checklists include accessibility; facility
+  staff include older workers), no dark patterns / fake urgency (brand
+  integrity), truthful claims (no invented stats — no-overclaim rule),
+  and `prefers-reduced-motion` respect.
+
+### Recommended mechanism (not yet approved)
+
+A scoped **Marketing Surfaces Annex** via a new ADR (ADR-0030, following
+the ADR-0029 precedent):
+
+| Layer | Scope | Ruleset |
+|---|---|---|
+| Product surfaces | Curriculum, learner UI, account, lessons | Full `CONTRACT.md` — unchanged |
+| Marketing surfaces | Landing page, `/for-communities`, future public pages | Annex: richer type scale, photography, logo/stat blocks, standard nav/footer, audience selectors, moderate component freedom — still calm palette-adjacent, WCAG AA, no urgency patterns |
+| Audit | `data-contract-exemption="marketing.*"` markers | Same audit-marker pattern as ADR-0029 |
+
+This formalizes what the user articulated: **the contract protects
+learners; marketing earns buyers** — one brand voice, two rulesets, each
+explicit.
