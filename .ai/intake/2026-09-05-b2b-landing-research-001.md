@@ -843,3 +843,44 @@ frame: what's included, how it's priced (per-resident vs. flat), and the
 conversation CTA — but specific figures must come from the user; the
 no-invented-numbers rule applies. Recommend user set: pilot price or
 "founding-rate" structure before publish.
+
+### B2B-PRICING-001 — CORRECTION: competitive set re-verified (user challenge)
+
+**User was right.** CareAcademy is caregiver/staff compliance training
+(CMS audits, state-mandated HHA, back-office integrations) — workforce
+EdTech selling to agencies, NOT resident-facing learning. Struck as a
+comparable; its published pricing is evidence about a different category.
+
+### The corrected comp set (resident/older-adult-facing learning sold to
+### institutions)
+
+| Org | Model | Pricing posture |
+|---|---|---|
+| **GetSetUp** — the real benchmark | B2B2C: sells to Medicare Advantage plans, state govts, senior living; 80% government + 20% healthcare revenue (Stanford GSB case); 4M users, 32 state partnerships | Not published — institutional contracts |
+| **OATS / Senior Planet (AARP)** | Nonprofit: free classes to learners; licensing program to 400+ partner sites | Grant/sponsor-funded, licensed |
+| **Candoo** | Consumer + enterprise tech support/training | Not published |
+| **Cyber-Seniors** | Nonprofit volunteer model | Free |
+| **Papa** | Companionship via health plans | Plan contracts |
+
+### Revised conclusion
+
+In our actual space, **nobody publishes institutional pricing** — payers
+are plans, governments, and communities whose deals are genuinely
+custom (GetSetUp's model is annual-budget-cycle institutional sales).
+
+That changes the recommendation's shape, not its direction:
+
+1. **Structure over figures:** publish the *how* — "pilot priced per
+   community, founding-partner terms, no implementation fee" — because
+   Gartner's 72%-expect-visibility applies even when numbers stay
+   custom. A pricing page that explains the model + procurement path
+   serves the Raze fourfold (tier clarity, logic, trust, routing)
+   without a published rate card.
+2. **Transparency as differentiator (optional):** since no resident-
+   learning competitor publishes, *choosing* to publish a founding-pilot
+   figure would be a genuine differentiator consistent with the brand's
+   honesty posture — still a user business decision, now made with the
+   right comp set.
+3. **Senior-living operators** (our primary target) are mid-market, not
+   RFP-formal — they're the segment most helped by a visible anchor.
+   Health plans (secondary) will always be custom regardless.
