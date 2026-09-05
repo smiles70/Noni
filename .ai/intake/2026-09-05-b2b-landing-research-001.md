@@ -421,3 +421,24 @@ or "55+" positioning.
 ("filed in this repo," Sprint 21) but I have not verified a USPTO/provisional
 filing. Confirm filing status before the phrase ships to production — the
 no-overclaim rule applies to legal claims too.
+
+### Copy revision 2 — positive lead + defined term (staged, 2026-09-05)
+
+User feedback: opening with "Not 'senior learning'" buried the lead — a
+negative frame is a weak position. Revised to lead positively and define
+the differentiator.
+
+- Hero: "AI learning grounded in geragogy — the science of how older
+  adults learn." Geragogy is defined in the first paragraph.
+- "What geragogy is — and why it changes outcomes": four evidence blocks
+  citing **W3C/WAI + Owsley (UAB School of Medicine)** (~80% contrast-
+  sensitivity loss by 80 — clutter doesn't just look busy, it disappears),
+  **Hasher & Zacks, U. Toronto** (aging weakens inhibition of irrelevant
+  visual information — decoration competes with content), **NN/g** (65+
+  ~43% slower; 55% vs 75% task success), **Pew 2026** (57% vs 28% AI
+  chatbot adoption gap), **JMIR 2025** (cognitive load mediates outcomes),
+  **Laganà et al. RCT** (self-efficacy gains predict persistence).
+- "How geragogy shapes every layer of mynaani": curriculum (worked
+  examples, plain language, no tests) → visuals (readable type, contrast,
+  density caps — clutter is lost learning, not style) → the patent-pending
+  interface system (stable, predictable state changes).
