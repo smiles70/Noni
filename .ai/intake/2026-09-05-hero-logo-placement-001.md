@@ -138,3 +138,29 @@ landing page (`frontend/src/components/LandingPage.tsx`).
 - Added `LandingPage.brand.test.tsx` — asserts top-left absolute position,
   non-interactivity, alt text, exemption marker ✅
 - Re-checked 12-point geragogy list post-staging: unchanged, all pass.
+
+## 5-point PR scoring rubric (PR-SCORE-001)
+
+A PR for this work must score 5/5 to merge. One point per criterion:
+
+1. **Evidence grounding** — placement/size/orientation decisions cite
+   verifiable external research (NN/g, published size guidance), not taste.
+2. **Contract compliance** — geragogy 12-point self-check passes; any
+   non-inventory element carries `data-contract-exemption` + ADR reference.
+3. **Verification completeness** — QA green twice, UAT checklist twice,
+   live staging proof of the asset.
+4. **Test coverage** — automated test guards the placement (position,
+   interactivity, alt text, exemption marker).
+5. **Honesty / no overclaim** — deviations and discovered defects disclosed
+   (RGB-source fix, asset weight, pre-existing hook bugs), no marketing
+   language in artifacts.
+
+### Score: 5/5
+
+| # | Criterion | Evidence |
+|---|---|---|
+| 1 | Evidence grounding | NN/g Whitenton 2016 (89% recall delta, 6× nav), Shopify/logo-diffusion size guidance — cited in intake §research |
+| 2 | Contract compliance | 12-point self-check recorded; exemption marker present; tokens only |
+| 3 | Verification | QA×2 (tsc/lint/121 tests/build), UAT×2, staging deploy run 33987157059 success + asset HTTP 200 |
+| 4 | Test coverage | `LandingPage.brand.test.tsx` |
+| 5 | Honesty | RGB→RGBA fix disclosed; 784KB→126KB optimization disclosed; hook defects disclosed in commit + intake |
