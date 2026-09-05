@@ -24,8 +24,8 @@
   },
   "lint-staged": {
     "frontend/**/*.{ts,tsx}": [
-      "cd frontend && npx prettier --write",
-      "cd frontend && npx eslint --max-warnings 0"
+      "prettier --write",
+      "eslint --max-warnings 0 --config frontend/eslint.config.js"
     ]
   }
 }

@@ -85,6 +85,26 @@ const ACTION_STACK: CSSProperties = {
   gap: SPACING.md,
 };
 
+// Brand mark — top-left of the hero. Stacked ~1:1 lockup, so height is fixed
+// and width derives from the asset (921×957). Sizes honour the 8px grid:
+// 112px desktop (14×8) / 88px mobile (11×8). Non-interactive: this page is
+// already home, and adding a link would add an actionable element for no gain.
+const LOGO: CSSProperties = {
+  position: "absolute",
+  top: SPACING.xl,
+  left: SPACING.xl,
+  zIndex: 1,
+  height: 112,
+  width: "auto",
+};
+
+const LOGO_MOBILE: CSSProperties = {
+  ...LOGO,
+  top: SPACING.lg,
+  left: SPACING.lg,
+  height: 88,
+};
+
 const HELP_BUBBLE: CSSProperties = {
   position: "fixed",
   right: SPACING.xl,
@@ -278,11 +298,18 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             />
           </picture>
 
-          {/* Floating action card, right side */}
-          <div
+          {/* Brand mark — upper-left landmark position */}
+          <img
+            src="/mynaani-logo.webp"
+            alt="mynaani"
+            width={108}
+            height={112}
+            style={isMobile ? LOGO_MOBILE : LOGO}
             data-contract-exemption="landing.hero"
-            style={cardPosition}
-          >
+          />
+
+          {/* Floating action card, right side */}
+          <div data-contract-exemption="landing.hero" style={cardPosition}>
             <div style={cardStyle}>
               <h1 id="hero-heading" style={h1Style}>
                 {content.hero.headline}
