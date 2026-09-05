@@ -595,3 +595,65 @@ Verdigris design-system docs) then drove a real spec:
 - Regenerated: the-ai-gap.pdf (10pp), geragogy-the-key-to-learning.pdf
   (8pp). Generator: scripts/build-whitepapers.mjs (Playwright, local only).
 - Verified visually via pdftoppm render of cover + interior pages.
+
+## B2B-CHANNEL-001 — blog and/or newsletter for the B2B channel? (2026-09-05)
+
+**Question (user):** is a blog or newsletter valuable for B2B in 2026;
+what do best-in-class SaaS do; who are the verifiable experts?
+
+### The verdict: yes — but it's a *system*, not a channel choice
+
+**"Blog vs newsletter" is a false choice** — published consensus is
+sequencing: the blog earns discovery (search, AI citations, backlinks);
+the newsletter converts discovery into an *owned* audience. Email
+subscribers survive algorithm changes; blog traffic doesn't.
+
+### Evidence
+
+- **Owned audience economics:** email drives ~40x more conversions per
+  unit of reach than social for B2B professional services (SparkToro);
+  ~73–77% of B2B buyers prefer email for vendor communication; agencies
+  with 5k+ subscriber lists report ~3.2x inbound lead volume vs. none.
+- **Blog still feeds the top:** 92% of B2B marketers use short articles
+  (CMI 16th annual, n=1,015); content marketing yields ~3x the leads of
+  traditional marketing; blogs are a primary research source for buyers
+  before they talk to sales.
+- **2026 caveats:** Apple MPP makes opens unreliable (measure
+  clicks/replies/pipeline); AI-flooded inboxes raise the quality bar —
+  human voice is the differentiator; "content upgrades" (research
+  downloads) are the highest-ROI list builder — *our whitepapers are
+  exactly this instrument*.
+- **Quality > volume:** median B2B SaaS output is ~11–20 posts/quarter;
+  high performers spread content across the funnel and measure pipeline,
+  not opens (Contentful/Benchmarker, n=321 SaaS teams).
+- **Edelman–LinkedIn:** ~52% of execs spend 1hr+/week on thought
+  leadership; substance builds trust faster than product copy.
+
+### The experts (verifiable, published)
+
+- **Ann Handley** (Chief Content Officer, MarketingProfs; *Everybody
+  Writes*): "Email newsletters should sit at the center of B2B marketing —
+  social is discovery, newsletters create the direct relationship." Write
+  to ONE reader's Tuesday problem; enterprise buyers "research slowly,
+  trust slowly, buy slowly" — a newsletter earns familiarity over months.
+- **Joe Pulizzi / Robert Rose** (Content Marketing Institute): owned
+  media is the asset; relevance + quality is the #1 needle-mover (65%).
+- **Rand Fishkin** (SparkToro): algorithms rent attention; email owns it.
+- **Candoo precedent:** blog + "Subscribe to our Newsletter" in footer +
+  "In the News" — our direct competitor already runs both.
+
+### Recommendation (research only — not yet approved)
+
+Right-size it for a pre-launch company:
+
+1. **Start the email capture now** — a calm "Get research updates" field
+   on `/for-communities` (or deferred to a provider: Beehiiv/ConvertKit/
+   Buttondown). The whitepapers are the content-upgrade magnets.
+2. **A lightweight "Insights" surface** rather than a blog schedule —
+   the two research briefs + occasional short evidence notes. An empty
+   or stale blog damages credibility more than no blog (Edelman–LinkedIn:
+   low-quality thought leadership actively harms).
+3. **Cadence honesty:** only promise a newsletter if we can sustain
+   quarterly-at-minimum. Announce "research updates," not a "newsletter."
+4. Needs a real signup destination before shipping — currently unbuilt
+   (no email service configured). mailto fallback is acceptable interim.
