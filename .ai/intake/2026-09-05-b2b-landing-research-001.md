@@ -237,3 +237,38 @@ the hero/landing page is restored to its prior fixed-viewport state
 (merge commit reverted on main). The research findings in this document
 (B2B-LANDING-001 and the scroll-depth analysis) remain valid research
 artifacts; no scroll-depth or B2B implementation is currently live.
+
+## B2B entry-point patterns — how competitors route visitors (2026-09-05)
+
+Verified by direct inspection of competitor homepages.
+
+| Site | Nav-level entry | In-page routing | B2B destination |
+|---|---|---|---|
+| **Candoo Tech** | Top nav carries **both** audiences side-by-side: `About \| Consumers \| Enterprises \| Resources` — plus hero split "Get started: **Consumers \| Enterprises**" | "Who do you need help for?" selector with 3 audience cards: *Myself* / *A Parent or Loved One* / ***Residents, clients & members*** → enterprise page | `/enterprise-services` |
+| **GetSetUp** | Now **B2B-led nav**: `Who We Serve` dropdown (Government, Health Plans, LTSS/HCBS) + `Solutions` + About; B2C reduced to a "Try a class" CTA next to "Request a Demo" | Partner logo wall directly under hero; audience pages under Who-We-Serve | `/who-we-serve/*` |
+| **Papa** | `Get Papa` dropdown with two B2C paths (Pay-as-you-go, Covered benefit) + separate top-level items: **Health Plans**, **Employers**, Be a Papa Pal | Mid-page audience cards: Health Plans / Employers / Papa Pals / Members | `/health-plans`, `/corporate-wellness-programs` |
+| **CareAcademy** | Pure B2B — entire nav is the buyer journey | n/a | whole site |
+| **LifeLoop** | Pure B2B | n/a | whole site |
+
+### Pattern synthesis
+
+1. **Dual-audience sites don't hide B2B** — they surface it at nav level
+   with a distinct label ("Enterprises", "Who We Serve", "Health Plans")
+   AND reinforce it with an in-page audience-selector section
+   ("Who do you need help for?" / audience cards).
+2. **Three routing archetypes observed:**
+   - **Equal-split nav** (Candoo): `Consumers | Enterprises` — best when
+     both motions matter equally.
+   - **B2B-led nav** (GetSetUp): enterprise buyers own the nav; consumer
+     action becomes a secondary CTA.
+   - **Segmented dropdown** (Papa): consumer entry groups under one item;
+     each B2B segment gets its own top-level label.
+3. **The audience-selector card row** is the shared mid-page pattern —
+   visitor self-identifies; each card routes to its surface. For mynaani
+   this fits the contract better than a nav dropdown (dropdowns are a
+   prohibited component without ADR).
+4. **Geragogy note:** a nav *dropdown* is a contract-prohibited component.
+   The compliant equivalent is a **text link** in the hero/card or a small
+   audience-selector section — e.g., a calm "For senior living
+   communities" link, or Candoo-style selector cards (Card component is
+   authorized).
