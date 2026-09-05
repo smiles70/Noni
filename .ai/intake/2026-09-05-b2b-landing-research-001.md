@@ -442,3 +442,71 @@ the differentiator.
   examples, plain language, no tests) → visuals (readable type, contrast,
   density caps — clutter is lost learning, not style) → the patent-pending
   interface system (stable, predictable state changes).
+
+## B2B-WHITEPAPER-001 — is a downloadable research paper the right instrument? (2026-09-05)
+
+**Question (user):** would a downloadable whitepaper on "the AI gap" position
+mynaani as a thought leader? Is the gap real, who is impacted, with what
+results?
+
+### Q1 — Does gated research work for B2B positioning? YES, with caveats
+
+**Edelman–LinkedIn B2B Thought Leadership Impact Report** (7 annual
+editions; ~2,000–3,500 global execs per wave):
+
+- **>40% of B2B deals stall** due to hidden buyers — internal stakeholders
+  who aren't the visible champion but influence the decision. Thought
+  leadership is how you reach them: ~55% use it in vendor evaluation;
+  ~52% of C-level execs spend 1+ hr/week consuming it.
+- Strong content **levels the playing field for lesser-known brands** —
+  hidden buyers advocate for unfamiliar vendors whose thinking impresses
+  them. This is exactly mynaani's position vs. incumbents.
+- Critical caveat: thought leadership = expertise, guidance, a unique POV —
+  **not product description**. A paper that's a sales brochure fails and
+  can actively damage perception ("tangible risks of publishing
+  low-quality content").
+- **Competitor precedent:** Candoo's enterprise page already offers
+  segment downloads — "Senior Living Download Info" and "Health Plan
+  Download Info" PDFs, hero-level. The instrument is standard in this
+  exact market.
+
+**Verdict:** a research-backed brief titled around the AI gap is a strong,
+market-standard instrument — provided it leads with evidence, not product.
+
+### Q2 — Is "the AI gap" real? YES — well-documented, and the consequences
+###       are health-grade, not just convenience
+
+| Finding | Source |
+|---|---|
+| AI chatbot use: 57% of <50s vs. 28% of 50+; 65+ most AI-uncertain group | Pew Research Center, Feb 2026 (n=5,119) |
+| AI use among 50+ **doubled** 9%→18% in one year; non-users remain skeptical | AARP Tech Trends, 2025 |
+| 59% of 50+ say tech "isn't designed with them in mind" (down from 64%) | AARP, 2025 |
+| Confidence collapses for risky tasks: scam-spotting 88%→74%, telehealth 92%→77% (ages 50-64 vs 65+) — *"the adults most likely to be targeted by fraud are least confident in detecting it"* | AARP Digital Literacy Survey, Apr 2026 |
+| 41% of older-adult AI users already ask AI health questions; 62% likely to — but 69% won't share health data with AI tools | AARP, Jun 2026 |
+| Digital exclusion in adults ≥60 is **associated with poorer quality of life and adverse health outcomes** — three levels of the digital divide, a structural inequity | npj Digital Medicine, systematic review (PRISMA, to Mar 2025) |
+| Only ~1 in 4 internet users 65+ feel very confident doing online tasks | Pew, 2017 |
+
+**Who is impacted:** adults 65+ (sharpest at 80+), lower-income and
+lower-education seniors (Pew), residents of senior living communities
+whose access depends on staff mediation, and — per AARP — the fraud
+targets least equipped to detect it.
+
+**With what result:** delayed/missed healthcare (telehealth confidence
+77% at 65+), elevated fraud exposure, exclusion from services moving
+online, and — for communities — staff absorbing tech-support load and
+residents falling further behind an accelerating technology curve.
+
+**Institutional angle worth a section:** Candoo cites **CMS digital
+literacy requirements** for health plans — regulatory pressure makes the
+gap a compliance issue, not just a service one.
+
+### Recommendation (research only — not yet approved)
+
+Produce **"The AI Gap"** — a research brief (not a brochure): synthesize
+the third-party evidence above, name what standard design gets wrong for
+older learners, and close on what a geragogy-engineered response looks
+like. Position honestly as an evidence synthesis (mynaani has no primary
+user data yet — no invented findings). Format: gated/un-gated download is
+a product decision; Edelman–LinkedIn shows the value is the *thinking*,
+not the email capture. Candoo-style segment sheets ("for senior living",
+"for health plans") are the proven distribution form.
