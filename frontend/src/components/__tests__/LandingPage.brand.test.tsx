@@ -12,6 +12,7 @@ import { describe, it, expect, vi } from "vitest";
 import { createElement } from "react";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
+import { MemoryRouter } from "react-router-dom";
 
 vi.mock("../../api/landing", () => ({
   loadLandingPage: vi.fn(async () => ({
@@ -64,7 +65,13 @@ async function render() {
   document.body.appendChild(host);
   const root = createRoot(host);
   await act(async () => {
-    root.render(createElement(LandingPage, { onBegin: () => {} }));
+    root.render(
+      createElement(
+        MemoryRouter,
+        null,
+        createElement(LandingPage, { onBegin: () => {} }),
+      ),
+    );
   });
   return host;
 }
@@ -104,5 +111,21 @@ describe("LandingPage — brand plate (BRAND-LOGO-002)", () => {
     // Plate is non-interactive too.
     expect(plate!.closest("a")).toBeNull();
     expect(plate!.closest("button")).toBeNull();
+  });
+});
+
+describe("LandingPage — B2B pathway entry (B2B-LANDING-001)", () => {
+  it("offers a calm top-right text link to /for-communities", async () => {
+    const host = await render();
+    const link = host.querySelector<HTMLAnchorElement>(
+      'a[href="/for-communities"]',
+    );
+    expect(link).not.toBeNull();
+    expect(link!.textContent).toBe("For senior living communities");
+    expect(link!.style.position).toBe("absolute");
+    expect(link!.style.top).toBe("32px");
+    expect(link!.style.right).toBe("32px");
+    // Audit marker inside the ADR-0029 exempt hero.
+    expect(link!.dataset.contractExemption).toBe("landing.hero");
   });
 });
