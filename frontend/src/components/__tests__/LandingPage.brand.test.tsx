@@ -127,5 +127,7 @@ describe("LandingPage — B2B pathway entry (B2B-LANDING-001)", () => {
     expect(link!.style.right).toBe("32px");
     // Audit marker inside the ADR-0029 exempt hero.
     expect(link!.dataset.contractExemption).toBe("landing.hero");
+    // B2B-ENTRY-001: ghost-button affordance (bordered, still secondary).
+    expect(link!.style.border).toContain("1px solid");
   });
 });

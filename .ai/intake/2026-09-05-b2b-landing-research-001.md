@@ -688,3 +688,70 @@ contact (DGR), research + newsletters are among the most-consumed
 formats (DGR), email is the highest-ROI channel (Litmus $36:$1;
 McKinsey 40×), and sharing inside the buying group is how hidden buyers
 are reached (DGR 71% + Edelman–LinkedIn >40% stall stat).
+
+## B2B-ENTRY-001 — landing entry-point placement: rubric + gap analysis (2026-09-05)
+
+**Question (user):** was the "For senior living communities" placement
+researched? Is it enterprise-grade? Honest answer: the top-right text
+link was a minimal-intrusion choice, NOT research-derived. Research now
+conducted.
+
+### External evidence
+
+- **WebAnatomy (434 SaaS landing pages):** "persona tabs" — audience
+  paths like "For Enterprise" visible from first click — appear in
+  **67% of best-in-class navbars vs. 28% overall**. Audience-labeled
+  entry from the hero is a best-in-class signal.
+- **Brand Vision audit of 50 SaaS sites:** a CTA *button* in the nav was
+  universal (100%); secondary paths (login etc.) are positioned as
+  visually subordinate — never bare text with no affordance.
+- **Raze/NerdCow SaaS nav architecture:** don't give audiences equal
+  weight; one global path + segment routing = our design (consumer hero
+  stays primary, B2B entry secondary) — validated.
+- **Oli Gardner (Unbounce, Conversion-Centered Design):** CTAs follow
+  Z-pattern visual hierarchy; noticeability beats size.
+- **Andy Crestodina (Orbit Media):** button *text* is the top conversion
+  factor — "For senior living communities" is a strong self-qualifying
+  label; secondary links beside a primary CTA are a tested pattern.
+- **atticusli nav A/B research:** CTA label should match buyer readiness;
+  a routing label ("For communities") correctly signals "this isn't your
+  page" rather than a false demo promise.
+
+### Rubric — landing B2B entry (10 criteria, /10 each)
+
+| # | Criterion | Current score | Notes |
+|---|---|---|---|
+| 1 | Position matches nav convention (top-right) | 10 | Correct landmark |
+| 2 | Audience label clarity | 10 | "For senior living communities" self-qualifies |
+| 3 | Affordance — looks clickable | 7 | Bare text link under-performs; best-in-class uses bordered/ghost button |
+| 4 | Hierarchy — secondary to primary CTA | 9 | Correctly subordinate |
+| 5 | Legibility on photo background | 9 | Surface plate solves contrast |
+| 6 | Persistence | 10 | Fixed hero — always visible |
+| 7 | Geragogy fit for primary audience | 10 | No clutter added; +1 action, still ≤5 |
+| 8 | Accessibility semantics | 9 | Real link, focusable |
+| 9 | Enterprise-grade polish | 7 | Text-link reads consumer-site, not SaaS-grade |
+| 10 | Path depth | 10 | One click to /for-communities |
+| | **Total** | **91/100** | |
+
+### Gap analysis
+
+- **Gap 1 (criteria 3+9): affordance.** Every audited best-in-class site
+  uses a *button-shaped* element for nav actions. Fix: convert the text
+  link to a **ghost/outline button** — `1px` accentMutedBlue border on the
+  existing surface plate. Preserves secondary hierarchy, adds enterprise
+  affordance, zero new color or clutter.
+- **Gap 2 (minor): single entry.** Candoo repeats B2B routing at hero +
+  mid-page + footer. Our fixed hero has no mid-page; a second entry could
+  later live in the How-it-works dialog or a future scroll surface —
+  parked per the fixed-hero decision.
+- **Not a gap:** secondary weight is *correct* — Brand Vision's audit shows
+  secondary paths are deliberately subordinate; consumer learners keep
+  primacy per geragogy.
+
+### Expert verdicts (simulated panel)
+
+- **Crestodina:** the label does the work — self-qualifying copy beats
+  generic "Enterprise."
+- **Gardner:** right spot (top of Z), but give it button affordance.
+- **WebAnatomy dataset:** persona tabs = best-in-class marker; we match
+  the pattern, weaker execution.

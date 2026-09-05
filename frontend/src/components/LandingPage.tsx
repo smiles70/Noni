@@ -135,6 +135,10 @@ const B2B_ENTRY: CSSProperties = {
   padding: `${SPACING.sm}px ${SPACING.md}px`,
   backgroundColor: "rgba(250, 250, 248, 0.85)",
   borderRadius: RADIUS.lg,
+  // B2B-ENTRY-001 gap fix: ghost-button border gives the enterprise
+  // affordance every audited best-in-class SaaS nav uses, while the
+  // muted treatment keeps it correctly secondary to the primary CTA.
+  border: `1px solid ${COLORS.accentMutedBlue}`,
   color: COLORS.accentMutedBlue,
   textDecoration: "none",
   fontSize: TYPOGRAPHY.bodySizePx,
