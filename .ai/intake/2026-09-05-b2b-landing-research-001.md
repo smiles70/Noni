@@ -229,3 +229,11 @@ first reduces B2B page risk and rework.
 
 *Research only. Implementation requires explicit approval — per Process
 v9.51 this would become EPI-B2B-001 with its own Epic/Block/Rack plan.*
+
+## Rollback note (2026-09-05)
+
+The SCROLL-DEPTH-001 implementation was **rolled back** on user direction —
+the hero/landing page is restored to its prior fixed-viewport state
+(merge commit reverted on main). The research findings in this document
+(B2B-LANDING-001 and the scroll-depth analysis) remain valid research
+artifacts; no scroll-depth or B2B implementation is currently live.

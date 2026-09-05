@@ -16,12 +16,12 @@ import { createRoot } from "react-dom/client";
 vi.mock("../../api/landing", () => ({
   loadLandingPage: vi.fn(async () => ({
     hero: { headline: "H", subheadline: "S" },
-    introduction: { title: "Intro title", body: "Intro body." },
-    what_mynaani_does: { title: "What title", items: ["Item A", "Item B"] },
-    how_it_feels: { title: "Feel title", items: ["Item C"] },
-    trust_and_safety: { title: "Trust title", body: "Trust body." },
+    introduction: { title: "", body: "" },
+    what_mynaani_does: { title: "", items: [] },
+    how_it_feels: { title: "", items: [] },
+    trust_and_safety: { title: "", body: "" },
     call_to_action: { primary: { label: "Begin" } },
-    closing: { body: "Closing body." },
+    closing: { body: "" },
   })),
 }));
 
@@ -104,55 +104,5 @@ describe("LandingPage — brand plate (BRAND-LOGO-002)", () => {
     // Plate is non-interactive too.
     expect(plate!.closest("a")).toBeNull();
     expect(plate!.closest("button")).toBeNull();
-  });
-});
-
-describe("LandingPage — scroll depth (SCROLL-DEPTH-001)", () => {
-  it("offers a calm scroll affordance and renders all five content sections", async () => {
-    const host = await render();
-
-    // Scroll affordance: a text link in the action stack pointing at the
-    // details region. Native anchor jump — no smooth-scroll motion.
-    const link = host.querySelector<HTMLAnchorElement>(
-      'a[href="#mynaani-details"]',
-    );
-    expect(link).not.toBeNull();
-    expect(link!.textContent).toBe("More about mynaani");
-
-    // Details region exists as a sibling AFTER the hero section.
-    const details = host.querySelector<HTMLElement>("#mynaani-details");
-    expect(details).not.toBeNull();
-    expect(details!.tagName).toBe("MAIN");
-
-    // All five API sections render — including trust_and_safety, the
-    // legitimacy content previously gated behind a click.
-    const sections = details!.querySelectorAll("section");
-    expect(sections.length).toBe(5);
-    const headings = details!.querySelectorAll("h2");
-    expect(headings.length).toBe(4);
-    expect(details!.textContent).toContain("Trust title");
-    expect(details!.textContent).toContain("Item A");
-    expect(details!.textContent).toContain("Closing body.");
-
-    // Contract components only: lists and straight dividers present.
-    expect(details!.querySelectorAll("ul").length).toBe(2);
-    expect(details!.querySelectorAll("hr").length).toBe(4);
-  });
-
-  it("keeps the hero a full-viewport first screen in document flow", async () => {
-    const host = await render();
-    const hero = host.querySelector<HTMLElement>(
-      'section[data-contract-exemption="landing.hero"]',
-    );
-    expect(hero).not.toBeNull();
-    // In-flow (not fixed) so content can follow it; still one viewport tall.
-    expect(hero!.style.position).toBe("relative");
-    expect(hero!.style.height).toBe("100vh");
-    // Details come after the hero in DOM order.
-    const details = host.querySelector("#mynaani-details");
-    expect(
-      hero!.compareDocumentPosition(details!) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
   });
 });
