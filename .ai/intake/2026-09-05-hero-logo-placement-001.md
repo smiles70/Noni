@@ -122,3 +122,19 @@ landing page (`frontend/src/components/LandingPage.tsx`).
 - PNG export was 784 KB — over the ≤100 KB web budget. Re-exported as
   WebP q90 at 4× display size (431×448): **126 KB**. `src` updated to
   `/mynaani-logo.webp`.
+
+## Staging round — PASSED (2026-09-05)
+
+- Pushed `feat/hero-logo` → `staging`; Deploy Staging run 33987157059:
+  preflight ✅, railway-deploy-backend ✅, cloudflare-pages-deploy ✅
+  (incl. G3 bundle guard) — 39s, conclusion `success`.
+- Asset live: `https://staging.noni-web.pages.dev/mynaani-logo.webp`
+  → HTTP 200, `image/webp`, 126 KB.
+- `virtual-uat-agent` job in the pipeline passed as part of the run.
+
+## Virtual QA + UAT round 2 — PASSED
+
+- Pre-push hook re-ran type-check + unit suite on the exact pushed tree ✅
+- Added `LandingPage.brand.test.tsx` — asserts top-left absolute position,
+  non-interactivity, alt text, exemption marker ✅
+- Re-checked 12-point geragogy list post-staging: unchanged, all pass.
