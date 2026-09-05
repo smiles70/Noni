@@ -558,3 +558,24 @@ named and repeated; §5 gained a concrete 12-month outcome picture.
   paragraph is what separates a brief from a brochure.
 - **Geragogy lens:** the paper practices what it preaches — plain
   language, no hype, claims carry sources.
+
+## B2B-WHITEPAPER-003 — "Geragogy: The Key to Learning for the Aging
+## Population" (2026-09-05)
+
+Second paper, same protocol: best-practice research → 10-point rubric →
+draft → score → iterate. `docs/marketing/geragogy-whitepaper.md`
+(~2,300 words, 16 sources). Companion to "The AI Gap": that paper sells
+the *problem*; this one sells the *method*.
+
+- Structure: buyer-seated exec summary → the "learner adapts to design"
+  failure → geragogy defined against pedagogy/andragogy (now sourced:
+  Boulton-Lewis, Knowles) → the four aging mechanisms (vision /
+  attention / working-memory load / confidence — W3C-WAI, Owsley,
+  Hasher & Zacks, JMIR, Laganà) → cognitively-protective learning design
+  at three layers → five buyer tests + 12-month picture → limitations →
+  CTA → references.
+- Key line carried through: standard visual richness is not neutral for
+  older learners — it taxes exactly the mechanisms age changes.
+- Rubric: Draft 1 ~96/100 (unsourced disciplinary distinction); Draft 2
+  ~10/10 after sourcing §2 and reaching 16 references.
+- "Patent pending" caveat from B2B-WHITEPAPER-001 still applies.
