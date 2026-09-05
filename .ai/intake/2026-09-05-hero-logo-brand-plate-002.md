@@ -119,3 +119,21 @@ signal rather than ambient decoration.
 | 10 | Cognitive load | ✅ reduced — mark now legible landmark/legitimacy signal |
 | 11 | Copy tone | ✅ `alt="mynaani"` unchanged |
 | 12 | Research | ✅ plate/scrim-over-imagery convention; NN/g perceptibility precondition |
+
+## Staging round — PASSED (2026-09-05)
+
+- `feat/brand-plate` → `staging`; Deploy Staging run **33991890712**:
+  preflight ✅, railway-deploy-backend ✅, cloudflare-pages-deploy ✅
+  (incl. G3 bundle guard) — conclusion `success`.
+- Live-bundle verification: deployed `index-q7LUwbRp.js` on
+  `staging.noni-web.pages.dev` contains `data-brand-plate`,
+  `rgba(250, 250, 248, 0.85)`, and `mynaani-logo.webp` — plate shipped.
+
+## Virtual QA + UAT round 2 — PASSED
+
+- Pre-push hook re-ran type-check + full unit suite on the exact pushed
+  tree ✅ (14 files / 122 tests, 15 xfail).
+- 12-point geragogy self-check re-run post-staging: unchanged, all pass.
+- Interaction density, motion, palette, and component inventory all
+  unchanged from the merged baseline; the only visual delta is the plate
+  and the on-grid size bump (128/96px).
