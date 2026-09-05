@@ -209,6 +209,22 @@ first reduces B2B page risk and rework.
 | 11 | Copy tone | ✅ "More about mynaani" — descriptive, no imperative |
 | 12 | Research | ✅ read-before-click legitimacy access; pattern reused by B2B page |
 
+### Staging round — PASSED (2026-09-05)
+
+- `feat/scroll-depth` → `staging`; Deploy Staging run **33995550918**:
+  all jobs green incl. G3 bundle guard — conclusion `success`.
+- Live-bundle verification: deployed `index-CerTmpMl.js` contains
+  `mynaani-details`, `More about mynaani`, and `data-brand-plate` —
+  scroll depth shipped.
+
+### Virtual QA + UAT round 2 — PASSED
+
+- Pre-push hook re-ran type-check + full unit suite on the pushed tree ✅
+  (14 files / 124 tests, 15 xfail).
+- 12-point geragogy self-check re-run post-staging: unchanged, all pass.
+- Hero rendering unchanged (fixed→relative is a flow change, not a visual
+  one); help bubble remains `position: fixed`; no motion added.
+
 ---
 
 *Research only. Implementation requires explicit approval — per Process
