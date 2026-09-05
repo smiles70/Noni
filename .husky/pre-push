@@ -1,4 +1,2 @@
-# frontend/node_modules/.bin/tsc
-# frontend/node_modules/.bin/vitest
-
-
+npm run type-check --workspace=frontend
+npm run test:unit --workspace=frontend
