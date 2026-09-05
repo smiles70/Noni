@@ -344,3 +344,37 @@ the ADR-0029 precedent):
 This formalizes what the user articulated: **the contract protects
 learners; marketing earns buyers** — one brand voice, two rulesets, each
 explicit.
+
+## B2B pathway implementation — STAGED FOR HUMAN REVIEW (2026-09-05)
+
+**Status:** implemented on `feat/b2b-pathway` → pushed to `staging` only.
+Production requires explicit human approval (AGENTS.md gate).
+
+- **ADR-0030** (`docs/decisions/0030-marketing-surfaces-annex.md`) —
+  Marketing Surfaces Annex: product surfaces keep the full geragogy
+  contract; marketing surfaces gain richer type scale, labelled icons,
+  marketing header/footer, while keeping calm tone, WCAG AA, tokens, and
+  the no-overclaim rule.
+- **`/for-communities`** (`frontend/src/components/ForCommunitiesPage.tsx`)
+  — Candoo-pattern: outcome headline, "Talk to us about a pilot" CTA →
+  `hello@mynaani.com`, three labelled-icon outcome cards (staff time /
+  resident confidence / differentiation), founding-partnership program
+  list, honest "founding communities" framing — zero invented stats or
+  logos (guarded by test), "who we serve" section, contact section,
+  marketing footer. All marked `data-contract-exemption="marketing.b2b"`.
+- **Entry link** — "For senior living communities", top-right of the hero
+  on a surface plate matching the brand-plate treatment; hero otherwise
+  unchanged (still fixed-viewport).
+
+### Evidence
+
+- QA: tsc ✅ · lint 0 warnings ✅ · 15 files / 125 tests ✅ (5 new) ·
+  build + bundle verify ✅ (page code-splits to its own 6KB chunk)
+- Staging: Deploy run **33996655953** ✅; `/for-communities` → HTTP 200;
+  live bundle contains route + entry link
+- Annex self-check: calm tone ✅, tokens only ✅, no motion ✅, no urgency
+  copy ✅, no fabricated proof ✅
+
+### Awaiting human review on staging
+
+https://staging.noni-web.pages.dev/for-communities
