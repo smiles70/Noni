@@ -776,3 +776,70 @@ WCAG AA.
 | Multi-entry coverage | (implicit) | 10 — hero + dialog |
 | Position, label, persistence, geragogy, depth | 10 | 10 |
 | **Total** | **91/100** | **100/100** |
+
+## B2B-PRICING-001 — pricing/procurement page research (2026-09-05)
+
+**Question (user):** deep+wide protocol on a B2B pricing/procurement page.
+
+### The evidence on transparency vs. "contact sales"
+
+- **Gartner 2024 B2B buyer research: 72% of buyers expect pricing
+  visibility during evaluation;** 67% prefer a rep-free experience
+  (webstacks/successknocks citing Gartner). Hidden pricing's real cost is
+  the *qualified buyer who silently bounces*.
+- **The honesty test (PulseRevOps):** a competitor can learn your pricing
+  in ~10 minutes regardless — hiding protects sales habit, not secrets.
+- **Decision rule:** publish when ACV < ~$25K and purchase is low-touch;
+  hide only when deals are genuinely negotiated/custom ($100K+, formal
+  RFP). **Hybrid wins most often:** published lower tiers, gated
+  enterprise, always a credible anchor or "starting at" figure.
+- **Raze enterprise-pricing model:** the page's job is fourfold —
+  **tier clarity, commercial logic, trust evidence, next-step routing**.
+  Don't collapse the enterprise path into a generic "contact sales" box
+  before the buyer can justify reaching out. Stage complexity.
+
+### What this vertical actually does (verified)
+
+| Vendor | Pricing posture | Model |
+|---|---|---|
+| **CareAcademy** (direct comp — senior-care training) | **Publishes**: Essentials $191/mo · Advanced ~$335-383 · Complete ~$371-419; ~$6/user/mo seats, 25-seat base, "contact us" for volume | Published tiers + seat pricing + volume gate |
+| **PointClickCare** (facility EHR leader) | Quote-only | Per-bed/month, modular |
+| **Yardi / RealPage** | Quote-only | Per-unit/bed + modules |
+| **WellSky LTC** | Partial ($120/user/mo starting) | Per-user |
+| **LifeLoop** | Quote-only | Per-community |
+| **Candoo / Papa** | Not published | Conversation |
+
+**Pattern:** the *learning/training* category publishes (CareAcademy is
+the outlier that proves transparency works in this vertical); the
+*facility-platform* category quotes per-bed. Resident-engagement
+(LifeLoop) sits middle: per-community, custom.
+
+### Implication for mynaani
+
+- Our deal size is closer to CareAcademy than PointClickCare — **publish
+  an honest anchor**, don't hide.
+- Natural unit: **per-resident/per-seat** (learning category norm) or
+  **flat per-community pilot** — NOT per-bed (that's facility-software
+  grammar, wrong category).
+- **The page should contain** (Raze fourfold + procurement reality):
+  1. Tier clarity — pilot / community / portfolio
+  2. Commercial logic — what the unit is (per-resident or per-community),
+     what's included, no hidden onboarding fee
+  3. Trust evidence — security/data-practice summary, what we collect and
+     don't (older-adult audience → privacy questions are table stakes),
+     terms, cancellation
+  4. Next-step routing — pilot conversation, procurement packet offer,
+     RFP contact
+- **Procurement realities to answer on-page:** multi-site discount,
+  contract length, cancellation, data handling (we hold learner names/
+  progress — state plainly we don't touch health data), insurance/
+  vendor-setup questions communities ask, and who to email.
+
+### ⚠️ Hard constraint — business decision required
+
+Publishing *numbers* requires actual pricing decisions. The page
+structure is implementable now with an honest **"Founding Partner Pilot"**
+frame: what's included, how it's priced (per-resident vs. flat), and the
+conversation CTA — but specific figures must come from the user; the
+no-invented-numbers rule applies. Recommend user set: pilot price or
+"founding-rate" structure before publish.
