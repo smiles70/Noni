@@ -34,9 +34,21 @@ const HEADER: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: `${SPACING.md}px ${SPACING.xl}px`,
+  padding: `${SPACING.sm}px ${SPACING.xl}px`,
   backgroundColor: COLORS.surface,
   borderBottom: `1px solid ${COLORS.disabled}`,
+};
+
+const HEADER_CTA: CSSProperties = {
+  display: "inline-block",
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.sm}px ${SPACING.lg}px`,
+  backgroundColor: COLORS.accentDesatGreen,
+  color: COLORS.surface,
+  borderRadius: RADIUS.lg,
+  fontWeight: 600,
+  textDecoration: "none",
+  marginLeft: SPACING.lg,
 };
 
 const HEADER_LINK: CSSProperties = {
@@ -205,16 +217,16 @@ export default function ForCommunitiesPage() {
           <img
             src="/mynaani-logo.webp"
             alt="mynaani"
-            height={48}
-            style={{ display: "block", height: 48, width: "auto" }}
+            height={72}
+            style={{ display: "block", height: 72, width: "auto" }}
           />
         </Link>
         <nav aria-label="Marketing">
           <Link to="/" style={HEADER_LINK}>
             For learners
           </Link>
-          <a href={MAILTO} style={HEADER_LINK}>
-            Contact
+          <a href={MAILTO} style={HEADER_CTA}>
+            Talk to us
           </a>
         </nav>
       </header>
@@ -269,14 +281,17 @@ export default function ForCommunitiesPage() {
               Toronto).
             </li>
             <li style={{ marginBottom: SPACING.sm }}>
-              <strong>The gap is measurable.</strong> In Nielsen Norman Group
-              usability studies, adults 65+ complete website tasks about{" "}
-              <strong>43% slower</strong> with roughly half the errors recovered
-              — success rates of 55% vs. 75% for younger adults. And adults
-              under 50 are about <strong>twice as likely</strong> to use AI
-              chatbots as adults 50+ (57% vs. 28%) — the audience most uncertain
-              about AI is the one standard design serves worst (Pew Research
-              Center, 2026).
+              <strong>Standard sites measurably fail them.</strong> In Nielsen
+              Norman Group usability research — the web-usability authority
+              behind decades of design standards — adults 65+ succeed at common
+              website tasks only <strong>55% of the time vs. 75%</strong> for
+              younger adults, and take about 43% longer.
+            </li>
+            <li style={{ marginBottom: SPACING.sm }}>
+              <strong>AI widens the gap.</strong> Adults under 50 are about{" "}
+              <strong>twice as likely</strong> to use AI chatbots as adults 50+
+              (57% vs. 28%), and 65+ adults are the most uncertain group of all
+              (Pew Research Center, 2026).
             </li>
             <li style={{ marginBottom: 0 }}>
               <strong>The method works.</strong> Cognitive load is the key
