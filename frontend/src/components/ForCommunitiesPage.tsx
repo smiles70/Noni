@@ -157,6 +157,46 @@ const FOOTER: CSSProperties = {
   fontSize: TYPOGRAPHY.bodySizePx,
 };
 
+// ---- Sources (best practice: inline attribution AND a linked list) ----------
+
+const SOURCES = [
+  {
+    name: "Pew Research Center — How Americans' opinions and use of AI differ by age (2026)",
+    url: "https://www.pewresearch.org/internet/2026/06/17/how-opinions-and-use-of-ai-differ-by-age/",
+    why: "AI chatbot adoption: 57% under-50 vs. 28% ages 50+; 65+ the most uncertain group.",
+  },
+  {
+    name: "Nielsen Norman Group — Usability for Senior Citizens",
+    url: "https://www.nngroup.com/articles/usability-seniors-improvements/",
+    why: "Adults 65+ succeed at website tasks 55% vs. 75% for ages 21–55, ~43% slower.",
+  },
+  {
+    name: "W3C Web Accessibility Initiative — Web Accessibility for Older Users: A Literature Review",
+    url: "https://www.w3.org/WAI/older-users/literature/",
+    why: "Ageing vision: ~80% contrast-sensitivity loss by age 80; presbyopia; colour-shift.",
+  },
+  {
+    name: "Owsley C. — Vision and Aging, Annual Review of Vision Science (UAB School of Medicine)",
+    url: "https://www.annualreviews.org/content/journals/10.1146/annurev-vision-111815-114550",
+    why: "Contrast sensitivity and visual-processing-speed decline in later life.",
+  },
+  {
+    name: "Hasher L. & Zacks R.T. — Working memory, comprehension, and aging (University of Toronto)",
+    url: "https://hasherlab.psych.utoronto.ca/abstracts/hasher_zacks_88.htm",
+    why: "Aging reduces inhibition of irrelevant information — visual distraction harms learning.",
+  },
+  {
+    name: "JMIR (2025) — Cognitive load and learning performance in digital health education for older patients",
+    url: "https://www.jmir.org/2025/1/e79430",
+    why: "Cognitive load is the key mediator of digital-learning outcomes (large effect).",
+  },
+  {
+    name: "Laganà L. et al. — Enhancing computer self-efficacy in older adults: a randomised controlled study",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4265211/",
+    why: "Age-appropriate training significantly improves attitudes and self-efficacy.",
+  },
+];
+
 // ---- Simple labelled icons (annex permits icons beside text) ----------------
 
 function Icon({ path }: { path: string }) {
@@ -396,6 +436,28 @@ export default function ForCommunitiesPage() {
           <a href={MAILTO} style={PRIMARY_BTN}>
             Email {CONTACT}
           </a>
+        </section>
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-sources">
+          <h2 id="b2b-sources" style={H3}>
+            Sources
+          </h2>
+          <ul style={{ ...LIST, fontSize: TYPOGRAPHY.bodySizePx }}>
+            {SOURCES.map((s) => (
+              <li key={s.url} style={{ marginBottom: SPACING.sm }}>
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: COLORS.accentMutedBlue }}
+                >
+                  {s.name}
+                </a>{" "}
+                — {s.why}
+              </li>
+            ))}
+          </ul>
         </section>
       </main>
 

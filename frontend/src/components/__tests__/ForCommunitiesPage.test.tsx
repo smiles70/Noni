@@ -51,9 +51,15 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
     expect(text).toContain("patent-pending");
     expect(text).toContain("What geragogy is");
     expect(text).toContain("How geragogy shapes every layer");
-    // Cited evidence, not invented proof.
+    // Cited evidence, not invented proof — inline attribution AND a
+    // linked Sources section (best practice, not footnotes-only).
     expect(text).toContain("Pew Research Center");
     expect(text).toContain("Hasher");
+    expect(text).toContain("Sources");
+    const sourceLinks = host.querySelectorAll(
+      '#b2b-sources ~ ul a[href^="https://"]',
+    );
+    expect(sourceLinks.length).toBeGreaterThanOrEqual(5);
   });
 
   it("routes contact to the real address — no invented proof", async () => {
