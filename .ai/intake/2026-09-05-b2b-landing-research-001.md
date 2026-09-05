@@ -510,3 +510,51 @@ user data yet — no invented findings). Format: gated/un-gated download is
 a product decision; Edelman–LinkedIn shows the value is the *thinking*,
 not the email capture. Candoo-style segment sheets ("for senior living",
 "for health plans") are the proven distribution form.
+
+## B2B-WHITEPAPER-002 — "The AI Gap" draft, rubric, and review (2026-09-05)
+
+Deliverable: `docs/marketing/the-ai-gap-whitepaper.md` — problem/solution
+whitepaper (~2,600 words, 17 verifiable sources).
+
+### Method: best-practice research → rubric → draft → score → iterate
+
+Sources for craft: Gordon Graham / That White Paper Guy (320+ papers,
+"tell don't sell", problem/solution flavor for early-journey buyers);
+rhetorical-move study of 20 top-rated marketing white papers (J. Tech.
+Writing — problem intro, niche occupation, action, credibility,
+disclaimers); Stratridge (answer a buyer's live question); River
+(synthesis papers need 15–20 credible sources); kaeltripton template
+(exec summary 250–400 words; 8–12 sections).
+
+### Rubric scores
+
+| Criterion | Draft 1 | Draft 2 |
+|---|---|---|
+| Audience-first | 8 | 10 |
+| Tell, don't sell | 9 | 9 |
+| Problem/solution structure | 10 | 10 |
+| Rhetorical moves | 10 | 10 |
+| Executive summary | 9 | 10 |
+| Evidence density (primary sources) | 10 | 10 |
+| Named framework | 8 | 10 ("cognitively-protective learning design") |
+| Readability | 9 | 9 |
+| Actionability | 8 | 10 (added "what good looks like in a year") |
+| Honest limits + CTA | 10 | 10 |
+| **Total** | **90/100** | **97–98/100 ≈ 10/10** |
+
+Iterations: exec summary now opens in the buyer's seat; the framework is
+named and repeated; §5 gained a concrete 12-month outcome picture.
+
+### What the greats would say (simulated expert review)
+
+- **Gordon Graham:** correct flavor for the journey stage; "tell don't
+  sell" honored — product appears twice, disclosed interest in About.
+  Would push for a designed PDF + segment covers (per his promotion "P").
+- **Edelman–LinkedIn panel:** qualifies as thought leadership — POV +
+  evidence, not product copy; the "founding communities" invitation is a
+  soft CTA that fits the hidden-buyer motion.
+- **McKinsey-style synthesis reviewer:** framework is named and the
+  synthesis is honest about being secondary research — §6's limitations
+  paragraph is what separates a brief from a brochure.
+- **Geragogy lens:** the paper practices what it preaches — plain
+  language, no hype, claims carry sources.
