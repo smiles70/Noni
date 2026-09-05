@@ -425,6 +425,53 @@ export default function ForCommunitiesPage() {
 
         <hr style={DIVIDER} />
 
+        <section style={SECTION} aria-labelledby="b2b-papers">
+          <h2 id="b2b-papers" style={H2}>
+            Research briefs for your team
+          </h2>
+          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
+            Two short, fully-referenced papers you can share with your board,
+            clinical leads, or member-services team:
+          </p>
+          <div style={CARD_ROW}>
+            <div style={CARD}>
+              <h3 style={H3}>The AI Gap</h3>
+              <p style={{ margin: `0 0 ${SPACING.md}px` }}>
+                Who AI is leaving behind, what it costs in health access and
+                fraud exposure — and why the gap is a design failure, not an
+                ability one. 17 sources.
+              </p>
+              <a
+                href="/whitepapers/the-ai-gap.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: COLORS.accentMutedBlue, fontWeight: 600 }}
+              >
+                Download the PDF
+              </a>
+            </div>
+            <div style={CARD}>
+              <h3 style={H3}>
+                Geragogy — the key to learning for the aging population
+              </h3>
+              <p style={{ margin: `0 0 ${SPACING.md}px` }}>
+                The science of how older adults learn, what standard design gets
+                wrong, and the method mynaani is built on. 16 sources.
+              </p>
+              <a
+                href="/whitepapers/geragogy-the-key-to-learning.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: COLORS.accentMutedBlue, fontWeight: 600 }}
+              >
+                Download the PDF
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <hr style={DIVIDER} />
+
         <section style={SECTION} aria-labelledby="b2b-contact">
           <h2 id="b2b-contact" style={H2}>
             Start a conversation

@@ -39,7 +39,9 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
     expect(page!.textContent).toContain("Why communities partner with mynaani");
     expect(page!.textContent).toContain("founding partnership");
     // Three outcome cards, each icon + text label.
-    expect(page!.querySelectorAll("h3").length).toBe(3);
+    const outcomes = page!.querySelector("#b2b-outcomes")!
+      .parentElement as HTMLElement;
+    expect(outcomes.querySelectorAll("h3").length).toBe(3);
     expect(page!.querySelectorAll("svg[aria-hidden]").length).toBe(3);
   });
 
@@ -60,6 +62,15 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
       '#b2b-sources ~ ul a[href^="https://"]',
     );
     expect(sourceLinks.length).toBeGreaterThanOrEqual(5);
+    // Candoo-pattern: downloadable research briefs.
+    expect(
+      host.querySelector('a[href="/whitepapers/the-ai-gap.pdf"]'),
+    ).not.toBeNull();
+    expect(
+      host.querySelector(
+        'a[href="/whitepapers/geragogy-the-key-to-learning.pdf"]',
+      ),
+    ).not.toBeNull();
   });
 
   it("routes contact to the real address — no invented proof", async () => {
