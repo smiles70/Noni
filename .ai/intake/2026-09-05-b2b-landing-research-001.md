@@ -657,3 +657,34 @@ Right-size it for a pre-launch company:
    quarterly-at-minimum. Announce "research updates," not a "newsletter."
 4. Needs a real signup destination before shipping — currently unbuilt
    (no email service configured). mailto fallback is acceptable interim.
+
+### B2B-CHANNEL-001 — additional verifiable sources (user-requested)
+
+4. **Litmus / Validity — State of Email 2025** (hundreds of global email
+   marketers): average email ROI **$36 per $1 spent**; 35% of companies
+   see $10–36, 30% see $36–50, 5% see >$50. Companies dedicating >15% of
+   marketing budget to email are **2× more likely** to reach 40%+ open
+   rates. Newsletters are explicitly among the highest-ROI email types.
+   https://www.litmus.com/resources/email-marketing-roi
+
+5. **McKinsey & Company — "Email marketing: Think inside the new inbox"**:
+   email acquires customers at **~40× the rate of Facebook + Twitter
+   combined**; email conversion ≈3× social; order values ~17% higher via
+   email (eMarketer data cited). The canonical owned-channel evidence.
+   https://www.mckinsey.com/capabilities/growth-marketing-and-sales/our-insights/email-marketing-think-inside-the-new-inbox
+
+6. **Demand Gen Report — Content Preferences Survey** (annual B2B buyer
+   research): **62% of buyers consume 3–7 pieces of content before
+   talking to sales**; research/survey reports are a top-3 format (55%);
+   blogs 54%, white papers 52%, e-books 56%; industry newsletters grew
+   34%→41% YoY as a consumed source; **71% download multiple assets and
+   71% share them with their buying team** (the hidden-buyer mechanism).
+   Caveat stat: 54% feel overwhelmed by content volume — the quality gap
+   is the opening, not volume.
+   https://www.demandgenreport.com/resources/2022-content-preferences-survey-b2b-buyers-crave-concise-research-based-content-to-inform-purchasing-process/7283/
+
+These triangulate the conclusion: buyers consume multiple assets before
+contact (DGR), research + newsletters are among the most-consumed
+formats (DGR), email is the highest-ROI channel (Litmus $36:$1;
+McKinsey 40×), and sharing inside the buying group is how hidden buyers
+are reached (DGR 71% + Edelman–LinkedIn >40% stall stat).
