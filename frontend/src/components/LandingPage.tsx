@@ -132,6 +132,10 @@ const B2B_ENTRY: CSSProperties = {
   top: SPACING.xl,
   right: SPACING.xl,
   zIndex: 1,
+  // B2B-ENTRY-001: ≥44px target + inline-flex for a11y polish.
+  display: "inline-flex",
+  alignItems: "center",
+  minHeight: 44,
   padding: `${SPACING.sm}px ${SPACING.md}px`,
   backgroundColor: "rgba(250, 250, 248, 0.85)",
   borderRadius: RADIUS.lg,
@@ -390,6 +394,8 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             to="/for-communities"
             style={isMobile ? B2B_ENTRY_MOBILE : B2B_ENTRY}
             data-contract-exemption="landing.hero"
+            data-b2b-entry="hero"
+            aria-label="For senior living communities — the mynaani enterprise pathway"
           >
             For senior living communities
           </Link>

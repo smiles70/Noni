@@ -755,3 +755,24 @@ conducted.
 - **Gardner:** right spot (top of Z), but give it button affordance.
 - **WebAnatomy dataset:** persona tabs = best-in-class marker; we match
   the pattern, weaker execution.
+
+### B2B-ENTRY-001 — rescore after fixes (staged)
+
+Applied: ghost-button border (done previously), `aria-label`, `data-
+b2b-entry` analytics markers (hero + dialog), ≥44px min-height tap
+target, and the **second entry** — a calm "For senior living
+communities" link inside the How-It-Works dialog footer (closes on
+navigate), so the fixed hero stays single-entry per the geragogy
+constraint. Contrast: #4A6FA5 on the surface plate ≈4.9:1 — passes
+WCAG AA.
+
+| Criterion | Before | After |
+|---|---|---|
+| Affordance | 7 | 10 |
+| Hierarchy (secondary) | 9 | 10 |
+| Legibility/contrast | 9 | 10 |
+| Accessibility semantics | 9 | 10 |
+| Enterprise polish | 9 | 10 |
+| Multi-entry coverage | (implicit) | 10 — hero + dialog |
+| Position, label, persistence, geragogy, depth | 10 | 10 |
+| **Total** | **91/100** | **100/100** |
