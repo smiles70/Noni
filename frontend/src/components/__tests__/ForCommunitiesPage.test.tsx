@@ -71,6 +71,10 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
         'a[href="/whitepapers/geragogy-the-key-to-learning.pdf"]',
       ),
     ).not.toBeNull();
+    // Owned-audience capture (B2B-CHANNEL-001) — honest mailto interim.
+    const updates = host.querySelector('a[href*="subject=Research%20updates"]');
+    expect(updates).not.toBeNull();
+    expect(host.textContent).toContain("Get research updates");
   });
 
   it("routes contact to the real address — no invented proof", async () => {

@@ -18,6 +18,7 @@ import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
 
 const CONTACT = "hello@mynaani.com";
 const MAILTO = `mailto:${CONTACT}?subject=Community%20partnership%20inquiry`;
+const UPDATES_MAILTO = `mailto:${CONTACT}?subject=Research%20updates`;
 
 // ---- Tokenized styles (marketing annex) ------------------------------------
 
@@ -438,7 +439,7 @@ export default function ForCommunitiesPage() {
 
         <section style={SECTION} aria-labelledby="b2b-papers">
           <h2 id="b2b-papers" style={H2}>
-            Research briefs for your team
+            Insights — research briefs for your team
           </h2>
           <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
             Two short, fully-referenced papers you can share with your board,
@@ -478,6 +479,27 @@ export default function ForCommunitiesPage() {
                 Download the PDF
               </a>
             </div>
+          </div>
+          <div
+            style={{
+              marginTop: SPACING.xl,
+              backgroundColor: COLORS.surface,
+              borderRadius: RADIUS.lg,
+              padding: SPACING.lg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: SPACING.md,
+            }}
+          >
+            <p style={{ margin: 0, maxWidth: 440 }}>
+              <strong>Get research updates.</strong> New briefs as they're
+              published — occasional, evidence-first, no noise.
+            </p>
+            <a href={UPDATES_MAILTO} style={SECONDARY_BTN}>
+              Email us to join the list
+            </a>
           </div>
         </section>
 
