@@ -47,10 +47,13 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
     const host = await render();
     const text = host.textContent!;
     expect(text).toContain("Geragogy");
+    expect(text).toContain("geragogy");
     expect(text).toContain("patent-pending");
-    expect(text).toContain("Why the method matters");
+    expect(text).toContain("What geragogy is");
+    expect(text).toContain("How geragogy shapes every layer");
     // Cited evidence, not invented proof.
     expect(text).toContain("Pew Research Center");
+    expect(text).toContain("Hasher");
   });
 
   it("routes contact to the real address — no invented proof", async () => {

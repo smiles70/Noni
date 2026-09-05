@@ -222,14 +222,16 @@ export default function ForCommunitiesPage() {
       <main>
         <section style={SECTION} aria-labelledby="b2b-hero">
           <h1 id="b2b-hero" style={H1}>
-            Not "senior learning." Geragogy — engineered into the software.
+            AI learning grounded in geragogy — the science of how older adults
+            learn
           </h1>
           <p style={LEAD}>
-            Mynaani is the only AI learning program built on geragogy — the
-            science of how older adults learn. Our patent-pending
-            cognitively-protective system governs the interface itself, so
-            residents learn AI without overload, pressure, or being talked down
-            to — and your staff doesn't have to run it.
+            Geragogy is the evidence-based study of learning in later life — and
+            it is the foundation Mynaani is built on. Our plain-language AI
+            curriculum and patent-pending, cognitively-protective interface are
+            designed for the way older adults actually see, process, and gain
+            confidence. Your residents learn AI — your staff doesn't have to run
+            the program.
           </p>
           <a href={MAILTO} style={PRIMARY_BTN}>
             Talk to us about a pilot
@@ -243,43 +245,73 @@ export default function ForCommunitiesPage() {
 
         <section style={SECTION} aria-labelledby="b2b-difference">
           <h2 id="b2b-difference" style={H2}>
-            Why the method matters
+            What geragogy is — and why it changes outcomes
           </h2>
           <p style={{ marginTop: 0, marginBottom: SPACING.md, maxWidth: 640 }}>
-            Older adults are the least-served AI audience — and the gap is
-            measured, not anecdotal:
+            Geragogy is the science of learning in later life: how aging affects
+            vision, attention, working memory, and confidence — and how teaching
+            must respond. It is not simplified content; it is a different
+            method, grounded in decades of published research:
           </p>
           <ul style={LIST}>
             <li style={{ marginBottom: SPACING.sm }}>
-              Adults under 50 are about <strong>twice as likely</strong> to use
-              AI chatbots as adults 50+ (57% vs. 28%) — and 65+ adults are the
-              most uncertain age group about AI's impact (Pew Research Center,
-              2026).
+              <strong>Vision changes the page.</strong> By age 80, typical
+              contrast sensitivity is about <strong>80% lower</strong> than at
+              20 — small type, low contrast, and visual clutter don't just look
+              busy, they disappear or exhaust the reader (W3C/WAI literature
+              review; Owsley, UAB School of Medicine).
             </li>
             <li style={{ marginBottom: SPACING.sm }}>
-              Only about <strong>1 in 4</strong> internet users ages 65+ say
-              they feel very confident using devices for online tasks (Pew
-              Research Center).
+              <strong>Attention filters weaken.</strong> Aging reduces the
+              ability to inhibit irrelevant information — decorative elements,
+              pop-ups, and motion actively compete with the lesson and reduce
+              comprehension and memory (Hasher &amp; Zacks, University of
+              Toronto).
             </li>
             <li style={{ marginBottom: SPACING.sm }}>
-              Learning science is clear:{" "}
-              <strong>cognitive load is the key mediator</strong> of
-              digital-learning outcomes for older adults — when interfaces
-              overload, learning stops (JMIR, 2025).
+              <strong>The gap is measurable.</strong> In Nielsen Norman Group
+              usability studies, adults 65+ complete website tasks about{" "}
+              <strong>43% slower</strong> with roughly half the errors recovered
+              — success rates of 55% vs. 75% for younger adults. And adults
+              under 50 are about <strong>twice as likely</strong> to use AI
+              chatbots as adults 50+ (57% vs. 28%) — the audience most uncertain
+              about AI is the one standard design serves worst (Pew Research
+              Center, 2026).
             </li>
             <li style={{ marginBottom: 0 }}>
-              Training designed for older adults measurably improves confidence
-              and self-efficacy — the strongest predictors of whether learners
-              persist (randomised controlled evidence, Laganà et al.).
+              <strong>The method works.</strong> Cognitive load is the key
+              mediator of digital-learning outcomes in older adults (JMIR,
+              2025), and training designed for older learners measurably
+              improves confidence and self-efficacy — the strongest predictors
+              of persistence (randomised controlled evidence, Laganà et al.).
             </li>
           </ul>
-          <p style={{ marginTop: SPACING.lg, marginBottom: 0, maxWidth: 640 }}>
-            Most "senior learning" products simplify content and hope for the
-            best. Mynaani's patent-pending approach treats cognitive safety as a{" "}
-            <em>system property</em>: interface density, pacing, and state
-            changes are governed so the experience stays calm and predictable —
-            confidence is protected by design, not by luck.
-          </p>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-how">
+          <h2 id="b2b-how" style={H2}>
+            How geragogy shapes every layer of mynaani
+          </h2>
+          <ul style={LIST}>
+            <li style={{ marginBottom: SPACING.sm }}>
+              <strong>The curriculum</strong> — short, structured lessons in
+              plain language, built on worked examples (the evidence-backed way
+              novices learn) with no tests, grades, or time pressure.
+            </li>
+            <li style={{ marginBottom: SPACING.sm }}>
+              <strong>The visuals</strong> — readable type, high contrast, and
+              hard limits on how much appears on screen at once, because for
+              older learners visual clutter isn't style — it's lost learning.
+            </li>
+            <li style={{ marginBottom: 0 }}>
+              <strong>The software itself</strong> — our patent-pending
+              cognitively-protective system governs how the interface changes,
+              keeping every screen stable and predictable. Confidence is
+              protected by design, not by luck.
+            </li>
+          </ul>
         </section>
 
         <hr style={DIVIDER} />
