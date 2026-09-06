@@ -160,6 +160,12 @@ export default function PaywallPage({
           The next modules go a little deeper and require a one-time payment.
           You will keep what you have learned either way; this is your choice.
         </p>
+        <p style={BODY}>
+          This is a single payment, not a subscription — you will not be
+          charged again. Checkout happens on Stripe's secure payment page,
+          and your card details never reach our system. We will never email
+          or call you to ask for payment.
+        </p>
 
         <section style={CARD}>
           <h2 style={H2}>What you get</h2>
