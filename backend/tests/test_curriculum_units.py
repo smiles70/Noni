@@ -24,6 +24,7 @@ class TestUnitData:
             "unit-5",
             "unit-6",
             "unit-7",
+            "unit-8",
         }
 
     def test_each_unit_has_at_least_one_page(self):
@@ -47,7 +48,7 @@ class TestUnitsRoute:
         r = client.get("/api/v1/curriculum/units")
         assert r.status_code == 200
         body = r.json()
-        assert len(body["units"]) == 7
+        assert len(body["units"]) == 8
         for u in body["units"]:
             for k in (
                 "id",
@@ -87,6 +88,7 @@ class TestUnitsRoute:
             "unit-5",
             "unit-6",
             "unit-7",
+            "unit-8",
         }
 
 
