@@ -42,6 +42,10 @@ const AccountSettingsPage = lazy(
   () => import("./components/AccountSettingsPage"),
 );
 const HelpPage = lazy(() => import("./components/HelpPage"));
+// B2B marketing surface (ADR-0030) — public, static, no auth.
+const ForCommunitiesPage = lazy(
+  () => import("./components/ForCommunitiesPage"),
+);
 // EPIC-002 Phase 2-3: Add WelcomePage, AccountSetupPage, and GettingStartedPage
 const WelcomePage = lazy(() => import("./components/WelcomePage"));
 const AccountSetupPage = lazy(() => import("./components/AccountSetupPage"));
@@ -200,6 +204,14 @@ const App: React.FC = () => {
                 }
               />
               <Route path="/signin" element={onSignInPage} />
+              <Route
+                path="/for-communities"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <ForCommunitiesPage />
+                  </Suspense>
+                }
+              />
               <Route
                 path="/welcome"
                 element={

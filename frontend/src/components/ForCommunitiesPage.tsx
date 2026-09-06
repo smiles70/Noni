@@ -1,0 +1,688 @@
+/**
+ * ForCommunitiesPage — B2B marketing surface for senior living communities
+ * and similar institutions (B2B-LANDING-001 / B2B-DESIGN-001).
+ *
+ * Governed by ADR-0030 (Marketing Surfaces Annex), NOT the learner-facing
+ * geragogy contract: richer type scale, simple labelled icons, marketing
+ * header/footer, and stat/outcome blocks are permitted here — but tone
+ * stays calm, WCAG AA holds, and no claims are invented. Every element is
+ * marked `data-contract-exemption="marketing.b2b"` for audit.
+ *
+ * Pattern source: candoootech.com/enterprise-services — outcome headline,
+ * proof strip, program list, "why partner" blocks, single contact CTA.
+ * Content is static (no envelope, no RenderGuard) per ADR-0030.
+ */
+import { CSSProperties } from "react";
+import { Link } from "react-router-dom";
+import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
+
+const CONTACT = "hello@mynaani.com";
+const MAILTO = `mailto:${CONTACT}?subject=Community%20partnership%20inquiry`;
+const UPDATES_MAILTO = `mailto:${CONTACT}?subject=Research%20updates`;
+
+// ---- Tokenized styles (marketing annex) ------------------------------------
+
+const PAGE: CSSProperties = {
+  fontFamily: TYPOGRAPHY.fontFamily,
+  color: COLORS.textPrimary,
+  backgroundColor: COLORS.background,
+  fontSize: TYPOGRAPHY.bodySizePx,
+  lineHeight: TYPOGRAPHY.bodyLineHeight,
+  minHeight: "100vh",
+};
+
+const HEADER: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: `${SPACING.sm}px ${SPACING.xl}px`,
+  backgroundColor: COLORS.surface,
+  borderBottom: `1px solid ${COLORS.disabled}`,
+};
+
+const HEADER_CTA: CSSProperties = {
+  display: "inline-block",
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.sm}px ${SPACING.lg}px`,
+  backgroundColor: COLORS.accentDesatGreen,
+  color: COLORS.surface,
+  borderRadius: RADIUS.lg,
+  fontWeight: 600,
+  textDecoration: "none",
+  marginLeft: SPACING.lg,
+};
+
+const HEADER_LINK: CSSProperties = {
+  color: COLORS.accentMutedBlue,
+  textDecoration: "none",
+  fontSize: TYPOGRAPHY.bodySizePx,
+  marginLeft: SPACING.lg,
+};
+
+const SECTION: CSSProperties = {
+  maxWidth: 880,
+  margin: "0 auto",
+  padding: `${SPACING.xxl}px ${SPACING.xl}px`,
+};
+
+const H1: CSSProperties = {
+  fontSize: 36,
+  lineHeight: 1.25,
+  marginTop: 0,
+  marginBottom: SPACING.md,
+  color: COLORS.textPrimary,
+  fontWeight: 700,
+};
+
+const LEAD: CSSProperties = {
+  fontSize: TYPOGRAPHY.headingScale.level2,
+  lineHeight: TYPOGRAPHY.bodyLineHeight,
+  marginTop: 0,
+  marginBottom: SPACING.xl,
+  maxWidth: 640,
+};
+
+const H2: CSSProperties = {
+  fontSize: 26,
+  lineHeight: 1.3,
+  marginTop: 0,
+  marginBottom: SPACING.lg,
+  color: COLORS.textPrimary,
+  fontWeight: 600,
+};
+
+const H3: CSSProperties = {
+  fontSize: TYPOGRAPHY.headingScale.level2,
+  marginTop: 0,
+  marginBottom: SPACING.sm,
+  color: COLORS.textPrimary,
+  fontWeight: 600,
+};
+
+const PRIMARY_BTN: CSSProperties = {
+  display: "inline-block",
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.md}px ${SPACING.xl}px`,
+  backgroundColor: COLORS.accentDesatGreen,
+  color: COLORS.surface,
+  borderRadius: RADIUS.lg,
+  fontWeight: 600,
+  textDecoration: "none",
+};
+
+const TH: CSSProperties = {
+  textAlign: "left",
+  padding: `${SPACING.sm}px ${SPACING.md}px`,
+  borderBottom: `2px solid ${COLORS.accentDesatGreen}`,
+  fontWeight: 600,
+  backgroundColor: COLORS.surface,
+};
+
+const TD: CSSProperties = {
+  padding: `${SPACING.sm}px ${SPACING.md}px`,
+  borderBottom: `1px solid ${COLORS.accentMutedBlue}`,
+};
+
+const SECONDARY_BTN: CSSProperties = {
+  display: "inline-block",
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.sm}px ${SPACING.lg}px`,
+  backgroundColor: COLORS.accentDesatGreen,
+  color: COLORS.surface,
+  borderRadius: RADIUS.lg,
+  fontWeight: 600,
+  textDecoration: "none",
+};
+
+const TEXT_LINK: CSSProperties = {
+  color: COLORS.accentMutedBlue,
+  fontSize: TYPOGRAPHY.bodySizePx,
+  marginLeft: SPACING.lg,
+};
+
+const CARD_ROW: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: SPACING.lg,
+};
+
+const CARD: CSSProperties = {
+  backgroundColor: COLORS.surface,
+  borderRadius: RADIUS.lg,
+  padding: SPACING.lg,
+  flex: "1 1 220px",
+  boxSizing: "border-box",
+};
+
+const ICON: CSSProperties = {
+  color: COLORS.accentMutedBlue,
+  display: "block",
+  marginBottom: SPACING.sm,
+};
+
+const DIVIDER: CSSProperties = {
+  border: "none",
+  borderTop: `1px solid ${COLORS.disabled}`,
+  margin: 0,
+};
+
+const LIST: CSSProperties = {
+  margin: 0,
+  paddingLeft: SPACING.lg,
+};
+
+const FOOTER: CSSProperties = {
+  borderTop: `1px solid ${COLORS.disabled}`,
+  padding: `${SPACING.xl}px`,
+  display: "flex",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  gap: SPACING.md,
+  backgroundColor: COLORS.surface,
+  fontSize: TYPOGRAPHY.bodySizePx,
+};
+
+// ---- Sources (best practice: inline attribution AND a linked list) ----------
+
+const SOURCES = [
+  {
+    name: "Pew Research Center — How Americans' opinions and use of AI differ by age (2026)",
+    url: "https://www.pewresearch.org/internet/2026/06/17/how-opinions-and-use-of-ai-differ-by-age/",
+    why: "AI chatbot adoption: 57% under-50 vs. 28% ages 50+; 65+ the most uncertain group.",
+  },
+  {
+    name: "Nielsen Norman Group — Usability for Senior Citizens",
+    url: "https://www.nngroup.com/articles/usability-seniors-improvements/",
+    why: "Adults 65+ succeed at website tasks 55% vs. 75% for ages 21–55, ~43% slower.",
+  },
+  {
+    name: "W3C Web Accessibility Initiative — Web Accessibility for Older Users: A Literature Review",
+    url: "https://www.w3.org/WAI/older-users/literature/",
+    why: "Ageing vision: ~80% contrast-sensitivity loss by age 80; presbyopia; colour-shift.",
+  },
+  {
+    name: "Owsley C. — Vision and Aging, Annual Review of Vision Science (UAB School of Medicine)",
+    url: "https://www.annualreviews.org/content/journals/10.1146/annurev-vision-111815-114550",
+    why: "Contrast sensitivity and visual-processing-speed decline in later life.",
+  },
+  {
+    name: "Hasher L. & Zacks R.T. — Working memory, comprehension, and aging (University of Toronto)",
+    url: "https://hasherlab.psych.utoronto.ca/abstracts/hasher_zacks_88.htm",
+    why: "Aging reduces inhibition of irrelevant information — visual distraction harms learning.",
+  },
+  {
+    name: "JMIR (2025) — Cognitive load and learning performance in digital health education for older patients",
+    url: "https://www.jmir.org/2025/1/e79430",
+    why: "Cognitive load is the key mediator of digital-learning outcomes (large effect).",
+  },
+  {
+    name: "Laganà L. et al. — Enhancing computer self-efficacy in older adults: a randomised controlled study",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4265211/",
+    why: "Age-appropriate training significantly improves attitudes and self-efficacy.",
+  },
+];
+
+// ---- Simple labelled icons (annex permits icons beside text) ----------------
+
+function Icon({ path }: { path: string }) {
+  return (
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      style={ICON}
+    >
+      <path d={path} />
+    </svg>
+  );
+}
+
+const OUTCOMES = [
+  {
+    icon: "M12 8v4l3 3M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+    title: "Save staff time",
+    body: "Residents learn at their own pace in a calm, self-guided program — your team is not asked to become technology trainers.",
+  },
+  {
+    icon: "M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM8.5 12.5l2.5 2.5 4.5-5",
+    title: "Resident confidence, family reassurance",
+    body: "Plain-language AI learning designed for adults 55+ helps residents stay connected and independent — outcomes families notice.",
+  },
+  {
+    icon: "M12 2l2.9 6.3 6.6.7-4.9 4.5 1.4 6.5L12 16.7 6 20l1.4-6.5L2.5 9l6.6-.7Z",
+    title: "A visible differentiator",
+    body: "Offering a considered, age-appropriate AI program signals a community that invests in residents' independence.",
+  },
+];
+
+const PROGRAM_INCLUDES = [
+  "A guided AI curriculum written in plain language for adults 55+",
+  "A calm, self-paced interface — no tests, grades, or time pressure",
+  "Onboarding support for residents and a point of contact for your staff",
+  "A pilot shaped with your community — we learn together what works",
+];
+
+// ---- Page -------------------------------------------------------------------
+
+export default function ForCommunitiesPage() {
+  return (
+    <div style={PAGE} data-contract-exemption="marketing.b2b">
+      <header style={HEADER}>
+        <Link
+          to="/"
+          aria-label="mynaani home"
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <img
+            src="/mynaani-logo.webp"
+            alt="mynaani"
+            height={72}
+            style={{ display: "block", height: 72, width: "auto" }}
+          />
+        </Link>
+        <nav
+          aria-label="Marketing"
+          style={{ display: "flex", alignItems: "center", gap: SPACING.lg }}
+        >
+          <a href="#b2b-papers" style={HEADER_LINK}>
+            Research
+          </a>
+          <a href="#b2b-pricing" style={HEADER_LINK}>
+            Pricing
+          </a>
+          <Link to="/" style={HEADER_LINK}>
+            For learners
+          </Link>
+          <a href={MAILTO} style={HEADER_CTA}>
+            Talk to us
+          </a>
+        </nav>
+      </header>
+
+      <main>
+        <section style={SECTION} aria-labelledby="b2b-hero">
+          <h1 id="b2b-hero" style={H1}>
+            AI learning grounded in geragogy — the science of how older adults
+            learn
+          </h1>
+          <p style={LEAD}>
+            Geragogy is the evidence-based study of learning in later life — and
+            it is the foundation Mynaani is built on. Our plain-language AI
+            curriculum and patent-pending, cognitively-protective interface are
+            designed for the way older adults actually see, process, and gain
+            confidence. Your residents learn AI — your staff doesn't have to run
+            the program.
+          </p>
+          <a href={MAILTO} style={PRIMARY_BTN}>
+            Talk to us about a pilot
+          </a>
+          <Link to="/" style={TEXT_LINK}>
+            See the learner experience
+          </Link>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-difference">
+          <h2 id="b2b-difference" style={H2}>
+            What geragogy is — and why it changes outcomes
+          </h2>
+          <p style={{ marginTop: 0, marginBottom: SPACING.md, maxWidth: 640 }}>
+            Geragogy is the science of learning in later life: how aging affects
+            vision, attention, working memory, and confidence — and how teaching
+            must respond. It is not simplified content; it is a different
+            method, grounded in decades of published research:
+          </p>
+          <ul style={LIST}>
+            <li style={{ marginBottom: SPACING.sm }}>
+              <strong>Vision changes the page.</strong> By age 80, typical
+              contrast sensitivity is about <strong>80% lower</strong> than at
+              20 — small type, low contrast, and visual clutter don't just look
+              busy, they disappear or exhaust the reader (W3C/WAI literature
+              review; Owsley, UAB School of Medicine).
+            </li>
+            <li style={{ marginBottom: SPACING.sm }}>
+              <strong>Attention filters weaken.</strong> Aging reduces the
+              ability to inhibit irrelevant information — decorative elements,
+              pop-ups, and motion actively compete with the lesson and reduce
+              comprehension and memory (Hasher &amp; Zacks, University of
+              Toronto).
+            </li>
+            <li style={{ marginBottom: SPACING.sm }}>
+              <strong>Standard sites measurably fail them.</strong> In Nielsen
+              Norman Group usability research — the web-usability authority
+              behind decades of design standards — adults 65+ succeed at common
+              website tasks only <strong>55% of the time vs. 75%</strong> for
+              younger adults, and take about 43% longer.
+            </li>
+            <li style={{ marginBottom: SPACING.sm }}>
+              <strong>AI widens the gap.</strong> Adults under 50 are about{" "}
+              <strong>twice as likely</strong> to use AI chatbots as adults 50+
+              (57% vs. 28%), and 65+ adults are the most uncertain group of all
+              (Pew Research Center, 2026).
+            </li>
+            <li style={{ marginBottom: 0 }}>
+              <strong>The method works.</strong> Cognitive load is the key
+              mediator of digital-learning outcomes in older adults (JMIR,
+              2025), and training designed for older learners measurably
+              improves confidence and self-efficacy — the strongest predictors
+              of persistence (randomised controlled evidence, Laganà et al.).
+            </li>
+          </ul>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-how">
+          <h2 id="b2b-how" style={H2}>
+            How geragogy shapes every layer of mynaani
+          </h2>
+          <ul style={LIST}>
+            <li style={{ marginBottom: SPACING.sm }}>
+              <strong>The curriculum</strong> — short, structured lessons in
+              plain language, built on worked examples (the evidence-backed way
+              novices learn) with no tests, grades, or time pressure.
+            </li>
+            <li style={{ marginBottom: SPACING.sm }}>
+              <strong>The visuals</strong> — readable type, high contrast, and
+              hard limits on how much appears on screen at once, because for
+              older learners visual clutter isn't style — it's lost learning.
+            </li>
+            <li style={{ marginBottom: 0 }}>
+              <strong>The software itself</strong> — our patent-pending
+              cognitively-protective system governs how the interface changes,
+              keeping every screen stable and predictable. Confidence is
+              protected by design, not by luck.
+            </li>
+          </ul>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-outcomes">
+          <h2 id="b2b-outcomes" style={H2}>
+            Why communities partner with mynaani
+          </h2>
+          <div style={CARD_ROW}>
+            {OUTCOMES.map((o) => (
+              <div key={o.title} style={CARD}>
+                <Icon path={o.icon} />
+                <h3 style={H3}>{o.title}</h3>
+                <p style={{ margin: 0 }}>{o.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-program">
+          <h2 id="b2b-program" style={H2}>
+            What a founding partnership includes
+          </h2>
+          <ul style={LIST}>
+            {PROGRAM_INCLUDES.map((item) => (
+              <li key={item} style={{ marginBottom: SPACING.sm }}>
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p style={{ marginTop: SPACING.lg, marginBottom: 0 }}>
+            We are onboarding a small number of founding communities. Working
+            with us now means the program is shaped around your residents' needs
+            — and your community helps set the standard.
+          </p>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-who">
+          <h2 id="b2b-who" style={H2}>
+            Designed for the people you serve
+          </h2>
+          <p style={{ marginTop: 0, marginBottom: SPACING.md, maxWidth: 640 }}>
+            Mynaani is built specifically for adults 55+ — not adapted for them.
+            Our geragogy-centered curriculum and patent-pending
+            cognitively-protective interface were designed for older learners
+            from the start: readable type, predictable behavior, and an approach
+            that respects experience rather than talking down to it. The same
+            care your community brings to residents is engineered into every
+            screen.
+          </p>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-papers">
+          <h2 id="b2b-papers" style={H2}>
+            Insights — research briefs for your team
+          </h2>
+          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
+            Two short, fully-referenced papers you can share with your board,
+            clinical leads, or member-services team:
+          </p>
+          <div style={CARD_ROW}>
+            <div style={CARD}>
+              <h3 style={H3}>The AI Gap</h3>
+              <p style={{ margin: `0 0 ${SPACING.md}px` }}>
+                Who AI is leaving behind, what it costs in health access and
+                fraud exposure — and why the gap is a design failure, not an
+                ability one. 17 sources.
+              </p>
+              <a
+                href="/whitepapers/the-ai-gap.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={SECONDARY_BTN}
+              >
+                Download the PDF
+              </a>
+            </div>
+            <div style={CARD}>
+              <h3 style={H3}>
+                Geragogy — the key to learning for the aging population
+              </h3>
+              <p style={{ margin: `0 0 ${SPACING.md}px` }}>
+                The science of how older adults learn, what standard design gets
+                wrong, and the method mynaani is built on. 16 sources.
+              </p>
+              <a
+                href="/whitepapers/geragogy-the-key-to-learning.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={SECONDARY_BTN}
+              >
+                Download the PDF
+              </a>
+            </div>
+          </div>
+          <div
+            style={{
+              marginTop: SPACING.xl,
+              backgroundColor: COLORS.surface,
+              borderRadius: RADIUS.lg,
+              padding: SPACING.lg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: SPACING.md,
+            }}
+          >
+            <p style={{ margin: 0, maxWidth: 440 }}>
+              <strong>Get research updates.</strong> New briefs as they're
+              published — occasional, evidence-first, no noise.
+            </p>
+            <a href={UPDATES_MAILTO} style={SECONDARY_BTN}>
+              Email us to join the list
+            </a>
+          </div>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        {/* B2B-PRICING-001: procurement section — Raze fourfold
+            (tier clarity, commercial logic, trust evidence, next-step
+            routing). Structure only: no invented figures. */}
+        <section style={SECTION} aria-labelledby="b2b-pricing">
+          <h2 id="b2b-pricing" style={H2}>
+            Pricing — founding partner rates
+          </h2>
+          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
+            Annual site licensing, billed to your organization — never to your
+            residents. <strong>Founding Partner rates</strong> for our pilot
+            cohort, sized by community:
+          </p>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              fontSize: TYPOGRAPHY.bodySizePx,
+              marginBottom: SPACING.md,
+            }}
+          >
+            <thead>
+              <tr>
+                <th style={TH}>Community size</th>
+                <th style={TH}>Nonprofit site</th>
+                <th style={TH}>For-profit location</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={TD}>Up to 25 residents or members</td>
+                <td style={TD}>
+                  <strong>$375 / year</strong>
+                </td>
+                <td style={TD}>
+                  <strong>$850 / year</strong>
+                </td>
+              </tr>
+              <tr>
+                <td style={TD}>26–75</td>
+                <td style={TD}>
+                  <strong>$550 / year</strong>
+                </td>
+                <td style={TD}>
+                  <strong>$1,250 / year</strong>
+                </td>
+              </tr>
+              <tr>
+                <td style={TD}>76–150</td>
+                <td style={TD}>
+                  <strong>$850 / year</strong>
+                </td>
+                <td style={TD}>
+                  <strong>$1,950 / year</strong>
+                </td>
+              </tr>
+              <tr>
+                <td style={TD}>Multi-site, 150+, or health plans</td>
+                <td style={TD} colSpan={2}>
+                  <strong>Custom</strong> — sized to your portfolio, including
+                  digital-literacy benefit structures for plans
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p style={{ margin: `0 0 ${SPACING.lg}px`, maxWidth: 640 }}>
+            Every tier includes the full geragogy-centered curriculum, guided
+            onboarding with no implementation fee, and staff materials. For
+            honest context: institutional digital-literacy programs in this
+            category typically run in the hundreds-to-low-thousands per site per
+            year — we publish our numbers because we'd want them if we were
+            buying. Founding partners keep their rate for the term; rates are
+            reviewed when the cohort closes.
+          </p>
+          <div
+            style={{
+              marginTop: SPACING.xl,
+              backgroundColor: COLORS.surface,
+              borderRadius: RADIUS.lg,
+              padding: SPACING.lg,
+            }}
+          >
+            <p style={{ margin: `0 0 ${SPACING.sm}px` }}>
+              <strong>Working with procurement?</strong> The plain answers, up
+              front:
+            </p>
+            <ul style={{ margin: `0 0 ${SPACING.sm}px`, paddingLeft: 22 }}>
+              <li>
+                <strong>Data:</strong> we hold learner names and progress — not
+                health data, not clinical records.
+              </li>
+              <li>
+                <strong>Onboarding:</strong> guided, no implementation fee, no
+                IT lift required from your team.
+              </li>
+              <li>
+                <strong>Terms:</strong> founding-pilot terms are set together —
+                we'll put every detail in writing before you commit to anything.
+              </li>
+              <li>
+                <strong>Questions:</strong> multi-site pricing, security
+                practices, vendor setup —{" "}
+                <a href={MAILTO} style={TEXT_LINK}>
+                  {CONTACT}
+                </a>{" "}
+                gets a real answer.
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-contact">
+          <h2 id="b2b-contact" style={H2}>
+            Start a conversation
+          </h2>
+          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
+            Tell us about your community and what your residents need — we'll
+            arrange a conversation at a time that suits you.
+          </p>
+          <a href={MAILTO} style={PRIMARY_BTN}>
+            Email {CONTACT}
+          </a>
+        </section>
+        <hr style={DIVIDER} />
+
+        <section style={SECTION} aria-labelledby="b2b-sources">
+          <h2 id="b2b-sources" style={H3}>
+            Sources
+          </h2>
+          <ul style={{ ...LIST, fontSize: TYPOGRAPHY.bodySizePx }}>
+            {SOURCES.map((s) => (
+              <li key={s.url} style={{ marginBottom: SPACING.sm }}>
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: COLORS.accentMutedBlue }}
+                >
+                  {s.name}
+                </a>{" "}
+                — {s.why}
+              </li>
+            ))}
+          </ul>
+        </section>
+      </main>
+
+      <footer style={FOOTER}>
+        <span>mynaani — AI learning for adults 55+</span>
+        <span>
+          <Link to="/" style={{ ...HEADER_LINK, marginLeft: 0 }}>
+            For learners
+          </Link>
+        </span>
+      </footer>
+    </div>
+  );
+}
