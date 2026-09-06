@@ -125,11 +125,11 @@ def test_repeat_signin_for_same_email_reuses_account(client):
 
 def test_callback_endpoint_is_gone(client):
     """ADR 0024 explicitly removed the session-exchange endpoint."""
-    r = client.post("/auth/callback", json={"credential": "mock:a3-gone@example.test"})
+    r = client.post("/api/v1/auth/callback", json={"credential": "mock:a3-gone@example.test"})
     assert r.status_code in (404, 405)
 
 
 def test_signout_endpoint_is_gone(client):
     """ADR 0024 explicitly removed the server-side signout endpoint."""
-    r = client.post("/auth/signout")
+    r = client.post("/api/v1/auth/signout")
     assert r.status_code in (404, 405)

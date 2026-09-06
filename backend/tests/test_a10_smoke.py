@@ -41,7 +41,7 @@ PAID_BUNDLE_CODE = "modules_4_5"
 # A real Module 4 unit id from backend/models/curriculum_units_module_4.py.
 PAID_UNIT = "module4-unit-1"
 # Free content for the negative-control check.
-FREE_UNIT_PATH = "/api/curriculum/what-is-ai"
+FREE_UNIT_PATH = "/api/v1/curriculum/what-is-ai"
 
 
 @pytest.fixture(scope="module")
@@ -110,7 +110,7 @@ def _signin(client: TestClient, email: str) -> str:
 
 def _checkout(client: TestClient, is_gift: bool = False) -> str:
     r = client.post(
-        "/api/billing/checkout",
+        "/api/v1/billing/checkout",
         json={"product_code": PAID_BUNDLE_CODE, "is_gift": is_gift},
     )
     assert r.status_code == 200, r.text
@@ -142,7 +142,7 @@ def _mock_webhook(
         },
     }
     r = client.post(
-        "/api/billing/stripe-webhook",
+        "/api/v1/billing/stripe-webhook",
         content=json.dumps(body),
         headers={"content-type": "application/json"},
     )
@@ -161,7 +161,7 @@ def test_smoke_anonymous_can_browse_free_content(client):
 
 
 def test_smoke_anonymous_hits_paywall_on_paid_content(client):
-    r = client.get(f"/api/curriculum/module-4/units/{PAID_UNIT}")
+    r = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")
     assert r.status_code == 402
     detail = r.json()["detail"]
     assert detail["envelope_id"] == "billing.signin_or_purchase_required"
@@ -173,7 +173,7 @@ def test_smoke_anonymous_hits_paywall_on_paid_content(client):
 
 def test_smoke_signed_in_without_grant_hits_paywall(client):
     _signin(client, "a10-empty@example.test")
-    r = client.get(f"/api/curriculum/module-4/units/{PAID_UNIT}")
+    r = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")
     assert r.status_code == 402
     assert r.json()["detail"]["envelope_id"] == "billing.purchase_required"
 
@@ -185,7 +185,7 @@ def test_smoke_full_purchase_grants_then_refund_revokes(client):
     _signin(client, "a10-buyer@example.test")
 
     # Before purchase: paywalled.
-    r0 = client.get(f"/api/curriculum/module-4/units/{PAID_UNIT}")
+    r0 = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")
     assert r0.status_code == 402
 
     # Buy -> webhook -> granted.
@@ -199,7 +199,7 @@ def test_smoke_full_purchase_grants_then_refund_revokes(client):
     assert out["outcome"] == "granted"
 
     # Now the paid unit opens.
-    r1 = client.get(f"/api/curriculum/module-4/units/{PAID_UNIT}")
+    r1 = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")
     assert r1.status_code == 200, r1.text
     body = r1.json()
     assert body["module"] == 4
@@ -207,7 +207,7 @@ def test_smoke_full_purchase_grants_then_refund_revokes(client):
     assert "ui_state" in body
 
     # Module 5 is part of the same bundle.
-    r2 = client.get("/api/curriculum/module-5/units/module5-unit-1")
+    r2 = client.get("/api/v1/curriculum/module-5/units/module5-unit-1")
     assert r2.status_code == 200
 
     # Refund.
@@ -220,7 +220,7 @@ def test_smoke_full_purchase_grants_then_refund_revokes(client):
     assert refunded["outcome"] == "refunded"
 
     # Paid content is paywalled again.
-    r3 = client.get(f"/api/curriculum/module-4/units/{PAID_UNIT}")
+    r3 = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")
     assert r3.status_code == 402
     assert r3.json()["detail"]["envelope_id"] == "billing.purchase_required"
 
@@ -254,7 +254,7 @@ def test_smoke_gift_flow_grants_only_recipient(client, DbSession):
     assert out["outcome"] == "granted"  # purchase marked paid
 
     # Buyer does NOT have access (gift not claimed).
-    r_buyer = client.get(f"/api/curriculum/module-4/units/{PAID_UNIT}")
+    r_buyer = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")
     assert r_buyer.status_code == 402, r_buyer.text
     assert r_buyer.json()["detail"]["envelope_id"] == "billing.purchase_required"
 
@@ -263,13 +263,13 @@ def test_smoke_gift_flow_grants_only_recipient(client, DbSession):
     recipient_id = _signin(client, "a10-recipient@example.test")
     assert recipient_id != buyer_id
 
-    pv = client.post("/api/gifts/preview", json={"token": raw_token})
+    pv = client.post("/api/v1/gifts/preview", json={"token": raw_token})
     assert pv.status_code == 200 and pv.json()["valid"] is True
 
-    cl = client.post("/api/gifts/claim", json={"token": raw_token})
+    cl = client.post("/api/v1/gifts/claim", json={"token": raw_token})
     assert cl.status_code == 200, cl.text
 
     # Recipient now has access.
-    r_recipient = client.get(f"/api/curriculum/module-4/units/{PAID_UNIT}")
+    r_recipient = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")
     assert r_recipient.status_code == 200, r_recipient.text
     assert r_recipient.json()["unit_id"] == PAID_UNIT

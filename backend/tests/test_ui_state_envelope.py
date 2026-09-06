@@ -167,7 +167,7 @@ def test_registry_returns_envelope_for_seeded_state():
 
 
 def test_endpoint_returns_envelope_for_known_state():
-    response = client.get("/api/ui-envelope/landing.intro")
+    response = client.get("/api/v1/ui-envelope/landing.intro")
     assert response.status_code == 200
     body = response.json()
     assert body["state_id"] == "landing.intro"
@@ -179,13 +179,13 @@ def test_endpoint_returns_envelope_for_known_state():
 
 def test_endpoint_returns_404_for_undefined_state():
     """CONTRACT Section IV.A: undefined states MUST NOT render."""
-    response = client.get("/api/ui-envelope/does.not.exist")
+    response = client.get("/api/v1/ui-envelope/does.not.exist")
     assert response.status_code == 404
     assert "undefined" in response.json()["detail"].lower()
 
 
 def test_endpoint_payload_respects_contract_maxima():
-    response = client.get("/api/ui-envelope/landing.intro")
+    response = client.get("/api/v1/ui-envelope/landing.intro")
     body = response.json()
     limits = body["interaction_limits"]
     assert limits["max_primary_actions"] <= 5
@@ -295,7 +295,7 @@ def test_seeded_envelope_uses_only_v1_components(state_id):
     ],
 )
 def test_seeded_envelope_endpoint_returns_200(state_id):
-    response = client.get(f"/api/ui-envelope/{state_id}")
+    response = client.get(f"/api/v1/ui-envelope/{state_id}")
     assert response.status_code == 200
     assert response.json()["state_id"] == state_id
 
@@ -354,7 +354,7 @@ def test_curriculum_menu_envelope_only_v1_components():
 
 
 def test_curriculum_menu_endpoint_returns_200():
-    response = client.get("/api/ui-envelope/curriculum.menu")
+    response = client.get("/api/v1/ui-envelope/curriculum.menu")
     assert response.status_code == 200
     assert response.json()["state_id"] == "curriculum.menu"
 
@@ -391,7 +391,7 @@ def test_landing_page_can_open_menu():
 def test_lesson_menu_endpoint_returns_full_tree():
     """GET /api/curriculum/menu returns Modules 0-3 + bridge units in
     one roundtrip so the menu UI does not need N module fetches."""
-    response = client.get("/api/curriculum/menu")
+    response = client.get("/api/v1/curriculum/menu")
     assert response.status_code == 200
     body = response.json()
 
@@ -415,7 +415,7 @@ def test_lesson_menu_endpoint_returns_full_tree():
 
 def test_lesson_menu_does_NOT_expose_paid_modules():
     """Modules 4+ are paid; they must not leak into the free menu."""
-    body = client.get("/api/curriculum/menu").json()
+    body = client.get("/api/v1/curriculum/menu").json()
     module_ids = [m["id"] for m in body["modules"]]
     assert 4 not in module_ids
     assert 5 not in module_ids

@@ -14,7 +14,7 @@ def test_content_module_validates_against_schema():
 
 
 def test_first_win_endpoint_returns_200_and_full_shape():
-    res = client.get("/api/landing/first-win")
+    res = client.get("/api/v1/landing/first-win")
     assert res.status_code == 200
     body = res.json()
     for key in (
@@ -27,7 +27,7 @@ def test_first_win_endpoint_returns_200_and_full_shape():
 
 
 def test_first_win_no_empty_strings_anywhere():
-    res = client.get("/api/landing/first-win")
+    res = client.get("/api/v1/landing/first-win")
     body = res.json()
 
     def assert_non_empty(value, path: str) -> None:
@@ -45,7 +45,7 @@ def test_first_win_no_empty_strings_anywhere():
 
 
 def test_first_win_offers_reversible_choices():
-    res = client.get("/api/landing/first-win")
+    res = client.get("/api/v1/landing/first-win")
     body = res.json()
     invite_options = body["step_4_invitation"]["options"]
     assert any(
@@ -58,7 +58,7 @@ def test_first_win_offers_reversible_choices():
 
 
 def test_first_win_contains_no_urgency_language():
-    res = client.get("/api/landing/first-win")
+    res = client.get("/api/v1/landing/first-win")
     text = res.text.lower()
     forbidden = ["hurry", "urgent", "limited time", "act now", "expires", "only today"]
     for word in forbidden:

@@ -160,7 +160,7 @@ def test_execute_deletion_zeroes_pii(DbSession):
 
 
 def test_me_delete_requires_session(client):
-    r = client.post("/me/delete")
+    r = client.post("/api/v1/me/delete")
     assert r.status_code == 401
     assert r.json()["detail"]["envelope_id"] == "auth.signed_out"
 
@@ -171,7 +171,7 @@ def test_me_delete_after_signin_returns_pending(client):
     frontend calls clerk.signOut() / clears its mock token after a
     successful 202 (covered in the frontend tests)."""
     client.headers["Authorization"] = "Bearer mock:a6-http@example.test"
-    r = client.post("/me/delete")
+    r = client.post("/api/v1/me/delete")
     assert r.status_code == 202
     body = r.json()
     assert body["status"] == "requested"

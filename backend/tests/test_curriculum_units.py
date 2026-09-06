@@ -44,7 +44,7 @@ class TestUnitData:
 
 class TestUnitsRoute:
     def test_list_units(self, client):
-        r = client.get("/api/curriculum/units")
+        r = client.get("/api/v1/curriculum/units")
         assert r.status_code == 200
         body = r.json()
         assert len(body["units"]) == 7
@@ -59,7 +59,7 @@ class TestUnitsRoute:
                 assert k in u
 
     def test_get_unit_page_returns_iscs_approved(self, client):
-        r = client.get("/api/curriculum/units/unit-3")
+        r = client.get("/api/v1/curriculum/units/unit-3")
         assert r.status_code == 200
         body = r.json()
         assert body["unit_id"] == "unit-3"
@@ -70,11 +70,11 @@ class TestUnitsRoute:
         assert page["complexity"] <= 2  # unit-3 max
 
     def test_get_unknown_unit_returns_404(self, client):
-        r = client.get("/api/curriculum/units/unit-999")
+        r = client.get("/api/v1/curriculum/units/unit-999")
         assert r.status_code == 404
 
     def test_next_unit_contract(self, client):
-        r = client.get("/api/curriculum/next-unit")
+        r = client.get("/api/v1/curriculum/next-unit")
         assert r.status_code == 200
         body = r.json()
         for k in ("unit_id", "title", "stability", "reason"):
@@ -100,7 +100,7 @@ class TestLessonRoute:
     """
 
     def test_lesson_returns_ordered_pages(self, client):
-        r = client.get("/api/curriculum/units/unit-3/lesson")
+        r = client.get("/api/v1/curriculum/units/unit-3/lesson")
         assert r.status_code == 200
         body = r.json()
         assert body["module"] == 1
@@ -118,7 +118,7 @@ class TestLessonRoute:
     def test_lesson_legacy_pages_omit_none_blocks(self, client):
         """Pages authored under the legacy schema should not leak `null`
         retrieval/example/principle fields onto the wire."""
-        r = client.get("/api/curriculum/units/unit-3/lesson")
+        r = client.get("/api/v1/curriculum/units/unit-3/lesson")
         assert r.status_code == 200
         for p in r.json()["pages"]:
             assert "example" not in p or p["example"] is not None
@@ -126,12 +126,12 @@ class TestLessonRoute:
             assert "principle" not in p or p["principle"] is not None
 
     def test_lesson_unknown_unit_404(self, client):
-        r = client.get("/api/curriculum/units/unit-999/lesson")
+        r = client.get("/api/v1/curriculum/units/unit-999/lesson")
         assert r.status_code == 404
 
     # ---- S25.4 / S25.5: bridge units (menu-only side lessons) ----------
     def test_bridge_units_catalog_lists_two_side_lessons(self, client):
-        r = client.get("/api/curriculum/bridge-units")
+        r = client.get("/api/v1/curriculum/bridge-units")
         assert r.status_code == 200
         ids = {u["id"] for u in r.json()["units"]}
         assert ids == {"bridge-compare", "bridge-where-claude-lives"}
@@ -139,14 +139,14 @@ class TestLessonRoute:
     def test_bridge_units_NOT_in_linear_catalog(self, client):
         """Bridge units must never appear in the main /units catalog,
         otherwise they leak into the linear free sequence."""
-        r = client.get("/api/curriculum/units")
+        r = client.get("/api/v1/curriculum/units")
         ids = {u["id"] for u in r.json()["units"]}
         assert "bridge-compare" not in ids
         assert "bridge-where-claude-lives" not in ids
 
     def test_bridge_units_NOT_in_next_unit_walk(self, client):
         """A bridge unit must never be the recommendation from /next-unit."""
-        r = client.get("/api/curriculum/next-unit")
+        r = client.get("/api/v1/curriculum/next-unit")
         assert r.json()["unit_id"] not in {
             "bridge-compare",
             "bridge-where-claude-lives",
@@ -154,7 +154,7 @@ class TestLessonRoute:
 
     def test_bridge_units_serve_four_page_lessons(self, client):
         for uid in ("bridge-compare", "bridge-where-claude-lives"):
-            r = client.get(f"/api/curriculum/units/{uid}/lesson")
+            r = client.get(f"/api/v1/curriculum/units/{uid}/lesson")
             assert r.status_code == 200, f"{uid}: lesson endpoint failed"
             pages = r.json()["pages"]
             assert len(pages) == 4, f"{uid}: expected 4 pages"
@@ -185,7 +185,7 @@ class TestLessonRoute:
             "unit-7",
         ]
         for uid in unit_ids:
-            r = client.get(f"/api/curriculum/units/{uid}/lesson")
+            r = client.get(f"/api/v1/curriculum/units/{uid}/lesson")
             assert r.status_code == 200, f"{uid}: lesson endpoint failed"
             pages = r.json()["pages"]
             assert len(pages) == 4, f"{uid}: expected 4 pages, got {len(pages)}"
@@ -207,7 +207,7 @@ class TestLessonRoute:
         vocabulary so a future content edit can't silently strip the
         conceptual bridge that justifies starting the course at unit-1.
         """
-        r = client.get("/api/curriculum/units/unit-1/lesson")
+        r = client.get("/api/v1/curriculum/units/unit-1/lesson")
         assert r.status_code == 200
         body = r.json()
         assert body["module"] == 1
@@ -239,7 +239,7 @@ class TestLessonRoute:
 
     def test_legacy_units_endpoint_still_returns_iscs_single_page(self, client):
         """Regression guard: the legacy single-page route must keep working."""
-        r = client.get("/api/curriculum/units/unit-3")
+        r = client.get("/api/v1/curriculum/units/unit-3")
         assert r.status_code == 200
         body = r.json()
         assert "ui_state" in body
@@ -267,19 +267,19 @@ class TestRetrievalChoiceRoute:
         return base
 
     def test_records_choice_returns_recorded_true(self, client):
-        r = client.post("/api/curriculum/retrieval-choice", json=self._body())
+        r = client.post("/api/v1/curriculum/retrieval-choice", json=self._body())
         assert r.status_code == 200
         assert r.json() == {"recorded": True}
 
     def test_rejects_extra_fields(self, client):
         body = self._body()
         body["smuggled_signal"] = 0.7
-        r = client.post("/api/curriculum/retrieval-choice", json=body)
+        r = client.post("/api/v1/curriculum/retrieval-choice", json=body)
         assert r.status_code == 422
 
     def test_rejects_out_of_range_module(self, client):
         r = client.post(
-            "/api/curriculum/retrieval-choice",
+            "/api/v1/curriculum/retrieval-choice",
             json=self._body(module=99),
         )
         assert r.status_code == 422
@@ -287,5 +287,5 @@ class TestRetrievalChoiceRoute:
     def test_rejects_missing_required_field(self, client):
         body = self._body()
         del body["chosen_id"]
-        r = client.post("/api/curriculum/retrieval-choice", json=body)
+        r = client.post("/api/v1/curriculum/retrieval-choice", json=body)
         assert r.status_code == 422

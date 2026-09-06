@@ -107,10 +107,11 @@ def test_legacy_whoami_not_registered():
         pytest.skip(f"Cannot import app: {exc}")
 
     routes = [getattr(route, "path", "") for route in app.routes]
-    assert "/auth/whoami" not in routes, (
-        "Legacy endpoint /auth/whoami is still registered. "
-        "Remove per ADR 0024 frontend cutover."
-    )
+    for legacy in ("/auth/whoami", "/api/auth/whoami", "/api/v1/auth/whoami"):
+        assert legacy not in routes, (
+            f"Legacy endpoint {legacy} is still registered. "
+            "Remove per ADR 0024 frontend cutover."
+        )
 
 
 def test_authprovider_is_only_interceptor_mutator():
@@ -436,7 +437,13 @@ def test_no_alembic_upgrade_in_lifespan():
         pytest.skip("lifespan function not found")
 
     body = lifespan_match.group(1)
-    assert "alembic" not in body.lower(), (
+    # Strip comment lines — a comment explaining why alembic must NOT be
+    # called inside lifespan must not trip the guard; only executable
+    # code counts.
+    code_only = "\n".join(
+        line for line in body.splitlines() if not line.strip().startswith("#")
+    )
+    assert "alembic" not in code_only.lower(), (
         "Gotcha: alembic detected inside lifespan. "
         "Gunicorn multi-worker = concurrent upgrades = deadlock on "
         "alembic_version table lock. Remove and use fly.toml "

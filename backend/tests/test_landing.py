@@ -63,7 +63,7 @@ class TestLandingData:
 
 class TestLandingRoutes:
     def test_list_steps(self, client):
-        r = client.get("/api/landing/steps")
+        r = client.get("/api/v1/landing/steps")
         assert r.status_code == 200
         body = r.json()
         assert len(body["steps"]) == 8
@@ -71,7 +71,7 @@ class TestLandingRoutes:
             assert k in body["steps"][0]
 
     def test_get_one_step(self, client):
-        r = client.get("/api/landing/steps/step-3")
+        r = client.get("/api/v1/landing/steps/step-3")
         assert r.status_code == 200
         body = r.json()
         assert body["id"] == "step-3"
@@ -79,5 +79,5 @@ class TestLandingRoutes:
         assert body["requires_user_action"] is False
 
     def test_get_unknown_step_returns_404(self, client):
-        r = client.get("/api/landing/steps/step-999")
+        r = client.get("/api/v1/landing/steps/step-999")
         assert r.status_code == 404

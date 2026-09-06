@@ -28,7 +28,7 @@ EXPECTED_IDS = {
 
 
 def test_module_2_units_catalog_has_all_five():
-    res = client.get("/api/curriculum/module-2/units")
+    res = client.get("/api/v1/curriculum/module-2/units")
     assert res.status_code == 200
     body = res.json()
     assert body["module"] == 2
@@ -38,7 +38,7 @@ def test_module_2_units_catalog_has_all_five():
 
 def test_each_module_2_unit_returns_an_approved_page():
     for unit_id in EXPECTED_IDS:
-        res = client.get(f"/api/curriculum/module-2/units/{unit_id}")
+        res = client.get(f"/api/v1/curriculum/module-2/units/{unit_id}")
         assert res.status_code == 200
         body = res.json()
         assert body["module"] == 2
@@ -47,11 +47,11 @@ def test_each_module_2_unit_returns_an_approved_page():
 
 
 def test_module_2_unknown_unit_returns_404():
-    assert client.get("/api/curriculum/module-2/units/nope").status_code == 404
+    assert client.get("/api/v1/curriculum/module-2/units/nope").status_code == 404
 
 
 def test_module_2_next_returns_one_of_the_five():
-    body = client.get("/api/curriculum/module-2/next").json()
+    body = client.get("/api/v1/curriculum/module-2/next").json()
     assert body["module"] == 2
     assert body["unit_id"] in EXPECTED_IDS
 
@@ -65,11 +65,11 @@ def test_module_2_units_have_telemetry_requirements_in_range():
 
 def test_module_2_content_no_urgency_language():
     forbidden = ["hurry", "urgent", "limited time", "act now", "expires", "only today"]
-    catalog = client.get("/api/curriculum/module-2/units").text.lower()
+    catalog = client.get("/api/v1/curriculum/module-2/units").text.lower()
     for w in forbidden:
         assert w not in catalog
     for unit_id in EXPECTED_IDS:
-        page = client.get(f"/api/curriculum/module-2/units/{unit_id}").text.lower()
+        page = client.get(f"/api/v1/curriculum/module-2/units/{unit_id}").text.lower()
         for w in forbidden:
             assert w not in page, f"{w!r} in {unit_id}"
 
@@ -81,7 +81,7 @@ def test_module_2_lesson_endpoint_returns_four_page_shape():
     silently drop a page type or reorder the lesson.
     """
     for unit_id in EXPECTED_IDS:
-        r = client.get(f"/api/curriculum/module-2/units/{unit_id}/lesson")
+        r = client.get(f"/api/v1/curriculum/module-2/units/{unit_id}/lesson")
         assert r.status_code == 200, f"{unit_id}: /lesson endpoint failed"
         body = r.json()
         assert body["module"] == 2
@@ -101,7 +101,7 @@ def test_module_2_lesson_pages_have_no_urgency_language():
     page in every lesson (not just the ISCS-selected one)."""
     forbidden = ["hurry", "urgent", "limited time", "act now", "expires", "only today"]
     for unit_id in EXPECTED_IDS:
-        body = client.get(f"/api/curriculum/module-2/units/{unit_id}/lesson").json()
+        body = client.get(f"/api/v1/curriculum/module-2/units/{unit_id}/lesson").json()
         for page in body["pages"]:
             haystack = (
                 " ".join(page.get("content", []))
@@ -117,12 +117,12 @@ def test_module_2_lesson_pages_have_no_urgency_language():
 
 
 def test_module_2_decision_recorded_with_audit_columns():
-    client.get("/api/curriculum/module-2/units/module2-unit-1")
-    rows = client.get("/api/telemetry/export").json()["events"]
+    client.get("/api/v1/curriculum/module-2/units/module2-unit-1")
+    rows = client.get("/api/v1/telemetry/export").json()["events"]
     matches = [
         r
         for r in rows
-        if r.get("request_path") == "/api/curriculum/module-2/units/module2-unit-1"
+        if r.get("request_path") == "/api/v1/curriculum/module-2/units/module2-unit-1"
     ]
     assert matches
     row = matches[-1]
