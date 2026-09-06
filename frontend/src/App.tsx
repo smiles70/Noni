@@ -42,6 +42,7 @@ const AccountSettingsPage = lazy(
   () => import("./components/AccountSettingsPage"),
 );
 const HelpPage = lazy(() => import("./components/HelpPage"));
+const PrivacyPage = lazy(() => import("./components/PrivacyPage"));
 // B2B marketing surface (ADR-0030) — public, static, no auth.
 const ForCommunitiesPage = lazy(
   () => import("./components/ForCommunitiesPage"),
@@ -275,6 +276,14 @@ const App: React.FC = () => {
                 element={
                   <Suspense fallback={loadFallback}>
                     <HelpPage onBack={goLanding} />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/privacy"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <PrivacyPage onBack={goLanding} />
                   </Suspense>
                 }
               />
