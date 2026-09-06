@@ -539,6 +539,11 @@ export default function ForCommunitiesPage() {
             residents. <strong>Founding Partner rates</strong> for our pilot
             cohort, sized by community:
           </p>
+          <p style={{ marginTop: SPACING.md, marginBottom: 0, maxWidth: 640 }}>
+            Program partners hear back from a person within one business day —
+            same day for anything urgent like a sign-in or payment problem.
+          </p>
+          
           <table
             style={{
               width: "100%",
