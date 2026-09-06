@@ -15,7 +15,7 @@ import { join } from 'node:path';
 import { env, exit } from 'node:process';
 
 const DIST_DIR = './dist';
-const PROD_API_URL = env.VITE_API_BASE_URL ?? 'https://noni-api.fly.dev';
+const PROD_API_URL = env.VITE_API_BASE_URL ?? 'https://noni-api-production.up.railway.app';
 
 console.log('🔍 Verifying production bundle...');
 
@@ -64,7 +64,7 @@ for (const file of jsFiles) {
       console.error('   See docs/gotchas.md G3 for details.');
       console.error('\n   To fix:');
       console.error('   1. Delete dist/ directory');
-      console.error('   2. Set VITE_API_BASE_URL=https://noni-api.fly.dev');
+      console.error('   2. Set VITE_API_BASE_URL=https://noni-api-production.up.railway.app');
       console.error('   3. Run npm run build again');
       hasErrors = true;
     }

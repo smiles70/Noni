@@ -6,12 +6,13 @@ status: completed
 severity: P0 - Production Deployment Required
 deliverables: 2 scripts, 1 guide, full automation
 ---
+> **Deprecated:** legacy platform retired; production runs on Railway.
 
 # Session: Infrastructure Setup - The Process Complete
 
 ## Executive Summary
 
-**The Process** was executed to establish full infrastructure automation for the Mynaani project. The deployment failed earlier due to missing `FLY_API_TOKEN` secret and lack of local tooling (git, flyctl, npm). This session provides **complete automated solutions**.
+**The Process** was executed to establish full infrastructure automation for the Mynaani project. The deployment failed earlier due to missing `LEGACY_DEPLOY_TOKEN` secret and lack of local tooling (git, the legacy CLI, npm). This session provides **complete automated solutions**.
 
 ---
 
@@ -39,10 +40,10 @@ deliverables: 2 scripts, 1 guide, full automation
 **File:** `scripts/setup-infrastructure.ps1`
 
 **Capabilities:**
-- Detects installed tools (git, flyctl, npm, node, gh)
+- Detects installed tools (git, the legacy CLI, npm, node, gh)
 - Downloads and installs missing tools
 - Configures GitHub authentication
-- Configures Fly.io authentication
+- Configures the legacy platform authentication
 - Triggers deployment via GitHub API
 - Provides detailed status reporting
 
@@ -52,7 +53,7 @@ deliverables: 2 scripts, 1 guide, full automation
 .\scripts\setup-infrastructure.ps1
 
 # With tokens (automated)
-.\scripts\setup-infrastructure.ps1 -GitHubToken "ghp_xxx" -FlyToken "fly_xxx"
+.\scripts\setup-infrastructure.ps1 -GitHubToken "ghp_xxx" 
 
 # Configure only (skip installs)
 .\scripts\setup-infrastructure.ps1 -ConfigureOnly
@@ -64,7 +65,7 @@ deliverables: 2 scripts, 1 guide, full automation
 **Sections:**
 - Quick Start guide
 - Prerequisites checklist
-- Required accounts (GitHub, Fly.io, Cloudflare, Clerk, Supabase)
+- Required accounts (GitHub, the legacy platform, Cloudflare, Clerk, Supabase)
 - The Process: 5-phase setup
 - Troubleshooting guide
 - G3 prevention system documentation
@@ -85,24 +86,24 @@ deliverables: 2 scripts, 1 guide, full automation
 **GitHub Actions Run #82 Failed:**
 ```
 Status: Failure ❌
-Failed Step: fly-deploy-backend ❌
+Failed Step: legacy-platform-deploy-backend ❌
 Error: Process completed with exit code 1
 ```
 
 **Diagnosis:**
-1. Missing `FLY_API_TOKEN` secret in GitHub repository
-2. GitHub Actions runner couldn't authenticate with Fly.io
+1. Missing `LEGACY_DEPLOY_TOKEN` secret in GitHub repository
+2. GitHub Actions runner couldn't authenticate with the legacy platform
 3. Backend deployment failed before frontend could deploy
 
 **Solution:**
-1. Add `FLY_API_TOKEN` secret: `https://github.com/smiles70/Mynaani/settings/secrets/actions`
+1. Add `LEGACY_DEPLOY_TOKEN` secret: `https://github.com/smiles70/Mynaani/settings/secrets/actions`
 2. Or skip backend deployment (already healthy) and deploy frontend only
 
 ---
 
 ## Current System State
 
-### Backend (Fly.io)
+### Backend (the legacy platform)
 **Status:** ✅ HEALTHY
 - App: `noni-api` is running
 - Health: `/health` returns `200 OK`
@@ -148,7 +149,7 @@ Error: Process completed with exit code 1
 # Follow prompts to:
 # 1. Install missing tools
 # 2. Authenticate with GitHub
-# 3. Authenticate with Fly.io
+# 3. Authenticate with the legacy platform
 # 4. Trigger deployment
 ```
 
@@ -157,14 +158,14 @@ Error: Process completed with exit code 1
 Since backend is healthy, we can focus on frontend:
 
 1. **Verify secrets in GitHub:**
-   - `VITE_API_BASE_URL` = `https://noni-api.fly.dev`
+   - `VITE_API_BASE_URL` = `https://noni-api-production.up.railway.app`
    - `VITE_CLERK_PUBLISHABLE_KEY` = From Clerk dashboard
    - `VITE_AUTH_PROVIDER` = `clerk`
 
 2. **Temporarily modify workflow** to skip backend:
    - Edit `.github/workflows/deploy.yml`
    - Add `workflow_dispatch` input: `skip-backend`
-   - Or comment out `fly-deploy-backend` job
+   - Or comment out `legacy-platform-deploy-backend` job
 
 3. **Trigger deploy**
 
@@ -174,10 +175,10 @@ Since backend is healthy, we can focus on frontend:
 
 | Secret | Status | How to Get |
 |--------|--------|-----------|
-| `VITE_API_BASE_URL` | ⚠️ Check | Should be `https://noni-api.fly.dev` |
+| `VITE_API_BASE_URL` | ⚠️ Check | Should be `https://noni-api-production.up.railway.app` |
 | `VITE_CLERK_PUBLISHABLE_KEY` | ⚠️ Check | Clerk Dashboard → API Keys |
 | `VITE_AUTH_PROVIDER` | ⚠️ Check | Should be `clerk` |
-| `FLY_API_TOKEN` | ❌ Missing | `flyctl auth token` or create in Fly.io dashboard |
+| `LEGACY_DEPLOY_TOKEN` | ❌ Missing | `the legacy CLI auth token` or create in the legacy platform dashboard |
 | `SUPABASE_ACCESS_TOKEN` | ⚠️ Check | Supabase Dashboard |
 | `SUPABASE_DB_PASSWORD` | ⚠️ Check | Supabase Settings |
 | `SUPABASE_PROJECT_ID` | ⚠️ Check | Supabase URL |
@@ -195,7 +196,7 @@ https://github.com/smiles70/Mynaani/settings/secrets/actions
 
 ```powershell
 # Backend health
-Invoke-RestMethod https://noni-api.fly.dev/health
+Invoke-RestMethod https://noni-api-production.up.railway.app/health
 
 # Frontend check (should return nothing)
 $response = Invoke-RestMethod https://noni-web.pages.dev/ -ErrorAction SilentlyContinue
@@ -258,7 +259,7 @@ Developer builds → verify-build-env.mjs runs
 
 ## Next Steps (Priority Order)
 
-1. **Add `FLY_API_TOKEN` secret** (if doing full deploy)
+1. **Add `LEGACY_DEPLOY_TOKEN` secret** (if doing full deploy)
 2. **OR skip backend job** (if frontend-only fix)
 3. **Trigger Deploy workflow** via GitHub Actions
 4. **Verify build passes** all 3 verification layers

@@ -108,6 +108,16 @@ export default function PurchaseSuccessPage() {
             </section>
           )}
 
+          <section style={CARD}>
+            <h2 style={H2}>What happens next</h2>
+            <p style={BODY}>
+              Your access is permanent — there is no subscription and no
+              further charge. You can continue now, or come back any time;
+              your progress is saved. If you ever need help, the "Help and
+              common questions" page explains how to reach us.
+            </p>
+          </section>
+
           <div style={STACK}>
             <button
               type="button"

@@ -24,7 +24,7 @@ echo ""
 MONITORS=(
   {
     "name": "Mynaani API Health"
-    "url": "https://noni-api.fly.dev/health"
+    "url": "https://noni-api-production.up.railway.app/health"
     "method": "GET"
     "expected_status": 200
     "check_interval": 30
@@ -42,7 +42,7 @@ MONITORS=(
   }
   {
     "name": "Mynaani Auth Config"
-    "url": "https://noni-api.fly.dev/api/v1/auth/config"
+    "url": "https://noni-api-production.up.railway.app/api/v1/auth/config"
     "method": "GET"
     "expected_status": 200
     "check_interval": 60
@@ -51,7 +51,7 @@ MONITORS=(
   }
   {
     "name": "Mynaani Curriculum"
-    "url": "https://noni-api.fly.dev/api/v1/curriculum/units"
+    "url": "https://noni-api-production.up.railway.app/api/v1/curriculum/units"
     "method": "GET"
     "expected_status": 200
     "check_interval": 60

@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Mynaani Incident Response Runbook
 
 **Version:** 1.0.0
@@ -32,14 +34,14 @@
 
 | Component | Technology | Vendor | Health Endpoint |
 |:---|:---|:---|:---|
-| API Backend | FastAPI + Gunicorn + Uvicorn | Fly.io | `https://noni-api.fly.dev/health` |
+| API Backend | FastAPI + Gunicorn + Uvicorn | railway.app | `https://noni-api-production.up.railway.app/health` |
 | Frontend | React + Vite | Cloudflare Pages | `https://noni-web.pages.dev` |
 | Database | PostgreSQL 15 | Supabase | `/health` (DB pool check) |
 | Auth | Clerk (JWT / JWKS) | Clerk | `/auth/config` |
 | Payments | Stripe Checkout + Webhooks | Stripe | `/api/v1/billing/health` |
 | Backups | pg_dump -> R2 | Cloudflare | `make restore-drill` (quarterly) |
 
-**Architecture:** 2 Fly machines minimum, 3 Gunicorn workers per machine, SQLAlchemy connection pool (size=5, max_overflow=10).
+**Architecture:** 2 Railway machines minimum, 3 Gunicorn workers per machine, SQLAlchemy connection pool (size=5, max_overflow=10).
 
 ---
 
@@ -101,16 +103,16 @@ Postmortem: {link to ticket}
 **Trigger:** `/health` returns non-200; users report site inaccessible.
 
 **Triage (2 minutes):**
-1. Check Fly app status: `fly status --app noni-api`
-2. Check Fly platform status: https://status.fly.io
+1. Check Railway app status: `railway status --app noni-api`
+2. Check Railway platform status: https://status.railway.app
 3. Check Cloudflare Pages: `curl -I https://noni-web.pages.dev`
 
 **Mitigation:**
-- Restart machines: `fly apps restart noni-api`
-- Rollback to last known good: `fly deploy --image noni-api:<previous_tag> --app noni-api`
+- Restart machines: `railway apps restart noni-api`
+- Rollback to last known good: `railway deploy --image noni-api:<previous_tag> --app noni-api`
 
 **Validation:**
-- `curl -fsS https://noni-api.fly.dev/health | jq .status` -> `"healthy"`
+- `curl -fsS https://noni-api-production.up.railway.app/health | jq .status` -> `"healthy"`
 - Run smoke test: `make smoke-prod`
 
 ---
@@ -126,8 +128,8 @@ Postmortem: {link to ticket}
 **Mitigation:**
 - If Clerk is down: enable mock auth (EMERGENCY ONLY):
   ```bash
-  fly secrets set AUTH_PROVIDER=mock --app noni-api
-  fly deploy --app noni-api
+  railway secrets set AUTH_PROVIDER=mock --app noni-api
+  railway deploy --app noni-api
   ```
   :warning: Revert to `clerk` as soon as their service recovers.
 - If JWKS rotation caused cache miss: restart backend to clear cache.
@@ -140,8 +142,8 @@ Postmortem: {link to ticket}
 
 **Mitigation (2 minutes):**
 ```bash
-fly releases list --app noni-api
-fly deploy --image noni-api:<previous_tag> --app noni-api
+railway releases list --app noni-api
+railway deploy --image noni-api:<previous_tag> --app noni-api
 make smoke-prod
 ```
 
@@ -155,15 +157,15 @@ make smoke-prod
 
 **Triage (5 minutes):**
 1. Contain: Revoke suspected credentials immediately.
-2. Check auth logs: `fly logs --app noni-api --recent | grep -i "auth"`
+2. Check auth logs: `railway logs --app noni-api --recent | grep -i "auth"`
 3. Identify scope: which data, which users, which time window.
 
 **Mitigation:**
 1. Rotate compromised secrets:
    ```bash
    openssl rand -hex 32
-   fly secrets set SECRET_KEY=<new> SESSION_SECRET=<new> --app noni-api
-   fly deploy --app noni-api
+   railway secrets set SECRET_KEY=<new> SESSION_SECRET=<new> --app noni-api
+   railway deploy --app noni-api
    ```
 2. Invalidate all Clerk sessions via Clerk Dashboard.
 3. Block suspicious IPs at Cloudflare WAF level.
@@ -210,10 +212,10 @@ make smoke-prod
 
 | Purpose | Command |
 |:---|:---|
-| Fly app status | `fly status --app noni-api` |
-| Fly logs | `fly logs --app noni-api --recent` |
-| Fly restart | `fly apps restart noni-api` |
-| Fly rollback | `fly deploy --image noni-api:<tag> --app noni-api` |
+| Railway app status | `railway status --app noni-api` |
+| Railway logs | `railway logs --app noni-api --recent` |
+| Railway restart | `railway apps restart noni-api` |
+| Railway rollback | `railway deploy --image noni-api:<tag> --app noni-api` |
 | Smoke test | `make smoke-prod` |
 | Backup now | `make backup-now` |
 | Restore drill | `make restore-drill` |
@@ -230,7 +232,7 @@ make smoke-prod
 | Security Contact | [FILL IN] | [FILL IN] |
 
 **Vendor Support:**
-- Fly.io: https://fly.io/support
+- railway.app: https://railway.app/support
 - Clerk: https://clerk.com/support
 - Stripe: https://support.stripe.com
 - Supabase: https://supabase.com/support

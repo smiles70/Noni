@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # STRIPE-LIVE-001: mynaani.com + Cloudflare + Stripe live plan
 
 **Status:** Pre-flight complete. Awaiting Stripe account and Cloudflare DNS readiness.
@@ -10,7 +12,7 @@
 User -> https://mynaani.com (Cloudflare DNS + CDN)
        |
        |-- / (frontend static bundle)
-       |-- /api/* -> backend origin (Railway / Fly)
+       |-- /api/* -> backend origin (Railway / legacy-platform)
        |-- /api/billing/stripe-webhook -> backend origin
 ```
 
@@ -28,7 +30,7 @@ Two options:
 
 ### Option A: apex domain to frontend, api subdomain to backend
 - `mynaani.com` -> Cloudflare Pages (frontend).
-- `api.mynaani.com` -> Railway/Fly backend.
+- `api.mynaani.com` -> Railway/legacy-platform backend.
 - `FRONTEND_URL=https://mynaani.com`
 - `STRIPE_SUCCESS_URL=https://mynaani.com/purchase/success?purchase={purchase_id}`
 - `STRIPE_CANCEL_URL=https://mynaani.com/purchase/cancel`

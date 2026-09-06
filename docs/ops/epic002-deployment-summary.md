@@ -44,7 +44,7 @@ EPIC-002 implementation is complete and ready for deployment. All code changes h
 **GitHub Staging Guide:** `docs/ops/github-staging-environment-guide.md`
 - 10-step comprehensive setup guide
 - GitHub Actions workflow configuration
-- Fly.io staging app setup
+- railway.app staging app setup
 - Cloudflare Pages staging setup
 - Clerk staging configuration
 - BetterStack staging integration
@@ -218,7 +218,7 @@ git revert 6559222
 alembic downgrade epic002_account_preferences
 
 # Application rollback
-flyctl deploy --remote <previous_commit_hash>
+railway deploy --remote <previous_commit_hash>
 ```
 
 **Estimated Rollback Times:**
@@ -239,7 +239,7 @@ flyctl deploy --remote <previous_commit_hash>
 **Guide Contents:**
 - 10-step setup process
 - GitHub Actions workflow configuration
-- Fly.io staging app setup
+- railway.app staging app setup
 - Cloudflare Pages staging setup
 - Clerk staging configuration
 - BetterStack staging integration
@@ -248,7 +248,7 @@ flyctl deploy --remote <previous_commit_hash>
 
 **Key Components:**
 - GitHub Actions workflow for automated deployment
-- Separate staging apps (Fly.io, Cloudflare Pages)
+- Separate staging apps (railway.app, Cloudflare Pages)
 - Staging-specific configuration
 - Isolated testing environment
 - Cost optimization strategies
@@ -390,7 +390,7 @@ flyctl deploy --remote <previous_commit_hash>
 1. **Set Up Staging Environment:**
    - Follow `docs/ops/github-staging-environment-guide.md`
    - Configure GitHub Actions workflow
-   - Set up Fly.io staging app
+   - Set up railway.app staging app
    - Set up Cloudflare Pages staging
    - Configure Clerk staging application
 

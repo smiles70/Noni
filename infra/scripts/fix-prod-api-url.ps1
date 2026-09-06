@@ -14,7 +14,7 @@
 [CmdletBinding()]
 param(
     [string]$Repo = "smiles70/Noni",
-    [string]$TargetUrl = "https://noni-api.fly.dev",
+    [string]$TargetUrl = "https://noni-api-production.up.railway.app",
     [switch]$DryRun
 )
 

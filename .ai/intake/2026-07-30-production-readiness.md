@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Production Readiness Assessment — 2026-07-30
 
 **Repository**: smiles70/Mynaani  
@@ -36,7 +38,7 @@
 - Status: ✅ Completed
 - Integration Map Generated: `.ai/enterprise/integration-map.md`
 - Active Integrations:
-  - Deploy: Fly.io (backend), Cloudflare Pages (frontend)
+  - Deploy: the legacy platform (backend), Cloudflare Pages (frontend)
   - Identity: Clerk (@clerk/clerk-react)
   - Payment: Stripe (stripe==11.4.1)
   - Observability: Prometheus (prometheus-client==0.20.0)
@@ -82,7 +84,7 @@
 - **Frontend**: ✅ PASSED (`npm run build`)
   - Bundle verification: PASSED
   - No localhost references found
-  - Production API URL verified: https://noni-api.fly.dev
+  - Production API URL verified: https://noni-api-production.up.railway.app
 - **Backend**: ⏭️ Skipped (Python not installed in local environment)
 
 #### Gate 3: Unit Tests
@@ -123,7 +125,7 @@
 - ✅ **CSRF Protection**: N/A (stateless JWT auth)
 - ✅ **Input Validation**: Pydantic models for request/response validation
 - ✅ **SQL Injection Prevention**: SQLAlchemy ORM with parameterized queries (no raw `execute()` with user input found)
-- ✅ **Secrets Management**: Environment variables via pydantic-settings, Fly.io Secrets
+- ✅ **Secrets Management**: Environment variables via pydantic-settings, the legacy platform Secrets
 
 ---
 
@@ -221,16 +223,16 @@
 - ✅ Container-scan job: Trivy (CRITICAL, HIGH severity)
 
 #### Deploy Pipeline (`.github/workflows/deploy.yml`)
-- ✅ Preflight: checks for required secrets (FLY_API_TOKEN, CLOUDFLARE_API_TOKEN, etc.)
+- ✅ Preflight: checks for required secrets (LEGACY_DEPLOY_TOKEN, CLOUDFLARE_API_TOKEN, etc.)
 - ✅ Supabase DB push: conditional (if Supabase secrets configured)
-- ✅ Fly.io backend deploy: `flyctl deploy --remote-only --no-cache`
+- ✅ the legacy platform backend deploy: `the legacy CLI deploy --remote-only --no-cache`
 - ✅ Cloudflare Pages frontend deploy: pinned auth config (VITE_AUTH_PROVIDER=clerk, VITE_CLERK_PUBLISHABLE_KEY)
 - ✅ Smoke test: production endpoint health check
 
 #### Deployment Targets
-- Backend: Fly.io (fly.toml, Dockerfile, shared-cpu-1x, 2 machines min)
+- Backend: the legacy platform (legacy deploy config, Dockerfile, shared-cpu-1x, 2 machines min)
 - Frontend: Cloudflare Pages
-- Database: Fly.io Postgres (managed)
+- Database: the legacy platform Postgres (managed)
 
 ---
 

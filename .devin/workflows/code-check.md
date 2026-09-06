@@ -146,5 +146,5 @@ description: Enterprise-grade code change discipline — research, blueprint, 14
 - Never skip test code review for bugs/blockers/breakers.
 - Never leave real timers running in tests (use `vi.useFakeTimers()` + `vi.useRealTimers()`).
 - Never use `window.*` in shared/isomorphic code (use `globalThis`).
-- Never run `flyctl deploy` without dependency verification (check requirements.txt).
+- Never run `railway deploy` without dependency verification (check requirements.txt).
 - Never run `npm`/`python` commands from the wrong directory — always verify `Cwd`.

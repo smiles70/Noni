@@ -4,7 +4,7 @@ NONI Direct Cloudflare Pages Deployment
 Option B: Bypass GitHub Actions entirely
 
 Deploys frontend directly to Cloudflare Pages using API-only approach.
-No npm, no flyctl, no GitHub Actions workflow needed.
+No npm, no railway, no GitHub Actions workflow needed.
 
 Requirements:
 - Python 3.7+ (standard library only)

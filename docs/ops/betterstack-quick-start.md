@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # BetterStack Quick Start Guide
 
 **Version:** 1.0.0  
@@ -16,9 +18,9 @@ This guide provides a quick start for configuring BetterStack monitoring for the
 
 - BetterStack account (https://betterstack.com)
 - BetterStack API key
-- Fly.io CLI access
+- railway.app CLI access
 - Cloudflare account access
-- Mynaani backend deployed to Fly.io
+- Mynaani backend deployed to railway.app
 - Mynaani frontend deployed to Cloudflare Pages
 
 ---
@@ -57,7 +59,7 @@ BETTERSTACK_SOURCE_NAME=noni-api
 3. Configure:
    - **Name:** Mynaani API Health
    - **Type:** HTTP
-   - **URL:** `https://noni-api.fly.dev/health`
+   - **URL:** `https://noni-api-production.up.railway.app/health`
    - **Method:** GET
    - **Expected Status:** 200
    - **Check Interval:** 30 seconds
@@ -87,7 +89,7 @@ BETTERSTACK_SOURCE_NAME=noni-api
 3. Configure:
    - **Name:** Mynaani Auth Config
    - **Type:** HTTP
-   - **URL:** `https://noni-api.fly.dev/api/v1/auth/config`
+   - **URL:** `https://noni-api-production.up.railway.app/api/v1/auth/config`
    - **Method:** GET
    - **Expected Status:** 200
    - **Check Interval:** 60 seconds
@@ -102,7 +104,7 @@ BETTERSTACK_SOURCE_NAME=noni-api
 3. Configure:
    - **Name:** Mynaani Curriculum
    - **Type:** HTTP
-   - **URL:** `https://noni-api.fly.dev/api/v1/curriculum/units`
+   - **URL:** `https://noni-api-production.up.railway.app/api/v1/curriculum/units`
    - **Method:** GET
    - **Expected Status:** 200
    - **Check Interval:** 60 seconds
@@ -113,19 +115,19 @@ BETTERSTACK_SOURCE_NAME=noni-api
 
 ## Step 3: Log Sources
 
-### 3.1 Backend Logs (Fly.io)
+### 3.1 Backend Logs (railway.app)
 
 **Manual Setup:**
 1. Navigate to Logs → Sources
 2. Click "Add Source"
-3. Select "Fly.io"
+3. Select "railway.app"
 4. Configure:
    - **Name:** noni-api-backend
    - **App:** noni-api
 5. Configure log drain:
 
 ```bash
-fly logs drain add betterstack \
+railway logs drain add betterstack \
   --app noni-api \
   --token <BETTERSTACK_TOKEN> \
   --format json
@@ -334,7 +336,7 @@ BETTERSTACK_SOURCE_NAME=noni-api
 # Rebuild and deploy
 cd backend
 # Add environment variables
-fly deploy
+railway deploy
 ```
 
 ### 8.2 Frontend Configuration
@@ -348,7 +350,7 @@ fly deploy
 ### 9.1 Monitor Testing
 
 **Test Monitor:**
-1. Temporarily stop Fly.io machine
+1. Temporarily stop railway.app machine
 2. Verify alert fires within expected time
 3. Check notification delivery
 4. Re-enable machine and verify recovery alert
@@ -378,9 +380,9 @@ fly deploy
 **Issue:** Logs not appearing in BetterStack
 
 **Solutions:**
-1. Check Fly.io log drain status: `fly logs drains list --app noni-api`
+1. Check railway.app log drain status: `railway logs drains list --app noni-api`
 2. Verify BetterStack token is valid
-3. Check network connectivity between Fly.io and BetterStack
+3. Check network connectivity between railway.app and BetterStack
 4. Review BetterStack log source configuration
 
 ### Alerts Not Firing
@@ -450,7 +452,7 @@ After completing this quick start:
 ## References
 
 - BetterStack Documentation: https://betterstack.com/docs
-- Fly.io Documentation: https://fly.io/docs
+- railway.app Documentation: https://railway.app/docs
 - Cloudflare Documentation: https://developers.cloudflare.com
 - BetterStack Setup Guide: `docs/ops/betterstack-setup.md`
 - Clerk Fallback Strategy: `docs/ops/clerk-fallback-strategy.md`

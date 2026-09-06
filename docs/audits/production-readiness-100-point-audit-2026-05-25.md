@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Mynaani Production Readiness Audit — 100-Point Threat Model
 
 **Date:** 2026-05-25
@@ -78,7 +80,7 @@ Post-Sprint 22, Mynaani has closed its most egregious security holes and graduat
 
 **H6. GRACEFUL SHUTDOWN MISSING** (Criteria #60)
 - **Location:** `backend/app/main.py`
-- **Risk:** Fly.io SIGTERM kills in-flight requests mid-transaction, causing partial DB writes.
+- **Risk:** the legacy platform SIGTERM kills in-flight requests mid-transaction, causing partial DB writes.
 - **Fix:** Trap SIGTERM in lifespan/Gunicorn config; wait for active requests (25s ceiling).
 
 ---
@@ -174,8 +176,8 @@ ADR 0024 deprecated it, but a `pg_cron` cleanup job may still insert rows. On Su
 **Q5. What is the verified RTO for a Supabase regional outage?**
 No documented recovery time objective. No failover, no read replica, no tested point-in-time restore. **A 24-hour outage during marketing is existential.**
 
-**Q6. Are Fly secrets rotated after the hard-coded defaults were removed?**
-If production still has the old `development-secret-key-change-in-production` value, startup validation will crash the deploy. **Verify `flyctl secrets list`.**
+**Q6. Are legacy-platform secrets rotated after the hard-coded defaults were removed?**
+If production still has the old `development-secret-key-change-in-production` value, startup validation will crash the deploy. **Verify `the legacy CLI secrets list`.**
 
 **Q7. Is the SOPS age private key recoverable outside 1Password?**
 `.sops.yaml` says keys are backed up to 1Password. If access is lost, every SOPS-encrypted secret becomes permanently unreadable. **Create offline paper backup.**
@@ -187,7 +189,7 @@ If production still has the old `development-secret-key-change-in-production` va
 ### Immediate Mitigation (Next 24–48 Hours)
 - [ ] **H1:** Add security headers middleware (CSP, HSTS, X-Frame-Options)
 - [ ] **H6:** Add SIGTERM handler for graceful shutdown
-- [ ] **Q6:** Verify Fly secrets do not contain old hard-coded defaults
+- [ ] **Q6:** Verify legacy-platform secrets do not contain old hard-coded defaults
 - [ ] **M3:** Add Stripe webhook event ID deduplication (24h TTL)
 - [ ] **Q4:** Check `sessions` table size; drop if unused
 - [ ] **M7:** Add `build:prod` script + `frontend/.env.production` to prevent localhost API URL in deployed bundles
@@ -211,7 +213,7 @@ If production still has the old `development-secret-key-change-in-production` va
 - [ ] **Q5:** Document and test point-in-time restore; define RTO (1h) and RPO (15min)
 - [ ] **#91:** Add container vulnerability scanning (`trivy`) to CI
 - [ ] **#92:** Add log sampling/filtering to avoid cost explosion at scale
-- [ ] **#100:** Run chaos test: kill a Fly machine mid-checkout, verify no orphaned purchases
+- [ ] **#100:** Run chaos test: kill a legacy-platform machine mid-checkout, verify no orphaned purchases
 
 ---
 
@@ -222,7 +224,7 @@ If production still has the old `development-secret-key-change-in-production` va
 | **Trust Architecture & Secure Gatekeeping** | 25 | **17 / 25** | Auth is solid (Clerk RS256, fail-closed, discriminated errors, no CSRF, no XSS vectors). Dinged for missing security headers, no API versioning, no idempotency keys, and no BOLA hardening beyond entitlements. |
 | **Quality, Scalability & State Resiliency** | 25 | **15 / 25** | Good modular boundaries, DB pooling configured, race-handled account upserts, no circular deps. Dinged for no background queue, no circuit breakers, monolithic auth files, no caching layer, and missing error boundaries. |
 | **Operational Telemetry & Silent Failure Defenses** | 25 | **16 / 25** | Prometheus metrics, structured JSON logging, request ID tracing, health checks, and CI testing operational. Dinged for no circuit breaker telemetry, no DB timeout policies, no graceful shutdown, no DLQ, and missing ghost-catch-block audit. |
-| **Operational Blindspot Assessment** | 25 | **11 / 25** | Fly secrets externalized, Stripe webhooks verify signatures, backups and restore drills exist in CI. Dinged for unverified WAF deployment, unknown SSL mode, no documented RTO/RPO, no container scanning, no secret rotation automation, and no chaos testing. |
+| **Operational Blindspot Assessment** | 25 | **11 / 25** | legacy-platform secrets externalized, Stripe webhooks verify signatures, backups and restore drills exist in CI. Dinged for unverified WAF deployment, unknown SSL mode, no documented RTO/RPO, no container scanning, no secret rotation automation, and no chaos testing. |
 
 ### FINAL JUDGMENT
 

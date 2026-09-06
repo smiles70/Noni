@@ -126,6 +126,11 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
           Enter the email you would like to use. We will send you a one-time
           link in a moment. There is no password to remember.
         </p>
+        <p style={BODY}>
+          The link arrives by email from an address ending in mynaani.com.
+          We will never email or call you to ask for a password or payment
+          details.
+        </p>
         {magicSent && (
           <p style={ALERT_TEXT} role="status">
             Please check your email and click the link we sent.

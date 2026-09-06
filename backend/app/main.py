@@ -148,7 +148,7 @@ async def lifespan(app: FastAPI):
     _verify_crypto_dependency()
     _verify_production_secrets()
     _seed_dev_products()
-    # Migrations run via fly.toml deploy.release_command before
+    # Migrations run via deploy release_command before
     # any web workers boot. Calling alembic here would cause
     # concurrent upgrades when gunicorn spawns multiple workers.
     try:

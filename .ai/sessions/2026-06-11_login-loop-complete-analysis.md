@@ -17,6 +17,7 @@ agents_involved:
   - Audit
   - Recovery
 ---
+> **Deprecated:** legacy platform retired; production runs on Railway.
 
 # Session: Login Loop Complete Analysis
 
@@ -108,7 +109,7 @@ if (!code) {  // Network error (localhost unreachable)
 1. Navigate to: `https://github.com/smiles70/Mynaani/actions/workflows/deploy.yml`
 2. Click "Run workflow" on `main` branch
 3. Verify secrets are set:
-   - `VITE_API_BASE_URL=https://noni-api.fly.dev`
+   - `VITE_API_BASE_URL=https://noni-api-production.up.railway.app`
    - `VITE_CLERK_PUBLISHABLE_KEY=pk_live_...`
 
 ### Option B: Manual Browser Verification

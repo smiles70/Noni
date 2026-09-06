@@ -14,10 +14,10 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "=== Sprint 27 SRE-B5 — DB Query Performance Monitor ===" -ForegroundColor Cyan
 
-# Fetch DATABASE_URL from Fly secrets
-$dbUrlRaw = fly secrets get DATABASE_URL -a noni-api 2>$null
+# Fetch DATABASE_URL from Railway secrets
+$dbUrlRaw = railway secrets get DATABASE_URL -a noni-api 2>$null
 if (-not $dbUrlRaw) {
-    throw "Could not retrieve DATABASE_URL from Fly secrets."
+    throw "Could not retrieve DATABASE_URL from Railway secrets."
 }
 
 # Convert to psql-friendly connection string (drop sslmode if present, psql handles it)

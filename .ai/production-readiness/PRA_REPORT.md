@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Production Readiness Assessment — Mynaani
 
 **Process:** v9.51
@@ -29,7 +31,7 @@ The repository is structurally mature and well-documented. Frontend and CI/CD ar
 | Documentation completeness | Good | README, ARCHITECTURE, 27 ADRs, ops runbooks, threat model, integration setup, and SOPs are present. |
 | Performance baseline | Not assessed | Lighthouse and pa11y were not run. |
 | Observability readiness | Good | Prometheus metrics, structured JSON logging, and request IDs are configured. SIEM integration is missing. |
-| CI/CD and deploy readiness | Good | GitHub Actions cover lint, test, build, security scan, Docker, Trivy, Fly.io, and Cloudflare Pages deploy. |
+| CI/CD and deploy readiness | Good | GitHub Actions cover lint, test, build, security scan, Docker, Trivy, the legacy platform, and Cloudflare Pages deploy. |
 | Data classification and compliance | Good | GDPR erasure, PII handling, and audit retention are present. SOC2/HIPAA are not claimed. |
 | Dependency health | At risk | Frontend npm vulnerabilities require breaking-change upgrades. |
 

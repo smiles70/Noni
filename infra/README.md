@@ -9,7 +9,7 @@ infra/
   .env.prod.sops.yaml         SOPS-encrypted production secrets (created by bootstrap)
   scripts/                    Implementation of vendor-dependent Make targets
   cloudflare/                 WAF rules and Pages config (as code)
-  fly/                        Fly app configuration (fly.toml lives at repo root)
+  railway/                        Railway app configuration (railway.toml lives at repo root)
 ```
 
 ## Quick start (local dev only — no vendor accounts needed)

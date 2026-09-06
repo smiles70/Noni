@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Intake — Curriculum UI Simplification and Noni Brand Audit
 
 **Date:** 2026-08-28
@@ -142,7 +144,7 @@ Two related pieces of feedback during the mobile-readiness pass:
 | `frontend/package.json` | 1 | `name` may be `noni-frontend` | Decide if npm package rename is in scope |
 | `pyproject.toml` | 1 | Project name `noni` | Decide if package rename is in scope |
 | `docker-compose.yml` | 5 | Service names `noni-api`, `noni-db`, etc. | In-scope only if re-branding infrastructure |
-| `fly.toml` | 1 | `app` name `noni` | In-scope only if re-branding infrastructure |
+| `legacy deploy config` | 1 | `app` name `noni` | In-scope only if re-branding infrastructure |
 | `.env.example` / `infra/.env.example` | 20+ | Variables `NONI_*` / `noni_*` | Rename if secrets/dashboards allow |
 | `.github/workflows/*.yml` | 14+ | Workflow variables and names use `noni` | Update to `mynaani` or neutral `app` |
 
@@ -158,7 +160,7 @@ Two related pieces of feedback during the mobile-readiness pass:
 ### Decision
 
 - **Decision ID:** `DEC-B-001`
-- **Statement:** Replace user-facing and front-end internal `noni` references with `mynaani` (or neutral `app`/`mynaani` where `mynaani` is not public-facing). Do not attempt to rename infrastructure identifiers (`docker-compose`, `fly.toml`, GitHub org, Railway project, DNS) in this pass; document those as a separate infrastructure-rebrand backlog.
+- **Statement:** Replace user-facing and front-end internal `noni` references with `mynaani` (or neutral `app`/`mynaani` where `mynaani` is not public-facing). Do not attempt to rename infrastructure identifiers (`docker-compose`, `legacy deploy config`, GitHub org, Railway project, DNS) in this pass; document those as a separate infrastructure-rebrand backlog.
 - **extraction_method:** `human_confirmed`
 - **confidence:** 0.90
 

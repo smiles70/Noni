@@ -1,8 +1,10 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Enterprise Security Threat Model & Adversarial Audit
 
 **Date:** 2026-05-25  
 **Auditor:** Automated adversarial Senior SRE / Security Architect  
-**Scope:** Full-stack — backend (FastAPI), frontend (React/Vite), infrastructure (Fly.io, Cloudflare, Supabase, Stripe, Clerk)
+**Scope:** Full-stack — backend (FastAPI), frontend (React/Vite), infrastructure (the legacy platform, Cloudflare, Supabase, Stripe, Clerk)
 
 ---
 
@@ -25,7 +27,7 @@ def export_telemetry_json(db: Session = Depends(get_db)) -> Dict[str, Any]:
 ```
 
 **The Risk:**  
-Anyone with network access to `https://noni-api.fly.dev/api/telemetry/export` can dump the entire `TelemetryEvent` table without authentication. This table contains learner interaction data, auth session outcomes, curriculum retrieval choices, and potentially PII-adjacent metadata (IP-derived hashes, user IDs, event metadata). An attacker can enumerate user behavior patterns, identify active learners, and extract structured data for phishing or competitive intelligence. The CSV endpoint (`/export.csv`) compounds this by delivering a ready-made spreadsheet.
+Anyone with network access to `https://noni-api-production.up.railway.app/api/telemetry/export` can dump the entire `TelemetryEvent` table without authentication. This table contains learner interaction data, auth session outcomes, curriculum retrieval choices, and potentially PII-adjacent metadata (IP-derived hashes, user IDs, event metadata). An attacker can enumerate user behavior patterns, identify active learners, and extract structured data for phishing or competitive intelligence. The CSV endpoint (`/export.csv`) compounds this by delivering a ready-made spreadsheet.
 
 **The Immediate Fix:**
 ```python
@@ -87,7 +89,7 @@ SESSION_SECRET: str = "dev-session-secret-change-in-production"
 ```
 
 **The Risk:**  
-If the operator forgets to override `SECRET_KEY` or `SESSION_SECRET` in the Fly environment, the production instance boots with publicly known, hard-coded secrets. An attacker who discovers this (via source-code audit, misconfiguration leak, or insider threat) can forge signed session cookies. The `verify_session_cookie` function in `backend/core/security.py` uses HMAC-SHA256 keyed by `SESSION_SECRET`; with the known key, anyone can mint valid session cookies and impersonate arbitrary users.
+If the operator forgets to override `SECRET_KEY` or `SESSION_SECRET` in the legacy-platform environment, the production instance boots with publicly known, hard-coded secrets. An attacker who discovers this (via source-code audit, misconfiguration leak, or insider threat) can forge signed session cookies. The `verify_session_cookie` function in `backend/core/security.py` uses HMAC-SHA256 keyed by `SESSION_SECRET`; with the known key, anyone can mint valid session cookies and impersonate arbitrary users.
 
 **The Immediate Fix:**
 ```python
@@ -179,7 +181,7 @@ Consolidate on a single verification path. Remove the inlined Clerk verification
 All telemetry counters are stored in process-local `defaultdict(int)` and `list` structures protected by a `threading.Lock`. On process restart (Gunicorn worker recycling, machine redeploy, crash), all counters are lost. There is no Prometheus exporter, no external time-series database, no alerting threshold. The team cannot observe auth failure spikes, rate-limit triggers, or curriculum endpoint latency degradation without logging into the machine and reading stdout. This is Stage 0 telemetry that has not graduated.
 
 **The Immediate Fix:**
-Expose a `/metrics` endpoint compatible with Prometheus (using `prometheus_client`). Replace in-memory counters with Counter and Histogram metrics. Deploy a Grafana instance or use Fly's built-in metrics integration. At minimum, ship counters to stdout in a structured format (OpenTelemetry / JSON) that a log aggregator can parse.
+Expose a `/metrics` endpoint compatible with Prometheus (using `prometheus_client`). Replace in-memory counters with Counter and Histogram metrics. Deploy a Grafana instance or use legacy-platform's built-in metrics integration. At minimum, ship counters to stdout in a structured format (OpenTelemetry / JSON) that a log aggregator can parse.
 
 ---
 
@@ -290,7 +292,7 @@ Remove the custom handler initialization. Use the root logger or a named logger 
 
 ### Q1. Are Supabase connection strings encrypted in transit?
 **What we see:** `DATABASE_URL` points to Supabase. The connection string contains the password.  
-**Catastrophic consequence if unconfigured:** If `sslmode=require` is not set in the connection string, the database password traverses the internet in plaintext between Fly.io and Supabase. An attacker on the same network segment (or a compromised ISP) can sniff credentials and gain full read/write access to the entire learner database, including PII, payment records, and auth hashes.
+**Catastrophic consequence if unconfigured:** If `sslmode=require` is not set in the connection string, the database password traverses the internet in plaintext between the legacy platform and Supabase. An attacker on the same network segment (or a compromised ISP) can sniff credentials and gain full read/write access to the entire learner database, including PII, payment records, and auth hashes.
 
 ### Q2. Is the Cloudflare WAF JSON actually deployed?
 **What we see:** `infra/cloudflare/waf-rules.json` exists locally.  
@@ -302,7 +304,7 @@ Remove the custom handler initialization. Use the root logger or a named logger 
 
 ### Q4. Are Stripe webhook IPs allowlisted at the edge?
 **What we see:** The webhook endpoint accepts any POST.  
-**Catastrophic consequence if unconfigured:** Without IP allowlisting at Cloudflare or Fly's proxy layer, an attacker can flood the webhook endpoint with fake events. While signature verification rejects them, each request still triggers an expensive HMAC-SHA256 verification, a DB session allocation, and a 400 response. At volume, this exhausts CPU credits on `shared-cpu-1x` machines and drops legitimate checkout completions, resulting in lost revenue and learner confusion.
+**Catastrophic consequence if unconfigured:** Without IP allowlisting at Cloudflare or legacy-platform's proxy layer, an attacker can flood the webhook endpoint with fake events. While signature verification rejects them, each request still triggers an expensive HMAC-SHA256 verification, a DB session allocation, and a 400 response. At volume, this exhausts CPU credits on `shared-cpu-1x` machines and drops legitimate checkout completions, resulting in lost revenue and learner confusion.
 
 ### Q5. What is the RTO/RPO for a Supabase outage?
 **What we see:** No incident response documentation exists.  
@@ -326,7 +328,7 @@ Remove the custom handler initialization. Use the root logger or a named logger 
 - [ ] **I2.** Add `get_current_account` dependency to `/api/signals/*` endpoints; replace raw `dict` payload with strict Pydantic schema.
 - [ ] **I3.** Replace hard-coded `SECRET_KEY` / `SESSION_SECRET` defaults with empty strings; add production startup validation that crashes on weak values.
 - [ ] **I4.** Remove `console.warn` leak from `client.ts` (or gate behind `import.meta.env.DEV`).
-- [ ] **I5.** Rotate `SECRET_KEY` and `SESSION_SECRET` in Fly secrets immediately.
+- [ ] **I5.** Rotate `SECRET_KEY` and `SESSION_SECRET` in legacy-platform secrets immediately.
 - [ ] **I6.** Apply per-IP rate limits to all public `/api/curriculum/*` endpoints.
 - [ ] **I7.** Add IP + rate-limit pre-check to `/api/billing/stripe-webhook` before signature verification.
 
@@ -337,7 +339,7 @@ Remove the custom handler initialization. Use the root logger or a named logger 
 - [ ] **S3.** Implement `X-Request-ID` middleware for distributed request tracing across frontend → backend → DB.
 - [ ] **S4.** Add structured JSON logging (using `python-json-logger`) with request ID correlation.
 - [ ] **S5.** Review and prune the unused `sessions` table and any associated cleanup jobs.
-- [ ] **S6.** Add Stripe webhook IP allowlisting at the edge (Cloudflare or Fly proxy layer).
+- [ ] **S6.** Add Stripe webhook IP allowlisting at the edge (Cloudflare or legacy-platform proxy layer).
 - [ ] **S7.** Harden `auth/config` to not expose raw provider string in production.
 
 ### Medium-Term (Pre-Scale)
@@ -370,7 +372,7 @@ Remove the custom handler initialization. Use the root logger or a named logger 
 
 **Date:** 2026-05-25 (same day, post-implementation)  
 **Items closed:** I1, I2, I3, I4, I6, I7, S1, S2, S3, S4, S7  
-**Items remaining:** I5 (manual Fly secret rotation), S5 (sessions table pruning), S6 (Stripe edge IP allowlisting), M1–M7 (medium-term)
+**Items remaining:** I5 (manual legacy-platform secret rotation), S5 (sessions table pruning), S6 (Stripe edge IP allowlisting), M1–M7 (medium-term)
 
 ### Closed Vulnerabilities
 
@@ -391,9 +393,9 @@ Remove the custom handler initialization. Use the root logger or a named logger 
 
 | Gap | Risk | Path to Closure |
 |:---|:---|:---|
-| I5 — Secret rotation in Fly | Low (validation catches misses) | `flyctl secrets set SECRET_KEY=... SESSION_SECRET=...` then redeploy |
+| I5 — Secret rotation in legacy-platform | Low (validation catches misses) | `the legacy CLI secrets set SECRET_KEY=... SESSION_SECRET=...` then redeploy |
 | S5 — Unused `sessions` table | Medium (disk-full on free tier) | Alembic migration to drop table + disable pg_cron job |
-| S6 — Stripe webhook edge allowlisting | Medium (CPU DoS at volume) | Cloudflare WAF rule or Fly proxy config restricting source IPs to Stripe ranges |
+| S6 — Stripe webhook edge allowlisting | Medium (CPU DoS at volume) | Cloudflare WAF rule or legacy-platform proxy config restricting source IPs to Stripe ranges |
 | Q1 — Supabase SSL in transit | Unknown | Verify `sslmode=require` in `DATABASE_URL` |
 | Q2 — Cloudflare WAF deployed | Unknown | Run `wrangler deploy` / Terraform apply and verify rule activation |
 | Q3 — SOPS age key recovery | Unknown | Document offline backup procedure outside 1Password |

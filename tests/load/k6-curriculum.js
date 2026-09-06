@@ -5,7 +5,7 @@
  *   k6 run --env API_BASE=http://localhost:8000 tests/load/k6-curriculum.js
  *
  * Run against staging/production:
- *   k6 run --env API_BASE=https://noni-api.fly.dev tests/load/k6-curriculum.js
+ *   k6 run --env API_BASE=https://noni-api-production.up.railway.app tests/load/k6-curriculum.js
  *
  * Target: validate 100 concurrent users (soft-launch ceiling).
  * SLOs: p99 latency < 500ms, error rate < 0.1%

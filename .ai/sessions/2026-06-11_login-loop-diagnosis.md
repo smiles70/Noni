@@ -13,6 +13,7 @@ agents_involved:
   - Test
   - Recovery
 ---
+> **Deprecated:** legacy platform retired; production runs on Railway.
 
 # Session: Login Loop Diagnosis
 
@@ -67,7 +68,7 @@ Since code has:
 2. ✅ G2 Bug 2 fixed (uses `lifespan`, not `cache_ttl`)
 3. ✅ Frontend loads (not G3)
 
-**Most Likely Cause:** Docker build cache issue on Fly.io
+**Most Likely Cause:** Docker build cache issue on the legacy platform
 
 The production container may have stale layers with incomplete dependencies, OR Clerk environment variables are misconfigured.
 
@@ -107,17 +108,17 @@ The production container may have stale layers with incomplete dependencies, OR 
 
 1. **Run diagnostics:**
    ```bash
-   flyctl logs --app noni-api --no-tail | head -100
+   the legacy CLI logs --app noni-api --no-tail | head -100
    ```
 
 2. **Apply fix:**
    ```bash
-   flyctl deploy --remote-only --no-cache
+   the legacy CLI deploy --remote-only --no-cache
    ```
 
 3. **Verify:**
    ```bash
-   curl https://noni-api.fly.dev/health
+   curl https://noni-api-production.up.railway.app/health
    # Should return {"status":"healthy",...}
    ```
 

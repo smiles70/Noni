@@ -5,7 +5,7 @@ Automatically modifies GitHub Actions workflow to skip broken backend step
 
 This script:
 1. Gets current deploy.yml via GitHub API
-2. Modifies it programmatically (removes fly-deploy-backend dependency)
+2. Modifies it programmatically (removes railway-deploy-backend dependency)
 3. Commits the change via API
 4. Triggers the workflow
 
@@ -135,12 +135,12 @@ class GitHubWorkflowFixer:
         
         Original:
           cloudflare-pages-deploy:
-            needs: [preflight, fly-deploy-backend]
+            needs: [preflight, railway-deploy-backend]
         
         Fixed:
           cloudflare-pages-deploy:
             needs: [preflight]
-            # Note: fly-deploy-backend skipped - backend already healthy
+            # Note: railway-deploy-backend skipped - backend already healthy
         """
         print_step("Analyzing workflow structure...", "wait")
         
@@ -158,15 +158,15 @@ class GitHubWorkflowFixer:
                 continue
             
             if in_cloudflare_job:
-                # Check if this is the needs line with fly-deploy-backend
-                if 'needs:' in line and 'fly-deploy-backend' in line:
+                # Check if this is the needs line with railway-deploy-backend
+                if 'needs:' in line and 'railway-deploy-backend' in line:
                     # Replace with just preflight
                     indent = len(line) - len(line.lstrip())
-                    new_line = ' ' * indent + 'needs: [preflight]  # AUTO-FIXED: removed fly-deploy-backend dependency'
+                    new_line = ' ' * indent + 'needs: [preflight]  # AUTO-FIXED: removed railway-deploy-backend dependency'
                     modified_lines.append(new_line)
                     found_needs = True
                     changes_made = True
-                    print_step(f"Line {i+1}: Removed fly-deploy-backend dependency", "success")
+                    print_step(f"Line {i+1}: Removed railway-deploy-backend dependency", "success")
                     continue
                 
                 # If we hit another job definition, we're done with cloudflare job
@@ -183,7 +183,7 @@ class GitHubWorkflowFixer:
         print_step(f"Workflow modified ({len(new_content)} chars)", "success")
         return new_content, True
     
-    def commit_workflow(self, new_content, sha, message="AUTO-FIX: Remove fly-deploy-backend dependency to unblock frontend deploy"):
+    def commit_workflow(self, new_content, sha, message="AUTO-FIX: Remove railway-deploy-backend dependency to unblock frontend deploy"):
         """Commit the fixed workflow"""
         print_step("Committing fixed workflow...", "wait")
         

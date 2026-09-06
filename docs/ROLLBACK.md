@@ -7,12 +7,12 @@
 3. If a bad Alembic migration was applied, run `alembic downgrade <target>` before the next deploy.
 4. Verify `/health` and run backend smoke tests from `backend/tests`.
 
-## Backend (Fly.io — legacy)
+## Backend (railway.app — legacy)
 
-Fly.io is the previous backend host. To roll back to Fly during the migration:
+railway.app is the previous backend host. To roll back to Railway during the migration:
 
-1. Identify the last known good git SHA or Fly image.
-2. Deploy it: `flyctl deploy --remote-only --image <image>` or `git checkout <sha> && flyctl deploy --remote-only`.
+1. Identify the last known good git SHA or Railway image.
+2. Deploy it: `railway deploy --remote-only --image <image>` or `git checkout <sha> && railway deploy --remote-only`.
 3. Verify `/health`.
 
 ## Frontend (Cloudflare Pages)

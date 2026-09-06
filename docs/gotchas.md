@@ -58,10 +58,10 @@ The `KeyError` masked the `TypeError`: the formatter crashed BEFORE the request 
 
 ```bash
 # Check for KeyError in logs
-/home/kim/.fly/bin/flyctl logs --app noni-api --no-tail | grep "KeyError: 'levelname'"
+/home/kim/.railway/bin/railway logs --app noni-api --no-tail | grep "KeyError: 'levelname'"
 
 # Check for PyJWKClient TypeError in logs  
-/home/kim/.fly/bin/flyctl logs --app noni-api --no-tail | grep "unexpected keyword argument 'cache_ttl'"
+/home/kim/.railway/bin/railway logs --app noni-api --no-tail | grep "unexpected keyword argument 'cache_ttl'"
 
 # Local reproduction:
 python -c "
@@ -234,7 +234,7 @@ This fails the process at startup instead of letting it serve broken
 
 - Deployed frontend shows "This page is paused." immediately after loading.
 - Browser devtools Network tab shows failed requests to `http://localhost:8000/api/...`
-- The backend (`noni-api.fly.dev`) is healthy and responding normally.
+- The backend (`noni-api-production.up.railway.app`) is healthy and responding normally.
 - The failure is invisible until a user loads the deployed site; local dev works fine.
 
 ### Root cause
@@ -253,7 +253,7 @@ The build command was:
 ./node_modules/.bin/tsc -b && ./node_modules/.bin/vite build
 ```
 
-The `VITE_API_BASE_URL=https://noni-api.fly.dev` prefix was missing.
+The `VITE_API_BASE_URL=https://noni-api-production.up.railway.app` prefix was missing.
 
 ### Confirmation procedure
 
@@ -271,7 +271,7 @@ curl -s https://<deployed-frontend-url>/ | grep -o 'localhost:8000' | head -1
 Rebuild with the environment variable set via `.env.production` (most reliable for WSL):
 ```bash
 cd frontend
-printf "VITE_API_BASE_URL=https://noni-api.fly.dev\n" > .env.production
+printf "VITE_API_BASE_URL=https://noni-api-production.up.railway.app\n" > .env.production
 ./node_modules/.bin/tsc -b && ./node_modules/.bin/vite build
 ```
 

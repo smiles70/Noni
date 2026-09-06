@@ -21,16 +21,16 @@ import pytest
 # =============================================================================
 
 
-def test_fly_toml_comment_vs_release_command():
+def test_deploy_config_comment_vs_release_command():
     """
-    Real enforcement: if fly.toml comments claim migrations run in lifespan,
+    Real enforcement: if railway.toml comments claim migrations run in lifespan,
     release_command must NOT exist (or vice versa).
     """
-    fly_path = Path("fly.toml")
-    if not fly_path.exists():
-        pytest.skip("fly.toml not present")
+    RAILWAY_path = Path("railway.toml")
+    if not RAILWAY_path.exists():
+        pytest.skip("railway.toml not present")
 
-    text = fly_path.read_text(encoding="utf-8")
+    text = RAILWAY_path.read_text(encoding="utf-8")
 
     # Positive claim: comment says migrations run IN/INSIDE lifespan.
     # Merely warning against lifespan (e.g. "NEVER run alembic inside
@@ -44,14 +44,14 @@ def test_fly_toml_comment_vs_release_command():
 
     if has_lifespan_claim and has_release_command:
         pytest.fail(
-            "fly.toml COMMENT claims migrations run in lifespan, "
+            "railway.toml COMMENT claims migrations run in lifespan, "
             "but [deploy] release_command is also present. "
             "These are contradictory. Pick one and update the comment."
         )
 
     if not has_lifespan_claim and not has_release_command:
         pytest.fail(
-            "fly.toml has no release_command AND no lifespan comment. "
+            "railway.toml has no release_command AND no lifespan comment. "
             "Migrations must run somewhere. Add release_command or document lifespan."
         )
 
@@ -61,18 +61,18 @@ def test_single_region_has_redundancy():
     Real enforcement: single-region deployment must have intra-region
     redundancy (min_machines_running >= 2). No tautology.
     """
-    fly_path = Path("fly.toml")
-    if not fly_path.exists():
-        pytest.skip("fly.toml not present")
+    RAILWAY_path = Path("railway.toml")
+    if not RAILWAY_path.exists():
+        pytest.skip("railway.toml not present")
 
-    text = fly_path.read_text(encoding="utf-8")
+    text = RAILWAY_path.read_text(encoding="utf-8")
 
     # Count declared primary regions
     region_matches = re.findall(
         r'^\s*primary_region\s*=\s*"([^"]+)"', text, re.MULTILINE
     )
     if len(region_matches) == 0:
-        pytest.fail("No primary_region declared in fly.toml")
+        pytest.fail("No primary_region declared in railway.toml")
 
     if len(region_matches) == 1:
         # Single region — enforce redundancy
@@ -419,7 +419,7 @@ def test_no_alembic_upgrade_in_lifespan():
     workers. All workers execute lifespan independently.
 
     Real enforcement: verify lifespan function does NOT call alembic.
-    Correct pattern: fly.toml [deploy] release_command.
+    Correct pattern: railway.toml [deploy] release_command.
     """
     main_path = Path("backend/app/main.py")
     if not main_path.exists():
@@ -446,7 +446,7 @@ def test_no_alembic_upgrade_in_lifespan():
     assert "alembic" not in code_only.lower(), (
         "Gotcha: alembic detected inside lifespan. "
         "Gunicorn multi-worker = concurrent upgrades = deadlock on "
-        "alembic_version table lock. Remove and use fly.toml "
+        "alembic_version table lock. Remove and use railway.toml "
         "[deploy] release_command instead."
     )
 

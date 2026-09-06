@@ -19,7 +19,7 @@ require jq
 PRODUCT_NAME="Mynaani Modules 4-5"
 PRICE_CENTS="${STRIPE_BOOTSTRAP_PRICE_CENTS:-4900}"   # default $49 — change in ADR 0021 if needed
 CURRENCY="${STRIPE_BOOTSTRAP_CURRENCY:-usd}"
-WEBHOOK_URL="${PROD_WEBHOOK_URL:-https://noni-api.fly.dev/api/billing/stripe-webhook}"
+WEBHOOK_URL="${PROD_WEBHOOK_URL:-https://noni-api-production.up.railway.app/api/billing/stripe-webhook}"
 
 echo "==> Looking for existing product '$PRODUCT_NAME'"
 PRODUCT_ID="$(stripe products list --limit 100 | jq -r --arg n "$PRODUCT_NAME" '.data[] | select(.name == $n) | .id' | head -n1 || true)"

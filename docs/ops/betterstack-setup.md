@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # BetterStack Monitoring Setup
 
 **Version:** 1.0.0  
@@ -15,8 +17,8 @@ BetterStack provides unified monitoring, uptime monitoring, and alerting for the
 ## Prerequisites
 
 - BetterStack account (https://betterstack.com)
-- Fly.io CLI installed and authenticated
-- Mynaani backend deployed to Fly.io
+- railway.app CLI installed and authenticated
+- Mynaani backend deployed to railway.app
 - Mynaani frontend deployed to Cloudflare Pages
 
 ---
@@ -30,7 +32,7 @@ BetterStack provides unified monitoring, uptime monitoring, and alerting for the
 **Configuration:**
 - **Name:** Mynaani API Health
 - **Type:** HTTP
-- **URL:** `https://noni-api.fly.dev/health`
+- **URL:** `https://noni-api-production.up.railway.app/health`
 - **Request Method:** GET
 - **Expected Status Code:** 200
 - **Check Interval:** 30 seconds
@@ -39,7 +41,7 @@ BetterStack provides unified monitoring, uptime monitoring, and alerting for the
 
 **Verification:**
 ```bash
-curl -I https://noni-api.fly.dev/health
+curl -I https://noni-api-production.up.railway.app/health
 # Expected: HTTP/2 200
 ```
 
@@ -70,7 +72,7 @@ curl -I https://noni-web.pages.dev
 **Configuration:**
 - **Name:** Mynaani Auth Config
 - **Type:** HTTP
-- **URL:** `https://noni-api.fly.dev/api/v1/auth/config`
+- **URL:** `https://noni-api-production.up.railway.app/api/v1/auth/config`
 - **Request Method:** GET
 - **Expected Status Code:** 200
 - **Check Interval:** 60 seconds
@@ -84,7 +86,7 @@ curl -I https://noni-web.pages.dev
 **Configuration:**
 - **Name:** Mynaani Curriculum
 - **Type:** HTTP
-- **URL:** `https://noni-api.fly.dev/api/v1/curriculum/units`
+- **URL:** `https://noni-api-production.up.railway.app/api/v1/curriculum/units`
 - **Request Method:** GET
 - **Expected Status Code:** 200
 - **Check Interval:** 60 seconds
@@ -104,17 +106,17 @@ curl -I https://noni-web.pages.dev
 1. **Create Log Source in BetterStack:**
    - Navigate to Logs > Sources
    - Click "Add Source"
-   - Select "Fly.io"
+   - Select "railway.app"
    - Name: `noni-api-backend`
 
-2. **Configure Fly.io Integration:**
+2. **Configure railway.app Integration:**
    ```bash
-   # Install BetterStack agent on Fly.io
-   fly scale count 0 --app noni-api
-   fly deploy --remote-only
+   # Install BetterStack agent on railway.app
+   railway scale count 0 --app noni-api
+   railway deploy --remote-only
    
    # Add BetterStack log drain
-   fly logs drain add betterstack \
+   railway logs drain add betterstack \
      --app noni-api \
      --token <BETTERSTACK_TOKEN> \
      --format json
@@ -271,7 +273,7 @@ curl -I https://noni-web.pages.dev
 1. **Configure Prometheus Scraping:**
    - Navigate to Metrics > Sources
    - Add Prometheus source
-   - URL: `https://noni-api.fly.dev/metrics`
+   - URL: `https://noni-api-production.up.railway.app/metrics`
    - Scrape interval: 30 seconds
 
 2. **Key Metrics to Monitor:**
@@ -302,7 +304,7 @@ curriculum_completions = Counter(
 ### 6.1 Alert Testing
 
 **Test Alert Delivery:**
-1. Temporarily disable a Fly.io machine
+1. Temporarily disable a railway.app machine
 2. Verify alert fires within expected time
 3. Confirm notification delivery to all channels
 4. Re-enable machine and verify recovery alert
@@ -347,9 +349,9 @@ curriculum_completions = Counter(
 ### 7.2 Troubleshooting
 
 **Logs Not Appearing:**
-1. Check Fly.io log drain status: `fly logs drains list --app noni-api`
+1. Check railway.app log drain status: `railway logs drains list --app noni-api`
 2. Verify BetterStack token is valid
-3. Check network connectivity between Fly.io and BetterStack
+3. Check network connectivity between railway.app and BetterStack
 4. Review BetterStack log source configuration
 
 **Alerts Not Firing:**
@@ -412,7 +414,7 @@ curriculum_completions = Counter(
 ## 10. References
 
 - BetterStack Documentation: https://betterstack.com/docs
-- Fly.io Logging: https://fly.io/docs/observability/logging
+- railway.app Logging: https://railway.app/docs/observability/logging
 - Cloudflare Logpush: https://developers.cloudflare.com/logs/get-started
 - Incident Response Runbook: `docs/ops/incident-response-runbook.md`
 - Recovery Runbook: `docs/ops/recovery-runbook.md`

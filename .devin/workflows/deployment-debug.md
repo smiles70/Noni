@@ -1,10 +1,10 @@
 ---
-description: Systematic debugging workflow for Fly.io deployment failures, Gunicorn worker boot errors, and Docker cache issues. Based on production incidents and external expert resources.
+description: Systematic debugging workflow for railway.app deployment failures, Gunicorn worker boot errors, and Docker cache issues. Based on production incidents and external expert resources.
 ---
 
 # Deployment Debug Workflow
 
-Use this workflow when `flyctl deploy` fails with health check timeouts, worker boot failures, or `ModuleNotFoundError`.
+Use this workflow when `railway deploy` fails with health check timeouts, worker boot failures, or `ModuleNotFoundError`.
 
 ## Phase 1: STOP — Do Not Guess
 
@@ -17,11 +17,11 @@ Use this workflow when `flyctl deploy` fails with health check timeouts, worker 
 // turbo
 1. Get logs from the FIRST failed boot cycle (not restart loops):
    ```bash
-   flyctl logs --app noni-api --machine <ID> --no-tail | head -50
+   railway logs --app noni-api --machine <ID> --no-tail | head -50
    ```
 2. Look for Python tracebacks, `ModuleNotFoundError`, `SyntaxError`, `ImportError`.
 3. If the log shows `HaltServer 'Worker failed to boot.' 3`, the error is in **import/startup phase**, not runtime.
-4. Check `flyctl status --app noni-api` and `flyctl checks list --app noni-api`.
+4. Check `railway status --app noni-api` and `railway checks list --app noni-api`.
 
 ## Phase 3: Root Cause Classification
 
@@ -36,7 +36,7 @@ Use this workflow when `flyctl deploy` fails with health check timeouts, worker 
 - **Check for Alembic in lifespan.** If `main.py` lifespan calls `alembic upgrade head`, this is the cause.
 - Gunicorn spawns multiple workers. Each executes lifespan independently.
 - Concurrent Alembic = deadlock on `alembic_version` table lock.
-- **Fix:** Move to `fly.toml` `[deploy] release_command = "alembic upgrade head"`. Remove from lifespan.
+- **Fix:** Move to `railway.toml` `[deploy] release_command = "alembic upgrade head"`. Remove from lifespan.
 
 ### Category C: 19–20 Second Timeout Pattern
 - If workers boot then crash after ~19s, check for:
@@ -48,14 +48,14 @@ Use this workflow when `flyctl deploy` fails with health check timeouts, worker 
 
 1. Do not add a dependency version without checking Python compatibility.
 2. Do not modify `lifespan` without confirming the release_command path.
-3. Cross-reference all changes against `infra/Dockerfile` and `fly.toml`.
+3. Cross-reference all changes against `infra/Dockerfile` and `railway.toml`.
 
 ## Phase 5: Apply Fix — Single Change at a Time
 
 1. Make ONE change.
 2. Commit and push.
 3. Deploy.
-4. Verify: `flyctl status --app noni-api` should show `started` with checks `passing`.
+4. Verify: `railway status --app noni-api` should show `started` with checks `passing`.
 5. If still failing, return to Phase 2. Do not stack multiple fixes.
 
 ## Phase 6: Post-Incident Prevention
@@ -70,4 +70,4 @@ Use this workflow when `flyctl deploy` fails with health check timeouts, worker 
 - **Rule 2:** The real error is in the FIRST boot log. Restart loops obscure it.
 - **Rule 3:** Fixing one layer can expose a deeper layer. Continue until checks pass.
 - **Rule 4:** `release_command` runs ONCE before workers boot. `lifespan` runs PER WORKER. Never put migrations in lifespan.
-- **Rule 5:** Run `flyctl deploy` from the repo root (`/mnt/c/Users/kimem/Noni` in WSL), never from `infra/`.
+- **Rule 5:** Run `railway deploy` from the repo root (`/mnt/c/Users/kimem/Noni` in WSL), never from `infra/`.

@@ -6,7 +6,7 @@ Sprint 22 S2: migrated from in-memory defaultdict counters to
 
 prometheus_client Counter + Histogram. Metrics are exposed on
 
-`/metrics` for scraping by Grafana / Fly Metrics.
+`/metrics` for scraping by Grafana / Railway Metrics.
 
 """
 

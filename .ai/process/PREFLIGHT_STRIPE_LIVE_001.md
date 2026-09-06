@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Preflight — STRIPE-LIVE-001: Production Stripe + mynaani.com
 
 **Process:** v9.51  
@@ -13,7 +15,7 @@
 | 4 | Mock payment flow proven | GO | Engineering | ADR 0021 / B2B2C-IMPL-001 merged |
 | 5 | Payment provider abstraction ready | GO | Engineering | `backend/services/payment_provider.py` supports `stripe` |
 | 6 | Build verification script exists | GO | Engineering | `frontend/scripts/verify-bundle.mjs` |
-| 7 | Secrets management plan | HOLD | Product | Need target platform (Railway/Fly/Cloudflare) |
+| 7 | Secrets management plan | HOLD | Product | Need target platform (Railway/legacy-platform/Cloudflare) |
 
 ## Go / no-go
 
@@ -21,8 +23,8 @@
 
 ## Open questions
 
-1. Is the backend staying on Railway or Fly.io?
-2. Is the frontend static on Cloudflare Pages or a Railway/Fly container?
+1. Is the backend staying on Railway or the legacy platform?
+2. Is the frontend static on Cloudflare Pages or a Railway/legacy-platform container?
 3. Do we use `api.mynaani.com` or `mynaani.com/api`?
 4. Is the Stripe account under the business entity that owns mynaani.com?
 5. Tax / 1099-K / VAT handling for $39 and $59 products?

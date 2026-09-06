@@ -980,7 +980,7 @@
     {
       "kind": "Decision",
       "id": "DEC-RAILWAY-001",
-      "name": "Migrate backend from Fly.io to Railway",
+      "name": "Migrate backend from the legacy platform to Railway",
       "status": "decided",
       "scope": "backend infrastructure"
     },

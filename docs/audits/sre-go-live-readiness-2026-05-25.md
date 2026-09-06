@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Mynaani SRE Go-Live Readiness Assessment
 
 > **Date:** 2026-05-25  
@@ -24,16 +26,16 @@ Mynaani's infrastructure is functional for development and a small pilot (<100 c
 │  Client (Browser)                                               │
 │  ├── Cloudflare CDN + WAF (rate limiting, DDoS protection)     │
 │  ├── Cloudflare Pages (static frontend, edge-cached)          │
-│  └── └── Fly.io API (FastAPI + Uvicorn)                       │
-│         └── Supabase Postgres (or Fly Postgres)                 │
+│  └── └── the legacy platform API (FastAPI + Uvicorn)                       │
+│         └── Supabase Postgres (or legacy Postgres)                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 | Component | Vendor | Current Spec | Scaling Model |
 |:----------|:-------|:-------------|:--------------|
 | **Frontend** | Cloudflare Pages | Edge-cached static assets | Automatic (CDN) |
-| **API** | Fly.io | shared-cpu-1x, 512MB RAM, 1 CPU | Auto stop/start, 1 machine minimum |
-| **Database** | Supabase Postgres (or Fly Postgres) | Default Supabase tier (or Fly 256MB-1GB) | Manual upgrade |
+| **API** | the legacy platform | shared-cpu-1x, 512MB RAM, 1 CPU | Auto stop/start, 1 machine minimum |
+| **Database** | Supabase Postgres (or legacy Postgres) | Default Supabase tier (or legacy-platform 256MB-1GB) | Manual upgrade |
 | **Auth** | Clerk (external SaaS) | Managed by Clerk | Fully managed |
 | **Payments** | Stripe (external SaaS) | Managed by Stripe | Fully managed |
 | **Observability** | BetterStack (optional) | 3 monitors (health, envelope, billing) | SaaS |
@@ -42,9 +44,9 @@ Mynaani's infrastructure is functional for development and a small pilot (<100 c
 
 ## II. Capacity Analysis
 
-### A. Fly.io API Machine Limits
+### A. the legacy platform API Machine Limits
 
-From `fly.toml`:
+From `legacy deploy config`:
 
 ```toml
 [http_service.concurrency]
@@ -60,8 +62,8 @@ From `fly.toml`:
 
 **What this means:**
 - **1 machine** running with **1 shared vCPU** and **512MB RAM**
-- Fly's proxy will route new requests to the machine up to **200 concurrent requests** (soft limit)
-- At **250 concurrent requests** (hard limit), Fly stops sending traffic and may start a new machine (if configured)
+- legacy-platform's proxy will route new requests to the machine up to **200 concurrent requests** (soft limit)
+- At **250 concurrent requests** (hard limit), legacy-platform stops sending traffic and may start a new machine (if configured)
 - **Uvicorn runs with a single worker process** (no `--workers` flag in Dockerfile or CMD)
 - Uvicorn's default worker class is `uvicorn.workers.UvicornWorker`, which is ASGI single-threaded per worker
 
@@ -139,11 +141,11 @@ engine = create_engine(
     pool_size=20,           # base connections
     max_overflow=30,          # burst connections
     pool_timeout=10,        # fail fast, don't queue forever
-    pool_recycle=3600,      # recycle connections hourly (Supabase/Fly benefit)
+    pool_recycle=3600,      # recycle connections hourly (Supabase/legacy-platform benefit)
     pool_reset_on_return="rollback",  # clean state between requests
 )
 ```
-**Also verify:** Supabase connection limit (default is 60–200 depending on tier). If using Fly Postgres, check `max_connections` in postgresql.conf.
+**Also verify:** Supabase connection limit (default is 60–200 depending on tier). If using legacy Postgres, check `max_connections` in postgresql.conf.
 
 ---
 
@@ -151,7 +153,7 @@ engine = create_engine(
 
 **Finding:** Dockerfile CMD runs `uvicorn backend.app.main:app --host 0.0.0.0 --port 8000` with no `--workers` flag. On a 1-vCPU machine this is fine, but scaling to a `performance-2x` (2 vCPU) or larger machine will waste cores.
 
-**Impact:** Cannot scale vertically by upgrading Fly machine size. Must scale horizontally (more machines) instead, which costs more and complicates session state.
+**Impact:** Cannot scale vertically by upgrading legacy-platform machine size. Must scale horizontally (more machines) instead, which costs more and complicates session state.
 
 **Remediation (two options):**
 
@@ -167,7 +169,7 @@ CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000", "
 
 **Workers formula:** `workers = (2 × CPU cores) + 1`. For shared-cpu-1x (1 vCPU): 3 workers. For performance-2x (2 vCPU): 5 workers.
 
-**Note:** With Gunicorn, each worker gets its own SQLAlchemy connection pool. If pool_size=20, 4 workers = 80 base connections. Must ensure Supabase/Fly `max_connections` accommodates this.
+**Note:** With Gunicorn, each worker gets its own SQLAlchemy connection pool. If pool_size=20, 4 workers = 80 base connections. Must ensure Supabase/legacy-platform `max_connections` accommodates this.
 
 ---
 
@@ -203,7 +205,7 @@ export const options = {
 };
 
 export default function () {
-  const res = http.get('https://noni-api.fly.dev/api/curriculum/module-1/units');
+  const res = http.get('https://noni-api-production.up.railway.app/api/curriculum/module-1/units');
   check(res, { 'status is 200': (r) => r.status === 200 });
   sleep(1);
 }
@@ -213,11 +215,11 @@ export default function () {
 
 #### C4. No Horizontal Auto-Scaling Configuration
 
-**Finding:** Fly.toml has `auto_stop_machines = "stop"` and `auto_start_machines = true`, but no explicit scaling configuration (no `[[services]]` with `min_machines`, `max_machines`, or `auto_scale_count`).
+**Finding:** legacy deploy config has `auto_stop_machines = "stop"` and `auto_start_machines = true`, but no explicit scaling configuration (no `[[services]]` with `min_machines`, `max_machines`, or `auto_scale_count`).
 
-**Impact:** Under load, Fly may not start additional machines quickly enough. During a traffic spike, the single machine becomes overwhelmed before new machines boot.
+**Impact:** Under load, legacy-platform may not start additional machines quickly enough. During a traffic spike, the single machine becomes overwhelmed before new machines boot.
 
-**Remediation:** Add to `fly.toml`:
+**Remediation:** Add to `legacy deploy config`:
 ```toml
 [http_service.concurrency]
   type = "requests"
@@ -253,13 +255,13 @@ export default function () {
     path = "/health"
     protocol = "https"
 
-# Autoscaling (requires Fly autoscaler or explicit machine count)
+# Autoscaling (requires legacy-platform autoscaler or explicit machine count)
 [deploy]
   strategy = "canary"
   max_unavailable = 0
 ```
 
-**Better:** Use Fly's `fly scale count` or configure autoscaling via `fly autoscaler` (if available on the org plan). For predictable load, run `fly scale count 2` minimum for redundancy.
+**Better:** Use legacy-platform's `legacy-platform scale count` or configure autoscaling via `legacy-platform autoscaler` (if available on the org plan). For predictable load, run `legacy-platform scale count 2` minimum for redundancy.
 
 ---
 
@@ -345,7 +347,7 @@ Minimum metrics to expose:
 |:---------|:-----|:-------|:------|:------------|
 | **P0** | C1: Configure DB connection pool | 2 hours | Backend | Before soft-launch |
 | **P0** | C2: Add Uvicorn/Gunicorn workers | 2 hours | Backend | Before soft-launch |
-| **P0** | C4: Configure Fly scaling (2 machines min) | 1 hour | Infra | Before soft-launch |
+| **P0** | C4: Configure legacy-platform scaling (2 machines min) | 1 hour | Infra | Before soft-launch |
 | **P1** | C3: Add k6 load tests + CI | 4 hours | SRE | Within 1 week |
 | **P1** | H1: Add Prometheus metrics endpoint | 4 hours | Backend | Within 1 week |
 | **P2** | H2: Query performance audit + indexes | 4 hours | Backend | Within 2 weeks |
@@ -366,7 +368,7 @@ Minimum metrics to expose:
 | DR runbook with RTO/RPO | Recommended | Partial | 🟡 WARNING |
 | Health checks operational | Yes | Yes | ✅ PASS |
 | Rate limiting configured | Yes | Yes | ✅ PASS |
-| SSL/TLS enforced | Yes | Yes (Fly + CF) | ✅ PASS |
+| SSL/TLS enforced | Yes | Yes (legacy-platform + CF) | ✅ PASS |
 | Secrets encrypted at rest | Yes | Yes (SOPS) | ✅ PASS |
 | Backup automation | Yes | Yes (scripted) | ✅ PASS |
 

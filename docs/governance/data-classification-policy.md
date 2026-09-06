@@ -28,7 +28,7 @@
 | Telemetry events | Restricted | Supabase `telemetry_events` | 90 days default |
 | Gift tokens | Confidential | Supabase `gift_tokens` | Until redeemed + 365d |
 | Deletion requests | Restricted | Supabase `deletion_requests` | 730 days |
-| API error logs | Internal | Fly.io logs / BetterStack | 30 days |
+| API error logs | Internal | railway.app logs / BetterStack | 30 days |
 | Stripe webhooks | Confidential | Supabase `processed_webhook_events` | 365 days |
 
 ---
