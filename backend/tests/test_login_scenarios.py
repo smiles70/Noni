@@ -123,7 +123,7 @@ class TestScenario1HappyPath:
 
     def test_first_session_call_reports_unmaterialized(self, client):
         email = _unique_email("s1a")
-        r = client.get("/auth/session", headers=_bearer(email))
+        r = client.get("/api/v1/auth/session", headers=_bearer(email))
         assert r.status_code == 200, r.text
         body = r.json()
         assert body["materialized"] is False
@@ -132,7 +132,7 @@ class TestScenario1HappyPath:
     def test_init_creates_row_and_is_idempotent(self, client, db_session):
         email = _unique_email("s1b")
         # First /init: creates.
-        r1 = client.post("/auth/session/init", headers=_bearer(email))
+        r1 = client.post("/api/v1/auth/session/init", headers=_bearer(email))
         assert r1.status_code == 200, r1.text
         account_id = r1.json()["account_id"]
         assert account_id
@@ -144,20 +144,20 @@ class TestScenario1HappyPath:
         assert row.deleted_at is None
 
         # Second /init: returns the SAME id (idempotent).
-        r2 = client.post("/auth/session/init", headers=_bearer(email))
+        r2 = client.post("/api/v1/auth/session/init", headers=_bearer(email))
         assert r2.status_code == 200
         assert r2.json()["account_id"] == account_id
 
     def test_full_handshake_session_then_init_then_session(self, client):
         email = _unique_email("s1c")
-        r1 = client.get("/auth/session", headers=_bearer(email))
+        r1 = client.get("/api/v1/auth/session", headers=_bearer(email))
         assert r1.json()["materialized"] is False
 
-        r2 = client.post("/auth/session/init", headers=_bearer(email))
+        r2 = client.post("/api/v1/auth/session/init", headers=_bearer(email))
         assert r2.status_code == 200
         account_id = r2.json()["account_id"]
 
-        r3 = client.get("/auth/session", headers=_bearer(email))
+        r3 = client.get("/api/v1/auth/session", headers=_bearer(email))
         assert r3.status_code == 200
         body = r3.json()
         assert body["materialized"] is True
@@ -180,10 +180,10 @@ class TestScenario2ReturningUser:
     def test_session_reports_materialized_without_writing(self, client, db_session):
         email = _unique_email("s2")
         # Arrange: simulate "yesterday's signup".
-        client.post("/auth/session/init", headers=_bearer(email))
+        client.post("/api/v1/auth/session/init", headers=_bearer(email))
 
         before = db_session.query(Account).count()
-        r = client.get("/auth/session", headers=_bearer(email))
+        r = client.get("/api/v1/auth/session", headers=_bearer(email))
         after = db_session.query(Account).count()
 
         assert r.status_code == 200
@@ -271,7 +271,7 @@ class TestScenario3TransientFailure:
         app.dependency_overrides[core_get_db] = _override_get_db
 
         try:
-            r = client.get("/auth/session", headers=_bearer(email))
+            r = client.get("/api/v1/auth/session", headers=_bearer(email))
         finally:
             app.dependency_overrides.pop(get_db_dep, None)
             app.dependency_overrides.pop(core_get_db, None)
@@ -292,24 +292,24 @@ class TestScenario4TamperedTokens:
     """
 
     def test_no_authorization_header_returns_no_credential(self, client):
-        r = client.get("/auth/session")
+        r = client.get("/api/v1/auth/session")
         assert r.status_code == 401
         assert _envelope_code(r) == "auth.no_credential"
 
     def test_malformed_bearer_returns_no_credential(self, client):
         # `Bearer ` with no token → parse_bearer returns None → no_credential
-        r = client.get("/auth/session", headers={"Authorization": "Bearer "})
+        r = client.get("/api/v1/auth/session", headers={"Authorization": "Bearer "})
         assert r.status_code == 401
         assert _envelope_code(r) == "auth.no_credential"
 
     def test_wrong_scheme_returns_no_credential(self, client):
-        r = client.get("/auth/session", headers={"Authorization": "Basic mock:a@b.c"})
+        r = client.get("/api/v1/auth/session", headers={"Authorization": "Basic mock:a@b.c"})
         assert r.status_code == 401
         assert _envelope_code(r) == "auth.no_credential"
 
     def test_mock_token_without_email_returns_malformed(self, client):
         # `mock:` without an email body → MockAuthProvider rejects → malformed
-        r = client.get("/auth/session", headers={"Authorization": "Bearer mock:"})
+        r = client.get("/api/v1/auth/session", headers={"Authorization": "Bearer mock:"})
         assert r.status_code == 401
         assert _envelope_code(r) == "auth.malformed"
 
@@ -321,7 +321,7 @@ class TestScenario4TamperedTokens:
 
         monkeypatch.setattr(auth_route_module, "verify_token", _fake_verify)
         r = client.get(
-            "/auth/session",
+            "/api/v1/auth/session",
             headers={"Authorization": "Bearer eyJfake.fake.fake"},
         )
         assert r.status_code == 401
@@ -335,7 +335,7 @@ class TestScenario4TamperedTokens:
 
         monkeypatch.setattr(auth_route_module, "verify_token", _fake_verify)
         r = client.get(
-            "/auth/session",
+            "/api/v1/auth/session",
             headers={"Authorization": "Bearer eyJforged.payload.sig"},
         )
         assert r.status_code == 401
@@ -343,7 +343,7 @@ class TestScenario4TamperedTokens:
 
     def test_no_stack_trace_in_error_body(self, client):
         """Defence-in-depth: no Python tracebacks should leak in 401s."""
-        r = client.get("/auth/session")
+        r = client.get("/api/v1/auth/session")
         body_text = r.text.lower()
         for forbidden in ("traceback", 'file "/', '.py", line '):
             assert (
@@ -366,7 +366,7 @@ class TestScenario5SoftDeletedTerminal:
     def deleted_account_email(self, client, db_session):
         email = _unique_email("s5")
         # Arrange: create then soft-delete the account.
-        r = client.post("/auth/session/init", headers=_bearer(email))
+        r = client.post("/api/v1/auth/session/init", headers=_bearer(email))
         account_id = r.json()["account_id"]
         row = (
             db_session.query(Account).filter(Account.id == uuid.UUID(account_id)).one()
@@ -378,7 +378,7 @@ class TestScenario5SoftDeletedTerminal:
     def test_session_get_rejects_with_account_deleted(
         self, client, deleted_account_email
     ):
-        r = client.get("/auth/session", headers=_bearer(deleted_account_email))
+        r = client.get("/api/v1/auth/session", headers=_bearer(deleted_account_email))
         assert r.status_code == 401, r.text
         assert _envelope_code(r) == "auth.account_deleted"
 
@@ -387,7 +387,7 @@ class TestScenario5SoftDeletedTerminal:
     ):
         """The bypass path: attacker hits /init directly, expecting it
         to recreate the row. Must NOT happen."""
-        r = client.post("/auth/session/init", headers=_bearer(deleted_account_email))
+        r = client.post("/api/v1/auth/session/init", headers=_bearer(deleted_account_email))
         assert r.status_code == 401, r.text
         assert _envelope_code(r) == "auth.account_deleted"
 
@@ -412,20 +412,20 @@ class TestUxTimingBudget:
         return r, time.perf_counter() - t0
 
     def test_auth_config_under_budget(self, client):
-        r, dt = self._time(lambda: client.get("/auth/config"))
+        r, dt = self._time(lambda: client.get("/api/v1/auth/config"))
         assert r.status_code == 200
-        assert dt < self.HARD_CEILING_SECONDS, f"/auth/config took {dt:.3f}s"
+        assert dt < self.HARD_CEILING_SECONDS, f"/api/v1/auth/config took {dt:.3f}s"
 
     def test_auth_session_unmaterialized_under_budget(self, client):
         email = _unique_email("ux1")
-        r, dt = self._time(lambda: client.get("/auth/session", headers=_bearer(email)))
+        r, dt = self._time(lambda: client.get("/api/v1/auth/session", headers=_bearer(email)))
         assert r.status_code == 200
-        assert dt < self.HARD_CEILING_SECONDS, f"/auth/session took {dt:.3f}s"
+        assert dt < self.HARD_CEILING_SECONDS, f"/api/v1/auth/session took {dt:.3f}s"
 
     def test_auth_session_init_under_budget(self, client):
         email = _unique_email("ux2")
         r, dt = self._time(
-            lambda: client.post("/auth/session/init", headers=_bearer(email))
+            lambda: client.post("/api/v1/auth/session/init", headers=_bearer(email))
         )
         assert r.status_code == 200
-        assert dt < self.HARD_CEILING_SECONDS, f"/auth/session/init took {dt:.3f}s"
+        assert dt < self.HARD_CEILING_SECONDS, f"/api/v1/auth/session/init took {dt:.3f}s"

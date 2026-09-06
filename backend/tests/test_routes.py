@@ -28,7 +28,7 @@ def test_root(client):
 
 
 def test_curriculum_what_is_ai(client):
-    r = client.get("/api/curriculum/what-is-ai")
+    r = client.get("/api/v1/curriculum/what-is-ai")
     assert r.status_code == 200
     body = r.json()
     assert "ui_state" in body
@@ -44,7 +44,7 @@ def test_signals_user_action(client):
     # Sprint 22 I2: signals now require auth.
     client.headers["Authorization"] = "Bearer mock:test@example.com"
     r = client.post(
-        "/api/signals/user-action",
+        "/api/v1/signals/user-action",
         json={"user_id": "test_user", "action_type": "TASK_COMPLETE"},
     )
     assert r.status_code == 200
@@ -57,7 +57,7 @@ def test_signals_user_action_rejects_unknown_type(client):
     # Sprint 22 I2: signals now require auth.
     client.headers["Authorization"] = "Bearer mock:test@example.com"
     r = client.post(
-        "/api/signals/user-action",
+        "/api/v1/signals/user-action",
         json={"user_id": "u", "action_type": "NOT_A_REAL_TYPE"},
     )
     assert r.status_code == 422
@@ -67,7 +67,7 @@ def test_signals_telemetry(client):
     # Sprint 22 I2: signals now require auth.
     client.headers["Authorization"] = "Bearer mock:test@example.com"
     r = client.post(
-        "/api/signals/telemetry",
+        "/api/v1/signals/telemetry",
         json={"type": "ROUTE_TEST", "payload": {"x": 1}},
     )
     assert r.status_code == 200

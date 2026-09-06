@@ -90,7 +90,7 @@ class TestModule0Data:
 
 class TestModule0Routes:
     def test_list_module_0_units(self, client):
-        r = client.get("/api/curriculum/module-0/units")
+        r = client.get("/api/v1/curriculum/module-0/units")
         assert r.status_code == 200
         body = r.json()
         assert body["module"] == 0
@@ -106,7 +106,7 @@ class TestModule0Routes:
                 assert k in u
 
     def test_get_module_0_unit_page(self, client):
-        r = client.get("/api/curriculum/module-0/units/module0-unit-1")
+        r = client.get("/api/v1/curriculum/module-0/units/module0-unit-1")
         assert r.status_code == 200
         body = r.json()
         assert body["module"] == 0
@@ -114,7 +114,7 @@ class TestModule0Routes:
         assert "ui_state" in body and "stability" in body
 
     def test_get_module_0_lesson(self, client):
-        r = client.get("/api/curriculum/module-0/units/module0-unit-1/lesson")
+        r = client.get("/api/v1/curriculum/module-0/units/module0-unit-1/lesson")
         assert r.status_code == 200
         body = r.json()
         assert body["module"] == 0
@@ -122,11 +122,11 @@ class TestModule0Routes:
         assert len(body["pages"]) == 4
 
     def test_unknown_module_0_unit_returns_404(self, client):
-        r = client.get("/api/curriculum/module-0/units/module0-unit-999")
+        r = client.get("/api/v1/curriculum/module-0/units/module0-unit-999")
         assert r.status_code == 404
 
     def test_lesson_menu_includes_module_0_first(self, client):
-        r = client.get("/api/curriculum/menu")
+        r = client.get("/api/v1/curriculum/menu")
         assert r.status_code == 200
         body = r.json()
         assert body["modules"][0]["id"] == 0
@@ -135,7 +135,7 @@ class TestModule0Routes:
 
     def test_retrieval_choice_accepts_module_0(self, client):
         r = client.post(
-            "/api/curriculum/retrieval-choice",
+            "/api/v1/curriculum/retrieval-choice",
             json={
                 "module": 0,
                 "unit_id": "module0-unit-1",

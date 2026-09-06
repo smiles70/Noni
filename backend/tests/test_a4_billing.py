@@ -117,7 +117,7 @@ def _post_mock_webhook(
         "data": {"object": payload_object},
     }
     return client.post(
-        "/api/billing/stripe-webhook",
+        "/api/v1/billing/stripe-webhook",
         content=json.dumps(body),
         headers={"content-type": "application/json"},
     )
@@ -127,7 +127,7 @@ def _post_mock_webhook(
 
 
 def test_billing_health_reports_mock_provider(client):
-    r = client.get("/api/billing/health")
+    r = client.get("/api/v1/billing/health")
     assert r.status_code == 200
     body = r.json()
     assert body["provider"] == "mock"
@@ -138,14 +138,14 @@ def test_billing_health_reports_mock_provider(client):
 
 
 def test_checkout_requires_session(client):
-    r = client.post("/api/billing/checkout", json={"product_code": PRODUCT_CODE})
+    r = client.post("/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE})
     assert r.status_code == 401
     assert r.json()["detail"]["envelope_id"] == "auth.signed_out"
 
 
 def test_checkout_unknown_product_404(client):
     _signin(client, "a4-unknown@example.test")
-    r = client.post("/api/billing/checkout", json={"product_code": "nope"})
+    r = client.post("/api/v1/billing/checkout", json={"product_code": "nope"})
     assert r.status_code == 404
     assert r.json()["detail"]["envelope_id"] == "billing.product_unavailable"
 
@@ -153,7 +153,7 @@ def test_checkout_unknown_product_404(client):
 def test_checkout_self_purchase_creates_purchase_row(client, DbSession):
     _signin(client, "a4-self@example.test")
     r = client.post(
-        "/api/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": False}
+        "/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": False}
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -169,7 +169,7 @@ def test_checkout_self_purchase_creates_purchase_row(client, DbSession):
 def test_checkout_gift_purchase_issues_token_hash(client, DbSession):
     _signin(client, "a4-giftbuyer@example.test")
     r = client.post(
-        "/api/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": True}
+        "/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": True}
     )
     assert r.status_code == 200
     purchase_id = uuid.UUID(r.json()["purchase_id"])
@@ -185,7 +185,7 @@ def test_checkout_gift_purchase_issues_token_hash(client, DbSession):
 
 def test_webhook_rejects_unsigned_body(client):
     r = client.post(
-        "/api/billing/stripe-webhook",
+        "/api/v1/billing/stripe-webhook",
         content="not even json",
         headers={"content-type": "application/json"},
     )
@@ -196,7 +196,7 @@ def test_webhook_rejects_unsigned_body(client):
 def test_checkout_completed_grants_entitlement(client, DbSession):
     _signin(client, "a4-grant@example.test")
     r = client.post(
-        "/api/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": False}
+        "/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": False}
     )
     purchase_id = r.json()["purchase_id"]
 
@@ -226,7 +226,7 @@ def test_checkout_completed_grants_entitlement(client, DbSession):
 def test_duplicate_webhook_is_noop(client, DbSession):
     _signin(client, "a4-dup@example.test")
     purchase_id = client.post(
-        "/api/billing/checkout", json={"product_code": PRODUCT_CODE}
+        "/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE}
     ).json()["purchase_id"]
 
     r1 = _post_mock_webhook(
@@ -250,7 +250,7 @@ def test_duplicate_webhook_is_noop(client, DbSession):
 def test_refund_revokes_entitlement(client, DbSession):
     _signin(client, "a4-refund@example.test")
     purchase_id = client.post(
-        "/api/billing/checkout", json={"product_code": PRODUCT_CODE}
+        "/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE}
     ).json()["purchase_id"]
     _post_mock_webhook(
         client,
@@ -287,7 +287,7 @@ def test_gift_flow_purchase_then_claim(client, DbSession):
     # Buyer purchases a gift.
     _signin(client, "a4-gifter@example.test")
     co = client.post(
-        "/api/billing/checkout",
+        "/api/v1/billing/checkout",
         json={"product_code": PRODUCT_CODE, "is_gift": True},
     )
     purchase_id = co.json()["purchase_id"]
@@ -320,13 +320,13 @@ def test_gift_flow_purchase_then_claim(client, DbSession):
     _signin(client, "a4-recipient@example.test")
 
     # Preview before claim.
-    pv = client.post("/api/gifts/preview", json={"token": raw_token})
+    pv = client.post("/api/v1/gifts/preview", json={"token": raw_token})
     assert pv.status_code == 200
     assert pv.json()["valid"] is True
     assert pv.json()["product_code"] == PRODUCT_CODE
 
     # Claim.
-    cl = client.post("/api/gifts/claim", json={"token": raw_token})
+    cl = client.post("/api/v1/gifts/claim", json={"token": raw_token})
     assert cl.status_code == 200, cl.text
     body = cl.json()
     assert body["product_code"] == PRODUCT_CODE
@@ -351,7 +351,7 @@ def test_gift_flow_purchase_then_claim(client, DbSession):
 def test_gift_double_claim_rejected(client, DbSession):
     _signin(client, "a4-gifter2@example.test")
     purchase_id = client.post(
-        "/api/billing/checkout",
+        "/api/v1/billing/checkout",
         json={"product_code": PRODUCT_CODE, "is_gift": True},
     ).json()["purchase_id"]
 
@@ -372,11 +372,11 @@ def test_gift_double_claim_rejected(client, DbSession):
     assert rw.status_code == 200, rw.text
 
     _signin(client, "a4-r1@example.test")
-    r1 = client.post("/api/gifts/claim", json={"token": raw_token})
+    r1 = client.post("/api/v1/gifts/claim", json={"token": raw_token})
     assert r1.status_code == 200
 
     # Second account tries to redeem the same (now consumed) token.
     _signin(client, "a4-r2@example.test")
-    r2 = client.post("/api/gifts/claim", json={"token": raw_token})
+    r2 = client.post("/api/v1/gifts/claim", json={"token": raw_token})
     assert r2.status_code == 400
     assert r2.json()["detail"]["envelope_id"] == "gift.invalid_or_already_claimed"

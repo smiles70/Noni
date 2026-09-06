@@ -23,15 +23,20 @@ import uuid
 from dataclasses import dataclass
 from typing import Any, Optional, Protocol
 
-from pybreaker import CircuitBreaker
+from pybreaker import CircuitBreaker, CircuitBreakerListener
 
 from backend.app.circuit_breaker_metrics import record_circuit_transition
 
 logger = logging.getLogger(__name__)
 
 
-class _StripeCircuitListener:
-    """Prometheus listener for Stripe circuit breaker state changes."""
+class _StripeCircuitListener(CircuitBreakerListener):
+    """Prometheus listener for Stripe circuit breaker state changes.
+
+    Subclasses CircuitBreakerListener so no-op hooks (before_call,
+    failure, success) are inherited — pybreaker calls them on every
+    guarded call; only state_change is overridden.
+    """
 
     def state_change(self, cb, old_state, new_state):
         from_state = old_state.name if old_state else "unknown"

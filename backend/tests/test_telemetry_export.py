@@ -26,7 +26,7 @@ def client():
 
 class TestTelemetryExport:
     def test_export_json_shape(self, client):
-        r = client.get("/api/telemetry/export")
+        r = client.get("/api/v1/telemetry/export")
         assert r.status_code == 200
         body = r.json()
         assert "count" in body and "events" in body
@@ -34,7 +34,7 @@ class TestTelemetryExport:
         assert body["count"] == len(body["events"])
 
     def test_export_csv_returns_csv_content_type(self, client):
-        r = client.get("/api/telemetry/export.csv")
+        r = client.get("/api/v1/telemetry/export.csv")
         assert r.status_code == 200
         assert "text/csv" in r.headers["content-type"]
         # Always at least a header row.
@@ -42,8 +42,8 @@ class TestTelemetryExport:
         assert text.split("\n")[0].strip(), "CSV must have a header row"
 
     def test_csv_row_count_matches_json_count(self, client):
-        json_count = client.get("/api/telemetry/export").json()["count"]
-        csv_text = client.get("/api/telemetry/export.csv").text
+        json_count = client.get("/api/v1/telemetry/export").json()["count"]
+        csv_text = client.get("/api/v1/telemetry/export.csv").text
         non_empty = [line for line in csv_text.splitlines() if line.strip()]
         # Header + N rows
         assert len(non_empty) == json_count + 1
@@ -54,7 +54,7 @@ class TestRetrievalRollup:
 
     def _post(self, client, *, module, unit_id, page_id, chosen_id, correct):
         r = client.post(
-            "/api/curriculum/retrieval-choice",
+            "/api/v1/curriculum/retrieval-choice",
             json={
                 "module": module,
                 "unit_id": unit_id,
@@ -66,7 +66,7 @@ class TestRetrievalRollup:
         assert r.status_code == 200, r.text
 
     def test_rollup_empty_shape_when_no_events(self, client):
-        r = client.get("/api/telemetry/rollup")
+        r = client.get("/api/v1/telemetry/rollup")
         assert r.status_code == 200
         body = r.json()
         assert set(body.keys()) == {"total_choices", "by_module", "by_unit"}
@@ -77,7 +77,7 @@ class TestRetrievalRollup:
         # Baseline: rollup may already contain events from prior tests in
         # this module (the in-process DB persists across tests). We diff
         # against the baseline so this test is order-independent.
-        baseline = client.get("/api/telemetry/rollup").json()
+        baseline = client.get("/api/v1/telemetry/rollup").json()
         baseline_total = baseline["total_choices"]
 
         # Two attempts on unit-2: 1 correct, 1 wrong  -> accuracy 0.5
@@ -108,7 +108,7 @@ class TestRetrievalRollup:
                 correct=True,
             )
 
-        body = client.get("/api/telemetry/rollup").json()
+        body = client.get("/api/v1/telemetry/rollup").json()
 
         assert body["total_choices"] == baseline_total + 5
 
@@ -136,7 +136,7 @@ class TestRetrievalRollup:
                 correct=correct,
             )
 
-        body = client.get("/api/telemetry/rollup").json()
+        body = client.get("/api/v1/telemetry/rollup").json()
         unit = next(
             u
             for u in body["by_unit"]

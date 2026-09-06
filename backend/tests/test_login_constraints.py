@@ -198,7 +198,7 @@ def test_T_B3_token_rejected_by_signature_or_exp() -> None:
     client = TestClient(app)
 
     # 1. No credential at all → auth.no_credential.
-    r = client.get("/auth/session")
+    r = client.get("/api/v1/auth/session")
     assert r.status_code == 401, r.text
     body = r.json()
     assert "error" in body, body
@@ -208,7 +208,7 @@ def test_T_B3_token_rejected_by_signature_or_exp() -> None:
     # 2. Bearer with a non-mock token → auth.malformed (B5: not a
     # generic 401; the reason is discriminated).
     r = client.get(
-        "/auth/session",
+        "/api/v1/auth/session",
         headers={"Authorization": "Bearer not-a-valid-token"},
     )
     assert r.status_code == 401, r.text
@@ -221,12 +221,12 @@ def test_T_B3_token_rejected_by_signature_or_exp() -> None:
 
     # 3. "Bearer " with no token body → auth.no_credential (the parser
     # rejects empty tokens before the verifier sees them).
-    r = client.get("/auth/session", headers={"Authorization": "Bearer "})
+    r = client.get("/api/v1/auth/session", headers={"Authorization": "Bearer "})
     assert r.status_code == 401, r.text
     assert r.json()["error"]["code"] == "auth.no_credential"
 
     # 4. Wrong scheme → also no_credential (parser rejects).
-    r = client.get("/auth/session", headers={"Authorization": "Basic mock:x@y.z"})
+    r = client.get("/api/v1/auth/session", headers={"Authorization": "Basic mock:x@y.z"})
     assert r.status_code == 401, r.text
     assert r.json()["error"]["code"] == "auth.no_credential"
 
@@ -469,7 +469,7 @@ def test_T_G2_two_subjects_sharing_email_do_not_silently_relink() -> None:
 
         client = TestClient(app)
         r = client.post(
-            "/auth/session/init",
+            "/api/v1/auth/session/init",
             headers={"Authorization": f"Bearer {s2_email_token}"},
         )
         assert r.status_code == 200, r.text
@@ -646,7 +646,7 @@ def test_T_H3_read_endpoints_perform_no_writes() -> None:
     try:
         client = TestClient(app)
         r = client.get(
-            "/auth/session",
+            "/api/v1/auth/session",
             headers={"Authorization": f"Bearer {token}"},
         )
     finally:
