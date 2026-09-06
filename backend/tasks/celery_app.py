@@ -15,7 +15,7 @@ app = Celery(
     "noni",
     broker=broker_url,
     backend=broker_url,
-    include=["backend.tasks.webhook_tasks"],
+    include=["backend.tasks.webhook_tasks", "backend.tasks.telemetry_tasks"],
 )
 
 app.conf.update(
