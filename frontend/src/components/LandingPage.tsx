@@ -11,6 +11,7 @@
  * for audit.
  */
 import { CSSProperties, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { loadLandingPage, LandingPageContent } from "../api/landing";
 import { loadEnvelope } from "../api/envelope";
 import {
@@ -120,6 +121,37 @@ const LOGO_IMG: CSSProperties = {
 const LOGO_IMG_MOBILE: CSSProperties = {
   ...LOGO_IMG,
   height: 96,
+};
+
+// B2B pathway — Candoo-pattern entry: a calm text link top-right on a
+// surface plate (same treatment family as the brand plate). The hero stays
+// visually unchanged for learners; institutional visitors get a clearly
+// labelled route to /for-communities without a prohibited dropdown.
+const B2B_ENTRY: CSSProperties = {
+  position: "absolute",
+  top: SPACING.xl,
+  right: SPACING.xl,
+  zIndex: 1,
+  // B2B-ENTRY-001: ≥44px target + inline-flex for a11y polish.
+  display: "inline-flex",
+  alignItems: "center",
+  minHeight: 44,
+  padding: `${SPACING.sm}px ${SPACING.md}px`,
+  backgroundColor: "rgba(250, 250, 248, 0.85)",
+  borderRadius: RADIUS.lg,
+  // B2B-ENTRY-001 gap fix: ghost-button border gives the enterprise
+  // affordance every audited best-in-class SaaS nav uses, while the
+  // muted treatment keeps it correctly secondary to the primary CTA.
+  border: `1px solid ${COLORS.accentMutedBlue}`,
+  color: COLORS.accentMutedBlue,
+  textDecoration: "none",
+  fontSize: TYPOGRAPHY.bodySizePx,
+};
+
+const B2B_ENTRY_MOBILE: CSSProperties = {
+  ...B2B_ENTRY,
+  top: SPACING.lg,
+  right: SPACING.lg,
 };
 
 const HELP_BUBBLE: CSSProperties = {
@@ -356,6 +388,17 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
               </div>
             </div>
           </div>
+
+          {/* B2B pathway — top-right text link, exempt marketing route */}
+          <Link
+            to="/for-communities"
+            style={isMobile ? B2B_ENTRY_MOBILE : B2B_ENTRY}
+            data-contract-exemption="landing.hero"
+            data-b2b-entry="hero"
+            aria-label="For senior living communities — the mynaani enterprise pathway"
+          >
+            For senior living communities
+          </Link>
 
           {/* Fixed help bubble */}
           {onHelp && (
