@@ -1045,3 +1045,24 @@ consistent with trading price for proof at this stage.
   Not a recommendation to change — the buy-logos-first logic stands.
 - All prior conditions stand: founding label, volume band, review
   clause, ADR amendment for institution-billed licensing.
+
+## B2B-PRICING-004 — how best-in-class route to pricing material
+
+- **Pendo (SaaS Pattern breakdown):** "Pricing and Plans" persistent in
+  main nav + pricing prompts placed *after proof content* ("No pressure.
+  Just answers."). Route early, show after evidence.
+- **Digitalheroes 2026 conversion data:** public pricing converts
+  15–30% of qualified traffic; gated "contact sales" converts 1–5%.
+  Hybrid is the mature pattern: publish lower tiers, Enterprise =
+  "Contact Sales" — the unpublished top tier exists to *capture*
+  enterprise traffic, not hide price.
+- **Stratridge:** the enterprise pricing page's job is arming an
+  internal champion's deck — published *ranges* signal confidence;
+  bare "contact us" reads as pricing insecurity to a CFO.
+- **Insivia:** for variable deals, show ranges/model logic — buyers
+  need budget confidence, not a single number.
+- **Our implementation:** /for-communities is a single page → a header
+  anchor link "Pricing" (Pendo's persistent-nav pattern, no dropdown)
+  routes to the banded section, which sits *after* the evidence
+  sections (Pendo's show-after-proof pattern). Bands published;
+  Portfolio/Plans = custom — the verified hybrid.

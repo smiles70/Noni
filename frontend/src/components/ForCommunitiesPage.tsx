@@ -110,6 +110,19 @@ const PRIMARY_BTN: CSSProperties = {
   textDecoration: "none",
 };
 
+const TH: CSSProperties = {
+  textAlign: "left",
+  padding: `${SPACING.sm}px ${SPACING.md}px`,
+  borderBottom: `2px solid ${COLORS.accentDesatGreen}`,
+  fontWeight: 600,
+  backgroundColor: COLORS.surface,
+};
+
+const TD: CSSProperties = {
+  padding: `${SPACING.sm}px ${SPACING.md}px`,
+  borderBottom: `1px solid ${COLORS.accentMutedBlue}`,
+};
+
 const SECONDARY_BTN: CSSProperties = {
   display: "inline-block",
   fontSize: TYPOGRAPHY.bodySizePx,
@@ -273,7 +286,16 @@ export default function ForCommunitiesPage() {
             style={{ display: "block", height: 72, width: "auto" }}
           />
         </Link>
-        <nav aria-label="Marketing">
+        <nav
+          aria-label="Marketing"
+          style={{ display: "flex", alignItems: "center", gap: SPACING.lg }}
+        >
+          <a href="#b2b-papers" style={HEADER_LINK}>
+            Research
+          </a>
+          <a href="#b2b-pricing" style={HEADER_LINK}>
+            Pricing
+          </a>
           <Link to="/" style={HEADER_LINK}>
             For learners
           </Link>
@@ -510,41 +532,74 @@ export default function ForCommunitiesPage() {
             routing). Structure only: no invented figures. */}
         <section style={SECTION} aria-labelledby="b2b-pricing">
           <h2 id="b2b-pricing" style={H2}>
-            How a partnership works
+            Pricing — founding partner rates
           </h2>
           <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
-            Pricing is per community, with founding-partner rates for our pilot
-            cohort. For honest context: institutional digital-literacy programs
-            in this category typically run in the hundreds-to-low-thousands per
-            site per year — we'll tell you exactly where we land in the first
-            conversation.
+            Annual site licensing, billed to your organization — never to your
+            residents. <strong>Founding Partner rates</strong> for our pilot
+            cohort, sized by community:
           </p>
-          <div style={CARD_ROW}>
-            <div style={CARD}>
-              <h3 style={H3}>Founding Partner Pilot</h3>
-              <p style={{ margin: `0 0 ${SPACING.sm}px` }}>
-                For communities who want to shape the program. Small cohort,
-                founding rates set together, direct line to the team, and a say
-                in what we build next.
-              </p>
-            </div>
-            <div style={CARD}>
-              <h3 style={H3}>Community</h3>
-              <p style={{ margin: `0 0 ${SPACING.sm}px` }}>
-                Per-community subscription covering your residents: the full
-                geragogy-centered curriculum, onboarding support, and materials
-                your staff can hand to residents.
-              </p>
-            </div>
-            <div style={CARD}>
-              <h3 style={H3}>Portfolio &amp; Health Plans</h3>
-              <p style={{ margin: `0 0 ${SPACING.sm}px` }}>
-                Multi-site or plan-wide arrangements with terms matched to your
-                scale — including digital-literacy benefit structures for health
-                plans.
-              </p>
-            </div>
-          </div>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              fontSize: TYPOGRAPHY.bodySizePx,
+              marginBottom: SPACING.md,
+            }}
+          >
+            <thead>
+              <tr>
+                <th style={TH}>Community size</th>
+                <th style={TH}>Nonprofit site</th>
+                <th style={TH}>For-profit location</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={TD}>Up to 25 residents or members</td>
+                <td style={TD}>
+                  <strong>$375 / year</strong>
+                </td>
+                <td style={TD}>
+                  <strong>$850 / year</strong>
+                </td>
+              </tr>
+              <tr>
+                <td style={TD}>26–75</td>
+                <td style={TD}>
+                  <strong>$550 / year</strong>
+                </td>
+                <td style={TD}>
+                  <strong>$1,250 / year</strong>
+                </td>
+              </tr>
+              <tr>
+                <td style={TD}>76–150</td>
+                <td style={TD}>
+                  <strong>$850 / year</strong>
+                </td>
+                <td style={TD}>
+                  <strong>$1,950 / year</strong>
+                </td>
+              </tr>
+              <tr>
+                <td style={TD}>Multi-site, 150+, or health plans</td>
+                <td style={TD} colSpan={2}>
+                  <strong>Custom</strong> — sized to your portfolio, including
+                  digital-literacy benefit structures for plans
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p style={{ margin: `0 0 ${SPACING.lg}px`, maxWidth: 640 }}>
+            Every tier includes the full geragogy-centered curriculum, guided
+            onboarding with no implementation fee, and staff materials. For
+            honest context: institutional digital-literacy programs in this
+            category typically run in the hundreds-to-low-thousands per site per
+            year — we publish our numbers because we'd want them if we were
+            buying. Founding partners keep their rate for the term; rates are
+            reviewed when the cohort closes.
+          </p>
           <div
             style={{
               marginTop: SPACING.xl,
