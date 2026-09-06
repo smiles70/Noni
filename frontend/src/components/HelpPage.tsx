@@ -335,6 +335,10 @@ function YourAccountSection() {
           your account and a description of what you were doing when the issue
           occurred.
         </p>
+        <p>
+          Our privacy statement — what we keep and what we never collect — is
+          on the <a href="/privacy" style={LINK}>privacy page</a>.
+        </p>
       </div>
     </section>
   );

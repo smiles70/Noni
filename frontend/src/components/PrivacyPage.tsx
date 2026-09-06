@@ -113,6 +113,11 @@ export default function PrivacyPage({ onBack }: Props) {
             data are removed permanently.
           </p>
           <p>
+            Your information travels to us over an encrypted connection. We
+            keep your account and progress for as long as your account
+            exists. Purchase records are kept as required for tax purposes.
+          </p>
+          <p>
             Questions are always welcome at{" "}
             <a href="mailto:hello@mynaani.com" style={LINK}>
               hello@mynaani.com
