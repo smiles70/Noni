@@ -5,6 +5,8 @@
  * Integrates with BetterStack monitoring for production observability.
  */
 
+import { shouldEmit } from "./telemetryContract";
+
 interface OnboardingEvent {
   event: string;
   timestamp: number;
@@ -30,6 +32,10 @@ class OnboardingTelemetry {
    * Track an onboarding event
    */
   track(event: string, metadata?: Record<string, unknown>): void {
+    // E72-B1 contract: suppress duplicate emissions inside the dedup
+    // window (double-mounts, repeated taps) before they cost a request.
+    if (!shouldEmit(event)) return;
+
     const telemetryEvent: OnboardingEvent = {
       event,
       timestamp: Date.now(),
