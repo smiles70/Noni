@@ -72,14 +72,14 @@ def _assert_lesson_shape(body: dict, expected_module: int, expected_unit: str):
 
 def test_module_4_lesson_returns_canonical_shape(bypass_paywall):
     for unit_id in M4_IDS:
-        r = client.get(f"/api/curriculum/module-4/units/{unit_id}/lesson")
+        r = client.get(f"/api/v1/curriculum/module-4/units/{unit_id}/lesson")
         assert r.status_code == 200, f"{unit_id}: {r.text}"
         _assert_lesson_shape(r.json(), 4, unit_id)
 
 
 def test_module_5_lesson_returns_canonical_shape(bypass_paywall):
     for unit_id in M5_IDS:
-        r = client.get(f"/api/curriculum/module-5/units/{unit_id}/lesson")
+        r = client.get(f"/api/v1/curriculum/module-5/units/{unit_id}/lesson")
         assert r.status_code == 200, f"{unit_id}: {r.text}"
         _assert_lesson_shape(r.json(), 5, unit_id)
 
@@ -97,7 +97,7 @@ def test_paid_lessons_have_no_urgency_language(bypass_paywall):
     for module, unit_ids in ((4, M4_IDS), (5, M5_IDS)):
         for unit_id in unit_ids:
             body = client.get(
-                f"/api/curriculum/module-{module}/units/{unit_id}/lesson"
+                f"/api/v1/curriculum/module-{module}/units/{unit_id}/lesson"
             ).json()
             for page in body["pages"]:
                 haystack = (
@@ -116,12 +116,12 @@ def test_paid_lessons_have_no_urgency_language(bypass_paywall):
 
 
 def test_module_4_lesson_unknown_unit_returns_404(bypass_paywall):
-    r = client.get("/api/curriculum/module-4/units/nope/lesson")
+    r = client.get("/api/v1/curriculum/module-4/units/nope/lesson")
     assert r.status_code == 404
 
 
 def test_module_5_lesson_unknown_unit_returns_404(bypass_paywall):
-    r = client.get("/api/curriculum/module-5/units/nope/lesson")
+    r = client.get("/api/v1/curriculum/module-5/units/nope/lesson")
     assert r.status_code == 404
 
 
@@ -133,13 +133,13 @@ def test_module_5_lesson_unknown_unit_returns_404(bypass_paywall):
 def test_module_4_lesson_paywalled_anonymous():
     """Without the bypass fixture, the dependency rejects anonymous
     callers exactly like /units/{id} does."""
-    r = client.get("/api/curriculum/module-4/units/module4-unit-1/lesson")
+    r = client.get("/api/v1/curriculum/module-4/units/module4-unit-1/lesson")
     assert r.status_code == 402, r.text
     assert r.json()["detail"]["envelope_id"] == "billing.signin_or_purchase_required"
 
 
 def test_module_5_lesson_paywalled_anonymous():
-    r = client.get("/api/curriculum/module-5/units/module5-unit-1/lesson")
+    r = client.get("/api/v1/curriculum/module-5/units/module5-unit-1/lesson")
     assert r.status_code == 402, r.text
     assert r.json()["detail"]["envelope_id"] == "billing.signin_or_purchase_required"
 
@@ -157,7 +157,7 @@ def test_retrieval_choice_accepts_module_4():
         "chosen_id": "a",
         "correct": True,
     }
-    r = client.post("/api/curriculum/retrieval-choice", json=body)
+    r = client.post("/api/v1/curriculum/retrieval-choice", json=body)
     assert r.status_code == 200, r.text
     assert r.json() == {"recorded": True}
 
@@ -170,7 +170,7 @@ def test_retrieval_choice_accepts_module_5():
         "chosen_id": "b",
         "correct": False,
     }
-    r = client.post("/api/curriculum/retrieval-choice", json=body)
+    r = client.post("/api/v1/curriculum/retrieval-choice", json=body)
     assert r.status_code == 200, r.text
     assert r.json() == {"recorded": True}
 
@@ -179,7 +179,7 @@ def test_retrieval_choice_rejects_module_out_of_range():
     """Regression guard for the widened range — 0 and 6 must still 422."""
     for bad in (0, 6, 99):
         r = client.post(
-            "/api/curriculum/retrieval-choice",
+            "/api/v1/curriculum/retrieval-choice",
             json={
                 "module": bad,
                 "unit_id": "u",

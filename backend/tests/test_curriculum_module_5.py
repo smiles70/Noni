@@ -44,25 +44,25 @@ EXPECTED_IDS = {
 
 
 def test_module_5_units_catalog_has_all_five():
-    body = client.get("/api/curriculum/module-5/units").json()
+    body = client.get("/api/v1/curriculum/module-5/units").json()
     assert body["module"] == 5
     assert {u["id"] for u in body["units"]} == EXPECTED_IDS
 
 
 def test_each_module_5_unit_returns_an_approved_page():
     for unit_id in EXPECTED_IDS:
-        body = client.get(f"/api/curriculum/module-5/units/{unit_id}").json()
+        body = client.get(f"/api/v1/curriculum/module-5/units/{unit_id}").json()
         assert body["module"] == 5
         assert body["unit_id"] == unit_id
         assert body["ui_state"]["content"], f"empty content for {unit_id}"
 
 
 def test_module_5_unknown_unit_returns_404():
-    assert client.get("/api/curriculum/module-5/units/nope").status_code == 404
+    assert client.get("/api/v1/curriculum/module-5/units/nope").status_code == 404
 
 
 def test_module_5_next_returns_one_of_the_five():
-    body = client.get("/api/curriculum/module-5/next").json()
+    body = client.get("/api/v1/curriculum/module-5/next").json()
     assert body["module"] == 5
     assert body["unit_id"] in EXPECTED_IDS
 
@@ -76,11 +76,11 @@ def test_module_5_units_have_telemetry_requirements_in_range():
 
 def test_module_5_content_no_urgency_language():
     forbidden = ["hurry", "urgent", "limited time", "act now", "expires", "only today"]
-    catalog = client.get("/api/curriculum/module-5/units").text.lower()
+    catalog = client.get("/api/v1/curriculum/module-5/units").text.lower()
     for w in forbidden:
         assert w not in catalog
     for unit_id in EXPECTED_IDS:
-        page = client.get(f"/api/curriculum/module-5/units/{unit_id}").text.lower()
+        page = client.get(f"/api/v1/curriculum/module-5/units/{unit_id}").text.lower()
         for w in forbidden:
             assert w not in page, f"{w!r} in {unit_id}"
 
@@ -109,7 +109,7 @@ def test_module_5_content_preserves_human_authority(_bypass_paywall):
         "you can",
     ]
     for unit_id in EXPECTED_IDS:
-        body = client.get(f"/api/curriculum/module-5/units/{unit_id}/lesson").json()
+        body = client.get(f"/api/v1/curriculum/module-5/units/{unit_id}/lesson").json()
         all_content = []
         for page in body["pages"]:
             all_content.extend(page.get("content", []))
@@ -138,12 +138,12 @@ def test_module_5_content_preserves_human_authority(_bypass_paywall):
 
 
 def test_module_5_decision_recorded_with_audit_columns():
-    client.get("/api/curriculum/module-5/units/module5-unit-1")
-    rows = client.get("/api/telemetry/export").json()["events"]
+    client.get("/api/v1/curriculum/module-5/units/module5-unit-1")
+    rows = client.get("/api/v1/telemetry/export").json()["events"]
     matches = [
         r
         for r in rows
-        if r.get("request_path") == "/api/curriculum/module-5/units/module5-unit-1"
+        if r.get("request_path") == "/api/v1/curriculum/module-5/units/module5-unit-1"
     ]
     assert matches
     row = matches[-1]
@@ -160,7 +160,7 @@ def test_module_5_content_has_full_lesson_structure(_bypass_paywall):
     """P10: every unit must have 4 pages (recap/principle/example/retrieval)
     with at least one ExampleBlock and one RetrievalBlock."""
     for unit_id in EXPECTED_IDS:
-        body = client.get(f"/api/curriculum/module-5/units/{unit_id}/lesson").json()
+        body = client.get(f"/api/v1/curriculum/module-5/units/{unit_id}/lesson").json()
         pages = body["pages"]
         assert len(pages) >= 4, f"{unit_id} has only {len(pages)} pages"
         page_types = {p.get("page_type") for p in pages}

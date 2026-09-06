@@ -55,15 +55,15 @@ class TestContentIntegrity:
 
 class TestLandingPageRoute:
     def test_get_landing_page_returns_200(self, client):
-        r = client.get("/api/landing/page")
+        r = client.get("/api/v1/landing/page")
         assert r.status_code == 200
 
     def test_response_shape_matches_schema(self, client):
-        r = client.get("/api/landing/page")
+        r = client.get("/api/v1/landing/page")
         LandingPageContent.model_validate(r.json())
 
     def test_primary_cta_label_matches_source(self, client):
-        r = client.get("/api/landing/page")
+        r = client.get("/api/v1/landing/page")
         body = r.json()
         assert (
             body["call_to_action"]["primary"]["label"]
@@ -75,7 +75,7 @@ class TestStepsContractUnchanged:
     """Sprint 3 contract must still hold: display_* fields are None."""
 
     def test_display_fields_remain_none_on_all_steps(self, client):
-        r = client.get("/api/landing/steps")
+        r = client.get("/api/v1/landing/steps")
         for step in r.json()["steps"]:
             assert step["display_title"] is None
             assert step["display_body"] is None
