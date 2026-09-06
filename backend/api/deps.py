@@ -196,6 +196,30 @@ def get_optional_account(
     return account
 
 
+def org_fair_share(
+    account: Optional[Account] = Depends(get_optional_account),
+    db: DbSession = Depends(get_db),
+) -> None:
+    """E71-B3 tenant fairness: per-org admission quota.
+
+    Accounts linked to an org (via a claimed AccessCode) are rate-limited
+    as a tenant so one institution's surge can't starve others. Unaffiliated
+    accounts and Redis outages fail open — this is protection, not a gate.
+    Over quota -> 429 with Retry-After (calm, retryable), never 500.
+    """
+    if account is None:
+        return
+    from backend.services.org_quota import org_admission_allowed, resolve_org_id
+
+    org_id = resolve_org_id(db, account.id)
+    if org_id and not org_admission_allowed(org_id):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail={"envelope_id": "org.quota_exceeded"},
+            headers={"Retry-After": "10"},
+        )
+
+
 def get_current_account(
     account: Optional[Account] = Depends(get_optional_account),
 ) -> Account:
