@@ -81,15 +81,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
 
+  // Session lifecycle: one concern — timestamp + 30-min inactivity
+  // timeout. (Guardrail: max 3 useEffect concerns per auth component —
+  // backend/tests/test_safe_yellow.py.)
   useEffect(() => {
     if (state?.status === "READY" && !sessionStartTime) {
       setSessionStartTime(Date.now());
     } else if (state?.status !== "READY" && sessionStartTime) {
       setSessionStartTime(null);
     }
-  }, [state?.status, sessionStartTime]);
 
-  useEffect(() => {
     if (!sessionStartTime || state?.status !== "READY") return;
 
     const checkTimeout = () => {
@@ -103,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const timeoutId = setInterval(checkTimeout, 60000);
     return () => clearInterval(timeoutId);
-  }, [sessionStartTime, state?.status, auth.signOut, setState]);
+  }, [state?.status, sessionStartTime, auth.signOut, setState]);
 
   useEffect(() => {
     function handle() {
