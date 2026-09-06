@@ -93,7 +93,7 @@ jobs:
 
       - name: Frontend tests
         working-directory: frontend
-        run: npm test
+        run: npm run test:unit
 
       - name: Secret leak detection
         run: |
