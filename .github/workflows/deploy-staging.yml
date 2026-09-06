@@ -147,9 +147,9 @@ jobs:
       - name: Run migrations
         run: alembic upgrade head
 
-      - name: Payment-provider contract tests
+      - name: Backend contract tests (full suite — coverage floor per pyproject)
         run: |
-          pytest backend/tests/test_stripe_payment_provider.py -v
+          pytest backend/tests/ -v
 
       - name: Install frontend dependencies
         working-directory: frontend
