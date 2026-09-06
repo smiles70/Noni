@@ -104,6 +104,24 @@ jobs:
     name: UAT - Contract and E2E Tests
     needs: virtual-qa-agent
     runs-on: ubuntu-latest
+    # Postgres service + env mirror ci.yml — the contract tests import the
+    # app, which requires a real DATABASE_URL.
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: noni
+          POSTGRES_PASSWORD: noni
+          POSTGRES_DB: noni
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://noni:noni@localhost:5432/noni
+      ENVIRONMENT: test
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -125,6 +143,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+
+      - name: Run migrations
+        run: alembic upgrade head
 
       - name: Payment-provider contract tests
         run: |
