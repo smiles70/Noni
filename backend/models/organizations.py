@@ -10,6 +10,7 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     ForeignKey,
@@ -35,9 +36,18 @@ class Organization(Base):
     contact_email = Column(String(256), nullable=False)
     admin_email = Column(String(256), nullable=False)
     status = Column(String(32), nullable=False, default="active")
+    # OB-1: B2B onboarding fields (spec 2026-09-06-b2b-onboarding-spec-001).
+    org_type = Column(String(16), nullable=False, default="nonprofit")
+    community_size = Column(Integer, nullable=True)
+    tier = Column(String(32), nullable=False, default="site")
+    custom_flag = Column(Boolean, nullable=False, default=False)
+    parent_org_id = Column(
+        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=True
+    )
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
 
     licenses = relationship("OrgLicense", back_populates="organization")
+    children = relationship("Organization")
 
 
 class OrgLicense(Base):
@@ -54,6 +64,7 @@ class OrgLicense(Base):
     purchase_id = Column(UUID(as_uuid=True), ForeignKey("purchases.id"), nullable=False)
     total_seats = Column(Integer, nullable=False, default=0)
     used_seats = Column(Integer, nullable=False, default=0)
+    expires_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
 
     organization = relationship("Organization", back_populates="licenses")
