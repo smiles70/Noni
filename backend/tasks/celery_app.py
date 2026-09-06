@@ -4,9 +4,20 @@ Sprint 27 H4: background job queue for webhooks, telemetry exports, and
 account cleanup. Redis is the broker; Fly Redis or Upstash Redis.
 """
 
+import importlib
+import pkgutil
+
 from celery import Celery
 
 from backend.core.config import settings
+
+# Worker context: register every ORM model so string relationships
+# (e.g. Purchase -> "Account") resolve inside tasks. Web workers get
+# this transitively via the route graph; the Celery worker does not.
+import backend.models
+
+for _m in pkgutil.iter_modules(backend.models.__path__):
+    importlib.import_module(f"backend.models.{_m.name}")
 
 # Redis broker URL from env (Fly Redis sets REDIS_URL automatically).
 broker_url = getattr(settings, "REDIS_URL", "redis://localhost:6379/0")
