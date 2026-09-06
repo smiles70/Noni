@@ -81,6 +81,10 @@ def gift_claim(
             detail={"envelope_id": "gift.invalid_or_already_claimed"},
         ) from e
     db.commit()
+    # Notify the giver (deferred; email never blocks the claim response).
+    from backend.tasks.email_tasks import send_gift_claimed
+
+    send_gift_claimed.delay(str(purchase.id))
     return GiftClaimResponse(
         purchase_id=str(purchase.id),
         product_code=purchase.product_code,
