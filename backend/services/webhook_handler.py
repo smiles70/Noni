@@ -99,7 +99,11 @@ def _on_checkout_completed(db: DbSession, event: WebhookEvent) -> str:
         "is_gift"
     ) == "true" or purchase.gift_claim_token_hash is not None
     if is_gift and purchase.beneficiary_account_id is None:
-        # Gift purchase pending claim: do NOT grant yet.
+        # Gift purchase pending claim: do NOT grant yet. Email the giver
+        # the shareable link (deferred; email never blocks the webhook).
+        from backend.tasks.email_tasks import send_gift_receipt
+
+        send_gift_receipt.delay(str(purchase.id))
         return "granted"  # purchase is paid; entitlement waits for claim
 
     entitlements.grant(
