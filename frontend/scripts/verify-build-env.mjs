@@ -37,7 +37,7 @@ if (!apiBaseUrl) {
   console.error('   See docs/gotchas.md G3 for details.');
   console.error('\n   To fix:');
   console.error('   - In GitHub Actions: Set VITE_API_BASE_URL secret');
-  console.error('   - In local build: export VITE_API_BASE_URL=https://noni-api.fly.dev');
+  console.error('   - In local build: export VITE_API_BASE_URL=https://noni-api-production.up.railway.app');
   exit(1);
 }
 
@@ -49,7 +49,7 @@ if (apiBaseUrl.includes('localhost') || apiBaseUrl.includes('127.0.0.1')) {
   console.error('   This causes the login loop (G3 gotcha).');
   console.error('\n   To fix:');
   console.error('   - Set VITE_API_BASE_URL to the production API URL');
-  console.error('   - Example: https://noni-api.fly.dev');
+  console.error('   - Example: https://noni-api-production.up.railway.app');
   exit(1);
 }
 

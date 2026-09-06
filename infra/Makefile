@@ -57,12 +57,12 @@ help:
 	@echo "  Secrets:"
 	@echo "    secrets-bootstrap    Generate age key and encrypt initial .env.prod"
 	@echo "    secrets-edit         Open SOPS-encrypted prod env in \$$EDITOR"
-	@echo "    secrets-sync         Push secrets to Fly, Cloudflare, Supabase, GitHub"
+	@echo "    secrets-sync         Push secrets to Railway, Cloudflare, Supabase, GitHub"
 	@echo "    secrets-rotate KEY=. Rotate a specific secret end-to-end"
 	@echo "    secrets-audit        Verify no secret is missing from any vendor"
 	@echo ""
 	@echo "  Deploy:"
-	@echo "    deploy-prod          Full production deploy (supabase + fly + cloudflare)"
+	@echo "    deploy-prod          Full production deploy (supabase + railway + cloudflare)"
 	@echo "    smoke-prod           Smoke-test the production endpoints"
 	@echo "    smoke-prod-live      Smoke-test with Stripe live mode"
 	@echo "    stripe-bootstrap     Create product, price, webhook in Stripe (test mode)"
@@ -163,7 +163,7 @@ db-reset:
 # ---------- vendor CLIs ----------
 
 REQUIRED_CLIS := git python node npm pre-commit docker
-OPTIONAL_CLIS := gh gcloud supabase flyctl wrangler stripe sops age psql
+OPTIONAL_CLIS := gh gcloud supabase railway wrangler stripe sops age psql
 
 .PHONY: check-clis
 check-clis:
@@ -190,7 +190,7 @@ cli-auth:
 	@gh auth login        || true
 	@gcloud auth login    || true
 	@supabase login       || true
-	@flyctl auth login    || true
+	@railway auth login    || true
 	@wrangler login       || true
 	@stripe login         || true
 

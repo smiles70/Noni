@@ -8,7 +8,7 @@ set -euo pipefail
 MODE="test"
 if [[ "${1:-}" == "--live" ]]; then MODE="live"; fi
 
-API_BASE="${PROD_API_BASE_URL:-https://noni-api.fly.dev}"
+API_BASE="${PROD_API_BASE_URL:-https://noni-api-production.up.railway.app}"
 
 require() { command -v "$1" >/dev/null 2>&1 || { echo "ERROR: required CLI missing: $1"; exit 1; }; }
 require curl

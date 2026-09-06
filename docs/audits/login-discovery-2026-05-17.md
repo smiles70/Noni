@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Login Discovery — Mynaani System Audit
 
 **Date:** 2026-05-17

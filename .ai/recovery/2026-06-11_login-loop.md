@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Recovery Log: Login Loop Incident
 **Date:** 2026-06-11
 **Status:** IN PROGRESS
@@ -27,9 +29,9 @@ Based on The Process analysis:
 
 ## Immediate Actions Required
 
-### Step 1: Check Fly.io Logs
+### Step 1: Check the legacy platform Logs
 ```bash
-flyctl logs --app noni-api --no-tail | head -100
+the legacy CLI logs --app noni-api --no-tail | head -100
 ```
 
 Look for:
@@ -39,29 +41,29 @@ Look for:
 
 ### Step 2: Force Fresh Deploy
 ```bash
-flyctl deploy --remote-only --no-cache
+the legacy CLI deploy --remote-only --no-cache
 ```
 
 ### Step 3: Verify Clerk Configuration
 ```bash
-flyctl secrets list --app noni-api
+the legacy CLI secrets list --app noni-api
 # Should show: CLERK_JWKS_URL, CLERK_ISSUER
 ```
 
 ### Step 4: Check Frontend API URL
 In browser devtools Console/Network:
-- Confirm API calls go to `https://noni-api.fly.dev`
+- Confirm API calls go to `https://noni-api-production.up.railway.app`
 - Not `http://localhost:8000` (would indicate G3)
 
 ## Verification After Fix
 
 ```bash
 # Run smoke tests
-export PROD_API_BASE_URL=https://noni-api.fly.dev
+export PROD_API_BASE_URL=https://noni-api-production.up.railway.app
 bash infra/scripts/smoke-prod.sh
 
 # Or manual check
-curl https://noni-api.fly.dev/health
+curl https://noni-api-production.up.railway.app/health
 # Expect: {"status":"healthy",...}
 ```
 

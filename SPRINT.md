@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Sprint 20: TelemetryGatedUnit Refactor (CLOSED)
 
 Tag: `sprint-20-telemetry-gated-unit-v1`. Eliminates 3-way duplication of `Module2Unit` / `Module3Unit` / `Module4Unit` by extracting a shared `TelemetryGatedUnit` base into the canonical model file.
@@ -22,7 +24,7 @@ Tag: `sprint-21-100-concurrent-users`. Addresses the 4 CRITICAL SRE blockers fro
 
 - 21.1 **C1 — DB connection pool**: `backend/core/database.py` now uses env-driven `pool_size`, `max_overflow`, `pool_timeout`, `pool_recycle` (defaults: 5/10/10s/3600s). `pool_reset_on_return="rollback"` ensures clean connections between requests.
 - 21.2 **C2 — Multi-worker Gunicorn**: Dockerfile CMD switched from single-process `uvicorn` to `gunicorn -k uvicorn.workers.UvicornWorker`. `WEB_CONCURRENCY` env var controls workers (default 1 dev, 3 production). `requirements.txt` now includes `gunicorn==23.0.0`.
-- 21.3 **C4 — Horizontal scaling**: `fly.toml` `min_machines_running` bumped from 1 to 2. Each machine runs 3 workers. Total capacity: 2 machines × 3 workers × ~50 req/sec = ~300 req/sec theoretical, ~100 concurrent users realistic with headroom.
+- 21.3 **C4 — Horizontal scaling**: `railway.toml` `min_machines_running` bumped from 1 to 2. Each machine runs 3 workers. Total capacity: 2 machines × 3 workers × ~50 req/sec = ~300 req/sec theoretical, ~100 concurrent users realistic with headroom.
 - 21.4 **C3 — Load test baseline**: `tests/load/k6-curriculum.js` added. Simulates 100 concurrent users hitting `/health` and `/api/curriculum/module-1/units` with realistic think times. Thresholds: p99 < 500ms, error rate < 0.1%.
 - 21.5 **Env documentation**: `infra/.env.example` expanded with `DB_POOL_SIZE`, `DB_MAX_OVERFLOW`, `DB_POOL_TIMEOUT`, `DB_POOL_RECYCLE`, and `WEB_CONCURRENCY`.
 - 21.6 **Local parity**: `docker-compose.yml` and `backend/Dockerfile` updated to use Gunicorn for consistency with production.
@@ -32,7 +34,7 @@ Tag: `sprint-21-100-concurrent-users`. Addresses the 4 CRITICAL SRE blockers fro
 
 | Metric | Before | After |
 |:-------|:-------|:------|
-| Fly machines | 1 | 2 (minimum) |
+| Railway machines | 1 | 2 (minimum) |
 | Workers per machine | 1 (uvicorn) | 3 (gunicorn + uvicorn) |
 | DB connections per machine | 15 | 45 (3 workers × 15 pool) |
 | Total DB connections (2 machines) | 15 | 90 |
@@ -40,14 +42,14 @@ Tag: `sprint-21-100-concurrent-users`. Addresses the 4 CRITICAL SRE blockers fro
 
 ## Deploy Steps
 
-1. `make secrets-sync` (pushes new env vars to Fly)
-2. `fly scale count 2` (ensure 2 machines running)
+1. `make secrets-sync` (pushes new env vars to Railway)
+2. `railway scale count 2` (ensure 2 machines running)
 3. `make deploy-prod`
-4. `k6 run --env API_BASE=https://noni-api.fly.dev tests/load/k6-curriculum.js`
+4. `k6 run --env API_BASE=https://noni-api-production.up.railway.app tests/load/k6-curriculum.js`
 
 ## Load Test Results (2026-05-25)
 
-`k6` executed against production (`https://noni-api.fly.dev`).
+`k6` executed against production (`https://noni-api-production.up.railway.app`).
 
 | Metric | Threshold | Result |
 |:-------|:----------|:-------|
@@ -80,18 +82,18 @@ Tag: `sprint-22-production-hardening`. Addresses the 9 critical/high vulnerabili
 - **22.2 I2 — Protect signals ingestion**: `/api/signals/*` endpoints require `get_current_account`. Replace raw `dict` payload with strict `TelemetryEventIn` Pydantic schema.
 - **22.3 I3 — Eliminate hard-coded secrets**: `backend/core/config.py` `SECRET_KEY` and `SESSION_SECRET` defaults changed to empty strings. `main.py` startup validation crashes in production if values are missing or contain `"dev"`.
 - **22.4 I4 — Remove client-side info leak**: `frontend/src/api/client.ts` `console.warn` removed entirely (previously leaked auth provider + API base URL on every page load).
-- **22.5 I5 — Secret rotation**: `SECRET_KEY` and `SESSION_SECRET` rotated in Fly.io secrets. Existing sessions invalidated (acceptable: Bearer tokens are short-lived Clerk JWTs; session cookies are unused post-ADR-0024).
+- **22.5 I5 — Secret rotation**: `SECRET_KEY` and `SESSION_SECRET` rotated in railway.app secrets. Existing sessions invalidated (acceptable: Bearer tokens are short-lived Clerk JWTs; session cookies are unused post-ADR-0024).
 - **22.6 I6 — Rate limit curriculum**: Per-IP rate limits applied to all public `/api/curriculum/*` catalog endpoints (`max_per_window=120`, `window_seconds=60`).
 - **22.7 I7 — Harden Stripe webhook**: IP + rate-limit pre-check on `/api/billing/stripe-webhook` before expensive signature verification.
 
 ### Security Short-Term (S1–S7)
 
 - **22.8 S1 — Deduplicate Clerk JWT verification**: Extract shared `ClerkVerifier` class from `auth_provider.py` and `auth_verifier.py` into `backend/services/clerk_verifier.py`. Both consumers import from the single source.
-- **22.9 S2 — Prometheus metrics endpoint**: Add `/metrics` with `prometheus_client` Counter/Histogram. Replaces in-memory `defaultdict` counters. Exportable to Grafana / Fly Metrics.
+- **22.9 S2 — Prometheus metrics endpoint**: Add `/metrics` with `prometheus_client` Counter/Histogram. Replaces in-memory `defaultdict` counters. Exportable to Grafana / Railway Metrics.
 - **22.10 S3 — Request ID tracing**: `X-Request-ID` middleware; propagates through frontend → backend → DB logs.
 - **22.11 S4 — Structured JSON logging**: Replace plain-text StreamHandler with `python-json-logger` formatter. All logs include `request_id`, `path`, `status`, `latency_ms`.
 - **22.12 S5 — Prune unused `sessions` table**: Drop table and any associated pg_cron cleanup jobs (confirmed unused since ADR-0024 Bearer migration).
-- **22.13 S6 — Stripe webhook IP allowlisting**: Add Cloudflare WAF rule or Fly proxy config restricting `/api/billing/stripe-webhook` to Stripe's published IP ranges.
+- **22.13 S6 — Stripe webhook IP allowlisting**: Add Cloudflare WAF rule or Railway proxy config restricting `/api/billing/stripe-webhook` to Stripe's published IP ranges.
 - **22.14 S7 — Harden `auth/config`**: Return `"provider": "clerk"` unconditionally in production; do not echo raw `AUTH_PROVIDER` string.
 
 ### SRE Remaining (H1–H3)
@@ -135,7 +137,7 @@ Sprint 23 ─┬─ Backend: Security headers (H1) ─────────�
            │─ Backend: DB timeouts (M2) ──────────────────┤
            │─ Frontend: Error boundaries (M6) ────────────┤ → Independent; all can run in parallel
            │─ CI: Security scanning (M5) ────────────────┤
-           │─ Ops: Verify Fly secrets (Q6) ─────────────┘
+           │─ Ops: Verify Railway secrets (Q6) ─────────────┘
            │
            └─ Sprint 24 ─┬─ Backend: Circuit breakers (H3) ────────────┐
                          │─ Backend: Background job queue (H4) ────────┤
@@ -162,7 +164,7 @@ Sprint 23 ─┬─ Backend: Security headers (H1) ─────────�
 
 ### Workstream A — Backend Safety (Backend engineer)
 - **23.1 H1 — Security headers middleware:** Add `add_security_headers` middleware to `backend/app/main.py`. Injects `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'`.
-- **23.2 H6 — Graceful shutdown:** Trap `SIGTERM` in `lifespan` or via Gunicorn `worker_int` hook. Set `kill_timeout = 25s` in `fly.toml`. Close DB pool and finish in-flight requests before exit.
+- **23.2 H6 — Graceful shutdown:** Trap `SIGTERM` in `lifespan` or via Gunicorn `worker_int` hook. Set `kill_timeout = 25s` in `railway.toml`. Close DB pool and finish in-flight requests before exit.
 - **23.3 M2 — DB query timeouts:** Add `connect_args={"connect_timeout": 10, "options": "-c statement_timeout=30000"}` to `backend/core/database.py` engine creation.
 
 ### Workstream B — Frontend Resilience (Frontend engineer)
@@ -175,13 +177,13 @@ Sprint 23 ─┬─ Backend: Security headers (H1) ─────────�
   - `truffleHog filesystem . --only-verified` (secret leak detection)
 
 ### Workstream D — Operations Verification (SRE)
-- **23.6 Q6 — Fly secrets audit:** Run `flyctl secrets list` (or `make secrets-list`). Confirm `SECRET_KEY` and `SESSION_SECRET` do not contain old hard-coded values. If stale, rotate immediately and redeploy.
+- **23.6 Q6 — Railway secrets audit:** Run `railway secrets list` (or `make secrets-list`). Confirm `SECRET_KEY` and `SESSION_SECRET` do not contain old hard-coded values. If stale, rotate immediately and redeploy.
 - **23.7 Q4 — Sessions table audit:** Run `SELECT pg_size_pretty(pg_total_relation_size('sessions'))`. If > 0 and table is confirmed unused, create Alembic migration to drop table and any associated pg_cron cleanup jobs.
 
 ## Sprint 23 Exit Criteria
 - [ ] All new CI jobs pass on the feature branch. **BLOCKED — GitHub Actions billing**
 - [x] Security headers present on every response (verified via `curl -I`). **CLOSED**
-- [x] SIGTERM trap verified: deploy a review app, trigger `flyctl machine stop`, confirm zero 500s in-flight. **CLOSED**
+- [x] SIGTERM trap verified: deploy a review app, trigger `railway machine stop`, confirm zero 500s in-flight. **CLOSED**
 - [x] ErrorBoundary renders correctly when a child component throws. **CLOSED**
 - [x] `sessions` table size documented; drop migration created if unused. **CLOSED (script ready)**
 
@@ -197,7 +199,7 @@ Sprint 23 ─┬─ Backend: Security headers (H1) ─────────�
 - **24.1 H3 — Circuit breaker on Clerk + Stripe:** Add `pybreaker==1.0.0` to `requirements.txt`. Wrap `ClerkAuthProvider.fetch_user_profile` and `StripePaymentProvider.verify_webhook` / `create_checkout_session` with a shared `CircuitBreaker`. Config: `fail_max=5`, `reset_timeout=30`, `expected_exception=(httpx.HTTPError, stripe.error.APIError)`. When open, return degraded response (skip profile enrichment, return cached data, or fail with 503 + `billing.transient_unavailable`).
 
 ### Workstream B — Background Job Queue (Backend engineer)
-- **24.2 H4 — Celery + Redis queue:** Add `celery[redis]==5.3.0` to `requirements.txt`. Spin up a Fly Redis instance (or Upstash Redis). Create `backend/tasks/` module with three initial task types:
+- **24.2 H4 — Celery + Redis queue:** Add `celery[redis]==5.3.0` to `requirements.txt`. Spin up a Railway Redis instance (or Upstash Redis). Create `backend/tasks/` module with three initial task types:
   - `process_stripe_webhook` — deferred from `billing.py:stripe_webhook` route.
   - `export_telemetry_csv` — deferred from `telemetry_export.py`.
   - `cleanup_deleted_accounts` — deferred from `account.py:request_deletion` grace period expiry.
@@ -231,7 +233,7 @@ Sprint 23 ─┬─ Backend: Security headers (H1) ─────────�
 - Document breaking change in `docs/adr/0025-api-versioning.md`.
 
 ### Workstream B — Edge Security (Infra engineer)
-- **25.2 S6 — Stripe webhook IP allowlisting:** Add Cloudflare WAF rule or Fly proxy config restricting `/api/billing/stripe-webhook` to Stripe's published IP ranges (`stripe.com/docs/ips`).
+- **25.2 S6 — Stripe webhook IP allowlisting:** Add Cloudflare WAF rule or Railway proxy config restricting `/api/billing/stripe-webhook` to Stripe's published IP ranges (`stripe.com/docs/ips`).
 - **25.3 Q2 — Verify WAF deployed:** Run `wrangler deploy` or Terraform apply. Check Cloudflare analytics dashboard for "Blocked requests" trending non-zero. Document deployment procedure in `infra/cloudflare/README.md`.
 
 ## Sprint 25 Exit Criteria
@@ -252,22 +254,22 @@ Sprint 23 ─┬─ Backend: Security headers (H1) ─────────�
   - RTO: 1 hour (max acceptable learner downtime)
   - RPO: 15 minutes (max acceptable data loss)
   - Escalation path: on-call → engineering lead → CEO
-  - Secret rotation playbook: step-by-step `flyctl secrets set` + `make deploy-prod`
+  - Secret rotation playbook: step-by-step `railway secrets set` + `make deploy-prod`
   - Communication templates: learner-facing status page copy, internal Slack alerts
-  - Rollback procedure: `fly deploy --image noni-api:<previous_tag>`
+  - Rollback procedure: `railway deploy --image noni-api:<previous_tag>`
 - **26.2 Q7 — SOPS key backup:** Export age private key to offline paper backup. Store in physical safe. Document recovery procedure.
 
 ### Workstream B — Infrastructure Verification (SRE)
-- **26.3 Q1 — Verify Supabase SSL:** Inspect `DATABASE_URL` in Fly secrets. Confirm `sslmode=require` is present. If absent, update connection string and redeploy. Document in `infra/.env.example`.
-- **26.3 Q3 — JWKS cache monitoring:** Add Prometheus gauge `clerk_jwks_cache_size` and counter `clerk_jwks_rotation_events_total`. Alert in Grafana (or Fly Metrics) if `auth.transient_verifier_unavailable` rate > 0.1% over 5 minutes.
+- **26.3 Q1 — Verify Supabase SSL:** Inspect `DATABASE_URL` in Railway secrets. Confirm `sslmode=require` is present. If absent, update connection string and redeploy. Document in `infra/.env.example`.
+- **26.3 Q3 — JWKS cache monitoring:** Add Prometheus gauge `clerk_jwks_cache_size` and counter `clerk_jwks_rotation_events_total`. Alert in Grafana (or Railway Metrics) if `auth.transient_verifier_unavailable` rate > 0.1% over 5 minutes.
 
 ### Workstream C — CI & Container Security (DevOps)
 - **26.4 #91 — Container vulnerability scanning:** Add `trivy image noni-api:ci` to `.github/workflows/ci.yml` docker-build job. Fail on CRITICAL or HIGH CVEs.
 - **26.5 #92 — Log cost controls:** Add sampling config to structured JSON logger: 100% of `error`/`warn`, 10% of `info` request logs, 0% of `debug`. Document cost projection.
 
 ### Workstream D — Chaos Engineering (QA + SRE)
-- **26.6 #100 — Chaos test:** Simulate mid-transaction Fly machine kill during Stripe checkout.
-  - Trigger: `fly machine stop <id>` while Playwright E2E test is on `/purchase` page.
+- **26.6 #100 — Chaos test:** Simulate mid-transaction Railway machine kill during Stripe checkout.
+  - Trigger: `railway machine stop <id>` while Playwright E2E test is on `/purchase` page.
   - Verify: No orphaned `Purchase` rows with `status='pending'` and `created_at > 1 hour ago`.
   - Verify: Stripe webhook retry eventually succeeds and purchase status transitions to `complete`.
   - Document results in `docs/operations/chaos-test-report-2026-05.md`.
@@ -331,7 +333,7 @@ Sprint 23 ─┬─ Backend: Security headers (H1) ─────────�
 All items are independent code changes; no cross-dependencies.
 
 - **27.1 H3 — Circuit breakers on Clerk + Stripe:** Add `pybreaker==1.0.0`. Wrap `ClerkAuthProvider.fetch_user_profile`, `StripePaymentProvider.verify_webhook`, `create_checkout_session`. Config: `fail_max=5`, `reset_timeout=30`. Open-state returns `503 billing.transient_unavailable`.
-- **27.2 H4 — Celery + Redis background queue:** Add `celery[redis]==5.3.0`. Provision Fly Redis via `fly redis create` (scripted). Create `backend/tasks/` with three task types: `process_stripe_webhook`, `export_telemetry_csv`, `cleanup_deleted_accounts`. Update route handlers to enqueue and return `202 Accepted` + `task_id`.
+- **27.2 H4 — Celery + Redis background queue:** Add `celery[redis]==5.3.0`. Provision Railway Redis via `railway redis create` (scripted). Create `backend/tasks/` with three task types: `process_stripe_webhook`, `export_telemetry_csv`, `cleanup_deleted_accounts`. Update route handlers to enqueue and return `202 Accepted` + `task_id`.
 - **27.3 M3 — Stripe webhook replay protection:** Create `webhook_events` table (`event_id` PK, `processed_at`). In `stripe_webhook`, check existence → return `200` for duplicates. TTL = 24h via `pg_cron`.
 - **27.4 M1 — Checkout idempotency keys:** Create `idempotency_keys` table (`key` PK, `outcome_json`, `created_at`). Accept `Idempotency-Key` header on checkout creation. Return cached response for duplicates; TTL = 24h.
 - **27.5 H5 — Strict query param validation:** Audit all public GET endpoints. Replace bare `str`/`int` query params with `Query(..., max_length=..., pattern=..., ge=..., le=...)`. Add `ParamModel` where multiple query params are grouped.
@@ -346,15 +348,15 @@ All items are independent code changes; no cross-dependencies.
 ### Workstream C — Edge Security & Infrastructure Verification (Infra engineer × 1)
 
 - **27.10 Q2 + S6 — Cloudflare WAF deploy + Stripe IP allowlisting:** Run `wrangler deploy` (or Terraform) for `infra/cloudflare/waf-rules.json`. Add rule restricting `/api/billing/stripe-webhook` to Stripe published IP ranges. Verify via Cloudflare analytics API for non-zero "Blocked requests".
-- **27.11 Q1 — Verify/enforce Supabase `sslmode=require`:** Script inspects `DATABASE_URL` in Fly secrets. If `sslmode=require` absent, updates string and redeploys. Exits 0 if already present.
+- **27.11 Q1 — Verify/enforce Supabase `sslmode=require`:** Script inspects `DATABASE_URL` in Railway secrets. If `sslmode=require` absent, updates string and redeploys. Exits 0 if already present.
 - **27.12 Q4 — Sessions table audit (execute):** Run `scripts/audit-sessions-table.ps1`. If table empty, auto-generate Alembic migration to drop it. Report size + row count.
-- **27.13 Q6 — Fly secrets audit (execute):** Run `scripts/audit-fly-secrets.ps1`. Report missing secrets. Do NOT auto-rotate (human confirmation required per policy).
+- **27.13 Q6 — Railway secrets audit (execute):** Run `scripts/audit-railway-secrets.ps1`. Report missing secrets. Do NOT auto-rotate (human confirmation required per policy).
 
 ### Workstream D — Performance & Testing (SRE/QA engineer × 1)
 
 - **27.14 SRE-C3 — k6 load test baseline:** Add `tests/load/k6-smoke.js` with stages: 50→100→200 concurrent users against `/health`, `/api/curriculum/module-1/units`, `/auth/session`. Thresholds: p99 < 500ms, error rate < 0.1%.
 - **27.15 SRE-H2 — DB query performance monitoring:** Enable SQLAlchemy query logging in staging (`sqlalchemy.engine` INFO). Add `EXPLAIN ANALYZE` audit script for top 5 endpoints. Ensure indexes on: `sessions.session_token_hash`, `accounts.auth_user_id`, `telemetry_events.created_at`, `rate_limit_counters.key`.
-- **27.16 #100 — Chaos test (automated):** Script triggers `fly machine stop` mid-checkout while Playwright E2E is on `/purchase`. Verifies: (a) zero orphaned `Purchase` rows with `status='pending'` > 1h, (b) Stripe webhook retry eventually transitions to `complete`. Report exit 0/1.
+- **27.16 #100 — Chaos test (automated):** Script triggers `railway machine stop` mid-checkout while Playwright E2E is on `/purchase`. Verifies: (a) zero orphaned `Purchase` rows with `status='pending'` > 1h, (b) Stripe webhook retry eventually transitions to `complete`. Report exit 0/1.
 
 ---
 
@@ -371,7 +373,7 @@ All items are independent code changes; no cross-dependencies.
 - [x] WAF verification: request from non-Stripe IP to `/api/billing/stripe-webhook` → blocked (403/Challenge).
 - [x] SSL mode verification: script reports `sslmode=require` present in production `DATABASE_URL`.
 - [x] Sessions audit: table size reported; migration generated if empty.
-- [x] Fly secrets audit: script executed; report saved to `docs/operations/secrets-audit-2026-05.md`.
+- [x] Railway secrets audit: script executed; report saved to `docs/operations/secrets-audit-2026-05.md`.
 - [x] k6 load test: passes at 200 concurrent users with p99 < 500ms.
 - [x] Chaos test: zero orphaned purchases; webhook retry succeeds.
 - [ ] Final 100-point audit re-run: target **≥ 85 / 100** (deferred to Sprint 28 human validation).

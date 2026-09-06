@@ -15,7 +15,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - `frontend/.env.production` for reliable build-time API URL configuration
 
 ### Fixed
-- Production frontend calling `localhost:8000` instead of `noni-api.fly.dev`
+- Production frontend calling `localhost:8000` instead of `noni-api-production.up.railway.app`
 - Build process now includes bundle verification step
 
 ---

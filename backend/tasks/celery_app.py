@@ -1,14 +1,14 @@
 """Celery app configuration.
 
 Sprint 27 H4: background job queue for webhooks, telemetry exports, and
-account cleanup. Redis is the broker; Fly Redis or Upstash Redis.
+account cleanup. Redis is the broker; Railway Redis or Upstash Redis.
 """
 
 from celery import Celery
 
 from backend.core.config import settings
 
-# Redis broker URL from env (Fly Redis sets REDIS_URL automatically).
+# Redis broker URL from env (Railway Redis sets REDIS_URL automatically).
 broker_url = getattr(settings, "REDIS_URL", "redis://localhost:6379/0")
 
 app = Celery(

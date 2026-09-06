@@ -42,7 +42,7 @@ defined here.
 | **Test mode** (Stripe) | A separate sandbox where you can pretend to charge cards without real money moving. All keys start with `sk_test_` or `pk_test_`. |
 | **Price ID** (Stripe) | A short code like `price_1Q...` that points to a specific product + amount. Our app sends this code to Stripe to start a checkout. |
 | **Stripe CLI** | A command-line tool from Stripe that forwards webhook events from Stripe's servers to your laptop while you develop. |
-| **PaaS** | "Platform as a Service" — a hosting company that runs your code without you managing servers. (Render, Fly.io, etc.) |
+| **PaaS** | "Platform as a Service" — a hosting company that runs your code without you managing servers. (Render, railway.app, etc.) |
 
 ---
 

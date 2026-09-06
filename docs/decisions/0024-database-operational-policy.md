@@ -20,14 +20,14 @@ This ADR sets the operational policy. Schema decisions live in `docs/architectur
 
 - Application connects via Supabase's pooler in **transaction mode**.
 - asyncpg / SQLAlchemy configured with `statement_cache_size=0` and `prepare_threshold=None` to be compatible with the transaction-mode pooler.
-- Per-process pool: `pool_size=5`, `max_overflow=10`. Fly machine count and worker count set such that total connections stay under 60% of the pooler's per-branch ceiling.
+- Per-process pool: `pool_size=5`, `max_overflow=10`. Railway machine count and worker count set such that total connections stay under 60% of the pooler's per-branch ceiling.
 - A `DATABASE_URL_DIRECT` (non-pooled) variant is used only by Alembic migrations and admin tooling.
 
 ### Migration policy
 
 - App schema migrations: Alembic in `backend/alembic/versions/`.
 - DB-level concerns (extensions, RLS policies, `pg_cron` jobs): Supabase migrations in `supabase/migrations/`.
-- Production application of migrations is performed by Fly's `release_command = "alembic upgrade head"` so exactly one machine runs migrations per release.
+- Production application of migrations is performed by Railway's `release_command = "alembic upgrade head"` so exactly one machine runs migrations per release.
 - Down-migrations are written for every up-migration; reversibility is enforced by CI (`alembic upgrade head && alembic downgrade -1 && alembic upgrade head`).
 - Destructive migrations (renames, type changes) are deployed in two phases: (1) additive, (2) cleanup, separated by a deploy boundary.
 

@@ -99,7 +99,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
   - ADR 0021 (pricing & tiering) ratified
   - ADR 0022 (vendor topology — 5 vendors at launch)
   - ADR 0023 (auth and session model — Supabase Auth, server-side session cookie, logical `auth_user_id`)
-  - ADR 0024 (DB operational policy — pooler mode, migration via Fly release_command, RLS, pg_cron retention, restore drill)
+  - ADR 0024 (DB operational policy — pooler mode, migration via Railway release_command, RLS, pg_cron retention, restore drill)
   - ADR 0025 (secrets — SOPS source of truth + `make secrets-sync` propagation)
 - Sprint A1 — Foundations (committed `72ad25f`, push pending until auth set up)
   - `infra/Makefile` (operator surface; `make help` lists all targets)
@@ -117,7 +117,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
   - `backend/tests/test_a2_launch_schema.py` — shape, FKs, idempotency, estimator persistence (5 tests)
 - Sprint A9 — CI/CD pipelines (in progress)
   - `.github/workflows/ci.yml` — added migration round-trip step (down + up)
-  - `.github/workflows/deploy.yml` — preflight + supabase-db-push + fly-deploy + pages-deploy + smoke; no-ops when secrets absent
+  - `.github/workflows/deploy.yml` — preflight + supabase-db-push + railway-deploy + pages-deploy + smoke; no-ops when secrets absent
   - `.github/workflows/secrets-drift.yml` — daily audit, opens `secrets-drift` issue on drift
   - `.github/workflows/nightly-backup.yml` — pg_dump → R2 nightly; no-ops without secrets
   - `.github/workflows/restore-drill.yml` — manual trigger; downloads latest dump, restores into ephemeral Postgres
@@ -150,7 +150,7 @@ See [`docs/deferred-decisions.md`](./docs/deferred-decisions.md) for the bundle 
   - Frontend deployed with `localhost:8000` as API base URL (missing `VITE_API_BASE_URL` at build time)
   - Production site showed "This page is paused" error
   - **Root cause:** Vite inlines `import.meta.env.VITE_API_BASE_URL` at build time; default fallback `localhost:8000` was baked into bundle
-  - **Fix:** Created `frontend/.env.production` with `VITE_API_BASE_URL=https://noni-api.fly.dev`; rebuild + redeploy
+  - **Fix:** Created `frontend/.env.production` with `VITE_API_BASE_URL=https://noni-api-production.up.railway.app`; rebuild + redeploy
   - **Prevention:** Bundle verification step added to deployment checklist (grep for `localhost:8000` before deploy)
 
 ## Out of Scope (deferred)

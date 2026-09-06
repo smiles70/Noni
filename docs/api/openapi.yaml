@@ -6,7 +6,7 @@ info:
   contact:
     name: Mynaani Engineering
 servers:
-  - url: https://noni-api.fly.dev/api/v1
+  - url: https://noni-api-production.up.railway.app/api/v1
     description: Production
 paths:
   /health:

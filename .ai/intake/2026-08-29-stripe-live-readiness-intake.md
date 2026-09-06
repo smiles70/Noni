@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Intake — Stripe Live Readiness for First Paying Customer
 
 **Date:** 2026-08-29  
@@ -66,7 +68,7 @@ Each batch groups items that can be completed together without conflict. Batches
 | # | Item | Evidence target |
 |---|------|-----------------|
 | 24 | Confirm `CORS_ORIGINS` includes `https://mynaani.com` and `https://www.mynaani.com`. | Preflight `OPTIONS` calls succeed. |
-| 25 | Confirm the Cloudflare Pages build uses `VITE_API_BASE_URL=https://noni-api-production.up.railway.app`. | No `noni-api.fly.dev` or `localhost` references in the bundle. |
+| 25 | Confirm the Cloudflare Pages build uses `VITE_API_BASE_URL=https://noni-api-production.up.railway.app`. | No `noni-api-production.up.railway.app` or `localhost` references in the bundle. |
 | 26 | Confirm `https://www.mynaani.com/purchase/success` and `/purchase/cancel` routes render correctly. | Manual visit returns 200. |
 | 27 | Confirm `mynaani.com` apex forwarding to `www.mynaani.com` is stable. | Both origins load the app. |
 
@@ -87,7 +89,7 @@ Each batch groups items that can be completed together without conflict. Batches
 | D1 | Gift token lost in live Stripe flow. `PaywallPage.tsx` appends `gift_token` to the Stripe checkout URL, but Stripe redirects back to `STRIPE_SUCCESS_URL?cs={CHECKOUT_SESSION_ID}` only — `gift_token`, `is_gift`, `purchase`, and `product` query params are all dropped. The buyer never sees the gift code. | Gift purchases unusable in live mode. Self-purchase unaffected. | `frontend/src/components/PaywallPage.tsx`, `frontend/src/components/PurchaseSuccessPage.tsx`, `backend/services/payment_provider.py` |
 | D2 | Gift price never charged. `create_checkout` uses `product.stripe_price_id` for both self and gift purchases; there is no per-tier price lookup. | The $59 gift tier silently charges the self-purchase price. | `backend/api/routes/billing.py` line ~141 |
 | D3 | Success page shows no product details in live mode. Stripe redirects with only `?cs=...`; the page's `product`/`provider` params are empty, so the confirmation card shows a blank product name. | Cosmetic but confusing for the customer. | `frontend/src/components/PurchaseSuccessPage.tsx` |
-| D4 | Stale webhook URLs in docs/scripts. `docs/stripe-setup.md` uses `/api/billing/webhook` and `/api/billing/stripe-webhook`; `infra/scripts/stripe-bootstrap.sh` points at the retired Fly host. Both would register endpoints Stripe cannot deliver to. | Whoever follows the old docs registers a dead webhook. | `docs/stripe-setup.md`, `infra/scripts/stripe-bootstrap.sh` |
+| D4 | Stale webhook URLs in docs/scripts. `docs/stripe-setup.md` uses `/api/billing/webhook` and `/api/billing/stripe-webhook`; `infra/scripts/stripe-bootstrap.sh` points at the retired legacy-platform host. Both would register endpoints Stripe cannot deliver to. | Whoever follows the old docs registers a dead webhook. | `docs/stripe-setup.md`, `infra/scripts/stripe-bootstrap.sh` |
 
 Recommended handling: fix D1–D3 in a small pre-launch sprint (backend can pass a `client_reference_id`/session lookup, or the success page can call a `GET /api/v1/billing/purchase-status?cs=...` endpoint); update D4 docs in the same change. Self-purchase-only launch is possible after Batches A–E plus item 28 without D1/D2 if the gift buttons are hidden or a decision is made to charge one price.
 
@@ -109,7 +111,7 @@ Recommended handling: fix D1–D3 in a small pre-launch sprint (backend can pass
 2. A signed-in learner on `www.mynaani.com` can buy Modules 4-5 with a real card.
 3. A learner can buy the same product as a gift and a second account can redeem it.
 4. A refund in the Stripe dashboard revokes the learner's entitlement.
-5. The production bundle contains no `noni-api.fly.dev` or `localhost` references.
+5. The production bundle contains no `noni-api-production.up.railway.app` or `localhost` references.
 
 ---
 

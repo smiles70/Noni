@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Mynaani Recovery Runbook
 
 **Version:** 1.0.0
@@ -22,7 +24,7 @@
 ### Prerequisites
 - Latest backup confirmed in Cloudflare R2
 - `pg_restore` and `psql` installed
-- Fly CLI authenticated
+- Railway CLI authenticated
 
 ### Procedure
 1. Identify the backup to restore:
@@ -37,7 +39,7 @@
 
 3. Stop application (to prevent writes during restore):
    ```bash
-   fly scale count 0 --app noni-api
+   railway scale count 0 --app noni-api
    ```
 
 4. Restore to Supabase:
@@ -55,38 +57,38 @@
 
 6. Restart application:
    ```bash
-   fly scale count 2 --app noni-api
+   railway scale count 2 --app noni-api
    make smoke-prod
    ```
 
 ---
 
-## Scenario 2: Fly App Total Failure
+## Scenario 2: Railway App Total Failure
 
-**Trigger:** Fly platform outage, app won't start, machines unhealthy.
+**Trigger:** Railway platform outage, app won't start, machines unhealthy.
 
 ### Procedure
-1. Check Fly status page: https://status.fly.io
+1. Check Railway status page: https://status.railway.app
 
-2. If Fly platform is down:
-   - Wait for Fly resolution (documented RTO not applicable -- vendor outage).
+2. If Railway platform is down:
+   - Wait for Railway resolution (documented RTO not applicable -- vendor outage).
    - Communicate to users via status page.
 
 3. If app-specific failure:
    ```bash
-   fly status --app noni-api
-   fly logs --app noni-api --recent
+   railway status --app noni-api
+   railway logs --app noni-api --recent
    ```
 
 4. Restart machines:
    ```bash
-   fly apps restart noni-api
+   railway apps restart noni-api
    ```
 
 5. If restart fails, rollback to last known good:
    ```bash
-   fly releases list --app noni-api
-   fly deploy --image noni-api:<previous_tag> --app noni-api
+   railway releases list --app noni-api
+   railway deploy --image noni-api:<previous_tag> --app noni-api
    make smoke-prod
    ```
 
@@ -106,7 +108,7 @@
 
 3. If connection pool exhausted:
    ```bash
-   fly scale count 4 --app noni-api  # Distribute load
+   railway scale count 4 --app noni-api  # Distribute load
    ```
 
 ---
@@ -121,8 +123,8 @@
 2. If Clerk incident:
    - Enable mock auth as emergency fallback (degrades security):
      ```bash
-     fly secrets set AUTH_PROVIDER=mock --app noni-api
-     fly deploy --app noni-api
+     railway secrets set AUTH_PROVIDER=mock --app noni-api
+     railway deploy --app noni-api
      ```
    - Monitor Clerk status.
    - Revert to `AUTH_PROVIDER=clerk` when Clerk recovers.
@@ -132,7 +134,7 @@
 ## Verification Checklist
 
 After any recovery:
-- [ ] `curl https://noni-api.fly.dev/health` returns 200
+- [ ] `curl https://noni-api-production.up.railway.app/health` returns 200
 - [ ] `make smoke-prod` passes
 - [ ] Auth flow works (test login)
 - [ ] Curriculum loads

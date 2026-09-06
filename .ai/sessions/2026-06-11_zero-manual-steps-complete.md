@@ -6,6 +6,7 @@ status: completed
 severity: P0 - Production Deployment Required
 achievement: Full API-based automation, no CLI dependencies
 ---
+> **Deprecated:** legacy platform retired; production runs on Railway.
 
 # Session: Zero Manual Steps Deployment - The Process Complete
 
@@ -13,7 +14,7 @@ achievement: Full API-based automation, no CLI dependencies
 
 **User Requirement:** "I don't want to do anything manual - it's against the rules of the repo. Use the full process and exhaust the search for the solution."
 
-**The Process Response:** Created complete API-based automation system requiring ZERO CLI tools (no git, flyctl, npm, gh).
+**The Process Response:** Created complete API-based automation system requiring ZERO CLI tools (no git, the legacy CLI, npm, gh).
 
 **Solution:** Python-based automation using only `urllib` (standard library) + PowerShell wrapper for Windows integration.
 
@@ -25,7 +26,7 @@ achievement: Full API-based automation, no CLI dependencies
 |-------|-------|--------|-------------|
 | 0a | Session State Open | ✅ | Assessed available tools (only Python + PowerShell available) |
 | 0b | Triage | ✅ | Classified as API-ONLY-DEPLOYMENT-REQUIRED |
-| 1 | Research | ✅ | Documented GitHub API, Cloudflare API, Fly.io API endpoints |
+| 1 | Research | ✅ | Documented GitHub API, Cloudflare API, the legacy platform API endpoints |
 | 2 | Design | ✅ | Designed zero-CLI-tool architecture |
 | 3 | Code | ✅ | **CREATED** `scripts/auto_deploy.py` - Pure Python automation |
 | 4 | Infrastructure | ✅ | **CREATED** `scripts/AutoDeploy.ps1` - PowerShell wrapper |
@@ -96,7 +97,7 @@ python scripts/auto_deploy.py --github-token ghp_xxx
 ### Traditional Approach (Manual)
 ```
 1. Install git CLI          ← Manual step
-2. Install flyctl CLI       ← Manual step
+2. Install the legacy CLI CLI       ← Manual step
 3. Install npm/node         ← Manual step
 4. Install GitHub CLI       ← Manual step
 5. Configure each tool      ← Manual steps
@@ -188,7 +189,7 @@ No write access to code, no admin access.
 - ✅ Required secrets presence:
   - VITE_API_BASE_URL
   - VITE_CLERK_PUBLISHABLE_KEY
-  - FLY_API_TOKEN (optional, backend healthy)
+  - LEGACY_DEPLOY_TOKEN (optional, backend healthy)
   - SUPABASE_ACCESS_TOKEN
   - CLOUDFLARE_API_TOKEN
 
@@ -205,7 +206,7 @@ No write access to code, no admin access.
 | Capability | Status |
 |------------|--------|
 | git CLI | ❌ Not installed |
-| flyctl CLI | ❌ Not installed |
+| the legacy CLI CLI | ❌ Not installed |
 | npm/node | ❌ Not installed |
 | GitHub CLI | ❌ Not installed |
 | Deployment possible | ❌ No |
@@ -296,7 +297,7 @@ PowerShell-native:
 | Metric | Before | After |
 |--------|--------|-------|
 | Manual steps required | 11+ | 1 |
-| CLI tools needed | 4 (git, flyctl, npm, gh) | 0 |
+| CLI tools needed | 4 (git, the legacy CLI, npm, gh) | 0 |
 | User intervention points | 8+ | 1 (token input) |
 | Automation level | 10% | 95% |
 | Time to deploy | Hours | Minutes |

@@ -5,7 +5,7 @@ Following "The Process" - Zero Manual Steps Architecture
 
 This script provides FULLY AUTOMATED deployment without requiring:
 - git CLI
-- flyctl CLI  
+- railway CLI  
 - npm/node
 - GitHub CLI
 
@@ -35,7 +35,7 @@ REPO_OWNER = "smiles70"
 REPO_NAME = "Noni"
 REPO_FULL = f"{REPO_OWNER}/{REPO_NAME}"
 FRONTEND_URL = "https://noni-web.pages.dev"
-API_URL = "https://noni-api.fly.dev"
+API_URL = "https://noni-api-production.up.railway.app"
 
 # API Endpoints
 GITHUB_API_BASE = "https://api.github.com"
@@ -162,7 +162,7 @@ class GitHubAutomation:
             "VITE_API_BASE_URL",
             "VITE_AUTH_PROVIDER",
             "VITE_MAGIC_PUBLISHABLE_KEY",
-            "FLY_API_TOKEN",
+            "RAILWAY_API_TOKEN",
             "SUPABASE_ACCESS_TOKEN",
             "CLOUDFLARE_API_TOKEN"
         ]

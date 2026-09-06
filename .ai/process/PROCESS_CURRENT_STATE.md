@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # PROCESS_CURRENT_STATE — Mynaani
 
 **Process version:** v9.51
@@ -13,7 +15,7 @@
 - CI/CD: GitHub Actions (`.github/workflows/ci.yml`, `deploy.yml`, `nightly-backup.yml`, `restore-drill.yml`, `secrets-drift.yml`).
 - Auth: Clerk (RS256 JWKS).
 - Payments: Stripe.
-- Deployment: Fly.io backend, Cloudflare Pages frontend.
+- Deployment: the legacy platform backend, Cloudflare Pages frontend.
 - `PROCESS_V9.51_SPEC.md` is loaded at repo root from the latest v9.51 process in `Downloads/`.
 
 ## Gaps (explicitly tracked)

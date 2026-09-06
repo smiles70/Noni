@@ -27,7 +27,7 @@ fi
 
 BASE="https://uptime.betterstack.com/api/v2"
 H_AUTH="Authorization: Bearer $BETTERSTACK_API_TOKEN"
-API_URL="${PROD_API_BASE_URL:-https://noni-api.fly.dev}"
+API_URL="${PROD_API_BASE_URL:-https://noni-api-production.up.railway.app}"
 
 create_monitor() {
   local name="$1" url="$2"

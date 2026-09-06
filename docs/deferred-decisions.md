@@ -19,7 +19,7 @@ Deferring all third-party / vendor decisions to a single dedicated pass so they 
 | Anthropic API key + real Claude | Sprint 7 | Mock `claude_engine` keeps working. Plan: USE_REAL_CLAUDE feature flag, default off. |
 | Email provider | Likely needed alongside auth | Postmark / SES / Resend / Mailgun. Needed for magic-link, password reset, transactional email. |
 | Observability / error tracking | Future | Sentry / Datadog / Honeycomb / OpenTelemetry-only. |
-| Production hosting | Future | Render / Fly.io / Railway / AWS / GCP / Azure / Vercel (FE only). |
+| Production hosting | Future | Render / railway.app / Railway / AWS / GCP / Azure / Vercel (FE only). |
 | Database hosting | Future | Managed Postgres (Supabase / Neon / RDS / Cloud SQL). |
 | Frontend deploy + CDN | Future | Vercel / Netlify / Cloudflare Pages / S3+CloudFront. |
 | Payment processor (if/when monetized) | Future | Stripe / Paddle / Lemon Squeezy. |

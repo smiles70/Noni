@@ -36,14 +36,14 @@
 
 ## Gap 2: Single Points of Failure (P11, P16, P20)
 
-**Current State:** One Postgres instance, one Fly region, Clerk JWKS = total auth dependency.
+**Current State:** One Postgres instance, one Railway region, Clerk JWKS = total auth dependency.
 **Target State:** Local JWKS cache + mock auth fallback when Clerk is unreachable.
 
 ### Architecture Decisions
 
 - **Clerk JWKS:** Cache fetched JWKS in memory for 24h. If fetch fails, serve from cache. If cache empty, fallback to mock auth (already wired).
-- **Postgres:** Document-only for this sprint. Read replica requires Fly Postgres provision changes (outside code). Mark as roadmap.
-- **Region:** Document-only. Multi-region Fly requires `fly scale count` changes. Mark as roadmap.
+- **Postgres:** Document-only for this sprint. Read replica requires Railway Postgres provision changes (outside code). Mark as roadmap.
+- **Region:** Document-only. Multi-region Railway requires `railway scale count` changes. Mark as roadmap.
 
 ### Implementation
 

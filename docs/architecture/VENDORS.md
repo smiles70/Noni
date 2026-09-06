@@ -14,7 +14,7 @@ Every vendor must earn its slot. A vendor earns its slot only if (a) it is irred
 |---|---|---|---|
 | 1 | Google Cloud Console | OAuth client (touched once at setup) | `gcloud` |
 | 2 | Supabase | Auth + Postgres + RLS + pg_cron | `supabase` |
-| 3 | Fly.io | FastAPI backend host + secrets | `flyctl` |
+| 3 | railway.app | FastAPI backend host + secrets | `railway` |
 | 4 | Cloudflare | Pages, DNS, WAF, R2, Registrar | `wrangler` |
 | 5 | Stripe | Checkout, webhooks, receipts | `stripe` |
 | 6 | BetterStack (optional at launch) | Logs, uptime, alerts | API |
@@ -31,7 +31,7 @@ flowchart LR
     end
 
     subgraph GH["GitHub"]
-        REPO["Repo<br/>fly.toml · wrangler.toml<br/>supabase/ · alembic/<br/>.github/workflows/"]
+        REPO["Repo<br/>railway.toml · wrangler.toml<br/>supabase/ · alembic/<br/>.github/workflows/"]
         GHA["Actions<br/>CI + deploy<br/>nightly backup<br/>secrets drift check"]
         GHS["Encrypted Secrets"]
     end
@@ -46,9 +46,9 @@ flowchart LR
         SCFG["config.toml + migrations<br/>(in repo)"]
     end
 
-    subgraph V3["3. Fly.io"]
-        FAPP["noni-api app<br/>fly.toml release_command<br/>= alembic upgrade head"]
-        FSEC["Fly Secrets<br/>DATABASE_URL<br/>SUPABASE_JWT_SECRET<br/>STRIPE_SECRET_KEY<br/>STRIPE_WEBHOOK_SECRET<br/>SESSION_SECRET"]
+    subgraph V3["3. railway.app"]
+        FAPP["noni-api app<br/>railway.toml release_command<br/>= alembic upgrade head"]
+        FSEC["Railway Secrets<br/>DATABASE_URL<br/>SUPABASE_JWT_SECRET<br/>STRIPE_SECRET_KEY<br/>STRIPE_WEBHOOK_SECRET<br/>SESSION_SECRET"]
     end
 
     subgraph V4["4. Cloudflare"]
@@ -70,14 +70,14 @@ flowchart LR
     end
 
     ENV --> MK
-    MK -- "flyctl secrets set" --> FSEC
+    MK -- "railway secrets set" --> FSEC
     MK -- "wrangler pages secret put" --> CFPE
     MK -- "supabase secrets set" --> SAUTH
     MK -- "gh secret set" --> GHS
     MK -- "stripe (read-only verify)" --> SWH
 
     REPO -- "push" --> GHA
-    GHA -- "flyctl deploy" --> FAPP
+    GHA -- "railway deploy" --> FAPP
     GHA -- "wrangler pages deploy" --> CFP
     GHA -- "supabase db push" --> SPG
     GHA -- "pg_dump nightly" --> CFR2
@@ -101,8 +101,8 @@ flowchart LR
 
 - **One source of truth (yellow box):** `infra/.env.prod.sops.yaml`. One file, one command (`make secrets-sync`) writes to all five vendors.
 - **No secret is typed into a vendor dashboard by hand.** Every line that touches a vendor is a CLI call.
-- **No vendor talks to another vendor without crossing the API.** Stripe -> Fly. Google -> Supabase -> Fly. There is no Stripe -> Supabase or Google -> Fly shortcut.
-- **Every config artifact lives in the repo:** `fly.toml`, `wrangler.toml`, `supabase/migrations/`, `alembic/versions/`. Bootstrapping from a fresh laptop is `git clone && make bootstrap`.
+- **No vendor talks to another vendor without crossing the API.** Stripe -> Railway. Google -> Supabase -> Railway. There is no Stripe -> Supabase or Google -> Railway shortcut.
+- **Every config artifact lives in the repo:** `railway.toml`, `wrangler.toml`, `supabase/migrations/`, `alembic/versions/`. Bootstrapping from a fresh laptop is `git clone && make bootstrap`.
 
 ## Operator surface (daily ops)
 
@@ -110,7 +110,7 @@ flowchart LR
 |---|---|---|
 | Bootstrap a fresh staging env | `make bootstrap-staging` | 0 |
 | Rotate a secret | edit `.env.prod` -> `make secrets-sync` | 0 |
-| Deploy backend | `git push` -> CI runs `flyctl deploy` | 0 |
+| Deploy backend | `git push` -> CI runs `railway deploy` | 0 |
 | Deploy frontend | `git push` -> Cloudflare Pages auto-builds | 0 |
 | New DB migration | `alembic revision -m ...` -> `git push` | 0 |
 | Add a new RLS policy | edit `supabase/migrations/*.sql` -> `supabase db push` | 0 |
