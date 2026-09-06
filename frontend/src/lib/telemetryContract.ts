@@ -24,6 +24,11 @@ export const ALLOWED_EVENTS = new Set([
   "onboarding.account_setup_complete",
   "onboarding.first_lesson_start",
   "onboarding.complete",
+  "onboarding.getting_started_view",
+  "onboarding.getting_started_complete",
+  "onboarding.first_action_complete",
+  "onboarding.abandonment",
+  "onboarding.error",
   // lesson lifecycle (state transitions only)
   "lesson.initialized",
   "lesson.started",

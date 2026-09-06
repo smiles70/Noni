@@ -345,6 +345,9 @@ app.include_router(
 app.include_router(
     session_validation_router, prefix="/api/v1/session", tags=["session"]
 )
+from backend.api.routes.me import router as me_router
+
+app.include_router(me_router, prefix="/api/v1/me", tags=["account"])
 app.include_router(billing_router, prefix="/api/v1/billing", tags=["billing"])
 app.include_router(gifts_router, prefix="/api/v1/gifts", tags=["gifts"])
 app.include_router(organizations_router, prefix="/api/v1/billing", tags=["billing"])

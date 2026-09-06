@@ -39,9 +39,42 @@ def user_action(
     return {"signals": signals}
 
 
+# Server-side mirror of frontend/src/lib/telemetryContract.ts ALLOWED_EVENTS.
+# Trust rubric T3: the allowlist is enforcement, not convention. Unknown
+# event names are soft-dropped (accepted:false) so older clients don't break.
+ALLOWED_TELEMETRY_EVENTS = frozenset(
+    {
+        "onboarding.welcome_view",
+        "onboarding.account_setup_start",
+        "onboarding.account_setup_complete",
+        "onboarding.first_lesson_start",
+        "onboarding.complete",
+        "onboarding.getting_started_view",
+        "onboarding.getting_started_complete",
+        "onboarding.first_action_complete",
+        "onboarding.abandonment",
+        "onboarding.error",
+        "lesson.initialized",
+        "lesson.started",
+        "lesson.paused",
+        "lesson.resumed",
+        "lesson.completed",
+        "lesson.abandoned",
+        "lesson.progress.25",
+        "lesson.progress.50",
+        "lesson.progress.75",
+        "lesson.progress.100",
+        "retrieval_choice.recorded",
+        "auth.render_disagreement",
+    }
+)
+
+
 @router.post("/telemetry")
 def log_event(
     body: TelemetryEventIn,
     account: Account = Depends(get_current_account),
 ) -> dict:
+    if body.type not in ALLOWED_TELEMETRY_EVENTS:
+        return {"accepted": False, "envelope_id": "telemetry.event_not_allowed"}
     return record(body.type, body.payload)

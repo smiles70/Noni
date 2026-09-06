@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     STRIPE_CANCEL_URL: str = "http://localhost:5173/purchase/cancel"
 
     # Deletion grace period.
-    DELETION_GRACE_PERIOD_DAYS: int = 7
+    DELETION_GRACE_PERIOD_DAYS: int = 30
 
     # Admin account UUIDs (comma-separated) for telemetry export gating.
     ADMIN_ACCOUNT_IDS: str = ""
