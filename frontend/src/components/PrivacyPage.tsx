@@ -104,6 +104,36 @@ export default function PrivacyPage({ onBack }: Props) {
       <div style={DIVIDER} />
 
       <section>
+        <h2 style={H2}>The services we use</h2>
+        <div style={BODY}>
+          <p>
+            A small number of specialist companies help us run mynaani. Each
+            handles only what it needs to:</p>
+          <ul style={UL}>
+            <li>Stripe — processes payments; card details go to them, not us.</li>
+            <li>Magic.link — sends your sign-in link and verifies it.</li>
+            <li>Railway — hosts the service and its database.</li>
+            <li>Cloudflare — delivers pages quickly and safely.</li>
+          </ul>
+          <p>
+            We do not use advertising networks or data brokers. A data
+            processing agreement is available to community and institutional
+            partners on request.
+          </p>
+        </div>
+
+        <h2 style={H2}>Reporting a concern</h2>
+        <div style={BODY}>
+          <p>
+            If you believe you have found a security problem, or something
+            about your information worries you, write to us at{" "}
+            <a href="mailto:hello@mynaani.com" style={LINK}>
+              hello@mynaani.com
+            </a>
+            . We reply within two business days.
+          </p>
+        </div>
+
         <h2 style={H2}>Removing your information</h2>
         <div style={BODY}>
           <p>

@@ -1,0 +1,4 @@
+# Mynaani security contact — RFC 9116
+Contact: mailto:hello@mynaani.com
+Preferred-Languages: en
+Expires: 2027-09-06T00:00:00.000Z
