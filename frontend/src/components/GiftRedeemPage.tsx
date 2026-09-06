@@ -43,13 +43,32 @@ type Phase = "enter" | "preview_ok" | "claimed";
 
 export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(() => {
+    // Link redemption: ?t= carries the token from the gift email or
+    // shared link so the recipient never has to transcribe it.
+    const t = new URLSearchParams(window.location.search).get("t");
+    return t ?? "";
+  });
   const [productCode, setProductCode] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("enter");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Auto-preview when the token arrived via link (?t=): same preview
+    // step as manual entry — the recipient still sees the gift before
+    // accepting, just without typing.
+    const t = new URLSearchParams(window.location.search).get("t");
+    if (t) {
+      previewGift(t)
+        .then((res) => {
+          if (res.valid && res.product_code) {
+            setProductCode(res.product_code);
+            setPhase("preview_ok");
+          }
+        })
+        .catch(() => setError("That link did not work. You can enter the token below instead."));
+    }
     loadEnvelope("account.gift_redeem")
       .then(setEnvelope)
       .catch(() =>
