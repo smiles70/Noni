@@ -1,0 +1,1090 @@
+{
+  "ontology": {
+    "version": "v9.51",
+    "entities": [
+      "SourceArtifact",
+      "Requirement",
+      "Capability",
+      "Epic",
+      "UserStory",
+      "AcceptanceCriterion",
+      "Test",
+      "Evidence",
+      "Owner",
+      "Decision",
+      "Dependency",
+      "Gap",
+      "Conflict",
+      "Assumption",
+      "Persona",
+      "Journey",
+      "BudgetProfile",
+      "CostEvent",
+      "RoutingDecision"
+    ],
+    "relationships": [
+      "defined_by",
+      "refines",
+      "implements",
+      "partially_implements",
+      "verified_by",
+      "evidenced_by",
+      "planned_by",
+      "owned_by",
+      "depends_on",
+      "blocked_by",
+      "conflicts_with",
+      "supersedes",
+      "derived_from",
+      "invalidated_by",
+      "serves_persona",
+      "part_of_journey",
+      "funded_by",
+      "routed_by",
+      "served"
+    ]
+  },
+  "metadata": {
+    "repo": "smiles70/Noni",
+    "date": "2026-08-29T23:03:20.020121+00:00",
+    "node_count": 77,
+    "edge_count": 80,
+    "graph_hash": "d51e109f4e3f"
+  },
+  "nodes": [
+    {
+      "kind": "AcceptanceCriterion",
+      "id": "AC-001",
+      "name": "/api/v1/billing/health reports provider=stripe, stripe_mode=live",
+      "extraction_method": "rule_based",
+      "confidence": 0.85
+    },
+    {
+      "kind": "AcceptanceCriterion",
+      "id": "AC-002",
+      "name": "Self-purchase smoke test passes with a real card",
+      "extraction_method": "rule_based",
+      "confidence": 0.85
+    },
+    {
+      "kind": "AcceptanceCriterion",
+      "id": "AC-003",
+      "name": "Knowledge graph schema validates against v9.51 \u00a719",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "BudgetProfile",
+      "id": "BUD-001",
+      "name": "Knowledge graph rebuild budget",
+      "extraction_method": "human_confirmed",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-001",
+      "name": "Stripe checkout session creation",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-002",
+      "name": "Stripe webhook verification and idempotent processing",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-003",
+      "name": "Gift token issue and redemption",
+      "extraction_method": "rule_based",
+      "confidence": 0.85
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-004",
+      "name": "Entitlement grant and revoke",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-005",
+      "name": "v9.51 knowledge graph extraction",
+      "extraction_method": "rule_based",
+      "confidence": 0.8
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-006",
+      "name": "v9.51 knowledge graph validation",
+      "extraction_method": "rule_based",
+      "confidence": 0.8
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-007",
+      "name": "Chat-initiated GitHub work item assignment",
+      "extraction_method": "rule_based",
+      "confidence": 0.8
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-CD-GATE",
+      "name": "QA \u2192 UAT \u2192 deploy gate in deploy-staging.yml",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-CD-QA",
+      "name": "Pre-deploy QA agent",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-CD-UAT",
+      "name": "Pre-deploy UAT agent",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-WI-ATTACH",
+      "name": "File and screenshot attachment builder",
+      "extraction_method": "rule_based",
+      "confidence": 0.85
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-WI-AUTH",
+      "name": "gh auth status pre-check",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-WI-BOARD",
+      "name": "Project board number resolver",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-WI-PEOPLE",
+      "name": "Chat-name to GitHub handle mapper",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-WI-PERMISSION",
+      "name": "Assignee repo-permission checker",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Capability",
+      "id": "CAP-WI-REPO",
+      "name": "Repository access and Issues verifier",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "CostEvent",
+      "id": "CE-001",
+      "name": "Initial skill and graph creation",
+      "extraction_method": "human_confirmed",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Decision",
+      "id": "DEC-0021",
+      "name": "One-time purchase for modules 4-5, no subscriptions",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Decision",
+      "id": "DEC-0021-PRICE",
+      "name": "$39 self / $59 gift (revisable operational parameter)",
+      "extraction_method": "structured_source",
+      "confidence": 0.75
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-001",
+      "name": "Stripe live account and product",
+      "extraction_method": "rule_based",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-002",
+      "name": "Redis broker and Celery worker",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Dependency",
+      "id": "DEP-003",
+      "name": "GitHub CLI authentication",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-001",
+      "name": "Payment flow current vs target HTML diagram",
+      "path": "docs/design/payment-flow-noni.html",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-002",
+      "name": "Stripe live readiness intake",
+      "path": ".ai/intake/2026-08-29-stripe-live-readiness-intake.md",
+      "extraction_method": "rule_based",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-003",
+      "name": "v9.51 process specification",
+      "path": "PROCESS_V9.51_SPEC.md",
+      "extraction_method": "rule_based",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Evidence",
+      "id": "EVI-WI-BOARD",
+      "name": "Mynaani Sprint Board project number 1",
+      "path": "https://github.com/users/smiles70/projects/1",
+      "extraction_method": "human_confirmed",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-001",
+      "name": "Gift token lost in live Stripe redirect",
+      "status": "open",
+      "owner_id": "OWN-ENGINEERING",
+      "next_action": "Fix PaywallPage/PurchaseSuccessPage to preserve or recover gift token after Stripe redirect",
+      "extraction_method": "human_confirmed",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-002",
+      "name": "Gift price never charged",
+      "status": "open",
+      "owner_id": "OWN-ENGINEERING",
+      "next_action": "Make billing.py select stripe_price_id based on is_gift",
+      "extraction_method": "human_confirmed",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-003",
+      "name": "Success page shows no product details in live mode",
+      "status": "open",
+      "owner_id": "OWN-ENGINEERING",
+      "next_action": "Lookup purchase/product from checkout session ID or pass state via server session",
+      "extraction_method": "human_confirmed",
+      "confidence": 0.8
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-CD-001",
+      "name": "deploy-staging.yml currently has no QA/UAT gate",
+      "status": "open",
+      "owner_id": "OWN-DEVOPS",
+      "next_action": "Add QA and UAT jobs to deploy-staging.yml",
+      "extraction_method": "human_confirmed",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-WI-001",
+      "name": "Work-item skill cannot be used until prerequisites are confirmed",
+      "status": "resolved",
+      "owner_id": "OWN-PROCESS",
+      "next_action": "Board and config are in place; permission check verified",
+      "extraction_method": "human_confirmed",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Journey",
+      "id": "JRN-FREE-TO-PAID",
+      "name": "Free modules to paid modules 3-5",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Owner",
+      "id": "OWN-DEVOPS",
+      "name": "DevSecOps"
+    },
+    {
+      "kind": "Owner",
+      "id": "OWN-ENGINEERING",
+      "name": "Engineering"
+    },
+    {
+      "kind": "Owner",
+      "id": "OWN-PROCESS",
+      "name": "Process"
+    },
+    {
+      "kind": "Owner",
+      "id": "OWN-PRODUCT",
+      "name": "Product/Owner"
+    },
+    {
+      "kind": "Persona",
+      "id": "PER-CAREGIVER",
+      "name": "Adult child or caregiver purchasing access for a learner",
+      "extraction_method": "structured_source",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Persona",
+      "id": "PER-LEARNER-55PLUS",
+      "name": "Adult learner 55+ learning AI for the first time",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-001",
+      "name": "No subscription or auto-renew in V1",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-002",
+      "name": "Free tier resolves on a complete, dignified thought",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-003",
+      "name": "No dark-pattern urgency or scarcity language",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-004",
+      "name": "Paywall appears only between modules, not mid-unit",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-005",
+      "name": "30-day full refund, no questions asked",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-006",
+      "name": "Stripe live checkout for first paying customer",
+      "extraction_method": "structured_source",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-007",
+      "name": "Gift purchase and redemption flow",
+      "extraction_method": "structured_source",
+      "confidence": 0.85
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-008",
+      "name": "v9.51 knowledge graph with provenance fields",
+      "extraction_method": "structured_source",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-CD-001",
+      "name": "QA must run before staging deploy",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-CD-002",
+      "name": "UAT must run before staging deploy",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-CD-003",
+      "name": "Existing deploy-staging.yml must not be duplicated",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-WI-001",
+      "name": "gh must be authenticated before work-item creation",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-WI-002",
+      "name": "GitHub Issues must be enabled",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-WI-003",
+      "name": "A GitHub Projects v2 board number must be known",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-WI-004",
+      "name": ".ai/people.yaml must map chat names to GitHub handles",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-WI-005",
+      "name": "Screenshots and files must be attachable to the issue body",
+      "extraction_method": "structured_source",
+      "confidence": 0.9
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-WI-006",
+      "name": "Assignee must have repo access before assignment",
+      "extraction_method": "structured_source",
+      "confidence": 0.95
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-ADR-0021",
+      "name": "0021-pricing-and-tiering.md",
+      "path": "docs/decisions/0021-pricing-and-tiering.md",
+      "authority": "decision"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-BILLING-ROUTES",
+      "name": "billing.py",
+      "path": "backend/api/routes/billing.py",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-CD-INTAKE",
+      "name": "2026-08-29-cd-qa-uat-staging-gate-001.md",
+      "path": ".ai/intake/2026-08-29-cd-qa-uat-staging-gate-001.md",
+      "authority": "secondary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-CD-PROMPT",
+      "name": "ci-cd-pipeline.md",
+      "path": ".ai/prompts/ci-cd-pipeline.md",
+      "authority": "secondary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-DEPLOY-STAGING",
+      "name": "deploy-staging.yml",
+      "path": ".github/workflows/deploy-staging.yml",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-HUMAN-GUIDE",
+      "name": "stripe-live-human-guide.html",
+      "path": "docs/stripe-live-human-guide.html",
+      "authority": "secondary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-KG-INTAKE",
+      "name": "2026-08-29-knowledge-graph-rebuild-v951-001.md",
+      "path": ".ai/intake/2026-08-29-knowledge-graph-rebuild-v951-001.md",
+      "authority": "secondary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-PAYMENT-FLOW-NONI",
+      "name": "payment-flow-noni.html",
+      "path": "docs/design/payment-flow-noni.html",
+      "authority": "secondary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-PAYMENT-PROVIDER",
+      "name": "payment_provider.py",
+      "path": "backend/services/payment_provider.py",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-PAYWALL-PAGE",
+      "name": "PaywallPage.tsx",
+      "path": "frontend/src/components/PaywallPage.tsx",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-PROCESS-V951",
+      "name": "PROCESS_V9.51_SPEC.md",
+      "path": "PROCESS_V9.51_SPEC.md",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-STRIPE-INTAKE",
+      "name": "2026-08-29-stripe-live-readiness-intake.md",
+      "path": ".ai/intake/2026-08-29-stripe-live-readiness-intake.md",
+      "authority": "secondary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-WI-INTAKE",
+      "name": "2026-08-29-work-item-assignment-prerequisites-001.md",
+      "path": ".ai/intake/2026-08-29-work-item-assignment-prerequisites-001.md",
+      "authority": "secondary"
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-001",
+      "name": "test_stripe_payment_provider.py",
+      "path": "backend/tests/test_stripe_payment_provider.py",
+      "extraction_method": "rule_based",
+      "confidence": 0.95
+    },
+    {
+      "kind": "Test",
+      "id": "TEST-002",
+      "name": "test_a4_billing.py",
+      "path": "backend/tests/test_a4_billing.py",
+      "extraction_method": "rule_based",
+      "confidence": 0.95
+    },
+    {
+      "kind": "UserStory",
+      "id": "US-001",
+      "name": "Learner buys paid modules with a real card",
+      "extraction_method": "llm_inferred",
+      "confidence": 0.75
+    },
+    {
+      "kind": "UserStory",
+      "id": "US-002",
+      "name": "Caregiver buys paid modules as a gift for a learner",
+      "extraction_method": "llm_inferred",
+      "confidence": 0.75
+    },
+    {
+      "kind": "UserStory",
+      "id": "US-003",
+      "name": "Process maintainer refreshes requirements graph from chat",
+      "extraction_method": "llm_inferred",
+      "confidence": 0.7
+    }
+  ],
+  "edges": [
+    {
+      "from": "AC-001",
+      "relation": "verified_by",
+      "to": "TEST-001",
+      "provenance": "billing health test"
+    },
+    {
+      "from": "AC-002",
+      "relation": "verified_by",
+      "to": "TEST-002",
+      "provenance": "billing end-to-end"
+    },
+    {
+      "from": "AC-003",
+      "relation": "verified_by",
+      "to": "EVI-003",
+      "provenance": "Process spec validates schema"
+    },
+    {
+      "from": "BUD-001",
+      "relation": "funded_by",
+      "to": "OWN-PROCESS",
+      "provenance": "Process budget owner"
+    },
+    {
+      "from": "CAP-001",
+      "relation": "evidenced_by",
+      "to": "EVI-001",
+      "provenance": "Payment flow diagram"
+    },
+    {
+      "from": "CAP-001",
+      "relation": "verified_by",
+      "to": "TEST-001",
+      "provenance": "test_stripe_payment_provider.py"
+    },
+    {
+      "from": "CAP-002",
+      "relation": "verified_by",
+      "to": "TEST-002",
+      "provenance": "test_a4_billing.py"
+    },
+    {
+      "from": "CAP-004",
+      "relation": "verified_by",
+      "to": "TEST-002",
+      "provenance": "test_a4_billing.py covers refund revocation"
+    },
+    {
+      "from": "CAP-007",
+      "relation": "blocked_by",
+      "to": "GAP-WI-001",
+      "provenance": "skill cannot run until prereqs confirmed"
+    },
+    {
+      "from": "CAP-007",
+      "relation": "depends_on",
+      "to": "DEP-003",
+      "provenance": "Needs gh CLI auth"
+    },
+    {
+      "from": "CAP-CD-GATE",
+      "relation": "depends_on",
+      "to": "DEP-002",
+      "provenance": "needs Redis/Celery only for backend; CI runners do not need Railway"
+    },
+    {
+      "from": "CAP-CD-QA",
+      "relation": "evidenced_by",
+      "to": "EVI-003",
+      "provenance": "v9.51 process spec"
+    },
+    {
+      "from": "CAP-CD-QA",
+      "relation": "verified_by",
+      "to": "TEST-001",
+      "provenance": "payment provider tests can be reused"
+    },
+    {
+      "from": "CAP-WI-AUTH",
+      "relation": "evidenced_by",
+      "to": "EVI-003",
+      "provenance": "v9.51 spec"
+    },
+    {
+      "from": "CAP-WI-BOARD",
+      "relation": "evidenced_by",
+      "to": "EVI-WI-BOARD",
+      "provenance": "gh project list and create"
+    },
+    {
+      "from": "CE-001",
+      "relation": "routed_by",
+      "to": "BUD-001",
+      "provenance": "Initial cost charged against BUD-001"
+    },
+    {
+      "from": "DEC-0021-PRICE",
+      "relation": "conflicts_with",
+      "to": "GAP-002",
+      "provenance": "$59 gift price cannot be charged without code change"
+    },
+    {
+      "from": "DEC-0021",
+      "relation": "shapes",
+      "to": "REQ-001",
+      "provenance": "Decision enforces no subscription"
+    },
+    {
+      "from": "DEC-0021",
+      "relation": "shapes",
+      "to": "REQ-002",
+      "provenance": "Decision enforces free tier completeness"
+    },
+    {
+      "from": "DEC-0021",
+      "relation": "shapes",
+      "to": "REQ-003",
+      "provenance": "Decision enforces dark-pattern prohibitions"
+    },
+    {
+      "from": "DEC-0021",
+      "relation": "shapes",
+      "to": "REQ-004",
+      "provenance": "Decision enforces paywall placement"
+    },
+    {
+      "from": "DEC-0021",
+      "relation": "shapes",
+      "to": "REQ-005",
+      "provenance": "Decision sets refund policy"
+    },
+    {
+      "from": "GAP-001",
+      "relation": "owned_by",
+      "to": "OWN-ENGINEERING",
+      "provenance": "Engineering owner"
+    },
+    {
+      "from": "GAP-002",
+      "relation": "owned_by",
+      "to": "OWN-ENGINEERING",
+      "provenance": "Engineering owner"
+    },
+    {
+      "from": "GAP-003",
+      "relation": "owned_by",
+      "to": "OWN-ENGINEERING",
+      "provenance": "Engineering owner"
+    },
+    {
+      "from": "GAP-CD-001",
+      "relation": "owned_by",
+      "to": "OWN-DEVOPS",
+      "provenance": "engineering"
+    },
+    {
+      "from": "GAP-WI-001",
+      "relation": "depends_on",
+      "to": "DEP-003",
+      "provenance": "needs gh CLI auth"
+    },
+    {
+      "from": "GAP-WI-001",
+      "relation": "owned_by",
+      "to": "OWN-PROCESS",
+      "provenance": "process owner"
+    },
+    {
+      "from": "REQ-001",
+      "relation": "implemented_by",
+      "to": "CAP-001",
+      "provenance": "Stripe one-time checkout uses payment mode"
+    },
+    {
+      "from": "REQ-005",
+      "relation": "implemented_by",
+      "to": "CAP-004",
+      "provenance": "Refund revokes entitlement"
+    },
+    {
+      "from": "REQ-006",
+      "relation": "depends_on",
+      "to": "DEP-001",
+      "provenance": "Needs live Stripe account"
+    },
+    {
+      "from": "REQ-006",
+      "relation": "depends_on",
+      "to": "DEP-002",
+      "provenance": "Needs Redis/Celery for webhooks"
+    },
+    {
+      "from": "REQ-006",
+      "relation": "evidenced_by",
+      "to": "EVI-002",
+      "provenance": "Stripe live readiness intake"
+    },
+    {
+      "from": "REQ-006",
+      "relation": "implemented_by",
+      "to": "CAP-001",
+      "provenance": "Stripe checkout is the live payment entry"
+    },
+    {
+      "from": "REQ-006",
+      "relation": "implemented_by",
+      "to": "CAP-002",
+      "provenance": "Webhook grants access after payment"
+    },
+    {
+      "from": "REQ-007",
+      "relation": "blocked_by",
+      "to": "GAP-001",
+      "provenance": "Gift token lost at Stripe redirect"
+    },
+    {
+      "from": "REQ-007",
+      "relation": "blocked_by",
+      "to": "GAP-002",
+      "provenance": "Wrong price charged for gift"
+    },
+    {
+      "from": "REQ-007",
+      "relation": "implemented_by",
+      "to": "CAP-003",
+      "provenance": "Gift token flow"
+    },
+    {
+      "from": "REQ-008",
+      "relation": "evidenced_by",
+      "to": "EVI-003",
+      "provenance": "v9.51 process spec"
+    },
+    {
+      "from": "REQ-008",
+      "relation": "implemented_by",
+      "to": "CAP-005",
+      "provenance": "Extraction skill builds the graph"
+    },
+    {
+      "from": "REQ-008",
+      "relation": "implemented_by",
+      "to": "CAP-006",
+      "provenance": "Validation skill checks the graph"
+    },
+    {
+      "from": "REQ-008",
+      "relation": "implemented_by",
+      "to": "CAP-007",
+      "provenance": "Work-item skill links chat to GitHub"
+    },
+    {
+      "from": "REQ-CD-001",
+      "relation": "implemented_by",
+      "to": "CAP-CD-QA",
+      "provenance": "QA job in workflow"
+    },
+    {
+      "from": "REQ-CD-002",
+      "relation": "implemented_by",
+      "to": "CAP-CD-UAT",
+      "provenance": "UAT job in workflow"
+    },
+    {
+      "from": "REQ-CD-003",
+      "relation": "implemented_by",
+      "to": "CAP-CD-GATE",
+      "provenance": "Single workflow, no new deploy path"
+    },
+    {
+      "from": "REQ-WI-001",
+      "relation": "implemented_by",
+      "to": "CAP-WI-AUTH",
+      "provenance": "auth pre-check"
+    },
+    {
+      "from": "REQ-WI-002",
+      "relation": "implemented_by",
+      "to": "CAP-WI-REPO",
+      "provenance": "repo/Issues verifier"
+    },
+    {
+      "from": "REQ-WI-003",
+      "relation": "implemented_by",
+      "to": "CAP-WI-BOARD",
+      "provenance": "project board resolver"
+    },
+    {
+      "from": "REQ-WI-004",
+      "relation": "implemented_by",
+      "to": "CAP-WI-PEOPLE",
+      "provenance": "people mapper"
+    },
+    {
+      "from": "REQ-WI-005",
+      "relation": "implemented_by",
+      "to": "CAP-WI-ATTACH",
+      "provenance": "attachment builder"
+    },
+    {
+      "from": "REQ-WI-006",
+      "relation": "implemented_by",
+      "to": "CAP-WI-PERMISSION",
+      "provenance": "permission checker"
+    },
+    {
+      "from": "SRC-ADR-0021",
+      "relation": "authorizes",
+      "to": "DEC-0021",
+      "provenance": "ADR 0021 is the source of the pricing decision"
+    },
+    {
+      "from": "SRC-ADR-0021",
+      "relation": "authorizes",
+      "to": "DEC-0021-PRICE",
+      "provenance": "ADR 0021 \u00a73 sets initial price targets"
+    },
+    {
+      "from": "SRC-BILLING-ROUTES",
+      "relation": "implemented_by",
+      "to": "CAP-002",
+      "provenance": "backend/api/routes/billing.py"
+    },
+    {
+      "from": "SRC-CD-INTAKE",
+      "relation": "defines",
+      "to": "REQ-CD-001",
+      "provenance": "intake"
+    },
+    {
+      "from": "SRC-CD-INTAKE",
+      "relation": "defines",
+      "to": "REQ-CD-002",
+      "provenance": "intake"
+    },
+    {
+      "from": "SRC-CD-INTAKE",
+      "relation": "defines",
+      "to": "REQ-CD-003",
+      "provenance": "intake"
+    },
+    {
+      "from": "SRC-CD-PROMPT",
+      "relation": "informs",
+      "to": "CAP-CD-GATE",
+      "provenance": "prompt blueprint"
+    },
+    {
+      "from": "SRC-DEPLOY-STAGING",
+      "relation": "implemented_by",
+      "to": "CAP-CD-GATE",
+      "provenance": "workflow file"
+    },
+    {
+      "from": "SRC-HUMAN-GUIDE",
+      "relation": "supports",
+      "to": "REQ-006",
+      "provenance": "Human guide supports Stripe live setup"
+    },
+    {
+      "from": "SRC-KG-INTAKE",
+      "relation": "defines",
+      "to": "REQ-008",
+      "provenance": "Intake requirement"
+    },
+    {
+      "from": "SRC-KG-INTAKE",
+      "relation": "planned_by",
+      "to": "CAP-005",
+      "provenance": "Intake defines extraction scope"
+    },
+    {
+      "from": "SRC-PAYMENT-FLOW-NONI",
+      "relation": "supports",
+      "to": "REQ-006",
+      "provenance": "Flow diagram documents target state"
+    },
+    {
+      "from": "SRC-PAYMENT-PROVIDER",
+      "relation": "implemented_by",
+      "to": "CAP-001",
+      "provenance": "backend/services/payment_provider.py"
+    },
+    {
+      "from": "SRC-PAYMENT-PROVIDER",
+      "relation": "implemented_by",
+      "to": "CAP-004",
+      "provenance": "Entitlements triggered by webhook"
+    },
+    {
+      "from": "SRC-PAYWALL-PAGE",
+      "relation": "implemented_by",
+      "to": "CAP-003",
+      "provenance": "frontend/src/components/PaywallPage.tsx"
+    },
+    {
+      "from": "SRC-PROCESS-V951",
+      "relation": "defines",
+      "to": "REQ-008",
+      "provenance": "Process spec \u00a719 requires knowledge graph"
+    },
+    {
+      "from": "SRC-STRIPE-INTAKE",
+      "relation": "defines",
+      "to": "REQ-006",
+      "provenance": "Intake requirement"
+    },
+    {
+      "from": "SRC-STRIPE-INTAKE",
+      "relation": "defines",
+      "to": "REQ-007",
+      "provenance": "Intake requirement"
+    },
+    {
+      "from": "SRC-WI-INTAKE",
+      "relation": "defines",
+      "to": "REQ-WI-001",
+      "provenance": "intake"
+    },
+    {
+      "from": "SRC-WI-INTAKE",
+      "relation": "defines",
+      "to": "REQ-WI-002",
+      "provenance": "intake"
+    },
+    {
+      "from": "SRC-WI-INTAKE",
+      "relation": "defines",
+      "to": "REQ-WI-003",
+      "provenance": "intake"
+    },
+    {
+      "from": "SRC-WI-INTAKE",
+      "relation": "defines",
+      "to": "REQ-WI-004",
+      "provenance": "intake"
+    },
+    {
+      "from": "SRC-WI-INTAKE",
+      "relation": "defines",
+      "to": "REQ-WI-005",
+      "provenance": "intake"
+    },
+    {
+      "from": "SRC-WI-INTAKE",
+      "relation": "defines",
+      "to": "REQ-WI-006",
+      "provenance": "intake"
+    },
+    {
+      "from": "US-001",
+      "relation": "blocked_by",
+      "to": "GAP-003",
+      "provenance": "Cosmetic missing product name"
+    },
+    {
+      "from": "US-001",
+      "relation": "part_of_journey",
+      "to": "JRN-FREE-TO-PAID",
+      "provenance": "Free to paid transition"
+    },
+    {
+      "from": "US-001",
+      "relation": "serves_persona",
+      "to": "PER-LEARNER-55PLUS",
+      "provenance": "B2C self-purchase"
+    },
+    {
+      "from": "US-002",
+      "relation": "part_of_journey",
+      "to": "JRN-FREE-TO-PAID",
+      "provenance": "Free to paid transition"
+    },
+    {
+      "from": "US-002",
+      "relation": "serves_persona",
+      "to": "PER-CAREGIVER",
+      "provenance": "Caregiver gift purchase"
+    }
+  ]
+}
