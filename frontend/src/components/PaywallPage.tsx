@@ -162,8 +162,9 @@ export default function PaywallPage({
         </p>
         <p style={BODY}>
           This is a single payment, not a subscription — you will not be
-          charged again. Checkout happens on Stripe's secure payment page,
-          and your card details never reach our system. We will never email
+          charged again. Checkout happens on Stripe's secure payment page —
+          the address in your browser will begin with checkout.stripe.com.
+          Your card details never reach our system, and we will never email
           or call you to ask for payment.
         </p>
 
