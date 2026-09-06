@@ -1,1 +1,18 @@
 node_modules/.bin/lint-staged
+
+# Sweep guard — prevents unrelated local changes from riding along in a
+# commit (incident: da1d538 swept in a WIP deploy-staging.yml edit via
+# `git add -A`, silently breaking 5 staging deploys).
+#
+# Commits touching .github/ must be deliberate: commit them separately
+# with ALLOW_WORKFLOW_CHANGES=1, e.g.
+#   ALLOW_WORKFLOW_CHANGES=1 git commit -m "workflow: ..."
+if git diff --cached --name-only | grep -q '^\.github/'; then
+  if [ "$ALLOW_WORKFLOW_CHANGES" != "1" ]; then
+    echo "" >&2
+    echo "BLOCKED: this commit stages changes under .github/." >&2
+    echo "Workflow/pipeline changes must be committed separately:" >&2
+    echo "  git add .github/... && ALLOW_WORKFLOW_CHANGES=1 git commit -m 'workflow: ...'" >&2
+    exit 1
+  fi
+fi
