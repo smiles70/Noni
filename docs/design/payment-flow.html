@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mynaani Payment Flow — Current (Mock) vs Target (Stripe)</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      color: #222;
+      line-height: 1.5;
+    }
+    h1, h2 { text-align: center; }
+    .diagram { margin: 2rem 0; }
+    .note {
+      background: #f6f7f9;
+      border-left: 4px solid #4f46e5;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    .legend span { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.9rem; }
+    .actor { background: #e0e7ff; }
+    .api    { background: #dcfce7; }
+    .stripe { background: #fff7ed; }
+    .db     { background: #f3e8ff; }
+    .ui     { background: #fef9c3; }
+  </style>
+</head>
+<body>
+  <h1>Mynaani Payment Flow</h1>
+  <p style="text-align:center;">Comparison of the current <strong>mock</strong> flow and the <strong>Stripe live</strong> target flow.</p>
+
+  <div class="legend">
+    <span class="ui">Learner / Frontend</span>
+    <span class="api">Mynaani API</span>
+    <span class="db">Database / Redis</span>
+    <span class="stripe">Stripe</span>
+  </div>
+
+  <h2>Current Flow — PAYMENT_PROVIDER=mock</h2>
+  <pre class="mermaid">
+flowchart TD
+    subgraph Browser[Learner browser]
+        P[Paywall page]
+        MC[Mock checkout page]
+        PS[Purchase success page]
+        C[Curriculum]
+    end
+
+    subgraph API[Mynaani API — noni-api-production.up.railway.app]
+        R1[POST /api/v1/billing/checkout]
+        MP[MockPaymentProvider]
+        R2[POST /api/v1/billing/mock-checkout-complete]
+        WH[process_event]
+    end
+
+    subgraph DB[Database]
+        PUR[Purchase row created]
+        ENT[Entitlement granted]
+    end
+
+    P -->|1. Click Buy for myself / gift| R1
+    R1 -->|2. Create Purchase row| PUR
+    R1 -->|3. Return mock checkout URL| MC
+    MC -->|4. Click Complete test payment| R2
+    R2 -->|5. Call process_event| WH
+    WH -->|6. Mark paid + grant| ENT
+    R2 -->|7. Return outcome| PS
+    PS -->|8. Continue to curriculum| C
+
+    style P fill:#fef9c3
+    style MC fill:#fef9c3
+    style PS fill:#fef9c3
+    style R1 fill:#dcfce7
+    style R2 fill:#dcfce7
+    style WH fill:#dcfce7
+    style MP fill:#dcfce7
+    style PUR fill:#f3e8ff
+    style ENT fill:#f3e8ff
+  </pre>
+
+  <h2>Target Flow — PAYMENT_PROVIDER=stripe (live)</h2>
+  <pre class="mermaid">
+flowchart TD
+    subgraph Browser[Learner browser — www.mynaani.com]
+        P[Paywall page]
+        PS[Purchase success page]
+        C[Curriculum]
+    end
+
+    subgraph API[Mynaani API — noni-api-production.up.railway.app]
+        R1[POST /api/v1/billing/checkout]
+        SP[StripePaymentProvider]
+        RWH[POST /api/v1/billing/stripe-webhook]
+        Q[Enqueue Celery task]
+        W[process_stripe_webhook task]
+        EV[process_event]
+    end
+
+    subgraph DB[Database + Redis]
+        PUR[Purchase row created]
+        RED[(Redis task queue)]
+        ENT[Entitlement granted]
+    end
+
+    subgraph STRIPE[Stripe]
+        CO[Stripe Checkout]
+    end
+
+    P -->|1. Click Buy for myself / gift| R1
+    R1 -->|2. Create Purchase row| PUR
+    R1 -->|3. Create Stripe session| SP
+    SP -->|4. Return checkout.stripe.com URL| CO
+    CO -->|5. Enter card and pay| CO
+    CO -->|6. Redirect to /purchase/success?cs=...| PS
+    PS -->|7. Show confirmation| C
+    CO -->|8. Send webhook checkout.session.completed| RWH
+    RWH -->|9. Enqueue for worker| Q
+    Q -->|10. Push to Redis| RED
+    W -->|11. Pull from Redis| RED
+    W -->|12. process_event| EV
+    EV -->|13. Mark paid + grant| ENT
+    C -->|14. Paid content available| C
+
+    style P fill:#fef9c3
+    style PS fill:#fef9c3
+    style C fill:#fef9c3
+    style R1 fill:#dcfce7
+    style RWH fill:#dcfce7
+    style SP fill:#dcfce7
+    style Q fill:#dcfce7
+    style W fill:#dcfce7
+    style EV fill:#dcfce7
+    style PUR fill:#f3e8ff
+    style RED fill:#f3e8ff
+    style ENT fill:#f3e8ff
+    style CO fill:#fff7ed
+  </pre>
+
+  <h2>Refund Flow — Target (Stripe)</h2>
+  <pre class="mermaid">
+flowchart LR
+    D[Stripe dashboard] -->|Merchant refunds| ST[Stripe sends charge.refunded]
+    ST -->|Webhook| WH[POST /api/v1/billing/stripe-webhook]
+    WH --> Q[Enqueue Celery task]
+    Q --> W[process_stripe_webhook]
+    W --> EV[process_event]
+    EV --> DB[Mark purchase refunded + revoke entitlement]
+
+    style D fill:#fff7ed
+    style ST fill:#fff7ed
+    style WH fill:#dcfce7
+    style Q fill:#dcfce7
+    style W fill:#dcfce7
+    style EV fill:#dcfce7
+    style DB fill:#f3e8ff
+  </pre>
+
+  <div class="note">
+    <strong>Key changes moving from mock to Stripe:</strong>
+    <ul>
+      <li>Checkout happens on <code>checkout.stripe.com</code>, not a fake local page.</li>
+      <li>Success page no longer calls <code>mock-checkout-complete</code>; access is granted by the Stripe webhook.</li>
+      <li>A Celery worker backed by Redis is required to process webhooks.</li>
+      <li>Refunds are initiated in the Stripe dashboard and trigger entitlement revocation via webhook.</li>
+    </ul>
+  </div>
+</body>
+</html>

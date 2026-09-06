@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mynaani Stripe Live Setup — Human Steps</title>
+  <style>
+    :root {
+      --purple: #4f46e5;
+      --green: #16a34a;
+      --yellow: #facc15;
+      --red: #dc2626;
+      --gray: #f3f4f6;
+      --text: #1f2937;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem;
+      font-size: 16px;
+    }
+    h1 { color: var(--purple); text-align: center; }
+    h2 { color: var(--purple); margin-top: 2.5rem; border-bottom: 2px solid var(--gray); padding-bottom: 0.3rem; }
+    h3 { color: var(--green); margin-top: 1.8rem; }
+    .box {
+      background: var(--gray);
+      border-left: 5px solid var(--purple);
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+    }
+    .warning { border-left-color: var(--red); background: #fef2f2; }
+    .tip { border-left-color: var(--green); background: #f0fdf4; }
+    .check { border-left-color: var(--yellow); background: #fefce8; }
+    ol { padding-left: 1.4rem; }
+    li { margin-bottom: 0.8rem; }
+    code, .code {
+      background: #e5e7eb;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.95em;
+      word-break: break-word;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.6rem;
+      border: 1px solid #d1d5db;
+    }
+    th { background: #e5e7eb; }
+    .button {
+      display: inline-block;
+      background: var(--purple);
+      color: #fff;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .hidden { display: none; }
+    a { color: var(--purple); }
+    a:hover { text-decoration: underline; }
+    small { color: #6b7280; }
+  </style>
+</head>
+<body>
+  <h1>Mynaani Stripe Live Setup</h1>
+  <p><strong>Read this if you are the person clicking buttons.</strong> This guide uses simple words and tells you exactly which website, button, and box to use. It is split into batches A through F. Do each batch in order. Skip a batch only if someone tells you it is already done.</p>
+
+  <div class="box tip">
+    <strong>What “live” means:</strong> Real money. A real card. A real Stripe account. Test mode is only for practice. Do the steps below in <strong>live mode</strong> unless the step says otherwise.
+  </div>
+
+  <div class="box check">
+    <strong>Before you start, gather these things:</strong>
+    <ul>
+      <li>Login for <a href="https://dashboard.stripe.com">dashboard.stripe.com</a></li>
+      <li>Login for <a href="https://railway.com">railway.com</a></li>
+      <li>Login for <a href="https://www.godaddy.com">GoDaddy</a> (only if DNS changes are needed)</li>
+      <li>Login for <a href="https://dash.cloudflare.com">Cloudflare</a> (only if the Pages build needs updating)</li>
+      <li>A clean notepad or password manager to copy secret values</li>
+    </ul>
+  </div>
+
+  <h2>Batch A — Set up the Stripe product and price</h2>
+  <p><strong>Why:</strong> Stripe needs to know what you are selling and how much it costs before anyone can pay.</p>
+
+  <h3>A1. Make sure your Stripe account can take live money</h3>
+  <ol>
+    <li>Go to <a href="https://dashboard.stripe.com">dashboard.stripe.com</a> and sign in.</li>
+    <li>Look at the top right. If the switch says <strong>“Test mode”</strong>, click it so it turns gray and says <strong>“Live mode”</strong>.</li>
+    <li>Click <strong>“Activate your account”</strong> or <strong>“Account settings”</strong> if you see a banner. Add your business bank account, tax info, and business address.</li>
+    <li>Wait until you do not see a red warning that says payments are disabled. This may take hours or days.</li>
+  </ol>
+  <div class="box warning">
+    <strong>Do not go live until the account is activated.</strong> If the banner still says “Payments disabled,” real cards will be rejected.
+  </div>
+
+  <h3>A2. Create the product</h3>
+  <ol>
+    <li>In the left sidebar, click <strong>“Products”</strong>.</li>
+    <li>Click the <strong>“+ Add product”</strong> button near the top right.</li>
+    <li>In the box called <strong>“Product name”</strong>, type exactly:<br><span class="code">Mynaani Modules 4-5</span></li>
+    <li>In the box called <strong>“Description”</strong>, type:<br><span class="code">One-time purchase: lifetime access to Modules 4 (Skills) and 5 (Agents).</span></li>
+    <li>Click <strong>“Save product”</strong>.</li>
+  </ol>
+
+  <h3>A3. Create the price for one person buying for themselves</h3>
+  <ol>
+    <li>On the product page, click <strong>“+ Add price”</strong>.</li>
+    <li>Click <strong>“One-time”</strong>.</li>
+    <li>Click the currency dropdown and choose <strong>“USD — United States dollar”</strong>.</li>
+    <li>In the <strong>“Price”</strong> box, type the approved self-purchase price. Example: <span class="code">39.00</span> or <span class="code">49.00</span>. Use the number the team decided.</li>
+    <li>Click <strong>“Save price”</strong>.</li>
+    <li>You will see a new line with a code starting with <span class="code">price_</span>. Click the three dots to the right and choose <strong>“Copy price ID”</strong>. Paste it in your notepad and label it <strong>“Self-purchase price ID”</strong>.</li>
+  </ol>
+
+  <h3>A4. Gift price — read this first</h3>
+  <div class="box warning">
+    <strong>Important:</strong> Right now the app charges the <strong>same price</strong> for a gift as for a self-purchase. It only knows about one price ID. Creating a second “gift” price in Stripe will do nothing until an engineer changes the code. Also, the gift flow has a known bug in live mode (the gift code is lost after payment — see Batch F). <strong>Decision needed:</strong> either launch with one price and no gift option, or wait for the engineering fix before selling gifts. Do not create a second price unless the team has decided to do the code work.
+  </div>
+
+  <div class="box warning">
+    <strong>Do not create a subscription.</strong> Both prices must be <strong>One-time</strong>. Mynaani does not use subscriptions.
+  </div>
+
+  <h2>Batch B — Add live Stripe secrets to Railway</h2>
+  <p><strong>Why:</strong> The Mynaani backend needs permission to talk to Stripe. These secret values go into Railway, never into the code.</p>
+
+  <h3>B1. Get your live secret key</h3>
+  <ol>
+    <li>In Stripe, click <strong>“Developers”</strong> in the left sidebar.</li>
+    <li>Click <strong>“API keys”</strong>.</li>
+    <li>Make sure the page is in <strong>Live mode</strong> (top right).</li>
+    <li>Find the row called <strong>“Secret key”</strong>. Click <strong>“Reveal test key”</strong> or <strong>“Reveal live key”</strong> if it is hidden.</li>
+    <li>Click the copy icon. The key starts with <span class="code">sk_live_</span>. Label it <strong>“Stripe secret key”</strong>.</li>
+  </ol>
+
+  <h3>B2. Open the right place in Railway</h3>
+  <ol>
+    <li>Go to <a href="https://railway.com">railway.com</a> and sign in.</li>
+    <li>Find the project called <strong>noni</strong> (or the project ID <span class="code">2e666ec8-c007-4054-b763-0d45d30759a2</span>).</li>
+    <li>Click the service called <strong>noni-api</strong> (or the service with ID <span class="code">3f9c0c51-c82d-4d92-b159-09d5f0509c4d</span>).</li>
+    <li>Click the tab called <strong>“Variables”</strong> (next to “Deploys” and “Logs”).</li>
+  </ol>
+
+  <h3>B3. Add or change the payment variables</h3>
+  <div class="box warning">
+    <strong>Do NOT set <code>PAYMENT_PROVIDER</code> to <code>stripe</code> yet.</strong> If you turn Stripe on before the webhook secret exists (that happens in Batch D), every billing page on the site will crash with an error. Leave <code>PAYMENT_PROVIDER</code> as <code>mock</code> for now. You will flip it in Batch D, step D2.
+  </div>
+  <p>For each row in the table, click the <strong>“+ New Variable”</strong> button or find the existing variable and click the pencil icon to change it.</p>
+  <table>
+    <tr><th>Variable name</th><th>What to paste or type</th></tr>
+    <tr><td><code>PAYMENT_PROVIDER</code></td><td>Leave as <span class="code">mock</span> for now (flip to <span class="code">stripe</span> in Batch D)</td></tr>
+    <tr><td><code>STRIPE_SECRET_KEY</code></td><td>The <span class="code">sk_live_...</span> key you copied</td></tr>
+    <tr><td><code>STRIPE_PRICE_ID_MODULES_4_5</code></td><td>The self-purchase <span class="code">price_...</span> you copied</td></tr>
+    <tr><td><code>STRIPE_SUCCESS_URL</code></td><td><span class="code">https://www.mynaani.com/purchase/success</span></td></tr>
+    <tr><td><code>STRIPE_CANCEL_URL</code></td><td><span class="code">https://www.mynaani.com/purchase/cancel</span></td></tr>
+    <tr><td><code>FRONTEND_URL</code></td><td><span class="code">https://www.mynaani.com</span></td></tr>
+    <tr><td><code>STRIPE_WEBHOOK_SECRET</code></td><td>Leave empty for now. You will fill it in Batch D.</td></tr>
+    <tr><td><code>STRIPE_PUBLISHABLE_KEY</code></td><td>Not needed for this flow. Leave empty.</td></tr>
+  </table>
+  <div class="box tip">
+    The <span class="code">STRIPE_SUCCESS_URL</span> must <strong>not</strong> have <span class="code">?purchase=...</span> on the end. It must be clean, exactly as shown above.
+  </div>
+  <div class="box check">
+    <strong>Check your work:</strong> All the variables above are saved in Railway. The site still runs in mock mode — that is correct for now. The switch to live happens in Batch D.
+  </div>
+
+  <h2>Batch C — Make sure the product row exists in the database</h2>
+  <p><strong>Why:</strong> The backend looks up a product called <span class="code">modules_4_5</span> before it can make a checkout.</p>
+
+  <h3>C1. Run the product seed inside the running service</h3>
+  <p>Railway’s dashboard does not have a shell button. You use the <strong>Railway CLI</strong> on your computer to open a terminal inside the running container.</p>
+  <ol>
+    <li>On your computer, open a terminal.</li>
+    <li>Type this and press Enter (it opens a terminal inside the production service):<br>
+      <span class="code">railway ssh --project 2e666ec8-c007-4054-b763-0d45d30759a2 --service 3f9c0c51-c82d-4d92-b159-09d5f0509c4d --environment 61bd7eea-6471-4ba2-b3d8-23e1c35f8dc1</span></li>
+    <li>When the prompt changes, type this exact command and press Enter:<br>
+      <span class="code">python -m scripts.seed_products</span></li>
+    <li>Read the output. It should say either <strong>“created”</strong>, <strong>“updated”</strong>, or <strong>“unchanged”</strong> and show the <span class="code">modules_4_5</span> product.</li>
+  </ol>
+
+  <div class="box check">
+    <strong>Check your work:</strong> In the same shell, paste this one-line command and press Enter:<br>
+    <span class="code">python -c "from backend.core.database import SessionLocal; from backend.models.billing import Product; db=SessionLocal(); p=db.query(Product).filter(Product.code=='modules_4_5').one(); print(p.code, p.display_name, p.price_cents, p.stripe_price_id)"</span><br>
+    You should see one line ending with the <span class="code">price_</span> ID you pasted into Railway. Type <span class="code">exit</span> to leave the shell.
+  </div>
+
+  <h2>Batch D — Tell Stripe where to send the “paid” signal, and start a worker</h2>
+  <p><strong>Why:</strong> After the user pays on Stripe, Stripe must tell Mynaani. Mynaani then needs a worker to add the purchase to the learner's account.</p>
+
+  <h3>D1. Add the webhook endpoint in Stripe</h3>
+  <ol>
+    <li>In Stripe, click <strong>“Developers”</strong> in the left sidebar.</li>
+    <li>Click <strong>“Webhooks”</strong>.</li>
+    <li>Click the <strong>“+ Add endpoint”</strong> button.</li>
+    <li>In the box called <strong>“Endpoint URL”</strong>, paste exactly:<br>
+      <span class="code">https://noni-api-production.up.railway.app/api/v1/billing/stripe-webhook</span></li>
+    <li>Click the box called <strong>“Select events”</strong>.</li>
+    <li>Check these two events:
+      <ul>
+        <li><strong>checkout.session.completed</strong></li>
+        <li><strong>charge.refunded</strong></li>
+      </ul>
+    </li>
+    <li>Click <strong>“Add endpoint”</strong>.</li>
+    <li>You will be taken to the new endpoint’s detail page. Look for <strong>“Signing secret”</strong> and a value starting with <span class="code">whsec_</span>. Click <strong>“Reveal”</strong>, then copy it. Label it <strong>“Stripe webhook secret”</strong>.</li>
+  </ol>
+
+  <h3>D2. Put the webhook secret into Railway and turn Stripe on</h3>
+  <ol>
+    <li>Go back to the Railway project, <strong>noni-api</strong> service, <strong>“Variables”</strong> tab.</li>
+    <li>Find the empty <strong>STRIPE_WEBHOOK_SECRET</strong> variable. Click the pencil.</li>
+    <li>Paste the <span class="code">whsec_</span> secret. Save.</li>
+    <li><strong>Now flip the switch:</strong> find <strong>PAYMENT_PROVIDER</strong>, click the pencil, change <span class="code">mock</span> to <span class="code">stripe</span>, and save.</li>
+    <li>Click the <strong>“Deploys”</strong> tab and click <strong>“Redeploy”</strong> (or the three dots on the latest deploy → <strong>“Redeploy”</strong>). Wait for the green checkmark.</li>
+  </ol>
+  <div class="box check">
+    <strong>Check your work:</strong> Open a terminal and run:<br>
+    <span class="code">curl https://noni-api-production.up.railway.app/api/v1/billing/health</span><br>
+    It should say: <span class="code">{"provider":"stripe","stripe_mode":"live"}</span>.<br>
+    If you see an error instead, check that both <code>STRIPE_SECRET_KEY</code> and <code>STRIPE_WEBHOOK_SECRET</code> are filled in, then redeploy again.
+  </div>
+
+  <h3>D3. Add Redis so the worker can do its job</h3>
+  <ol>
+    <li>In Railway, click <strong>“New”</strong> in the top right (or the <strong>“+”</strong> button in the project).</li>
+    <li>Choose <strong>“Database”</strong> or <strong>“Template”</strong> and search for <strong>“Redis”</strong>.</li>
+    <li>Create the Redis service. Railway will fill in the <span class="code">REDIS_URL</span> variable for you.</li>
+    <li>Make sure the <strong>noni-api</strong> service now has a variable called <span class="code">REDIS_URL</span> and it looks like <span class="code">redis://...</span>. If not, click the three dots on the Redis service and choose <strong>“Variables”</strong>, then copy the connection string and paste it as <span class="code">REDIS_URL</span> in the noni-api service.</li>
+  </ol>
+
+  <h3>D4. Start the Celery worker</h3>
+  <p>Choose one of these two ways. Ask an engineer if you are not sure which one to use.</p>
+  <div class="box">
+    <strong>Option 1 — Add a worker service:</strong>
+    <ol>
+      <li>In Railway, click <strong>“New”</strong> → <strong>“Empty project”</strong> or <strong>“GitHub Repo”</strong> and choose the same repo.</li>
+      <li>Click the service, open <strong>“Settings”</strong>, and set the <strong>“Start Command”</strong> to:<br>
+        <span class="code">celery -A backend.tasks.celery_app worker --loglevel=info</span></li>
+      <li>Make sure the worker service has the same environment variables as <strong>noni-api</strong> (especially <span class="code">DATABASE_URL</span> and <span class="code">REDIS_URL</span>).</li>
+    </ol>
+  </div>
+  <div class="box">
+    <strong>Option 2 — Add a worker start command to the same service:</strong>
+    <ol>
+      <li>In noni-api <strong>“Settings”</strong>, look for <strong>“Start Command”</strong>.</li>
+      <li>Change it to run both the web server and the worker. This is harder and is best done by an engineer.</li>
+    </ol>
+  </div>
+
+  <h2>Batch E — Make the website talk to the right backend</h2>
+  <p><strong>Why:</strong> When the user pays and comes back to <span class="code">www.mynaani.com</span>, the browser must point to the live Railway backend, not the old Fly or Pages preview URL.</p>
+
+  <h3>E1. Update the API base URL for Cloudflare Pages</h3>
+  <ol>
+    <li>Go to the GitHub repo: <a href="https://github.com/smiles70/Noni">github.com/smiles70/Noni</a>.</li>
+    <li>Click <strong>“Settings”</strong> at the top, then <strong>“Secrets and variables”</strong> → <strong>“Actions”</strong>.</li>
+    <li>Find the variable called <strong>VITE_API_BASE_URL</strong>. Click the pencil.</li>
+    <li>Make sure the value is:<br>
+      <span class="code">https://noni-api-production.up.railway.app</span></li>
+    <li>Save and wait for the next Cloudflare Pages build, or go to <strong>“Actions”</strong> and run the <strong>Deploy</strong> workflow.</li>
+  </ol>
+
+  <h3>E2. Update CORS in Railway</h3>
+  <ol>
+    <li>In Railway, go to the noni-api <strong>“Variables”</strong> tab.</li>
+    <li>Find or add <span class="code">CORS_ORIGINS</span>.</li>
+    <li>Paste:<br>
+      <span class="code">https://mynaani.com,https://www.mynaani.com</span></li>
+    <li>Redeploy.</li>
+  </ol>
+
+  <h3>E3. Check the custom domain (if it is already set up, just verify)</h3>
+  <ol>
+    <li>Go to <a href="https://dash.cloudflare.com">Cloudflare dashboard</a>.</li>
+    <li>Open the <strong>noni-web</strong> Pages project.</li>
+    <li>Click <strong>“Custom domains”</strong> (or <strong>“Domains”</strong>).</li>
+    <li>You should see <strong>www.mynaani.com</strong> with a green check. If not, the domain is not ready yet; ask the person who set up DNS.</li>
+    <li>Check that <span class="code">mynaani.com</span> forwards to <span class="code">https://www.mynaani.com</span> in GoDaddy.</li>
+  </ol>
+
+  <h2>Batch F — Test with real money (or a real card you control)</h2>
+  <p><strong>Why:</strong> You must prove the whole path works before real customers see it.</p>
+
+  <h3>F1. Test a self-purchase</h3>
+  <ol>
+    <li>Open <span class="code">https://www.mynaani.com</span> in a private or incognito browser window.</li>
+    <li>Sign in with a test email.</li>
+    <li>Go to the paywall (the screen that appears before Module 4).</li>
+    <li>Click <strong>“Continue and purchase for myself”</strong>.</li>
+    <li>You should be taken to a Stripe checkout page.</li>
+    <li>Use a real card that you control. Pay.</li>
+    <li>You should land on <span class="code">https://www.mynaani.com/purchase/success?cs=...</span>. <small>Note: the success page may not show the product name in live mode — that is a known cosmetic issue. What matters is the next step.</small></li>
+    <li>Go back to the curriculum. Within about 30 seconds the paywall should be gone. If it is still there after 2 minutes, the webhook or worker is not working — check the Railway worker logs and the Stripe dashboard under <strong>Developers → Webhooks → your endpoint → “Event deliveries”</strong>.</li>
+  </ol>
+
+  <h3>F2. Test a gift purchase — currently blocked</h3>
+  <div class="box warning">
+    <strong>Do not test gifts with real money yet.</strong> There is a known bug: in live Stripe mode, the gift code is <strong>lost</strong> when Stripe sends the buyer back to the site. The buyer pays but never sees the code. Engineering must fix this first (it is tracked as defect D1 in the intake document). Only test gifts after an engineer confirms the fix is deployed. The steps below are for after the fix.
+  </div>
+  <ol>
+    <li>Go to the paywall again with a different test account (the buyer).</li>
+    <li>Click <strong>“Buy as a gift for someone else”</strong>.</li>
+    <li>Pay with a real card.</li>
+    <li>Copy the gift code shown on the success page.</li>
+    <li>Sign out, then sign in with a third account (the recipient).</li>
+    <li>Go to the paywall, click <strong>“I have a gift code to redeem”</strong>, and paste the code.</li>
+    <li>The recipient should now have access to Modules 4-5.</li>
+  </ol>
+
+  <h3>F3. Test a refund</h3>
+  <ol>
+    <li>In the Stripe dashboard, click <strong>“Payments”</strong>.</li>
+    <li>Find the test payment you just made.</li>
+    <li>Click the payment, then click <strong>“Refund”</strong>.</li>
+    <li>Back in Mynaani, the account that bought the product should no longer see Modules 4-5.</li>
+  </ol>
+
+  <div class="box warning">
+    <strong>Clean up after testing:</strong> If you used a real card, refund every test purchase in the Stripe dashboard so you are not accidentally charged.
+  </div>
+
+  <h2>Quick reference: secret values and where they live</h2>
+  <table>
+    <tr><th>Secret / value</th><th>Comes from</th><th>Goes into</th></tr>
+    <tr><td><code>sk_live_...</code></td><td>Stripe → Developers → API keys</td><td>Railway → noni-api → STRIPE_SECRET_KEY</td></tr>
+    <tr><td><code>whsec_...</code></td><td>Stripe → Developers → Webhooks</td><td>Railway → noni-api → STRIPE_WEBHOOK_SECRET</td></tr>
+    <tr><td><code>price_...</code> (self)</td><td>Stripe → Products → price</td><td>Railway → noni-api → STRIPE_PRICE_ID_MODULES_4_5</td></tr>
+    <tr><td><code>REDIS_URL</code></td><td>Railway → Redis service</td><td>Railway → noni-api</td></tr>
+    <tr><td><code>VITE_API_BASE_URL</code></td><td>Your notes</td><td>GitHub → Settings → Secrets and variables</td></tr>
+  </table>
+
+  <p style="margin-top: 2rem; text-align: center; color: #6b7280;">
+    <small>Last updated 2026-08-29. If Stripe or Railway changes its dashboard, some labels may move, but the overall order stays the same.</small>
+  </p>
+</body>
+</html>

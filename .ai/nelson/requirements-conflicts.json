@@ -1,0 +1,8 @@
+{
+  "generated_at": "2026-08-29T14:00:00Z",
+  "mode": "shadow",
+  "conflicts": [],
+  "notes": [
+    "Price discrepancy ($39/$59 vs $49) is documented as a conflict risk between DEC-0021-PRICE and GAP-002; it is logged as a Gap, not a Conflict, because the code does not yet implement the gift price."
+  ]
+}

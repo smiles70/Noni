@@ -505,6 +505,85 @@ export default function ForCommunitiesPage() {
 
         <hr style={DIVIDER} />
 
+        {/* B2B-PRICING-001: procurement section — Raze fourfold
+            (tier clarity, commercial logic, trust evidence, next-step
+            routing). Structure only: no invented figures. */}
+        <section style={SECTION} aria-labelledby="b2b-pricing">
+          <h2 id="b2b-pricing" style={H2}>
+            How a partnership works
+          </h2>
+          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
+            Pricing is per community, with founding-partner rates for our pilot
+            cohort. For honest context: institutional digital-literacy programs
+            in this category typically run in the hundreds-to-low-thousands per
+            site per year — we'll tell you exactly where we land in the first
+            conversation.
+          </p>
+          <div style={CARD_ROW}>
+            <div style={CARD}>
+              <h3 style={H3}>Founding Partner Pilot</h3>
+              <p style={{ margin: `0 0 ${SPACING.sm}px` }}>
+                For communities who want to shape the program. Small cohort,
+                founding rates set together, direct line to the team, and a say
+                in what we build next.
+              </p>
+            </div>
+            <div style={CARD}>
+              <h3 style={H3}>Community</h3>
+              <p style={{ margin: `0 0 ${SPACING.sm}px` }}>
+                Per-community subscription covering your residents: the full
+                geragogy-centered curriculum, onboarding support, and materials
+                your staff can hand to residents.
+              </p>
+            </div>
+            <div style={CARD}>
+              <h3 style={H3}>Portfolio &amp; Health Plans</h3>
+              <p style={{ margin: `0 0 ${SPACING.sm}px` }}>
+                Multi-site or plan-wide arrangements with terms matched to your
+                scale — including digital-literacy benefit structures for health
+                plans.
+              </p>
+            </div>
+          </div>
+          <div
+            style={{
+              marginTop: SPACING.xl,
+              backgroundColor: COLORS.surface,
+              borderRadius: RADIUS.lg,
+              padding: SPACING.lg,
+            }}
+          >
+            <p style={{ margin: `0 0 ${SPACING.sm}px` }}>
+              <strong>Working with procurement?</strong> The plain answers, up
+              front:
+            </p>
+            <ul style={{ margin: `0 0 ${SPACING.sm}px`, paddingLeft: 22 }}>
+              <li>
+                <strong>Data:</strong> we hold learner names and progress — not
+                health data, not clinical records.
+              </li>
+              <li>
+                <strong>Onboarding:</strong> guided, no implementation fee, no
+                IT lift required from your team.
+              </li>
+              <li>
+                <strong>Terms:</strong> founding-pilot terms are set together —
+                we'll put every detail in writing before you commit to anything.
+              </li>
+              <li>
+                <strong>Questions:</strong> multi-site pricing, security
+                practices, vendor setup —{" "}
+                <a href={MAILTO} style={TEXT_LINK}>
+                  {CONTACT}
+                </a>{" "}
+                gets a real answer.
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <hr style={DIVIDER} />
+
         <section style={SECTION} aria-labelledby="b2b-contact">
           <h2 id="b2b-contact" style={H2}>
             Start a conversation

@@ -884,3 +884,35 @@ That changes the recommendation's shape, not its direction:
 3. **Senior-living operators** (our primary target) are mid-market, not
    RFP-formal — they're the segment most helped by a visible anchor.
    Health plans (secondary) will always be custom regardless.
+
+### B2B-PRICING-001 — SECOND CORRECTION: "nobody publishes" was too
+### dogmatic (user pushback, verified)
+
+Widened the lens per user direction: per-seat/group-licensed technical
+training filtered to age-based curricula for institutions. Published
+prices exist:
+
+| Vendor | What they sell | Published price |
+|---|---|---|
+| **Northstar Digital Literacy** | Institutional digital-literacy subscription (curriculum + assessments + learner accounts) | **$550/yr** single nonprofit/library/school location (500 learners, 3,500 assessments); **$1,000/yr per location** for-profit; multi-location custom. digitalliteracyassessment.org/pricing |
+| **digitalLIFT** (Aging Services package) | Train-the-trainer + ready curriculum for aging-services staff | **Basic $1,475 · Advanced $3,325** (35% sector discount); group packages contact-us. digitallift.org/packages/aging-services |
+| **TheSeniorTechie Workshops** | Ready-to-teach workshop kits for senior centers/libraries | **$49/kit + $30/session**, unlimited organizational use. workshops.theseniortechie.com |
+| **OATS / Senior Planet** | Curriculum licensing to 450+ partner sites | **Free of charge** (grant-funded) |
+| **Learn More Technologies (50+TechBridge)** | 50+ AI/digital curriculum licensed to orgs | Free to learners; institutional licensing via WIOA-funded partnerships (23 orgs) |
+
+### Market boundary established
+
+Institutional pricing for older-adult digital-skills curriculum lands
+in the **hundreds-to-low-thousands per site/year** band — NOT the
+thousands-per-month of facility software. This is the honest market
+context a founding-partner offer prices against.
+
+### Final recommendation (revised, evidence-bounded)
+
+- The procurement page is justified and buildable NOW with structure +
+  honest pilot framing.
+- If a founding price is later chosen, market context says a credible
+  band is roughly **$500–$3,500/site/year** territory for this
+  category (Northstar $550–1,000; digitalLIFT $1,475–3,325) — far
+  below EHR-level pricing, aligned with learning-curriculum norms.
+  Still a user decision; no invented figures on the page.

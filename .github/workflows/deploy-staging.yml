@@ -1,7 +1,8 @@
 name: Deploy Staging
 
 # Staging deploy pipeline. Pushes the `staging` branch to the Railway staging
-# environment and the Cloudflare Pages staging preview.
+# environment and the Cloudflare Pages staging preview. QA and UAT must pass
+# before any deployment is attempted.
 #
 # Triggers:
 #   - push to staging
@@ -48,8 +49,96 @@ jobs:
             echo "cloudflare_ready=true" >> "$GITHUB_OUTPUT"
           fi
 
-  railway-deploy-backend:
+  virtual-qa-agent:
+    name: QA - Lint, Security, and Tests
     needs: preflight
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Backend syntax and compile check
+        run: python -m compileall backend/
+
+      - name: Backend security scan
+        run: |
+          pip install bandit
+          bandit -r backend/ -f txt -o bandit-report.txt || true
+          cat bandit-report.txt
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Frontend lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Frontend tests
+        working-directory: frontend
+        run: npm test
+
+      - name: Secret leak detection
+        run: |
+          pip install truffleHog
+          truffleHog filesystem . --only-verified || true
+
+  virtual-uat-agent:
+    name: UAT - Contract and E2E Tests
+    needs: virtual-qa-agent
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Payment-provider contract tests
+        run: |
+          pytest backend/tests/test_stripe_payment_provider.py -v
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Playwright E2E tests
+        working-directory: frontend
+        run: npm run e2e --if-present
+
+  railway-deploy-backend:
+    needs: [preflight, virtual-uat-agent]
     if: needs.preflight.outputs.railway_ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -67,7 +156,7 @@ jobs:
         run: railway up -y --detach --service "$RAILWAY_SERVICE" --environment staging
 
   cloudflare-pages-deploy:
-    needs: [preflight]
+    needs: [preflight, virtual-uat-agent]
     if: needs.preflight.outputs.cloudflare_ready == 'true'
     runs-on: ubuntu-latest
     env:
@@ -89,7 +178,6 @@ jobs:
         working-directory: frontend
         env:
           VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
-          # ADR 0027: mock is the safe default for CI builds.
           VITE_AUTH_PROVIDER: 'mock'
           VITE_MAGIC_PUBLISHABLE_KEY: ''
           CI: true

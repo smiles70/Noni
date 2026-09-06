@@ -71,6 +71,11 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
         'a[href="/whitepapers/geragogy-the-key-to-learning.pdf"]',
       ),
     ).not.toBeNull();
+    // Procurement section (B2B-PRICING-001): tiers + honest context,
+    // no invented figures.
+    expect(host.textContent).toContain("How a partnership works");
+    expect(host.textContent).toContain("Founding Partner Pilot");
+    expect(host.textContent).toContain("Working with procurement");
     // Owned-audience capture (B2B-CHANNEL-001) — honest mailto interim.
     const updates = host.querySelector('a[href*="subject=Research%20updates"]');
     expect(updates).not.toBeNull();
