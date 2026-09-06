@@ -26,7 +26,7 @@ app = Celery(
     "noni",
     broker=broker_url,
     backend=broker_url,
-    include=["backend.tasks.webhook_tasks", "backend.tasks.telemetry_tasks"],
+    include=["backend.tasks.webhook_tasks", "backend.tasks.telemetry_tasks", "backend.tasks.org_tasks"],
 )
 
 app.conf.update(
@@ -45,6 +45,7 @@ app.conf.update(
         "backend.tasks.telemetry_tasks.*": {"queue": "events"},
         "backend.tasks.webhook_tasks.export_telemetry_csv": {"queue": "batch"},
         "backend.tasks.webhook_tasks.cleanup_deleted_accounts": {"queue": "batch"},
+        "backend.tasks.org_tasks.*": {"queue": "batch"},
     },
     # E71-B4: periodic maintenance on the batch queue. `celery beat` is
     # started alongside the worker (see Dockerfile SERVICE_ROLE=worker
@@ -53,6 +54,10 @@ app.conf.update(
         "cleanup-deleted-accounts-daily": {
             "task": "backend.tasks.webhook_tasks.cleanup_deleted_accounts",
             "schedule": 86400.0,  # daily
+        },
+        "license-renewal-reminders-daily": {
+            "task": "backend.tasks.org_tasks.license_renewal_reminders",
+            "schedule": 86400.0,
         },
     },
 )

@@ -12,12 +12,15 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
+
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_current_account, get_db, require_staff
 from backend.models.accounts import Account
 from backend.models.billing import Product, Purchase
+from backend.models.governance import OrgAuditLog
 from backend.models.organizations import AccessCode, Organization, OrgLicense
 from backend.services import entitlements
 
@@ -31,6 +34,11 @@ class OrganizationCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=256)
     contact_email: str = Field(..., min_length=1, max_length=256)
     admin_email: str = Field(..., min_length=1, max_length=256)
+    org_type: str = Field(default="nonprofit", pattern="^(nonprofit|for_profit|health_plan)$")
+    community_size: Optional[int] = Field(default=None, ge=1)
+    tier: str = Field(default="site", max_length=32)
+    custom_flag: bool = False
+    parent_org_id: Optional[uuid.UUID] = None
 
 
 class OrganizationResponse(BaseModel):
@@ -45,6 +53,8 @@ class LicenseCreate(BaseModel):
     product_code: str
     total_seats: int = Field(..., ge=1)
     amount_cents: int = Field(..., ge=0)
+    expires_at: Optional[datetime] = None
+    invoice_ref: str = Field(default="", max_length=128)
 
 
 class LicenseResponse(BaseModel):
@@ -107,8 +117,19 @@ def create_organization(
         contact_email=body.contact_email,
         admin_email=body.admin_email,
         status="active",
+        org_type=body.org_type,
+        community_size=body.community_size,
+        tier=body.tier,
+        custom_flag=body.custom_flag,
+        parent_org_id=body.parent_org_id,
     )
     db.add(org)
+    db.flush()
+    db.add(OrgAuditLog(
+        organization_id=org.id, actor_account_id=staff.id,
+        action="org.create",
+        detail=f"name={body.name} type={body.org_type} tier={body.tier}",
+    ))
     db.flush()
     return org
 
@@ -147,8 +168,15 @@ def create_license(
         purchase_id=purchase.id,
         total_seats=body.total_seats,
         used_seats=0,
+        expires_at=body.expires_at,
     )
     db.add(license_)
+    db.flush()
+    db.add(OrgAuditLog(
+        organization_id=org_id, actor_account_id=staff.id,
+        action="license.create",
+        detail=f"seats={body.total_seats} amount_cents={body.amount_cents} invoice={body.invoice_ref or 'card'}",
+    ))
     db.flush()
     return license_
 
@@ -259,6 +287,11 @@ def redeem_code(
         )
 
     license_ = access.license
+    if license_.expires_at is not None and license_.expires_at < datetime.now(timezone.utc):
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail={"envelope_id": "org.license_expired"},
+        )
     if license_.used_seats >= license_.total_seats:
         raise HTTPException(
             status_code=status.HTTP_410_GONE,
@@ -279,3 +312,73 @@ def redeem_code(
 
     db.commit()
     return {"granted": True, "product_code": license_.product_code}
+
+
+# ---------- OB-2: aggregate-only org dashboard (staff) ----------
+
+
+@router.get("/org/{org_id}/dashboard")
+def org_dashboard(
+    org_id: uuid.UUID,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> dict:
+    """Aggregate-only org view. The privacy boundary IS the feature:
+    no per-learner fields are ever returned here."""
+    org = db.query(Organization).filter(Organization.id == org_id).one_or_none()
+    if org is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"envelope_id": "org.not_found"},
+        )
+    licenses = db.query(OrgLicense).filter(OrgLicense.organization_id == org_id).all()
+    now = datetime.now(timezone.utc)
+    lic_rows = []
+    for lic in licenses:
+        codes = db.query(AccessCode).filter(AccessCode.license_id == lic.id).all()
+        lic_rows.append({
+            "license_id": str(lic.id),
+            "product_code": lic.product_code,
+            "total_seats": lic.total_seats,
+            "used_seats": lic.used_seats,
+            "codes_issued": len(codes),
+            "codes_claimed": sum(1 for c in codes if c.claimed_by_account_id),
+            "expires_at": lic.expires_at.isoformat() if lic.expires_at else None,
+            "expired": bool(lic.expires_at and lic.expires_at < now),
+            "expiring_soon": bool(
+                lic.expires_at
+                and now < lic.expires_at
+                and (lic.expires_at - now).days <= 30
+            ),
+        })
+    return {
+        "organization": {
+            "id": str(org.id),
+            "name": org.name,
+            "org_type": org.org_type,
+            "tier": org.tier,
+            "community_size": org.community_size,
+            "status": org.status,
+            "parent_org_id": str(org.parent_org_id) if org.parent_org_id else None,
+        },
+        "licenses": lic_rows,
+        "children": [
+            {"id": str(c.id), "name": c.name, "status": c.status,
+             "org_type": c.org_type, "tier": c.tier}
+            for c in db.query(Organization)
+            .filter(Organization.parent_org_id == org_id)
+            .all()
+        ],
+        "audit": [
+            {
+                "action": a.action,
+                "detail": a.detail,
+                "at": a.created_at.isoformat(),
+            }
+            for a in db.query(OrgAuditLog)
+            .filter(OrgAuditLog.organization_id == org_id)
+            .order_by(OrgAuditLog.created_at.desc())
+            .limit(50)
+            .all()
+        ],
+    }

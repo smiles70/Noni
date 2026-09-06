@@ -52,3 +52,25 @@ class RateLimitCounter(Base):
     count = Column(Integer, nullable=False, default=0)
     window_start = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     expires_at = Column(DateTime(timezone=True), nullable=False)
+
+
+class OrgAuditLog(Base):
+    """OB-5: append-only audit of organization/billing mutations.
+
+    Records who granted a license, changed a tier, issued codes, or
+    provisioned an org manually — the minimum trail enterprise buyers
+    (and health plans) will ask for before signing.
+    """
+
+    __tablename__ = "org_audit_log"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id = Column(
+        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
+    )
+    actor_account_id = Column(
+        UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True
+    )
+    action = Column(String(48), nullable=False)
+    detail = Column(String(512), nullable=False, default="")
+    created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
