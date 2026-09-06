@@ -297,6 +297,31 @@ function YourAccountSection() {
           switching to a different browser.
         </p>
 
+        <h3 style={H3}>Recognizing our emails</h3>
+        <p>
+          Sign-in links and receipts only ever come from an address ending
+          in mynaani.com. We will never email or call you to ask for a
+          password, a card number, or any personal details. If a message
+          claiming to be from us asks for those, it is not from us.
+        </p>
+
+        <h3 style={H3}>Using a shared device</h3>
+        <p>
+          You can sign in on any computer, tablet, or phone using the link
+          we email you — there is nothing to install and no password to
+          remember. If you share the device with others, sign out from the
+          "Your account" page when you are finished. For your privacy, you
+          are also signed out automatically after 30 minutes of inactivity.
+        </p>
+
+        <h3 style={H3}>If you joined through a program</h3>
+        <p>
+          If you received an access code from a senior center or community
+          program, the staff who gave it to you can help with sign-in and
+          getting started. They cannot see your lessons or answers — only
+          whether your code was used.
+        </p>
+
         <h3 style={H3}>Contacting support</h3>
         <p>
           If your question is not answered here, write to us at
