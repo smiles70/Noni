@@ -46,4 +46,13 @@ app.conf.update(
         "backend.tasks.webhook_tasks.export_telemetry_csv": {"queue": "batch"},
         "backend.tasks.webhook_tasks.cleanup_deleted_accounts": {"queue": "batch"},
     },
+    # E71-B4: periodic maintenance on the batch queue. `celery beat` is
+    # started alongside the worker (see Dockerfile SERVICE_ROLE=worker
+    # branch runs worker+beat via the same command).
+    beat_schedule={
+        "cleanup-deleted-accounts-daily": {
+            "task": "backend.tasks.webhook_tasks.cleanup_deleted_accounts",
+            "schedule": 86400.0,  # daily
+        },
+    },
 )
