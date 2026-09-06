@@ -67,6 +67,10 @@ class Settings(BaseSettings):
     # Formula: (2 * CPU cores) + 1. shared-cpu-1x (1 core) -> 3; performance-2x (2 core) -> 5.
     WEB_CONCURRENCY: int = 1
 
+    # E70-B2: when true AND REDIS_URL is set, telemetry writes enqueue to
+    # Celery instead of a synchronous INSERT on the request path.
+    TELEMETRY_ASYNC: bool = False
+
     # Redis-backed rate limiting and Celery broker. Empty keeps local/test
     # environments on the Postgres fallback limiter.
     REDIS_URL: str = ""

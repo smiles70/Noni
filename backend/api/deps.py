@@ -75,7 +75,9 @@ def _upsert_account(
     claims: AuthClaims,
     provider: AuthProvider,
     credential: Optional[str] = None,
-) -> Optional[Account]:
+) -> tuple[Optional[Account], bool]:
+    """Returns (account, changed) — `changed` is True when the row was
+    inserted or mutated and the caller must commit."""
     """Idempotent account row for the given provider claims.
 
     Two execution paths:
@@ -100,12 +102,20 @@ def _upsert_account(
     )
     now = datetime.now(timezone.utc)
     if account is not None:
+        changed = False
         if claims.email and account.email != claims.email:
             account.email = claims.email
+            changed = True
         if claims.display_name and account.display_name != claims.display_name:
             account.display_name = claims.display_name
-        account.updated_at = now
-        return account
+            changed = True
+        # Throttle the last-seen touch: bumping updated_at on every
+        # request makes every authenticated read a DB write + commit.
+        # 60s granularity preserves the signal at ~1% of the write cost.
+        if account.updated_at is None or (now - account.updated_at).total_seconds() > 60:
+            account.updated_at = now
+            changed = True
+        return account, changed
 
     email = claims.email
     display_name = claims.display_name
@@ -119,7 +129,7 @@ def _upsert_account(
         # Cannot insert without a value for NOT NULL UNIQUE accounts.email.
         # Caller treats None as 401, which is the right outcome: the
         # token verified, but we couldn't materialize a user record.
-        return None
+        return None, False
 
     candidate = Account(
         id=uuid.uuid4(),
@@ -130,7 +140,7 @@ def _upsert_account(
     db.add(candidate)
     try:
         db.flush()
-        return candidate
+        return candidate, True
     except IntegrityError:
         db.rollback()
         # Race A: another request inserted the same auth_user_id first.
@@ -141,7 +151,7 @@ def _upsert_account(
             .one_or_none()
         )
         if existing is not None:
-            return existing
+            return existing, False
         # Race B (FORMERLY: silent email-collision relink) is no longer
         # handled here. Per B8 / I-D, the (subject -> row) mapping is
         # monotonic; relinking an existing row's auth_user_id to a new
@@ -154,7 +164,7 @@ def _upsert_account(
         # without an existing auth_user_id row, returning None surfaces
         # as a 401 and the caller logs it; this is the correct outcome
         # for the rare cases this branch could be reached.
-        return None
+        return None, False
 
 
 def get_optional_account(
@@ -178,11 +188,36 @@ def get_optional_account(
     claims = provider.verify_credential(token)
     if claims is None:
         return None
-    account = _upsert_account(db, claims, provider, token)
+    account, changed = _upsert_account(db, claims, provider, token)
     if account is None:
         return None
-    db.commit()
+    if changed:
+        db.commit()
     return account
+
+
+def org_fair_share(
+    account: Optional[Account] = Depends(get_optional_account),
+    db: DbSession = Depends(get_db),
+) -> None:
+    """E71-B3 tenant fairness: per-org admission quota.
+
+    Accounts linked to an org (via a claimed AccessCode) are rate-limited
+    as a tenant so one institution's surge can't starve others. Unaffiliated
+    accounts and Redis outages fail open — this is protection, not a gate.
+    Over quota -> 429 with Retry-After (calm, retryable), never 500.
+    """
+    if account is None:
+        return
+    from backend.services.org_quota import org_admission_allowed, resolve_org_id
+
+    org_id = resolve_org_id(db, account.id)
+    if org_id and not org_admission_allowed(org_id):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail={"envelope_id": "org.quota_exceeded"},
+            headers={"Retry-After": "10"},
+        )
 
 
 def get_current_account(

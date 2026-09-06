@@ -8,13 +8,14 @@ System (ISCS). Subsystems emit signals; the ISCS decides UI states.
 import signal
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 
+from backend.api.deps import org_fair_share
 from backend.api.routes.account import account_profile_router
 from backend.api.routes.onboarding_telemetry import (
     router as onboarding_telemetry_router,
@@ -314,8 +315,18 @@ async def _http_exception_handler(request: Request, exc: HTTPException) -> JSONR
 
 # Sprint 27 H2: Versioned public API surface under /api/v1/.
 # Legacy /api/* routes preserved as 302 redirects with Deprecation header.
-app.include_router(curriculum_router, prefix="/api/v1/curriculum", tags=["curriculum"])
-app.include_router(signals_router, prefix="/api/v1/signals", tags=["signals"])
+app.include_router(
+    curriculum_router,
+    prefix="/api/v1/curriculum",
+    tags=["curriculum"],
+    dependencies=[Depends(org_fair_share)],
+)
+app.include_router(
+    signals_router,
+    prefix="/api/v1/signals",
+    tags=["signals"],
+    dependencies=[Depends(org_fair_share)],
+)
 app.include_router(landing_router, prefix="/api/v1/landing", tags=["landing"])
 app.include_router(
     telemetry_export_router, prefix="/api/v1/telemetry", tags=["telemetry"]
