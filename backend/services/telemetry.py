@@ -21,6 +21,59 @@ def record(
     decision_reason: Optional[str] = None,
     max_complexity: Optional[int] = None,
 ) -> Dict:
+    """Append a telemetry event. Returns the recorded event (or a queued
+    envelope when TELEMETRY_ASYNC is on).
+
+    E70-B2: when TELEMETRY_ASYNC=1 AND REDIS_URL is set, the write is
+    enqueued to Celery instead of running synchronously on the request's
+    second DB connection. Falls back to sync on broker failure so events
+    are never silently dropped.
+    """
+    from backend.core.config import settings
+
+    if getattr(settings, "TELEMETRY_ASYNC", False) and getattr(
+        settings, "REDIS_URL", ""
+    ):
+        try:
+            from backend.tasks.telemetry_tasks import record_telemetry_event
+
+            record_telemetry_event.delay(
+                event_type=event_type,
+                metadata=metadata or {},
+                request_path=request_path,
+                stability=stability,
+                selected_state_id=selected_state_id,
+                decision_reason=decision_reason,
+                max_complexity=max_complexity,
+            )
+            return {
+                "queued": True,
+                "event": event_type,
+                "request_path": request_path,
+            }
+        except Exception:
+            pass  # broker down -> durable sync write below
+    return _record_sync(
+        event_type,
+        metadata,
+        request_path=request_path,
+        stability=stability,
+        selected_state_id=selected_state_id,
+        decision_reason=decision_reason,
+        max_complexity=max_complexity,
+    )
+
+
+def _record_sync(
+    event_type: str,
+    metadata: Optional[dict] = None,
+    *,
+    request_path: Optional[str] = None,
+    stability: Optional[float] = None,
+    selected_state_id: Optional[str] = None,
+    decision_reason: Optional[str] = None,
+    max_complexity: Optional[int] = None,
+) -> Dict:
     """Append a telemetry event durably. Returns the recorded event."""
     db = SessionLocal()
     try:
