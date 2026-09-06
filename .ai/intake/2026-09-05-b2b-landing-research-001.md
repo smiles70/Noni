@@ -916,3 +916,132 @@ context a founding-partner offer prices against.
   category (Northstar $550–1,000; digitalLIFT $1,475–3,325) — far
   below EHR-level pricing, aligned with learning-curriculum norms.
   Still a user decision; no invented figures on the page.
+
+## B2B-PRICING-002 — pressure test of proposed founding pricing
+## ($375/yr nonprofit site · $850/yr for-profit location). 3 passes.
+
+### Pass 0 — internal anchor discovered (decisive context)
+
+ADR 0021: consumer pricing is **$39 one-time, lifetime** ($59 gift),
+NO subscriptions — a deliberate anti-dark-pattern stance for older
+adults (C1 Fisk 2009; C3 Knowles 2019). This is the governing anchor.
+
+### Pass 1 — unit economics coherence vs. B2C
+
+- $375/site/yr is institutional *access infrastructure*, not per-learner
+  pricing — a different product. A community with 100 residents pays
+  $3.75/resident/yr vs. $39 lifetime direct. Over a multi-year stay the
+  per-resident cost collapses toward pennies.
+- **Risk flagged:** a flat site fee with no volume band gives a
+  500-resident community the same price as a 40-resident one. Northstar
+  solves this with learner-account tiers (Tier 1 caps at 500 learners).
+  Recommendation: pair the founding rate with a stated band
+  (e.g., "up to ~150 residents/site; larger communities talk to us").
+- Institutional annual licensing ≠ the consumer subscription dark
+  patterns ADR 0021 prohibits (that governs learner-facing billing).
+  BUT for governance cleanliness, B2B site licensing should get its own
+  one-line ADR amendment noting it is institution-billed, annually,
+  with no auto-charge to learners — same ethos, different surface.
+
+### Pass 2 — industry buying behavior / culture / sensitivity
+
+- **Senior living communities:** life-enrichment/activity budgets are
+  modest but discretionary; $375 sits comfortably under typical PO
+  approval thresholds — a "try it" decision, not a capital request.
+  Buying culture is relationship + pilot + reference-driven; a low
+  founding price converts friction into logos and evidence — which is
+  the actual asset a pre-revenue company needs.
+- **Nonprofit senior centers / libraries:** extreme sensitivity —
+  Northstar at $550 offers state subsidies; OATS is *free*. $375
+  undercuts Northstar by ~32% — strong, but some nonprofits still
+  can't pay; that's acceptable (they're brand partners, not revenue).
+- **For-profit senior living:** $850/location is a rounding error
+  against their budgets (engagement platforms run $1k+/mo). The risk
+  here is inverted: **too cheap can signal "not serious"** — mitigated
+  by labeling it founding-cohort pricing with a review date.
+- **Health plans:** always custom; the posted numbers don't constrain
+  that conversation — the page already says so.
+- **Reference discipline:** published comparables bound us honestly —
+  Northstar $550/$1,000, digitalLIFT $1,475/$3,325, SeniorTechie
+  $49–109/kit. $375/$850 undercuts Northstar ~30% and sits far below
+  digitalLIFT — aggressive but defensible for a founding cohort
+  explicitly trading price for evidence and references.
+
+### Pass 3 — audit check (self-review of this analysis)
+
+- Bias check: am I rationalizing the user's number? The counter-case is
+  real — $375 is thin against support/onboarding cost-to-serve, and
+  for-profit $850 underprices vs. market. Mitigations: founding label +
+  cohort cap + review date make underpricing a *strategy*, not a trap.
+- Missing evidence: we have no willingness-to-pay data of our own; the
+  published comparables are the only honest anchor. Confidence:
+  directionally solid, not precise — treat as pilot parameters to
+  revisit after 3–5 signed pilots.
+- The "free" competitor pressure (OATS, LearnMore/WIOA) is answered by
+  positioning (geragogy + patent-pending method), not by going lower.
+
+### Verdict
+
+**$375 nonprofit / $850 for-profit per site per year is defensible AS
+FOUNDING-PARTNER PILOT PRICING**, conditional on:
+
+1. Label it "Founding Partner rate — pilot cohort" (honest, not
+   urgency — ADR 0021's no-scarcity rule is learner-facing; B2B cohort
+   framing is standard and compliant with our no-dark-pattern ethos).
+2. State a resident-volume band per site so a 500-bed community isn't
+   priced identically to a 40-bed one (Northstar-tier precedent).
+3. Add a review clause: "founding rates reviewed at cohort close;
+   existing partners keep their rate for the term."
+4. File a one-line ADR amendment: institution-billed annual site
+   license is distinct from learner-facing billing (ADR 0021 scope).
+
+Meets industry expectations: annual institutional licensing is the
+norm (Northstar, digitalLIFT both annual); the numbers are inside the
+evidence-bounded band ($500–$3,500/site/yr) at the aggressive low end —
+consistent with trading price for proof at this stage.
+
+## B2B-PRICING-003 — buyer-seat audit: ED / MD / administrator view
+## of $375 nonprofit / $850 for-profit per site-year.
+
+### How the numbers land on the buyer's desk (verified)
+
+- **The buyer is a department-budget owner.** Life-enrichment/activities
+  is a staffed department: directors earn $65–121K (John Knox Village
+  JD $96–121K; Greenwood Village $85–95K) and own an annual program
+  budget, goals, and spend approvals. $375–$850/yr is a line item they
+  can approve alone — it never reaches a committee.
+- **Scale check (decisive):** premium programming packages sell at
+  **$150–$300/mo PER RESIDENT** (Pro-Visio senior-living CFO guidance:
+  "Lifelong Learning Series $150/mo"). Our ENTIRE site costs $71/mo at
+  the for-profit rate — less than one resident's single package. The
+  number doesn't meet expectations; it *undercuts* them by an order of
+  magnitude.
+- **Approval workflow reality (multi-site):** regional procurement +
+  approval software (OnCare/Procurement Partners culture); a sub-$1k
+  annual line clears every threshold in that literature — informal
+  approval chains stall on *big* invoices, not this one.
+- **Budget-cycle fit:** senior-living/nonprofit orgs budget annually
+  (Sept–Dec planning per Onset/Northshore audit docs). An annual site
+  license lands exactly where they plan — matches buying cadence.
+- **Nonprofit senior centers:** budgets are ~80% salary (Gardner COA
+  budget narrative), program spend is grant-shaped. $375 is reachable
+  but competes with FREE alternatives (OATS licensing, WIOA-funded
+  curriculum) — the honest risk: nonprofits may take free over cheap.
+  Mitigation: our position is method (geragogy + patent-pending),
+  and founding partners get input rights free options can't offer.
+- **Buying culture:** relationship + pilot + reference. An ED buys what
+  a peer ED vouches for. Founding-cohort pricing is designed for exactly
+  this: trade ARPU for referenceable evidence.
+
+### Audit check on the numbers — verdict holds, one soft spot
+
+- $375 nonprofit: **solid.** Under Northstar's $550, above the "is this
+  real?" floor, inside discretionary authority, grant-fundable.
+- $850 for-profit: **defensible but possibly under-priced** — the same
+  buyer approves $150–300/mo/resident programming and pays $1K+/mo for
+  engagement platforms. An option the user may consider later: for-
+  profit founding rate could carry $1,200–1,500 with the same
+  "founding cohort" frame without straining any budget we've measured.
+  Not a recommendation to change — the buy-logos-first logic stands.
+- All prior conditions stand: founding label, volume band, review
+  clause, ADR amendment for institution-billed licensing.
