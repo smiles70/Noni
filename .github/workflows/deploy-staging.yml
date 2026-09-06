@@ -147,13 +147,12 @@ jobs:
       - name: Run migrations
         run: alembic upgrade head
 
-      # Scope: the Stripe payment-provider contract test only. The full
-      # backend suite is currently red on main (45 pre-existing failures,
-      # CI-HEALTH debt) — gating deploys on it would block every staging
-      # push until that suite is triaged separately.
-      - name: Payment-provider contract tests
+      # Full backend contract suite. --no-cov: the 25% coverage floor in
+      # pytest.ini is enforced by ci.yml as a quality metric; the deploy
+      # gate checks correctness, not coverage.
+      - name: Backend contract tests (full suite)
         run: |
-          pytest backend/tests/test_stripe_payment_provider.py -v --no-cov
+          pytest backend/tests/ -v --no-cov
 
       - name: Install frontend dependencies
         working-directory: frontend
