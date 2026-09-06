@@ -17,6 +17,7 @@
  * avoid a second fetch.
  */
 import { CSSProperties, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import type { LandingPageContent } from "../api/landing";
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
 
@@ -234,6 +235,29 @@ export default function HowItWorksDialog({ content, onClose, onBegin }: Props) {
               Got it
             </button>
           )}
+          {/* B2B-ENTRY-001 gap 2: second, calm B2B entry — inside the
+              learner-adjacent dialog so the fixed hero stays single-entry. */}
+          <p
+            style={{
+              margin: `${SPACING.sm}px 0 0`,
+              fontSize: TYPOGRAPHY.bodySizePx,
+              textAlign: "center",
+            }}
+          >
+            <Link
+              to="/for-communities"
+              onClick={onClose}
+              data-b2b-entry="how-it-works"
+              style={{
+                color: COLORS.accentMutedBlue,
+                display: "inline-flex",
+                alignItems: "center",
+                minHeight: 44,
+              }}
+            >
+              For senior living communities
+            </Link>
+          </p>
         </footer>
       </div>
     </div>
