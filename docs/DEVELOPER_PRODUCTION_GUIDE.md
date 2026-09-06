@@ -72,16 +72,16 @@ VITE_MAGIC_PUBLISHABLE_KEY=pk_live_...
 
 > Never commit `.env`. It is already in `.gitignore`.
 
-### 1.3 Set Fly.io backend secret (CLI)
+### 1.3 Set railway.app backend secret (CLI)
 
 ```bash
-flyctl secrets set MAGIC_API_SECRET_KEY=sk_live_... -a noni-api
+railway secrets set MAGIC_API_SECRET_KEY=sk_live_... -a noni-api
 ```
 
 Optional, for `MAGIC_CLIENT_ID` if Magic does not auto-detect it:
 
 ```bash
-flyctl secrets set MAGIC_CLIENT_ID=<client_id_from_dashboard> -a noni-api
+railway secrets set MAGIC_CLIENT_ID=<client_id_from_dashboard> -a noni-api
 ```
 
 ### 1.4 Set Cloudflare Pages build-time secret (CLI)
@@ -244,7 +244,7 @@ npm install @sentry/react @sentry/browser
 ### 4.3 Set the Sentry DSN
 
 ```bash
-flyctl secrets set SENTRY_DSN=https://...@....ingest.sentry.io/... -a noni-api
+railway secrets set SENTRY_DSN=https://...@....ingest.sentry.io/... -a noni-api
 gh secret set SENTRY_DSN --body "https://...@....ingest.sentry.io/..."
 ```
 
@@ -380,4 +380,4 @@ npm run build
 
 ---
 
-*Generated under Process v9.51. Adjust secret values, project names, and URLs to match your own Magic, Fly.io, Cloudflare, and Sentry accounts.*
+*Generated under Process v9.51. Adjust secret values, project names, and URLs to match your own Magic, railway.app, Cloudflare, and Sentry accounts.*

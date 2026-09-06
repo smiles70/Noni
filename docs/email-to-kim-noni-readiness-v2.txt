@@ -1,3 +1,5 @@
+DEPRECATED: legacy platform retired; production runs on Railway.
+
 Subject: Where Noni Stands -- Against the Market and Against the Standard
 
 Hi Kim,
@@ -135,7 +137,7 @@ THE TWO THINGS STILL BLOCKING SERIES B
 
 BLOCKER 1: ONE DATABASE = TOTAL OUTAGE IF IT FAILS
 -- Why it matters: This is the #1 question in technical due diligence. "What happens if your database goes down?" If the answer is "total outage," that is a flag or disqualification.
--- Fix: Fly.io Managed Postgres (automatic failover) or manually building a high-availability cluster
+-- Fix: the legacy platform Managed Postgres (automatic failover) or manually building a high-availability cluster
 -- Effort: High
 
 BLOCKER 2: NO FRONTEND ERROR REPORTING
@@ -181,7 +183,7 @@ QUICK WIN 1: SENTRY (1 to 2 days of work)
 -- Cost: Free tier
 -- Impact: High
 
-QUICK WIN 2: FLY.IO MANAGED POSTGRES (1 to 2 weeks of work)
+QUICK WIN 2: LEGACY-PLATFORM MANAGED POSTGRES (1 to 2 weeks of work)
 -- What it does: Remove the single biggest risk in technical due diligence
 -- Cost: Managed service pricing
 -- Impact: High

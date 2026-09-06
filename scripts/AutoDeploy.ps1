@@ -8,7 +8,7 @@
     
     This script provides FULLY AUTOMATED deployment without requiring:
     - git CLI
-    - flyctl CLI
+    - railway CLI
     - npm/node
     - GitHub CLI
     
@@ -287,7 +287,7 @@ Write-Host "  ✓ G3 (localhost) check passed" -ForegroundColor $Colors.Success
 
 Write-Host "`nResources:" -ForegroundColor $Colors.Info
 Write-Host "  Frontend: https://noni-web.pages.dev" -ForegroundColor White
-Write-Host "  API: https://noni-api.fly.dev" -ForegroundColor White
+Write-Host "  API: https://noni-api-production.up.railway.app" -ForegroundColor White
 Write-Host "  Actions: https://github.com/$RepoFull/actions" -ForegroundColor White
 
 Write-Host "`nNext steps:" -ForegroundColor $Colors.Info

@@ -22,5 +22,5 @@
 
 ## Blockers
 
-- **Railway migration pending:** `RAILWAY_TOKEN` must be added to GitHub Actions and the Railway project/service created. Fly.io is currently blocked by an overdue invoice, so the new `deploy.yml` will not deploy the backend until the Railway token is present.
+- **Railway migration pending:** `RAILWAY_TOKEN` must be added to GitHub Actions and the Railway project/service created. railway.app is currently blocked by an overdue invoice, so the new `deploy.yml` will not deploy the backend until the Railway token is present.
 - No code-level production blockers remain.

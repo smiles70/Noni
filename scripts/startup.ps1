@@ -12,7 +12,7 @@
     -BackendPort     Port for FastAPI (default 8000)
     -FrontendPort    Port for Vite (default 5173)
     -SkipInstall     Skip dependency install steps
-    -Prod            Point frontend at prod backend (https://noni-api.fly.dev) instead of localhost
+    -Prod            Point frontend at prod backend (https://noni-api-production.up.railway.app) instead of localhost
 
 .NOTES
     Opens two new PowerShell windows so each service streams its own logs.
@@ -35,7 +35,7 @@ Write-Host "Backend:  http://localhost:$BackendPort"
 Write-Host "Frontend: http://localhost:$FrontendPort"
 Write-Host ""
 
-# Ensure PATH includes Node and Fly installs (Windows persistent env vars)
+# Ensure PATH includes Node and npm (Windows persistent env vars)
 $env:PATH = [Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
             [Environment]::GetEnvironmentVariable("PATH", "User")
 
@@ -71,7 +71,7 @@ if (-not $SkipInstall) {
 }
 
 # ---------- Launch ----------
-$apiBaseUrl = if ($Prod) { "https://noni-api.fly.dev" } else { "http://localhost:$BackendPort" }
+$apiBaseUrl = if ($Prod) { "https://noni-api-production.up.railway.app" } else { "http://localhost:$BackendPort" }
 
 Write-Host ""
 Write-Host "[backend] Launching uvicorn..." -ForegroundColor Green

@@ -14,7 +14,7 @@
 
 ### Prerequisites
 - [ ] CI passed on PR (`pytest`, `npm test`, `pre-commit`)
-- [ ] Required secrets present in Fly (`make secrets-audit` clean)
+- [ ] Required secrets present in Railway (`make secrets-audit` clean)
 - [ ] Backup from within last 24 hours confirmed
 
 ### Procedure
@@ -28,19 +28,19 @@
    ```bash
    make deploy-prod
    ```
-   Runs: Supabase migrations -> Fly deploy -> Cloudflare Pages deploy -> smoke test.
+   Runs: Supabase migrations -> Railway deploy -> Cloudflare Pages deploy -> smoke test.
 
 3. **Monitor deploy:**
    ```bash
-   fly logs --app noni-api
+   railway logs --app noni-api
    ```
    Watch for `Application startup complete`.
 
 4. **Verify post-deploy:**
    ```bash
    make smoke-prod
-   curl https://noni-api.fly.dev/health
-   curl https://noni-api.fly.dev/metrics
+   curl https://noni-api-production.up.railway.app/health
+   curl https://noni-api-production.up.railway.app/metrics
    ```
 
 5. **Watch metrics for 10 minutes:**
@@ -49,8 +49,8 @@
 
 ### Rollback (if deploy fails)
 ```bash
-fly releases list --app noni-api
-fly deploy --image noni-api:<previous_tag> --app noni-api
+railway releases list --app noni-api
+railway deploy --image noni-api:<previous_tag> --app noni-api
 make smoke-prod
 ```
 
@@ -116,10 +116,10 @@ Document results in `docs/operations/restore-drill-YYYY-QN.md`.
    sops --encrypt /tmp/.env.prod > infra/.env.prod.sops.yaml
    ```
 
-4. Set in Fly:
+4. Set in Railway:
    ```bash
-   fly secrets set SECRET_KEY="$NEW_SECRET" --app noni-api
-   fly deploy --app noni-api
+   railway secrets set SECRET_KEY="$NEW_SECRET" --app noni-api
+   railway deploy --app noni-api
    ```
 
 5. Verify:
@@ -140,9 +140,9 @@ Document results in `docs/operations/restore-drill-YYYY-QN.md`.
 **Frequency:** Monthly.
 
 ### Procedure
-1. Check current Fly secret:
+1. Check current Railway secret:
    ```bash
-   fly ssh console --app noni-api
+   railway ssh console --app noni-api
    echo $DATABASE_URL
    ```
 
@@ -150,8 +150,8 @@ Document results in `docs/operations/restore-drill-YYYY-QN.md`.
 
 3. If missing:
    ```bash
-   fly secrets set DATABASE_URL="postgresql+asyncpg://...?sslmode=require" --app noni-api
-   fly deploy --app noni-api
+   railway secrets set DATABASE_URL="postgresql+asyncpg://...?sslmode=require" --app noni-api
+   railway deploy --app noni-api
    ```
 
 ---
@@ -177,37 +177,37 @@ trivy image noni-api:latest
 
 ---
 
-## SOP-07: Fly Secrets Audit
+## SOP-07: Railway Secrets Audit
 
 **Purpose:** Verify all required secrets are present.
 **Frequency:** Monthly.
 
 ### Procedure
 ```bash
-scripts/audit-fly-secrets.ps1
+scripts/audit-railway-secrets.ps1
 ```
 
 Verify against `.env.example`:
 ```bash
 diff <(grep -E '^[A-Z].*=' infra/.env.example | cut -d= -f1 | sort) \
-     <(fly secrets list --app noni-api | tail -n +3 | awk '{print $1}' | sort)
+     <(railway secrets list --app noni-api | tail -n +3 | awk '{print $1}' | sort)
 ```
 
 ---
 
-## SOP-08: Scaling Fly Machines
+## SOP-08: Scaling Railway Machines
 
 **Purpose:** Increase or decrease compute capacity.
 **Trigger:** Sustained CPU > 70% or latency p99 > 500ms.
 
 ### Procedure
 ```bash
-fly status --app noni-api
-fly scale count 4 --app noni-api   # Add machines
-fly scale vm shared-cpu-2x --app noni-api  # Or upgrade VM
+railway status --app noni-api
+railway scale count 4 --app noni-api   # Add machines
+railway scale vm shared-cpu-2x --app noni-api  # Or upgrade VM
 ```
 
 Scale down post-incident:
 ```bash
-fly scale count 2 --app noni-api
+railway scale count 2 --app noni-api
 ```

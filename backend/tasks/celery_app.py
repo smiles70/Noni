@@ -1,7 +1,7 @@
 """Celery app configuration.
 
 Sprint 27 H4: background job queue for webhooks, telemetry exports, and
-account cleanup. Redis is the broker; Fly Redis or Upstash Redis.
+account cleanup. Redis is the broker; Railway Redis or Upstash Redis.
 """
 
 import importlib
@@ -19,7 +19,7 @@ import backend.models
 for _m in pkgutil.iter_modules(backend.models.__path__):
     importlib.import_module(f"backend.models.{_m.name}")
 
-# Redis broker URL from env (Fly Redis sets REDIS_URL automatically).
+# Redis broker URL from env (Railway Redis sets REDIS_URL automatically).
 broker_url = getattr(settings, "REDIS_URL", "redis://localhost:6379/0")
 
 app = Celery(

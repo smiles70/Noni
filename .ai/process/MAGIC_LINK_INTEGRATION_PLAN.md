@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Magic.link Integration Plan
 
 **Process:** v9.51
@@ -133,7 +135,7 @@
 - `docker-compose.yml`
 - `.github/workflows/deploy.yml`
 - `scripts/setup-infrastructure.ps1`
-- `scripts/audit-fly-secrets.ps1`
+- `scripts/audit-legacy-platform-secrets.ps1`
 - `scripts/auto_deploy.py`
 - `infra/scripts/secrets-sync.sh`
 

@@ -34,7 +34,7 @@ This guide provides comprehensive instructions for setting up a staging environm
    - Ability to create projects
    - Access to environment variables
 
-3. **Fly.io Account**
+3. **railway.app Account**
    - Access to Mynaani backend apps
    - Ability to create apps
    - Access to environment variables
@@ -54,7 +54,7 @@ This guide provides comprehensive instructions for setting up a staging environm
 
 - Git command-line tools
 - GitHub CLI (gh) - recommended
-- Fly.io CLI (flyctl)
+- railway.app CLI (railway)
 - Node.js and npm (for frontend builds)
 - Python (for backend)
 - PostgreSQL client (for database management)
@@ -145,10 +145,10 @@ jobs:
           cd backend
           alembic upgrade head
 
-      - name: Deploy to Fly.io Staging
-        uses: superfly/flyctl-actions@master
+      - name: Deploy to railway.app Staging
+        uses: railwayapp/railway-actions@master
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         with:
           args: "deploy --app noni-api-staging --remote staging"
 
@@ -236,7 +236,7 @@ Navigate to repository settings → "Secrets and variables" → "Actions" → "N
    - `STAGING_CLERK_SECRET_KEY` - Clerk secret key for staging
 
 3. **Infrastructure Configuration:**
-   - `FLY_API_TOKEN` - Fly.io API token
+   - `RAILWAY_API_TOKEN` - railway.app API token
    - `CLOUDFLARE_API_TOKEN` - Cloudflare API token
 
 4. **Monitoring Configuration:**
@@ -245,23 +245,23 @@ Navigate to repository settings → "Secrets and variables" → "Actions" → "N
 
 ---
 
-## Step 3: Fly.io Staging App Setup
+## Step 3: railway.app Staging App Setup
 
 ### 3.1 Create Staging Backend App
 
-**Objective:** Create separate Fly.io app for staging backend
+**Objective:** Create separate railway.app app for staging backend
 
 ```bash
 # Create staging app
-flyctl apps create noni-api-staging --org personal
+railway apps create noni-api-staging --org personal
 
 # Add environment variables
-flyctl secrets set DATABASE_URL="postgresql://user:password@host:port/dbname" --app noni-api-staging
-flyctl secrets set AUTH_PROVIDER="clerk" --app noni-api-staging
-flyctl secrets set CLERK_PUBLISHABLE_KEY="pk_test_..." --app noni-api-staging
-flyctl secrets set CLERK_SECRET_KEY="sk_test_..." --app noni-api-staging
-flyctl secrets set SECRET_KEY="staging-secret-key-min-32-chars" --app noni-api-staging
-flyctl secrets set SESSION_SECRET="staging-session-secret-min-32-chars" --app noni-api-staging
+railway secrets set DATABASE_URL="postgresql://user:password@host:port/dbname" --app noni-api-staging
+railway secrets set AUTH_PROVIDER="clerk" --app noni-api-staging
+railway secrets set CLERK_PUBLISHABLE_KEY="pk_test_..." --app noni-api-staging
+railway secrets set CLERK_SECRET_KEY="sk_test_..." --app noni-api-staging
+railway secrets set SECRET_KEY="staging-secret-key-min-32-chars" --app noni-api-staging
+railway secrets set SESSION_SECRET="staging-session-secret-min-32-chars" --app noni-api-staging
 ```
 
 ### 3.2 Configure Staging App
@@ -270,13 +270,13 @@ flyctl secrets set SESSION_SECRET="staging-session-secret-min-32-chars" --app no
 
 ```bash
 # Set staging environment
-flyctl config set ENVIRONMENT="staging" --app noni-api-staging
+railway config set ENVIRONMENT="staging" --app noni-api-staging
 
 # Configure regions (match production or use separate region)
-flyctl regions set iad --app noni-api-staging
+railway regions set iad --app noni-api-staging
 
 # Configure scaling (use minimal for staging)
-flyctl scale count 1 --app noni-api-staging
+railway scale count 1 --app noni-api-staging
 ```
 
 ### 3.3 Create Staging Database
@@ -285,13 +285,13 @@ flyctl scale count 1 --app noni-api-staging
 
 ```bash
 # Create PostgreSQL database for staging
-flyctl postgres create --name noni-db-staging --region iad
+railway postgres create --name noni-db-staging --region iad
 
 # Get connection string
-flyctl postgres connect noni-db-staging
+railway postgres connect noni-db-staging
 
 # Set DATABASE_URL secret
-flyctl secrets set DATABASE_URL="postgresql://..." --app noni-api-staging
+railway secrets set DATABASE_URL="postgresql://..." --app noni-api-staging
 ```
 
 ---
@@ -321,7 +321,7 @@ Navigate to project settings → "Environment variables"
 **Required Variables:**
 - `VITE_AUTH_PROVIDER` = "clerk"
 - `VITE_CLERK_PUBLISHABLE_KEY` = "pk_test_..." (staging key)
-- `VITE_API_BASE_URL` = "https://noni-api-staging.fly.dev"
+- `VITE_API_BASE_URL` = "https://noni-api-staging.up.railway.app"
 
 ### 4.3 Configure Staging Branch
 
@@ -353,7 +353,7 @@ Navigate to project settings → "Environment variables"
 1. Navigate to Clerk application settings
 2. Configure "Allowed redirect URLs":
    - `https://noni-web-staging.pages.dev/*`
-   - `https://noni-api-staging.fly.dev/*`
+   - `https://noni-api-staging.up.railway.app/*`
 
 3. Configure "Domain":
    - Add staging domain: `https://noni-web-staging.pages.dev`
@@ -389,9 +389,9 @@ Navigate to project settings → "Environment variables"
 **Objective:** Add BetterStack configuration to staging
 
 ```bash
-# Add to Fly.io secrets
-flyctl secrets set BETTERSTACK_API_KEY="staging-api-key" --app noni-api-staging
-flyctl secrets set BETTERSTACK_ONBOARDING_SOURCE_NAME="noni-staging" --app noni-api-staging
+# Add to railway.app secrets
+railway secrets set BETTERSTACK_API_KEY="staging-api-key" --app noni-api-staging
+railway secrets set BETTERSTACK_ONBOARDING_SOURCE_NAME="noni-staging" --app noni-api-staging
 ```
 
 ### 6.3 Configure Staging Monitors
@@ -399,9 +399,9 @@ flyctl secrets set BETTERSTACK_ONBOARDING_SOURCE_NAME="noni-staging" --app noni-
 **Objective:** Create staging-specific uptime monitors
 
 1. Create uptime monitors for staging endpoints:
-   - `https://noni-api-staging.fly.dev/health`
+   - `https://noni-api-staging.up.railway.app/health`
    - `https://noni-web-staging.pages.dev`
-   - `https://noni-api-staging.fly.dev/api/v1/auth/config`
+   - `https://noni-api-staging.up.railway.app/api/v1/auth/config`
 
 2. Configure alert rules for staging (lower thresholds than production)
 
@@ -415,7 +415,7 @@ flyctl secrets set BETTERSTACK_ONBOARDING_SOURCE_NAME="noni-staging" --app noni-
 
 ```bash
 # Connect to staging database
-flyctl postgres connect noni-db-staging
+railway postgres connect noni-db-staging
 
 # Run migration in staging
 cd backend
@@ -475,13 +475,13 @@ git push origin staging
 **Backend Verification:**
 ```bash
 # Check backend health
-curl https://noni-api-staging.fly.dev/health
+curl https://noni-api-staging.up.railway.app/health
 
 # Check auth config
-curl https://noni-api-staging.fly.dev/api/v1/auth/config
+curl https://noni-api-staging.up.railway.app/api/v1/auth/config
 
 # Check session endpoint (with valid token)
-curl -H "Authorization: Bearer <token>" https://noni-api-staging.fly.dev/api/v1/auth/session
+curl -H "Authorization: Bearer <token>" https://noni-api-staging.up.railway.app/api/v1/auth/session
 ```
 
 **Frontend Verification:**
@@ -593,7 +593,7 @@ git push origin main
 **Issue 4: Clerk Authentication Fails**
 - **Solution:** Verify Clerk API keys, check redirect URLs, verify application configuration
 
-**Issue 5: Fly.io Deployment Fails**
+**Issue 5: railway.app Deployment Fails**
 - **Solution:** Check API token, verify app configuration, check region availability
 
 ---
@@ -649,7 +649,7 @@ git push origin main
 
 ### Staging Cost Reduction
 
-1. **Fly.io:**
+1. **railway.app:**
    - Use minimal VM size
    - Scale down when not in use
    - Use shared databases instead of dedicated
@@ -680,28 +680,28 @@ git merge main
 git push origin staging
 ```
 
-### Fly.io Commands
+### railway.app Commands
 ```bash
 # Create staging app
-flyctl apps create noni-api-staging
+railway apps create noni-api-staging
 
 # Set secrets
-flyctl secrets set DATABASE_URL="..." --app noni-api-staging
+railway secrets set DATABASE_URL="..." --app noni-api-staging
 
 # Deploy to staging
-flyctl deploy --app noni-api-staging
+railway deploy --app noni-api-staging
 
 # Check app status
-flyctl status --app noni-api-staging
+railway status --app noni-api-staging
 ```
 
 ### Database Commands
 ```bash
 # Create staging database
-flyctl postgres create --name noni-db-staging
+railway postgres create --name noni-db-staging
 
 # Connect to staging database
-flyctl postgres connect noni-db-staging
+railway postgres connect noni-db-staging
 
 # Run migration
 alembic upgrade head

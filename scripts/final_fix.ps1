@@ -15,10 +15,10 @@ $content = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64St
 $content = $content -replace 'npm ci', 'npm install'
 
 # 3. Fix 2: Remove backend from needs
-$content = $content -replace 'needs: \[preflight, fly-deploy-backend\]', 'needs: [preflight]'
+$content = $content -replace 'needs: \[preflight, railway-deploy-backend\]', 'needs: [preflight]'
 
 # 4. Fix 3: Add if: false to backend job (prevent it from running)
-$content = $content -replace '(fly-deploy-backend:\s*\n)', "`$1    if: false  # SKIP - backend already healthy`n"
+$content = $content -replace '(railway-deploy-backend:\s*\n)', "`$1    if: false  # SKIP - backend already healthy`n"
 
 # 5. Commit changes
 $body = @{

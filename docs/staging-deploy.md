@@ -2,7 +2,7 @@
 
 Sprint **B3** ships a containerized backend, an nginx-served frontend, and a
 managed Postgres dependency. This guide covers a generic Docker host (VPS,
-Fly.io, Render, Railway, ECS, Cloud Run). Pick whichever target you prefer;
+railway.app, Render, Railway, ECS, Cloud Run). Pick whichever target you prefer;
 the build artifacts are identical.
 
 ## 1. Prerequisites
@@ -84,17 +84,17 @@ Put a TLS-terminating reverse proxy (Caddy, nginx, Traefik) in front and route
 `api.staging.*` -> container `api:8000`, `app.staging.*` -> container
 `frontend:80`.
 
-### 4b. Fly.io
+### 4b. railway.app
 
 ```bash
-fly launch --no-deploy --copy-config --name noni-api-staging
-fly secrets set $(grep -v '^#' .env | xargs)
-fly deploy
+railway launch --no-deploy --copy-config --name noni-api-staging
+railway secrets set $(grep -v '^#' .env | xargs)
+railway deploy
 ```
 
-The `Dockerfile` at the repo root builds `backend.app.main:app`; Fly's
+The `Dockerfile` at the repo root builds `backend.app.main:app`; Railway's
 auto-detected `internal_port` should be `8000`. Frontend deploys as a separate
-Fly app from `frontend/Dockerfile`.
+Railway app from `frontend/Dockerfile`.
 
 ### 4c. Render / Railway / Cloud Run
 

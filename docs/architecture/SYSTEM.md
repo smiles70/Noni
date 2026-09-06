@@ -18,7 +18,7 @@ flowchart TB
         R2["R2 Bucket<br/>Nightly pg_dump"]
     end
 
-    subgraph Fly["Fly.io (us-east)"]
+    subgraph Railway["railway.app (us-east)"]
         API["FastAPI Backend<br/>Authority for: envelope,<br/>curriculum, ISCS, entitlement,<br/>session, webhooks"]
         EST["InterfaceStateEstimator<br/>per-user, persisted"]
     end
@@ -80,5 +80,5 @@ flowchart TB
 1. **No client-supplied trust.** The SPA holds no decision logic; everything renderable comes from an authoritative envelope.
 2. **One authority for state.** All Postgres writes route through FastAPI; no direct browser-to-DB path.
 3. **One verifier of external claims.** JWT and Stripe webhook signature verification happen in exactly one place.
-4. **Restart-safe stability.** The ISCS estimator persists per user; a Fly restart does not silently regress learner state.
-5. **Edge does not bypass.** Cloudflare proxies `/api/*` to Fly; the origin is never addressed directly by the browser.
+4. **Restart-safe stability.** The ISCS estimator persists per user; a Railway restart does not silently regress learner state.
+5. **Edge does not bypass.** Cloudflare proxies `/api/*` to Railway; the origin is never addressed directly by the browser.

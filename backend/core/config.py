@@ -63,7 +63,7 @@ class Settings(BaseSettings):
     DB_POOL_TIMEOUT: int = 10
     DB_POOL_RECYCLE: int = 3600
 
-    # Gunicorn worker count. Override per-machine via Fly env or docker-compose.
+    # Gunicorn worker count. Override per-machine via env or docker-compose.
     # Formula: (2 * CPU cores) + 1. shared-cpu-1x (1 core) -> 3; performance-2x (2 core) -> 5.
     WEB_CONCURRENCY: int = 1
 

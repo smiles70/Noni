@@ -22,7 +22,7 @@ Adopt a closed set of five vendors at launch, plus one optional observability ve
 |---|---|---|---|
 | 1 | Google Cloud Console | OAuth client (one-time setup) | `gcloud` |
 | 2 | Supabase | Auth + Postgres + RLS + pg_cron | `supabase` |
-| 3 | Fly.io | FastAPI backend host + secrets | `flyctl` |
+| 3 | railway.app | FastAPI backend host + secrets | `railway` |
 | 4 | Cloudflare | Pages, DNS, WAF, R2, Registrar | `wrangler` |
 | 5 | Stripe | Checkout, webhooks, receipts | `stripe` |
 | 6 | BetterStack (optional) | Logs, uptime, alerts | API |
@@ -42,13 +42,13 @@ GitHub is already in the stack and is not counted as a new vendor.
 - One source of truth for every secret (see ADR 0025).
 - Every vendor has a real CLI; manual dashboard work is restricted to account creation and CLI authentication.
 - Supabase concentrates auth + data + scheduled jobs. This concentration is accepted; mitigations are nightly off-platform `pg_dump` to R2 and a documented "migrate to another Postgres in 1 day" runbook.
-- BetterStack may be deferred at launch if Fly's built-in logs are sufficient for the first weeks; the slot is reserved.
+- BetterStack may be deferred at launch if Railway's built-in logs are sufficient for the first weeks; the slot is reserved.
 
 ## Reversibility
 
 - Migrating off Supabase Postgres: `pg_dump` is portable. Application reads `DATABASE_URL`; no Supabase-specific SQL outside `supabase/migrations/`.
 - Migrating off Supabase Auth: `accounts.auth_user_id` is a logical UUID, not a foreign key (see ADR 0023). Users can be re-bound to another identity provider without schema rewrite.
-- Migrating off Fly: container image is portable; `release_command` migration pattern works on any container host.
+- Migrating off Railway: container image is portable; `release_command` migration pattern works on any container host.
 - Migrating off Cloudflare: DNS and Pages config in `wrangler.toml` are portable; R2 contents are S3-compatible.
 
 ## References

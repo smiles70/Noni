@@ -1,3 +1,5 @@
+DEPRECATED: legacy platform retired; production runs on Railway.
+
 Subject: Where Noni Stands -- Against the Market and Against the Standard
 
 Hi Kim,
@@ -80,7 +82,7 @@ THE TWO THINGS STILL BLOCKING SERIES B
 1. ONE DATABASE = TOTAL OUTAGE IF IT FAILS
    - #1 question in due diligence: "What happens if your DB goes down?"
    - Answer "total outage" = flag or disqualification
-   - Fix: Fly.io Managed Postgres (auto-failover) or manual HA cluster
+   - Fix: the legacy platform Managed Postgres (auto-failover) or manual HA cluster
    - Effort: High
 
 2. NO FRONTEND ERROR REPORTING
@@ -120,7 +122,7 @@ TWO QUICK WINS I'D PRIORITIZE
 1. SENTRY (1-2 days)
    Catch frontend errors immediately. Free tier. High impact.
 
-2. FLY.IO MANAGED POSTGRES (1-2 weeks)
+2. LEGACY-PLATFORM MANAGED POSTGRES (1-2 weeks)
    Remove the single biggest risk in technical due diligence.
 
 Both together move Noni from 521 to ~543 and turn the "what's blocking us?" answer from "2 critical infrastructure gaps" to "path to Series B is clear."

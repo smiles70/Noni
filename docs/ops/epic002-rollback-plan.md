@@ -54,10 +54,10 @@ This document provides step-by-step rollback procedures for EPIC-002 deployment.
 1. **Stop Application:**
    ```bash
    # Stop backend
-   flyctl apps stop noni-api
+   railway apps stop noni-api
    
    # Stop frontend (if separate)
-   flyctl apps stop noni-web
+   railway apps stop noni-web
    ```
 
 2. **Rollback Database Migration:**
@@ -74,8 +74,8 @@ This document provides step-by-step rollback procedures for EPIC-002 deployment.
 
 4. **Restart Application:**
    ```bash
-   flyctl apps start noni-api
-   flyctl apps start noni-web
+   railway apps start noni-api
+   railway apps start noni-web
    ```
 
 5. **Verify Functionality:**
@@ -142,7 +142,7 @@ This document provides step-by-step rollback procedures for EPIC-002 deployment.
 
 3. **Redeploy Backend:**
    ```bash
-   flyctl deploy
+   railway deploy
    ```
 
 4. **Verify Functionality:**
@@ -175,7 +175,7 @@ This document provides step-by-step rollback procedures for EPIC-002 deployment.
 
 3. **Redeploy Application:**
    ```bash
-   flyctl deploy
+   railway deploy
    ```
 
 4. **Verify Functionality:**
@@ -198,8 +198,8 @@ This document provides step-by-step rollback procedures for EPIC-002 deployment.
 
 1. **Stop All Services:**
    ```bash
-   flyctl apps stop noni-api
-   flyctl apps stop noni-web
+   railway apps stop noni-api
+   railway apps stop noni-web
    ```
 
 2. **Complete Code Rollback:**
@@ -220,7 +220,7 @@ This document provides step-by-step rollback procedures for EPIC-002 deployment.
 
 5. **Redeploy Everything:**
    ```bash
-   flyctl deploy
+   railway deploy
    ```
 
 6. **Verify Functionality:**
@@ -386,16 +386,16 @@ alembic downgrade epic002_account_preferences
 alembic downgrade <migration_id>
 ```
 
-### Fly.io Rollback
+### railway.app Rollback
 ```bash
 # Stop application
-flyctl apps stop noni-api
+railway apps stop noni-api
 
 # Redeploy previous version
-flyctl deploy --remote <previous_commit_hash>
+railway deploy --remote <previous_commit_hash>
 
 # Start application
-flyctl apps start noni-api
+railway apps start noni-api
 ```
 
 ---

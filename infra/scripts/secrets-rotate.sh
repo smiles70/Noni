@@ -42,11 +42,11 @@ case "$KEY" in
   SESSION_SECRET)
     echo ""
     echo "NEXT: existing sessions will be invalidated. Consider scheduling rotation during low traffic."
-    echo "      flyctl machines restart --app \${FLY_APP_NAME:-noni-api}"
+    echo "      railway machines restart --app \${RAILWAY_APP_NAME:-noni-api}"
     ;;
   STRIPE_WEBHOOK_SECRET|STRIPE_SECRET_KEY|SUPABASE_JWT_SECRET|DATABASE_URL|DATABASE_URL_DIRECT)
     echo ""
-    echo "NEXT: restart backend machines: flyctl machines restart --app \${FLY_APP_NAME:-noni-api}"
+    echo "NEXT: restart backend machines: railway machines restart --app \${RAILWAY_APP_NAME:-noni-api}"
     ;;
   VITE_API_BASE_URL|STRIPE_PUBLISHABLE_KEY)
     echo ""

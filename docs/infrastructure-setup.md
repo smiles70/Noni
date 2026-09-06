@@ -4,6 +4,7 @@ version: 2.0
 date: 2026-06-11
 process: The Process v2.0
 ---
+> **Deprecated:** legacy platform retired; production runs on Railway.
 
 # Infrastructure Setup Guide
 
@@ -16,7 +17,7 @@ Complete automated setup for Mynaani project infrastructure using **The Process*
 .\scripts\setup-infrastructure.ps1
 
 # Or with specific tokens
-.\scripts\setup-infrastructure.ps1 -GitHubToken "ghp_xxx" -FlyToken "fly_xxx"
+.\scripts\setup-infrastructure.ps1 -GitHubToken "ghp_xxx"
 ```
 
 ## Prerequisites
@@ -33,7 +34,7 @@ Before starting, ensure you have access to:
 | Service | URL | Purpose |
 |---------|-----|---------|
 | GitHub | https://github.com/smiles70/Mynaani | Repository access |
-| Fly.io | https://fly.io/apps/noni-api | Backend deployment |
+| railway.app | https://railway.app/apps/noni-api | Backend deployment |
 | Cloudflare | https://dash.cloudflare.com | Frontend deployment |
 | Clerk | https://dashboard.clerk.com | Authentication |
 | Supabase | https://app.supabase.com | Database |
@@ -47,12 +48,12 @@ Before starting, ensure you have access to:
 
 ```powershell
 # Check current tool availability
-Get-Command git, flyctl, npm, node, gh -ErrorAction SilentlyContinue
+Get-Command git, railway, npm, node, gh -ErrorAction SilentlyContinue
 ```
 
 **Expected Output:**
 - ✓ Git: version 2.x
-- ✓ Fly.io CLI: version 0.x
+- ✓ railway.app CLI: version 0.x
 - ✓ npm: version 10.x
 - ✓ Node.js: version 20.x
 - ✓ GitHub CLI: version 2.x
@@ -82,10 +83,10 @@ The script will:
 # Run installer with defaults
 ```
 
-**Fly.io CLI:**
+**railway.app CLI:**
 ```powershell
 # PowerShell (Run as Administrator)
-iwr https://fly.io/install.ps1 -useb | iex
+iwr https://railway.app/install.ps1 -useb | iex
 ```
 
 **Node.js (includes npm):**
@@ -118,14 +119,14 @@ gh auth login --with-token < my-token.txt
 
 **Required Scopes:** `repo`, `workflow`
 
-#### Fly.io Authentication
+#### railway.app Authentication
 
 ```powershell
-# Get token from https://fly.io/user/personal_access_tokens
-flyctl auth token
+# Get token from https://railway.app/user/personal_access_tokens
+railway auth token
 
 # Or login interactively
-flyctl auth login
+railway auth login
 ```
 
 ### Phase 3: Repository Secrets Configuration
@@ -137,10 +138,10 @@ flyctl auth login
 
 | Secret | Value Source | Purpose |
 |--------|--------------|---------|
-| `VITE_API_BASE_URL` | `https://noni-api.fly.dev` | Frontend API URL |
+| `VITE_API_BASE_URL` | `https://noni-api-production.up.railway.app` | Frontend API URL |
 | `VITE_CLERK_PUBLISHABLE_KEY` | Clerk Dashboard → API Keys | Frontend auth |
 | `CLERK_JWKS_URL` | Clerk Dashboard → JWT | Backend auth |
-| `FLY_API_TOKEN` | `flyctl auth token` | Fly.io deployment |
+| `RAILWAY_API_TOKEN` | `railway auth token` | railway.app deployment |
 | `SUPABASE_ACCESS_TOKEN` | Supabase Dashboard | Database |
 | `SUPABASE_DB_PASSWORD` | Supabase Settings | Database password |
 | `SUPABASE_PROJECT_ID` | Supabase URL | Database ID |
@@ -193,10 +194,10 @@ gh workflow run deploy.yml --repo smiles70/Mynaani
 
 ```powershell
 # Backend health check
-curl https://noni-api.fly.dev/health
+curl https://noni-api-production.up.railway.app/health
 
 # Auth endpoint check
-curl https://noni-api.fly.dev/api/v1/auth/config
+curl https://noni-api-production.up.railway.app/api/v1/auth/config
 
 # Frontend check (no localhost references)
 curl -s https://noni-web.pages.dev/ | findstr "localhost"
@@ -220,20 +221,20 @@ gh run view <run-id> --repo smiles70/Mynaani
 **Common Causes:**
 1. Missing repository secret
 2. Invalid token permissions
-3. Fly.io app not found
+3. railway.app app not found
 4. Supabase connection failure
 
-### Issue: flyctl not found after installation
+### Issue: railway not found after installation
 
 **Fix:**
 ```powershell
 # Add to PATH manually
-$env:PATH += ";$env:USERPROFILE\.fly\bin"
+$env:PATH += ";$env:USERPROFILE\.railway\bin"
 
 # Or for permanent addition
 [Environment]::SetEnvironmentVariable(
     "PATH",
-    "$env:PATH;$env:USERPROFILE\.fly\bin",
+    "$env:PATH;$env:USERPROFILE\.railway\bin",
     "User"
 )
 ```
@@ -278,8 +279,8 @@ The following safeguards are now in place:
 ### Updating Tools
 
 ```powershell
-# Update Fly.io CLI
-flyctl version update
+# Update railway.app CLI
+railway version update
 
 # Update Node.js (if using nvm-windows)
 nvm install latest
@@ -309,7 +310,7 @@ gh extension upgrade --all
 
 ### External Documentation
 
-- Fly.io: https://fly.io/docs/
+- railway.app: https://railway.app/docs/
 - GitHub Actions: https://docs.github.com/en/actions
 - Cloudflare Pages: https://developers.cloudflare.com/pages/
 - Clerk: https://clerk.com/docs

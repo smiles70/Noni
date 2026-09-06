@@ -22,7 +22,7 @@ export const options = {
   },
 };
 
-const BASE = __ENV.API_BASE_URL || 'https://noni-api.fly.dev';
+const BASE = __ENV.API_BASE_URL || 'https://noni-api-production.up.railway.app';
 
 export default function () {
   const urls = [

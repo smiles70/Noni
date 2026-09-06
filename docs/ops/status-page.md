@@ -22,12 +22,12 @@
 1. **Sign up** at betterstack.com
 2. **Create status page** with components:
    - Web App (`noni-web.pages.dev`)
-   - API Backend (`noni-api.fly.dev/health`)
+   - API Backend (`noni-api-production.up.railway.app/health`)
    - Database (Supabase)
    - Auth (Clerk)
    - Payments (Stripe)
 3. **Configure monitors:**
-   - HTTP check on `noni-api.fly.dev/health` every 60s
+   - HTTP check on `noni-api-production.up.railway.app/health` every 60s
    - HTTP check on `noni-web.pages.dev` every 60s
 4. **Add to deploy pipeline:**
    - Update `make deploy-prod` to ping BetterStack "all-clear" after smoke test

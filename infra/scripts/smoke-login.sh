@@ -9,14 +9,14 @@
 # Usage:
 #   bash infra/scripts/smoke-login.sh [API_BASE]
 #
-# API_BASE defaults to https://noni-api.fly.dev. Override for staging:
-#   bash infra/scripts/smoke-login.sh https://noni-api-staging.fly.dev
+# API_BASE defaults to https://noni-api-production.up.railway.app. Override for staging:
+#   bash infra/scripts/smoke-login.sh https://noni-api-staging.up.railway.app
 #
 # Exit status: 0 if every check passed, non-zero on the first failure.
 #
 # Why this exists: the pytest suite (test_login_scenarios.py) covers
 # the in-process FastAPI behaviour. This script verifies the *deployed*
-# surface — TLS, Fly proxy, CORS preflight, and the actual response
+# surface — TLS, Railway proxy, CORS preflight, and the actual response
 # envelope shape a browser will see — none of which TestClient can
 # observe.
 #
@@ -32,7 +32,7 @@
 
 set -euo pipefail
 
-API_BASE="${1:-https://noni-api.fly.dev}"
+API_BASE="${1:-https://noni-api-production.up.railway.app}"
 FE_ORIGIN="${FE_ORIGIN:-https://noni-web.pages.dev}"
 SLA_SECONDS="${SLA_SECONDS:-1.5}"   # cold-start tolerant; tighten on warm
 

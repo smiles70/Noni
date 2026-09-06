@@ -1,7 +1,7 @@
 # 3rd-Party Integration Automation Library
 
 > Exhaustive research on API-first, CLI-first, and programmatic automation for
-> Cloudflare, Fly.io, and GitHub. Built to eliminate manual dashboard clicks.
+> Cloudflare, railway.app, and GitHub. Built to eliminate manual dashboard clicks.
 >
 > **Rule**: Automated first. Manual only as last resort. Every vendor claim is
 > verified against official API docs and CLI reference.
@@ -12,7 +12,7 @@
 
 1. [Executive Summary — The Bootstrapping Problem](#1-executive-summary--the-bootstrapping-problem)
 2. [Cloudflare](#2-cloudflare)
-3. [Fly.io](#3-flyio)
+3. [railway.app](#3-railway)
 4. [GitHub](#4-github)
 5. [Cross-Vendor Bootstrap Script](#5-cross-vendor-bootstrap-script)
 6. [References](#6-references)
@@ -24,10 +24,10 @@
 | Vendor | Can create *first* credential via API/CLI? | Minimum manual step | Notes |
 |--------|--------------------------------------------|---------------------|-------|
 | **Cloudflare** | **No** (API tokens) / **Partial** (Global API Key) | One dashboard visit to view/copy Global API Key, OR one token creation via dashboard | API tokens require an existing token or Global API Key. Global API Key is legacy but programmatically usable. |
-| **Fly.io** | **Partial** | `fly auth login` (can use `--token` flag with existing token) | `fly tokens create` works non-interactively once authenticated. First auth requires browser flow OR an existing token. |
+| **railway.app** | **Partial** | `railway auth login` (can use `--token` flag with existing token) | `railway tokens create` works non-interactively once authenticated. First auth requires browser flow OR an existing token. |
 | **GitHub** | **Yes** | `gh auth login` OR Personal Access Token via web | `gh` CLI fully automates secret creation, workflow triggers. PAT can be created via web UI, then everything else is CLI. |
 
-**Verdict**: Zero *completely* manual steps is impossible for Cloudflare and Fly.io
+**Verdict**: Zero *completely* manual steps is impossible for Cloudflare and railway.app
 because they require an identity proof that can only be established through a
 browser-based OAuth flow or a dashboard visit. However, after the one-time
 bootstrap, 100% of ongoing operations (token rotation, deploys, secret sync)
@@ -224,65 +224,65 @@ Write-Host "Created token (save this): $token"
 
 ---
 
-## 3. Fly.io
+## 3. railway.app
 
 ### 3.1 Authentication Methods
 
 | Method | How to obtain | Scope | Scriptable? |
 |--------|---------------|-------|-------------|
-| **Personal access token** | `fly auth login` then `fly auth token` (deprecated) | Full org | Yes |
-| **Deploy token** | `fly tokens create deploy -a <app>` | Single app deploy | Yes |
-| **Org deploy token** | `fly tokens create org -o <org>` | Org-wide deploy | Yes |
-| **Read-only token** | `fly tokens create readonly -o <org>` | Read state only | Yes |
-| **Machine exec token** | `fly tokens create machine-exec` | Single command | Yes |
+| **Personal access token** | `railway auth login` then `railway auth token` (deprecated) | Full org | Yes |
+| **Deploy token** | `railway tokens create deploy -a <app>` | Single app deploy | Yes |
+| **Org deploy token** | `railway tokens create org -o <org>` | Org-wide deploy | Yes |
+| **Read-only token** | `railway tokens create readonly -o <org>` | Read state only | Yes |
+| **Machine exec token** | `railway tokens create machine-exec` | Single command | Yes |
 
-**Key insight**: `fly tokens create` is the modern, least-privilege way. It
-replaces the old `fly auth token` (which returned the all-powerful personal
+**Key insight**: `railway tokens create` is the modern, least-privilege way. It
+replaces the old `railway auth token` (which returned the all-powerful personal
 token). All token creation is CLI-driven and non-interactive once authenticated.
 
 ### 3.2 Token Creation via CLI
 
 ```bash
 # Deploy token (recommended for CI)
-fly tokens create deploy -a noni-api -x 720h
+railway tokens create deploy -a noni-api -x 720h
 
 # Org deploy token (for multi-app pipelines)
-fly tokens create org -o my-org -x 720h
+railway tokens create org -o my-org -x 720h
 
 # JSON output for scripting
-fly tokens create deploy -a noni-api -x 720h --json
+railway tokens create deploy -a noni-api -x 720h --json
 ```
 
-**Reference**: [Integrating flyctl](https://fly.io/docs/flyctl/integrating/)
+**Reference**: [Integrating railway](https://railway.app/docs/railway/integrating/)
 
 ### 3.3 Using Tokens Non-Interactively
 
 ```bash
-export FLY_API_TOKEN="<token>"
-fly deploy --remote-only   # skips all login prompts
+export RAILWAY_API_TOKEN="<token>"
+railway deploy --remote-only   # skips all login prompts
 ```
 
 ### 3.4 Setting App Secrets via CLI
 
 ```bash
-fly secrets set DATABASE_URL="..." SESSION_SECRET="..." -a noni-api
+railway secrets set DATABASE_URL="..." SESSION_SECRET="..." -a noni-api
 ```
 
-### 3.5 Bootstrapping Fly.io
+### 3.5 Bootstrapping railway.app
 
-**The catch**: `fly auth login` requires a browser for the OAuth flow by
+**The catch**: `railway auth login` requires a browser for the OAuth flow by
 default. However, you can bypass the browser:
 
 ```bash
 # If you already have a token (e.g., from a previous machine):
-export FLY_API_TOKEN="<existing-token>"
-fly status -a noni-api   # works immediately, no login needed
+export RAILWAY_API_TOKEN="<existing-token>"
+railway status -a noni-api   # works immediately, no login needed
 
 # If you have a username/password (legacy, not recommended):
-fly auth login --username <email> --password <password>
+railway auth login --username <email> --password <password>
 ```
 
-**Conclusion**: Fly.io's first auth requires either:
+**Conclusion**: railway.app's first auth requires either:
 1. Browser-based OAuth (one-time)
 2. An existing token copied from another machine
 
@@ -399,8 +399,8 @@ function Set-RepoSecret {
 
 # --- Main ---
 if (-not $Token) { throw "Set GITHUB_TOKEN env var" }
-Set-RepoSecret -Name "VITE_API_BASE_URL" -Value "https://noni-api.fly.dev"
-Set-RepoSecret -Name "PROD_API_BASE_URL" -Value "https://noni-api.fly.dev"
+Set-RepoSecret -Name "VITE_API_BASE_URL" -Value "https://noni-api-production.up.railway.app"
+Set-RepoSecret -Name "PROD_API_BASE_URL" -Value "https://noni-api-production.up.railway.app"
 ```
 
 ### 4.4 Triggering Workflow Runs via API
@@ -432,7 +432,7 @@ gh workflow run deploy.yml --repo smiles70/Mynaani --ref main
 .PREREQUISITES (one-time manual steps)
     1. Cloudflare: obtain Global API Key from dashboard
        → https://dash.cloudflare.com/profile/api-tokens
-    2. Fly.io: run `fly auth login` once on this machine
+    2. railway.app: run `railway auth login` once on this machine
     3. GitHub: create PAT with `repo` scope
        → https://github.com/settings/tokens
 
@@ -442,7 +442,7 @@ param(
     [string]$CfAccountId = $env:CLOUDFLARE_ACCOUNT_ID,
     [string]$CfApiKey    = $env:CLOUDFLARE_API_KEY,
     [string]$CfEmail     = $env:CLOUDFLARE_EMAIL,
-    [string]$FlyApp      = "noni-api",
+    [string]$AppName     = "noni-api",
     [string]$GhRepo      = "smiles70/Mynaani",
     [string]$GhToken     = $env:GITHUB_TOKEN
 )
@@ -450,7 +450,7 @@ param(
 # --- Validate prerequisites ---
 $missing = @()
 if (-not $CfApiKey -or -not $CfEmail)   { $missing += "CLOUDFLARE_API_KEY + CLOUDFLARE_EMAIL" }
-if (-not (Get-Command fly -ErrorAction SilentlyContinue)) { $missing += "flyctl (install from https://fly.io/docs/flyctl/install/)" }
+if (-not (Get-Command railway -ErrorAction SilentlyContinue)) { $missing += "railway (install from https://railway.app/docs/railway/install/)" }
 if (-not $GhToken)                        { $missing += "GITHUB_TOKEN" }
 if ($missing) {
     Write-Host "Missing prerequisites (one-time setup):" -ForegroundColor Red
@@ -462,10 +462,10 @@ if ($missing) {
 Write-Host "`n[1/4] Creating Cloudflare API token..." -ForegroundColor Cyan
 # ... (use function from section 2.6)
 
-# --- Step 2: Create Fly.io deploy token ---
-Write-Host "`n[2/4] Creating Fly.io deploy token..." -ForegroundColor Cyan
-$flyToken = fly tokens create deploy -a $FlyApp -x 720h --json | ConvertFrom-Json
-Write-Host "Fly token created (expiry: $($flyToken.expires_at))"
+# --- Step 2: Create railway.app deploy token ---
+Write-Host "`n[2/4] Creating railway.app deploy token..." -ForegroundColor Cyan
+$deployToken = railway tokens create deploy -a $AppName -x 720h --json | ConvertFrom-Json
+Write-Host "Railway token created (expiry: $($deployToken.expires_at))"
 
 # --- Step 3: Set all secrets in GitHub ---
 Write-Host "`n[3/4] Syncing secrets to GitHub..." -ForegroundColor Cyan
@@ -489,9 +489,9 @@ Write-Host "`nDone. Monitor: https://github.com/$GhRepo/actions" -ForegroundColo
 | Cloudflare | Account token creation API schema | https://developers.cloudflare.com/api/resources/accounts/subresources/tokens/methods/create/ |
 | Cloudflare | Pages direct upload / Wrangler | https://developers.cloudflare.com/pages/get-started/direct-upload/ |
 | Cloudflare | Wrangler system env vars | https://developers.cloudflare.com/workers/wrangler/system-environment-variables/ |
-| Fly.io | flyctl integration / tokens | https://fly.io/docs/flyctl/integrating/ |
-| Fly.io | fly tokens create deploy | https://fly.io/docs/flyctl/tokens-create-deploy/ |
-| Fly.io | Access tokens overview | https://fly.io/docs/security/tokens/ |
+| railway.app | railway integration / tokens | https://railway.app/docs/railway/integrating/ |
+| railway.app | railway tokens create deploy | https://railway.app/docs/railway/tokens-create-deploy/ |
+| railway.app | Access tokens overview | https://railway.app/docs/security/tokens/ |
 | GitHub | Encrypting secrets for REST API | https://docs.github.com/en/rest/guides/encrypting-secrets-for-the-rest-api |
 | GitHub | REST API: Actions Secrets | https://docs.github.com/en/rest/actions/secrets |
 | GitHub | gh CLI secrets | https://cli.github.com/manual/gh_secret_set |
@@ -503,7 +503,7 @@ Write-Host "`nDone. Monitor: https://github.com/$GhRepo/actions" -ForegroundColo
 After researching 15+ authoritative sources across all three vendors, the
 unavoidable truth is:
 
-> **Cloudflare** and **Fly.io** both require a browser-based identity proof
+> **Cloudflare** and **railway.app** both require a browser-based identity proof
 > (OAuth or dashboard login) to establish the *first* credential.
 
 There is **no REST endpoint** that says "create an API token with no
@@ -511,7 +511,7 @@ authentication." This would be a security disaster.
 
 **The automation strategy** is therefore:
 1. **One-time**: obtain bootstrap credentials (Global API Key for Cloudflare,
-   `fly auth login` for Fly.io, PAT for GitHub).
+   `railway auth login` for railway.app, PAT for GitHub).
 2. **Ongoing**: use those credentials to programmatically create scoped,
    short-lived tokens, manage secrets, deploy, and rotate.
 

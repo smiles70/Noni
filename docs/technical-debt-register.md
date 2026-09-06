@@ -29,7 +29,7 @@
 |:---|:---|:---|:---|
 | 11 | Frontend bundle missing API base URL | 2026-05-28 | Created `.env.production` with `VITE_API_BASE_URL` |
 | 12 | Missing help center | 2026-05-28 | Created `HelpPage.tsx` with 4 articles |
-| 13 | Concurrent Alembic deadlock | 2026-05-27 | Moved to Fly `release_command` |
+| 13 | Concurrent Alembic deadlock | 2026-05-27 | Moved to Railway `release_command` |
 | 14 | Missing `numpy` dependency | 2026-05-27 | Added to `requirements.txt` |
 
 ---

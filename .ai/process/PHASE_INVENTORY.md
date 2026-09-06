@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Phase Inventory — Magic.link Authentication Integration
 
 **Process:** v9.51
@@ -126,7 +128,7 @@ The Magic.link integration is divided into **6 phases** (0 through 5). Each phas
 - `docker-compose.yml`
 - `.github/workflows/deploy.yml`
 - `scripts/setup-infrastructure.ps1`
-- `scripts/audit-fly-secrets.ps1`
+- `scripts/audit-legacy-platform-secrets.ps1`
 - `scripts/auto_deploy.py`
 - `infra/scripts/secrets-sync.sh`
 
@@ -143,7 +145,7 @@ The Magic.link integration is divided into **6 phases** (0 through 5). Each phas
 **Verification:**
 - `npm run build` passes.
 - Bundle guard passes (no localhost refs, API URL correct).
-- `scripts/audit-fly-secrets.ps1` lists `MAGIC_*`.
+- `scripts/audit-legacy-platform-secrets.ps1` lists `MAGIC_*`.
 
 **Commit boundary:** `git add infra/ .github/ scripts/ docker-compose.yml frontend/Dockerfile`
 

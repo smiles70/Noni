@@ -242,7 +242,7 @@ All policies live in `supabase/migrations/*.sql`. Summary:
 
 - **Supabase migrations** (`supabase/migrations/`) own DB-level concerns: extensions, RLS policies, `pg_cron` jobs.
 - **Alembic migrations** (`backend/alembic/versions/`) own app-level schema: tables, columns, indexes, application FKs.
-- Production migration runs as Fly `release_command = "alembic upgrade head"` after `supabase db push` has completed.
+- Production migration runs as Railway `release_command = "alembic upgrade head"` after `supabase db push` has completed.
 
 ## Properties this schema guarantees
 

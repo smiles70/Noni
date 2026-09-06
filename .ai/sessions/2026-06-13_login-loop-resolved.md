@@ -13,12 +13,13 @@ agents_involved:
   - Audit
   - Deploy
 ---
+> **Deprecated:** legacy platform retired; production runs on Railway.
 
 # Session: Login Loop Resolution (40h → Fixed)
 
 ## Root Cause
 
-The `/auth/config` endpoint forced `"clerk"` in production regardless of the actual `AUTH_PROVIDER` environment variable. However, `auth_verifier.py` and `auth_provider.py` both read `settings.AUTH_PROVIDER` directly — which defaulted to `"mock"` when the env var was missing or misconfigured on Fly.io.
+The `/auth/config` endpoint forced `"clerk"` in production regardless of the actual `AUTH_PROVIDER` environment variable. However, `auth_verifier.py` and `auth_provider.py` both read `settings.AUTH_PROVIDER` directly — which defaulted to `"mock"` when the env var was missing or misconfigured on the legacy platform.
 
 **Result:** The endpoint told the frontend "we use Clerk" while the backend silently verified all Clerk JWTs with the mock verifier, returning `auth.malformed` on every real token. This caused an infinite login loop.
 
@@ -63,10 +64,10 @@ This mirrors the guard already present in `auth.py`'s `/auth/config` endpoint, e
 
 ```bash
 # Health check
-curl https://noni-api.fly.dev/health
+curl https://noni-api-production.up.railway.app/health
 
 # Auth mode confirmation
-curl -L https://noni-api.fly.dev/api/v1/auth/config
+curl -L https://noni-api-production.up.railway.app/api/v1/auth/config
 ```
 
 ## Prevention

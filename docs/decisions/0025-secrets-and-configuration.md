@@ -5,7 +5,7 @@ Status: Accepted
 
 ## Context
 
-The system spans five vendors (ADR 0022). The same secret often must exist in multiple vendor dashboards (Fly secrets, Cloudflare Pages env vars, Supabase, GitHub Actions, local dev). The operator constraint is binding: **no secret is typed into a vendor dashboard by hand more than once, and rotation is one command.**
+The system spans five vendors (ADR 0022). The same secret often must exist in multiple vendor dashboards (Railway secrets, Cloudflare Pages env vars, Supabase, GitHub Actions, local dev). The operator constraint is binding: **no secret is typed into a vendor dashboard by hand more than once, and rotation is one command.**
 
 ## Decision
 
@@ -23,7 +23,7 @@ A single Make target, `make secrets-sync`, decrypts the SOPS file and pushes eac
 
 | Secret group | Targets |
 |---|---|
-| `DATABASE_URL`, `DATABASE_URL_DIRECT`, `SUPABASE_*`, `SESSION_SECRET`, `STRIPE_*`, `GOOGLE_OAUTH_*` | Fly secrets (`flyctl secrets set`) |
+| `DATABASE_URL`, `DATABASE_URL_DIRECT`, `SUPABASE_*`, `SESSION_SECRET`, `STRIPE_*`, `GOOGLE_OAUTH_*` | Railway secrets (`railway secrets set`) |
 | `VITE_API_BASE_URL` | Cloudflare Pages env (`wrangler pages secret put`) |
 | OAuth provider client_id/secret | Supabase Auth provider config (`supabase secrets set`) |
 | GitHub Actions secrets used by CI | `gh secret set` |
@@ -32,11 +32,11 @@ A single Make target, `make secrets-sync`, decrypts the SOPS file and pushes eac
 
 ### Rotation
 
-`make secrets-rotate KEY=FOO` regenerates the named secret (or prompts for the new value if vendor-issued), updates the SOPS file, runs `secrets-sync`, and prints which artifacts (e.g., Fly machines, Cloudflare Pages deployments) require a restart.
+`make secrets-rotate KEY=FOO` regenerates the named secret (or prompts for the new value if vendor-issued), updates the SOPS file, runs `secrets-sync`, and prints which artifacts (e.g., Railway machines, Cloudflare Pages deployments) require a restart.
 
 ### Drift detection
 
-CI workflow `.github/workflows/secrets-drift.yml` runs daily. It compares the key set in `infra/.env.example` against the keys present in Fly, Cloudflare Pages, Supabase, and GitHub. Any drift opens a GitHub issue tagged `secrets-drift`.
+CI workflow `.github/workflows/secrets-drift.yml` runs daily. It compares the key set in `infra/.env.example` against the keys present in Railway, Cloudflare Pages, Supabase, and GitHub. Any drift opens a GitHub issue tagged `secrets-drift`.
 
 ### Local development
 

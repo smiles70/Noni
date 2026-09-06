@@ -1,8 +1,10 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Railway Migration Plan — Mynaani
 
 **Date:** 2026-08-27
 **Process:** v9.51
-**Goal:** move the Mynaani backend from Fly.io to Railway without affecting the Cloudflare Pages frontend.
+**Goal:** move the Mynaani backend from the legacy platform to Railway without affecting the Cloudflare Pages frontend.
 
 ## Phase 0 — Intake, ADR, and graph
 
@@ -14,7 +16,7 @@
 ## Phase 1 — GitHub Actions deploy workflow
 
 - [] Update `.github/workflows/deploy.yml`:
-  - Replace `fly-deploy-backend` with `railway-deploy-backend`.
+  - Replace `legacy-platform-deploy-backend` with `railway-deploy-backend`.
   - Preflight checks for `RAILWAY_TOKEN`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
   - Keep `cloudflare-pages-deploy` and smoke test.
 - [] Use `VITE_API_BASE_URL` from GitHub secret or `vars`.
@@ -30,7 +32,7 @@
 
 - [] Update `infra/scripts/smoke-prod.sh` to use `PROD_API_BASE_URL` from env.
 - [] Update `docs/CURRENT_STATE.md` with the migration status.
-- [] Update `docs/ROLLBACK.md` with the Fly-to-Railway rollback path.
+- [] Update `docs/ROLLBACK.md` with the legacy-platform-to-Railway rollback path.
 
 ## Phase 4 — Verification and release
 

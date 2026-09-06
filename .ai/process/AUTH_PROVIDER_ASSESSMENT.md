@@ -1,3 +1,5 @@
+> **Deprecated:** legacy platform retired; production runs on Railway.
+
 # Auth Provider Assessment — Post-Clerk Decommission
 
 **Process:** v9.51 (traceable evidence, external verifiable sources)
@@ -20,7 +22,7 @@
 - Updated `backend/api/routes/auth.py` parity probe to report `AUTH_PROVIDER` directly (no Clerk hard-coding).
 - Updated `backend/app/main.py` warnings.
 - Removed Clerk secrets from `infra/.env.example` and `infra/.env.prod.sops.yaml`.
-- Removed Clerk references from `scripts/setup-infrastructure.ps1`, `scripts/audit-fly-secrets.ps1`, `scripts/auto_deploy.py`, `infra/scripts/secrets-sync.sh`, `.github/workflows/deploy.yml`, `SECURITY.md`, `docs/ONBOARDING.md`, `docs/TEST_STRATEGY.md`, `docs/ROLLBACK.md`, and `docs/CURRENT_STATE.md`.
+- Removed Clerk references from `scripts/setup-infrastructure.ps1`, `scripts/audit-legacy-platform-secrets.ps1`, `scripts/auto_deploy.py`, `infra/scripts/secrets-sync.sh`, `.github/workflows/deploy.yml`, `SECURITY.md`, `docs/ONBOARDING.md`, `docs/TEST_STRATEGY.md`, `docs/ROLLBACK.md`, and `docs/CURRENT_STATE.md`.
 
 ### 1.2 Mock auth verification
 - `npm run type-check` ✅
@@ -57,7 +59,7 @@ The mock provider (`MockAuthProvider`) is functional and is now the only identit
 |---|---|
 | Frontend is Vite + React (no Next.js) | ❌ No first-class package. Vite/React integration is possible only via custom `@auth/core` wrapper or a separate Node auth service. |
 | Backend is FastAPI (Python) | ❌ NextAuth/Auth.js expects Node.js/Express route handlers. There is no official FastAPI adapter. |
-| Deployment is Fly.io + Cloudflare Pages | ⚠️ Would require a Node auth micro-service on Fly or Cloudflare Pages functions; adds infrastructure. |
+| Deployment is the legacy platform + Cloudflare Pages | ⚠️ Would require a Node auth micro-service on legacy-platform or Cloudflare Pages functions; adds infrastructure. |
 | Geragogy needs (calm, password-optional, no dark patterns) | ⚠️ Depends on provider chosen. Credentials provider is possible but requires custom DB adapter. |
 | Open-source and self-hosted option | ✅ `@auth/core` is open source, but a full implementation still needs Node. |
 | Implementation effort | **High** for Mynaani's stack: would require either (a) rewriting/migrating the auth surface to a Node service, or (b) writing a custom `@auth/core` ↔ FastAPI bridge. |
@@ -85,10 +87,10 @@ The existing `AuthProvider` protocol in `backend/services/auth_provider.py` was 
 
 For v9.51 traceability, the following steps would be required:
 
-1. **Add a Node/Express auth service** on Fly.io (e.g., `auth.noni.fly.dev`) running `@auth/express` with `@auth/core`.
+1. **Add a Node/Express auth service** on the legacy platform (e.g., noni-api-production.up.railway.app`) running `@auth/express` with `@auth/core`.
 2. **Implement an `Auth.js` configuration** with a provider that fits geragogy (e.g., Google OAuth, Magic.link, or Credentials with email/OTP).
 3. **Expose `/api/auth/*` endpoints** in the Node service for sign-in, sign-out, callback, session, and CSRF.
-4. **Cross-domain cookie/session handling** between `noni-web.pages.dev` and `auth.noni.fly.dev` (CORS, `SameSite`, secure, HttpOnly).
+4. **Cross-domain cookie/session handling** between `noni-web.pages.dev` and noni-api-production.up.railway.app` (CORS, `SameSite`, secure, HttpOnly).
 5. **Issue a backend-verifiable token** (e.g., signed JWT or opaque token) that the FastAPI `/auth/session` endpoint can validate.
 6. **Update `AuthProvider.tsx`** to call the NextAuth endpoints instead of mock localStorage.
 7. **Update `backend/services/auth_provider.py`** with a new provider class matching the token shape.

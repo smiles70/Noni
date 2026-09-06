@@ -8,7 +8,7 @@
 ## Architecture Overview
 
 ```
-[Browser] -> [Cloudflare Pages] -> [FastAPI on Fly.io] -> [Supabase Postgres]
+[Browser] -> [Cloudflare Pages] -> [FastAPI on railway.app] -> [Supabase Postgres]
                 ^                      ^                     ^
            Static assets            Business logic         Persistent data
            (React SPA)              (Python/FastAPI)       (PostgreSQL 15)
@@ -29,7 +29,7 @@ flowchart LR
     end
 
     subgraph Compute
-        Fly[Fly.io<br/>FastAPI + Gunicorn<br/>3 workers x 2 machines]
+        Railway[railway.app<br/>FastAPI + Gunicorn<br/>3 workers x 2 machines]
     end
 
     subgraph Data
@@ -43,11 +43,11 @@ flowchart LR
     end
 
     Browser -->|HTTPS| CF
-    CF -->|API calls| Fly
-    Fly -->|SQLAlchemy<br/>asyncpg| Supabase
-    Fly -->|JWKS fetch| Clerk
-    Fly -->|API calls| Stripe
-    Fly -->|pg_dump| R2
+    CF -->|API calls| Railway
+    Railway -->|SQLAlchemy<br/>asyncpg| Supabase
+    Railway -->|JWKS fetch| Clerk
+    Railway -->|API calls| Stripe
+    Railway -->|pg_dump| R2
 ```
 
 ---
@@ -56,7 +56,7 @@ flowchart LR
 
 1. **Browser** loads React SPA from Cloudflare Pages
 2. **Browser** calls `GET /api/v1/ui-envelope/curriculum.unit`
-3. **Fly.io** receives request via Gunicorn -> Uvicorn -> FastAPI
+3. **railway.app** receives request via Gunicorn -> Uvicorn -> FastAPI
 4. **FastAPI** `get_current_account` dependency verifies Clerk JWT via `PyJWKClient`
 5. **FastAPI** queries Supabase for curriculum unit content
 6. **Supabase** RLS policy ensures account only sees authorized data

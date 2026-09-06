@@ -5,7 +5,7 @@
     Automated Infrastructure Setup for Mynaani Project
 .DESCRIPTION
     Following "The Process" - Enterprise-grade infrastructure setup script
-    Installs and configures: Git, Fly.io CLI (flyctl), Node.js/npm, GitHub CLI (gh)
+    Installs and configures: Git, Node.js/npm, GitHub CLI (gh)
     Configures GitHub Actions secrets and triggers deployment
 .NOTES
     Run with: .\scripts\setup-infrastructure.ps1
@@ -15,8 +15,7 @@
 param(
     [switch]$SkipInstall,
     [switch]$ConfigureOnly,
-    [string]$GitHubToken = "",
-    [string]$FlyToken = ""
+    [string]$GitHubToken = ""
 )
 
 # Error handling - fail fast
@@ -31,7 +30,6 @@ Write-Host "========================================`n" -ForegroundColor Cyan
 $REPO_OWNER = "smiles70"
 $REPO_NAME = "Noni"
 $REPO_FULL = "$REPO_OWNER/$REPO_NAME"
-$FLY_APP = "noni-api"
 
 # Tool versions (pinned for reproducibility)
 $NODE_VERSION = "20.11.0"
@@ -43,7 +41,6 @@ Write-Host "[PHASE 1] DETECTING CURRENT STATE..." -ForegroundColor Yellow
 
 $tools = @{
     git = @{ cmd = "git"; args = "--version"; name = "Git" }
-    flyctl = @{ cmd = "flyctl"; args = "version"; name = "Fly.io CLI" }
     npm = @{ cmd = "npm"; args = "--version"; name = "npm" }
     node = @{ cmd = "node"; args = "--version"; name = "Node.js" }
     gh = @{ cmd = "gh"; args = "--version"; name = "GitHub CLI" }
@@ -87,27 +84,6 @@ if (-not $ConfigureOnly) {
             return
         } catch {
             Write-Host "    ✗ Failed to download Git: $_" -ForegroundColor Red
-        }
-    }
-    
-    # --- Install Fly.io CLI (flyctl) ---
-    if (-not $detected.flyctl) {
-        Write-Host "  → Installing Fly.io CLI (flyctl)..." -ForegroundColor Blue
-        try {
-            # PowerShell install method
-            $installScript = Invoke-WebRequest -Uri "https://fly.io/install.ps1" -UseBasicParsing
-            Invoke-Expression $installScript
-            
-            # Add to PATH for this session
-            $env:PATH += ";$env:USERPROFILE\.fly\bin"
-            
-            # Verify
-            $flyVersion = flyctl version
-            Write-Host "    ✓ Fly.io CLI installed: $flyVersion" -ForegroundColor Green
-            $detected.flyctl = $flyVersion
-        } catch {
-            Write-Host "    ✗ Failed to install flyctl: $_" -ForegroundColor Red
-            Write-Host "    Manual install: https://fly.io/docs/hands-on/install-flyctl/" -ForegroundColor Yellow
         }
     }
     
@@ -195,10 +171,9 @@ if ($detected.gh) {
 
 # Required secrets for deployment
 $requiredSecrets = @(
-    @{ name = "VITE_API_BASE_URL"; value = "https://noni-api.fly.dev"; desc = "Frontend API URL" }
+    @{ name = "VITE_API_BASE_URL"; value = "https://noni-api-production.up.railway.app"; desc = "Frontend API URL" }
     @{ name = "VITE_AUTH_PROVIDER"; value = "mock"; desc = "Auth provider (mock default; magic per ADR 0027)" }
     @{ name = "VITE_MAGIC_PUBLISHABLE_KEY"; value = ""; desc = "Magic publishable key (required when VITE_AUTH_PROVIDER=magic)" }
-    @{ name = "FLY_API_TOKEN"; value = $FlyToken; desc = "Fly.io API Token" }
     @{ name = "SUPABASE_ACCESS_TOKEN"; value = ""; desc = "Supabase Token (from supabase.com)" }
     @{ name = "SUPABASE_DB_PASSWORD"; value = ""; desc = "Supabase DB Password" }
     @{ name = "SUPABASE_PROJECT_ID"; value = ""; desc = "Supabase Project ID" }
@@ -234,43 +209,12 @@ if ($GitHubToken) {
 }
 
 # ============================================================================
-# PHASE 4: FLY.IO CONFIGURATION
-# ============================================================================
-if ($detected.flyctl) {
-    Write-Host "`n[PHASE 4] CONFIGURING FLY.IO..." -ForegroundColor Yellow
-    
-    if ($FlyToken) {
-        Write-Host "  → Authenticating with Fly.io..." -ForegroundColor Blue
-        try {
-            $env:FLY_ACCESS_TOKEN = $FlyToken
-            flyctl auth token 2>&1 | Out-Null
-            Write-Host "    ✓ Fly.io authenticated" -ForegroundColor Green
-            
-            # Check app status
-            Write-Host "  → Checking app status..." -ForegroundColor Blue
-            $appStatus = flyctl status --app $FLY_APP 2>&1
-            if ($appStatus -match "running") {
-                Write-Host "    ✓ App '$FLY_APP' is running" -ForegroundColor Green
-            } else {
-                Write-Host "    ! App status: $appStatus" -ForegroundColor Yellow
-            }
-        } catch {
-            Write-Host "    ✗ Fly.io authentication failed: $_" -ForegroundColor Red
-        }
-    } else {
-        Write-Host "  ! No Fly.io token provided" -ForegroundColor Yellow
-        Write-Host "  → Get token from: https://fly.io/user/personal_access_tokens" -ForegroundColor Cyan
-        Write-Host "  → Or run: flyctl auth login" -ForegroundColor Cyan
-    }
-}
-
-# ============================================================================
-# PHASE 5: DEPLOYMENT - Trigger GitHub Actions
+# PHASE 4: DEPLOYMENT - Trigger GitHub Actions
 # ============================================================================
 Write-Host "`n[PHASE 5] TRIGGERING DEPLOYMENT..." -ForegroundColor Yellow
 
 Write-Host "  Current status:" -ForegroundColor Cyan
-Write-Host "    - Backend (Fly.io): Healthy (verified earlier)" -ForegroundColor Green
+Write-Host "    - Backend (Railway): Will be deployed by GitHub Actions" -ForegroundColor Green
 Write-Host "    - Frontend (Cloudflare): Needs redeploy" -ForegroundColor Yellow
 Write-Host "    - G3 Guards: IMPLEMENTED in repository" -ForegroundColor Green
 
