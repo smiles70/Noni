@@ -27,4 +27,12 @@ app.conf.update(
     task_track_started=True,
     task_time_limit=300,  # 5 minutes max per task
     worker_prefetch_multiplier=1,  # fair scheduling for long tasks
+    # E71-B1: named-queue routing. Without this every task lands on the
+    # default "celery" queue that specialized workers don't consume.
+    task_routes={
+        "backend.tasks.webhook_tasks.process_stripe_webhook": {"queue": "realtime"},
+        "backend.tasks.telemetry_tasks.*": {"queue": "events"},
+        "backend.tasks.webhook_tasks.export_telemetry_csv": {"queue": "batch"},
+        "backend.tasks.webhook_tasks.cleanup_deleted_accounts": {"queue": "batch"},
+    },
 )
