@@ -29,6 +29,14 @@ def record(
     second DB connection. Falls back to sync on broker failure so events
     are never silently dropped.
     """
+    # Normalize pydantic payloads (R1b): callers may pass a RootModel or
+    # BaseModel — coerce to plain dict before enqueue/insert.
+    if metadata is not None and not isinstance(metadata, dict):
+        if hasattr(metadata, "model_dump"):
+            metadata = metadata.model_dump()
+        if not isinstance(metadata, dict) and hasattr(metadata, "root"):
+            metadata = metadata.root
+
     from backend.core.config import settings
 
     if getattr(settings, "TELEMETRY_ASYNC", False) and getattr(
