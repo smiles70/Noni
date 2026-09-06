@@ -44,6 +44,8 @@ class Settings(BaseSettings):
     EMAIL_PROVIDER: str = "resend"
     RESEND_API_KEY: str = ""
     EMAIL_FROM: str = "Mynaani <hello@mynaani.com>"
+    # When set, ALL outbound email is redirected here (test/rollout catch-all).
+    EMAIL_OVERRIDE_TO: str = ""
 
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 30

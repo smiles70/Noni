@@ -35,3 +35,11 @@ def test_gift_claimed_copy_is_calm():
     body = m.call_args[1]["json"]["text"]
     assert "!" not in body
     assert "accepted" in body.lower()
+
+
+def test_override_redirects_recipient():
+    """EMAIL_OVERRIDE_TO catch-all routes every send to the test address."""
+    with patch.object(email.settings, "RESEND_API_KEY", "re_x"),          patch.object(email.settings, "EMAIL_OVERRIDE_TO", "steven@mindbyndr.com"),          patch("backend.services.email.httpx.post") as m:
+        m.return_value.status_code = 200
+        email.send("real-user@example.com", "s", "t")
+    assert m.call_args[1]["json"]["to"] == ["steven@mindbyndr.com"]

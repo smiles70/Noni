@@ -25,6 +25,8 @@ def send(to: str, subject: str, text: str) -> bool:
 
     Fails quiet: logs and returns False; never raises.
     """
+    if settings.EMAIL_OVERRIDE_TO:
+        to = settings.EMAIL_OVERRIDE_TO
     if not settings.RESEND_API_KEY:
         logger.info("email skipped (no RESEND_API_KEY): %s", subject)
         return False
