@@ -53,4 +53,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
 
 # Migrations run once before gunicorn boots; workers must not run alembic
 # concurrently. WEB_CONCURRENCY drives the gunicorn worker count.
-CMD ["sh", "-c", "if [ \"$SERVICE_ROLE\" = \"worker\" ]; then celery -A backend.tasks.celery_app worker -l INFO -Q realtime,events,batch,ai; else alembic upgrade head && gunicorn -k uvicorn.workers.UvicornWorker -w ${WEB_CONCURRENCY:-3} --bind 0.0.0.0:${PORT} backend.app.main:app; fi"]
+CMD ["sh", "-c", "if [ \"$SERVICE_ROLE\" = \"worker\" ]; then celery -A backend.tasks.celery_app worker -B -l INFO -Q realtime,events,batch,ai; else alembic upgrade head && gunicorn -k uvicorn.workers.UvicornWorker -w ${WEB_CONCURRENCY:-3} --bind 0.0.0.0:${PORT} backend.app.main:app; fi"]
