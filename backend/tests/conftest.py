@@ -33,6 +33,13 @@ os.environ.setdefault("CLERK_JWKS_URL", "")
 os.environ.setdefault("CLERK_ISSUER", "")
 os.environ.setdefault("CLERK_SECRET_KEY", "")
 
+# Sprint 27 H4 moved webhook/side-effect work onto a Celery+Redis queue.
+# Tests assert synchronous effects and run without a broker — force eager
+# execution so .delay() runs inline (standard Celery test pattern).
+from backend.tasks.celery_app import app as _celery_app
+
+_celery_app.conf.update(task_always_eager=True, task_eager_propagates=True)
+
 
 # =============================================================================
 # Enterprise Test Fixtures (ET-1)
