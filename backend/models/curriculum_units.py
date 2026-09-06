@@ -550,7 +550,7 @@ UNITS: List[CurriculumUnit] = [
                 page_type="recap",
                 content=[
                     "You have learned to ask in plain words, take small steps, read carefully, and ignore what does not fit.",
-                    "This last lesson is about what to do when something goes wrong anyway. Spoiler: it is usually a small thing.",
+                    "This lesson is about what to do when something goes wrong anyway. Spoiler: it is usually a small thing.",
                 ],
                 complexity=1,
             ),
@@ -618,6 +618,92 @@ UNITS: List[CurriculumUnit] = [
         ],
         max_complexity=2,
         stability_threshold=0.9,
+    ),
+
+    # --- Unit 8: staying safe (intake 2026-09-06-m1-safety-unit-001) ---
+    # Geragogy: mechanism over fear, taught at point of capability. Sources:
+    # FTC imposter-scam spotlight (Aug 2025), FBI IC3 2025, AARP/Microsoft
+    # AI for Good fraud study — cited in the intake, not in learner copy.
+    CurriculumUnit(
+        id="unit-8",
+        title="A Slower Reply",
+        description="What to do when a message or call wants to hurry you.",
+        pages=[
+            CurriculumPage(
+                id="u8-recap",
+                title="Where we left off",
+                page_type="recap",
+                content=[
+                    "You have learned to use Claude, check its answers, and trust your own judgment.",
+                    "This lesson uses that same skill somewhere new: messages and calls that arrive uninvited.",
+                ],
+                complexity=1,
+            ),
+            CurriculumPage(
+                id="u8-principle",
+                title="A hurry is a hint",
+                page_type="principle",
+                principle="A message that wants to hurry you deserves a slower reply, not a faster one.",
+                content=[
+                    "Scams almost always create a rush — an emergency, a warning, a deadline.",
+                    "Real organizations do not work that way. Banks, government offices, and mynaani will never call or email asking you to pay or move money.",
+                    "If a voice on the phone sounds like family but asks for money, hang up and call the number you already know.",
+                ],
+                complexity=2,
+            ),
+            CurriculumPage(
+                id="u8-example",
+                title="The call that sounded like home",
+                page_type="example",
+                content=[
+                    "Sometimes a voice or message can sound exactly like someone you trust.",
+                ],
+                example=ExampleBlock(
+                    situation=(
+                        "The phone rings. The voice sounds like your grandson, upset, "
+                        "saying he needs money sent right away and asking you not to tell anyone."
+                    ),
+                    claude_says=(
+                        "If you pasted the message into Claude, it might say: urgent requests for "
+                        "money that ask for secrecy are a known pattern — verify before acting."
+                    ),
+                    takeaway=(
+                        "You do not have to decide on the spot. Hang up and call your grandson "
+                        "at the number already in your phone. If it was really him, he will still be there."
+                    ),
+                ),
+                complexity=2,
+            ),
+            CurriculumPage(
+                id="u8-retrieval",
+                title="Which reply keeps you safest?",
+                page_type="retrieval",
+                content=[
+                    "Read both. Pick the one that fits the rule from the principle page.",
+                ],
+                retrieval=RetrievalBlock(
+                    prompt="A caller says your bank account has a problem and you must act right now. What do you do?",
+                    choices=[
+                        RetrievalChoice(
+                            id="a",
+                            text="Hang up, then call the bank at the number on the back of your card.",
+                        ),
+                        RetrievalChoice(
+                            id="b",
+                            text="Stay on the line — it sounds official, and waiting might make it worse.",
+                        ),
+                    ],
+                    correct_id="a",
+                    explanation=(
+                        "Urgency is the tell. The number you already know is the safe path; "
+                        "the caller's deadline is not."
+                    ),
+                ),
+                complexity=1,
+            ),
+        ],
+        max_complexity=2,
+        stability_threshold=1.2,
     ),
 ]
 

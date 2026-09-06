@@ -172,7 +172,7 @@ export default function PaywallPage({
           <h2 style={H2}>What you get</h2>
           <ul>
             <li>
-              Modules 3, 4, and 5, with their full set of practice activities.
+              Modules 2, 3, 4, and 5, with their full set of practice activities.
             </li>
             <li>
               The same calm, paced pace as the earlier modules — no urgency, no
