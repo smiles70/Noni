@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-08-29T23:03:20.029867+00:00",
+  "previous_hash": "53ccb3af40db",
+  "current_hash": "d51e109f4e3f",
+  "drift_detected": true,
+  "diff": {
+    "added_nodes": [
+      "EVI-WI-BOARD"
+    ],
+    "removed_nodes": [],
+    "changed_nodes": [
+      "GAP-WI-001"
+    ],
+    "added_edges": [
+      "CAP-WI-BOARD::evidenced_by::EVI-WI-BOARD"
+    ],
+    "removed_edges": []
+  },
+  "notes": [
+    "GitHub Project board created; GAP-WI-001 resolved."
+  ]
+}

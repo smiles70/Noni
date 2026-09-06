@@ -1,0 +1,14 @@
+# Work Item Assignment Configuration
+# Populated from GitHub CLI checks on 2026-08-29
+
+repo: smiles70/Noni
+issues_enabled: true
+gitHub_project:
+  owner: smiles70
+  number: 1
+  title: "Mynaani Sprint Board"
+  url: "https://github.com/users/smiles70/projects/1"
+default_label: chat-assigned
+
+# v9.51 tokenomics budget link
+budget: .ai/budgets/knowledge-graph-rebuild-001.yaml

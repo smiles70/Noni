@@ -1,0 +1,55 @@
+# BudgetProfile for the v9.51 knowledge graph rebuild and work-item assignment pilot
+# This is a manual ledger because Devin does not expose real-time token/cost APIs yet.
+# Update consumed_usd and cost_events by hand after each run, or append a CostEvent
+# via the knowledge-graph-extraction or work-item-assignment skill.
+
+budget_id: knowledge-graph-rebuild-001
+state: active
+owner: process
+max_usd: 25.0
+consumed_usd: 1.2
+currency: usd
+per_call_usd: 0.02
+
+# v9.51 tokenomics entities (placeholder; will be promoted to graph nodes later)
+funded_by:
+  - owner: product
+    source: operational-budget
+
+ledger_type: manual
+
+notes: |
+  This is a conservative cap for the prompt/skill-only rebuild phase.
+  Each chat session that uses the extraction or validation skill is expected
+  to cost roughly $0.02–$0.50. If the cap is reached, stop and ask the user
+  for a budget increase before continuing.
+
+cost_events:
+  - event_id: ce-2026-08-29-initial-rebuild
+    date: 2026-08-29 14:00:00+00:00
+    scope: initial v9.51 knowledge graph rebuild + skill creation
+    estimated_usd: 0.5
+    actual_usd: 0.5
+    model: sw1-medium
+    tool_calls: 25
+  - event_id: ce-2026-08-29-cd-qa-uat-gate
+    date: 2026-08-29 21:29:39.727185+00:00
+    scope: v9.51 intake + KG update + deploy-staging.yml QA/UAT gate
+    estimated_usd: 0.5
+    actual_usd: 0.5
+    model: sw1-medium
+    tool_calls: 10
+  - event_id: ce-2026-08-29-work-item-config
+    date: 2026-08-29 21:37:28.732361+00:00
+    scope: configure work-item people, config, and skill with permission/attachment checks
+    estimated_usd: 0.1
+    actual_usd: 0.1
+    model: sw1-medium
+    tool_calls: 5
+  - event_id: ce-2026-08-29-github-board
+    date: 2026-08-29T23:03:25.448241+00:00
+    scope: create GitHub Project v2 board, verify gh project scope, update work-item config
+    estimated_usd: 0.1
+    actual_usd: 0.1
+    model: sw1-medium
+    tool_calls: 4

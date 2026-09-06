@@ -1,0 +1,13 @@
+# Chat-to-GitHub handle mapping for the Noni/Mynaani project
+# Populated from `gh api repos/smiles70/Noni/collaborators` on 2026-08-29.
+# Add real chat/Slack/display names as aliases when known.
+
+smiles70:
+  github: smiles70
+  role: owner
+  aliases: []
+
+kimemiles:
+  github: kimemiles
+  role: collaborator
+  aliases: []

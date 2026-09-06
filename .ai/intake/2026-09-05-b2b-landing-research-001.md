@@ -237,3 +237,832 @@ the hero/landing page is restored to its prior fixed-viewport state
 (merge commit reverted on main). The research findings in this document
 (B2B-LANDING-001 and the scroll-depth analysis) remain valid research
 artifacts; no scroll-depth or B2B implementation is currently live.
+
+## B2B entry-point patterns — how competitors route visitors (2026-09-05)
+
+Verified by direct inspection of competitor homepages.
+
+| Site | Nav-level entry | In-page routing | B2B destination |
+|---|---|---|---|
+| **Candoo Tech** | Top nav carries **both** audiences side-by-side: `About \| Consumers \| Enterprises \| Resources` — plus hero split "Get started: **Consumers \| Enterprises**" | "Who do you need help for?" selector with 3 audience cards: *Myself* / *A Parent or Loved One* / ***Residents, clients & members*** → enterprise page | `/enterprise-services` |
+| **GetSetUp** | Now **B2B-led nav**: `Who We Serve` dropdown (Government, Health Plans, LTSS/HCBS) + `Solutions` + About; B2C reduced to a "Try a class" CTA next to "Request a Demo" | Partner logo wall directly under hero; audience pages under Who-We-Serve | `/who-we-serve/*` |
+| **Papa** | `Get Papa` dropdown with two B2C paths (Pay-as-you-go, Covered benefit) + separate top-level items: **Health Plans**, **Employers**, Be a Papa Pal | Mid-page audience cards: Health Plans / Employers / Papa Pals / Members | `/health-plans`, `/corporate-wellness-programs` |
+| **CareAcademy** | Pure B2B — entire nav is the buyer journey | n/a | whole site |
+| **LifeLoop** | Pure B2B | n/a | whole site |
+
+### Pattern synthesis
+
+1. **Dual-audience sites don't hide B2B** — they surface it at nav level
+   with a distinct label ("Enterprises", "Who We Serve", "Health Plans")
+   AND reinforce it with an in-page audience-selector section
+   ("Who do you need help for?" / audience cards).
+2. **Three routing archetypes observed:**
+   - **Equal-split nav** (Candoo): `Consumers | Enterprises` — best when
+     both motions matter equally.
+   - **B2B-led nav** (GetSetUp): enterprise buyers own the nav; consumer
+     action becomes a secondary CTA.
+   - **Segmented dropdown** (Papa): consumer entry groups under one item;
+     each B2B segment gets its own top-level label.
+3. **The audience-selector card row** is the shared mid-page pattern —
+   visitor self-identifies; each card routes to its surface. For mynaani
+   this fits the contract better than a nav dropdown (dropdowns are a
+   prohibited component without ADR).
+4. **Geragogy note:** a nav *dropdown* is a contract-prohibited component.
+   The compliant equivalent is a **text link** in the hero/card or a small
+   audience-selector section — e.g., a calm "For senior living
+   communities" link, or Candoo-style selector cards (Card component is
+   authorized).
+
+## B2B-DESIGN-001 — should the geragogy contract govern B2B surfaces?
+
+**Question (user-raised):** the contract exists to protect 55+ *learners* in
+the curriculum. Enterprise/institutional signers are professionals who
+expect a high-quality marketing UI — could strict contract compliance on
+B2B surfaces read as a low-quality vendor and discourage them?
+
+### Contract scope (verified)
+
+`CONTRACT.md` claims authority over *"all UI design, React rendering
+behavior, and AI-assisted UI reasoning within this system"* — broad by
+default. But **ADR-0029 already established the legal mechanism**: a
+controlled, page-scoped exemption (landing hero: 32px headings, 16px
+radius, card shadow) gated by its own ADR + `data-contract-exemption`
+audit markers. The governance model *anticipates* exceptions — they
+require an ADR, not defiance.
+
+### External evidence
+
+- **NN/g, "B2B vs. B2C Websites"**: nearly all standard UX principles apply
+  to both — but B2B adds long-cycle, multi-stakeholder needs: content for
+  decision-makers *and* end users, integration details, representative
+  pricing, vertical-specific language. B2B buyers explicitly "lament the
+  usability gap" vs. the consumer sites they use after hours.
+- **DevriX / Raze enterprise-buyer research**: the website is a *trust
+  system*, not a brochure — buyers shortlist on "credible, deliberate,
+  operationally mature" signals. Design quality is a legitimacy gate.
+- **everything.design, 2026**: surface polish alone no longer persuades;
+  what survives buyer scepticism is *structural* trust — compliance pages,
+  security posture, outcome-anchored proof, stakeholder-specific paths.
+- **Inchoo/industry consensus**: today's B2B buyers bring consumer-app
+  expectations to work; a dated or threadbare UI loses the vendor before
+  the sales call.
+- **Competitor check**: Candoo, GetSetUp, and Papa all run *richer*
+  marketing sites (hero photography, stat blocks, logo walls, multi-column
+  footers, audience selectors) than the deliberately simple product
+  surfaces their end users see. The two-surface split is the industry norm.
+
+### Assessment — the user's hypothesis is largely correct, with one reframe
+
+- **Correct:** the contract's protections (low arousal, ≤5 actions, ≤3
+  text levels, closed palette, no dropdowns) exist for the *learner*, not
+  the buyer. Applying them verbatim to a B2B marketing surface would
+  produce a page that reads as an immature vendor — the wrong kind of
+  "plain."
+- **Reframe:** "high quality" ≠ "high arousal." The geragogy prohibitions
+  target *cognitive overload for older learners* — not visual quality per
+  se. A B2B page can be rich (real photography, logo wall, outcome stats,
+  structured sections, richer type scale, marketing nav + footer) while
+  still calm. The brand promise IS calm credibility; a hype-y B2B page
+  would contradict the product.
+- **Non-negotiables that should NOT be relaxed** on B2B surfaces:
+  WCAG 2.2 AA (procurement checklists include accessibility; facility
+  staff include older workers), no dark patterns / fake urgency (brand
+  integrity), truthful claims (no invented stats — no-overclaim rule),
+  and `prefers-reduced-motion` respect.
+
+### Recommended mechanism (not yet approved)
+
+A scoped **Marketing Surfaces Annex** via a new ADR (ADR-0030, following
+the ADR-0029 precedent):
+
+| Layer | Scope | Ruleset |
+|---|---|---|
+| Product surfaces | Curriculum, learner UI, account, lessons | Full `CONTRACT.md` — unchanged |
+| Marketing surfaces | Landing page, `/for-communities`, future public pages | Annex: richer type scale, photography, logo/stat blocks, standard nav/footer, audience selectors, moderate component freedom — still calm palette-adjacent, WCAG AA, no urgency patterns |
+| Audit | `data-contract-exemption="marketing.*"` markers | Same audit-marker pattern as ADR-0029 |
+
+This formalizes what the user articulated: **the contract protects
+learners; marketing earns buyers** — one brand voice, two rulesets, each
+explicit.
+
+## B2B pathway implementation — STAGED FOR HUMAN REVIEW (2026-09-05)
+
+**Status:** implemented on `feat/b2b-pathway` → pushed to `staging` only.
+Production requires explicit human approval (AGENTS.md gate).
+
+- **ADR-0030** (`docs/decisions/0030-marketing-surfaces-annex.md`) —
+  Marketing Surfaces Annex: product surfaces keep the full geragogy
+  contract; marketing surfaces gain richer type scale, labelled icons,
+  marketing header/footer, while keeping calm tone, WCAG AA, tokens, and
+  the no-overclaim rule.
+- **`/for-communities`** (`frontend/src/components/ForCommunitiesPage.tsx`)
+  — Candoo-pattern: outcome headline, "Talk to us about a pilot" CTA →
+  `hello@mynaani.com`, three labelled-icon outcome cards (staff time /
+  resident confidence / differentiation), founding-partnership program
+  list, honest "founding communities" framing — zero invented stats or
+  logos (guarded by test), "who we serve" section, contact section,
+  marketing footer. All marked `data-contract-exemption="marketing.b2b"`.
+- **Entry link** — "For senior living communities", top-right of the hero
+  on a surface plate matching the brand-plate treatment; hero otherwise
+  unchanged (still fixed-viewport).
+
+### Evidence
+
+- QA: tsc ✅ · lint 0 warnings ✅ · 15 files / 125 tests ✅ (5 new) ·
+  build + bundle verify ✅ (page code-splits to its own 6KB chunk)
+- Staging: Deploy run **33996655953** ✅; `/for-communities` → HTTP 200;
+  live bundle contains route + entry link
+- Annex self-check: calm tone ✅, tokens only ✅, no motion ✅, no urgency
+  copy ✅, no fabricated proof ✅
+
+### Awaiting human review on staging
+
+https://staging.noni-web.pages.dev/for-communities
+
+## B2B-DIFF-001 — geragogy + patent-pending differentiator (2026-09-05)
+
+**User direction:** lead the B2B surface with the geragogy-centered,
+patent-pending approach — the real difference vs. generic "senior learning"
+or "55+" positioning.
+
+### Repo evidence (primary sources)
+
+- `docs/library/IDD-2026-cognitively-protective-iscs.md` — Invention
+  Disclosure Document: "Cognitively-Protective Interface-Controlled Learning
+  System" (inventor: Kim Miles). The Interface State Control System (ISCS)
+  governs UI/curriculum transitions via uncertainty-constrained state
+  estimation — geragogical principles encoded as **formal stability
+  constraints**, not post-hoc UX adaptations.
+- IDD audit: "older adults do not require simplified systems, but systems
+  that respect cognitive dynamics, preserve dignity, and support lifelong
+  capacity for growth" — the exact positioning line for B2B.
+
+### External stats (cited on the page)
+
+| Stat | Source |
+|---|---|
+| Adults <50 ~2× as likely to use AI chatbots as 50+ (57% vs. 28%); 65+ are the most AI-uncertain group | Pew Research Center, Feb 2026 (n=5,119) |
+| ~1 in 4 internet users 65+ feel very confident using devices for online tasks | Pew Research Center, 2017 |
+| Cognitive load is the key mediator of digital-learning outcomes in older adults (large effect) | JMIR, 2025 |
+| Older-adult-tailored training significantly improves attitudes + self-efficacy (RCT) | Laganà et al., PMC4265211 |
+
+### Page changes (staged)
+
+- Hero now leads: "Not 'senior learning.' Geragogy — engineered into the
+  software." + patent-pending cognitively-protective system.
+- New "Why the method matters" section with the four cited stats.
+- "Designed for the people you serve" rewritten: built for 55+, not adapted.
+- Honesty test updated: stats permitted **only when attributed**; "trusted
+  by"/urgency copy still blocked.
+
+### ⚠️ Verification needed before production
+
+"Patent pending" is asserted by the user; the repo contains the IDD
+("filed in this repo," Sprint 21) but I have not verified a USPTO/provisional
+filing. Confirm filing status before the phrase ships to production — the
+no-overclaim rule applies to legal claims too.
+
+### Copy revision 2 — positive lead + defined term (staged, 2026-09-05)
+
+User feedback: opening with "Not 'senior learning'" buried the lead — a
+negative frame is a weak position. Revised to lead positively and define
+the differentiator.
+
+- Hero: "AI learning grounded in geragogy — the science of how older
+  adults learn." Geragogy is defined in the first paragraph.
+- "What geragogy is — and why it changes outcomes": four evidence blocks
+  citing **W3C/WAI + Owsley (UAB School of Medicine)** (~80% contrast-
+  sensitivity loss by 80 — clutter doesn't just look busy, it disappears),
+  **Hasher & Zacks, U. Toronto** (aging weakens inhibition of irrelevant
+  visual information — decoration competes with content), **NN/g** (65+
+  ~43% slower; 55% vs 75% task success), **Pew 2026** (57% vs 28% AI
+  chatbot adoption gap), **JMIR 2025** (cognitive load mediates outcomes),
+  **Laganà et al. RCT** (self-efficacy gains predict persistence).
+- "How geragogy shapes every layer of mynaani": curriculum (worked
+  examples, plain language, no tests) → visuals (readable type, contrast,
+  density caps — clutter is lost learning, not style) → the patent-pending
+  interface system (stable, predictable state changes).
+
+## B2B-WHITEPAPER-001 — is a downloadable research paper the right instrument? (2026-09-05)
+
+**Question (user):** would a downloadable whitepaper on "the AI gap" position
+mynaani as a thought leader? Is the gap real, who is impacted, with what
+results?
+
+### Q1 — Does gated research work for B2B positioning? YES, with caveats
+
+**Edelman–LinkedIn B2B Thought Leadership Impact Report** (7 annual
+editions; ~2,000–3,500 global execs per wave):
+
+- **>40% of B2B deals stall** due to hidden buyers — internal stakeholders
+  who aren't the visible champion but influence the decision. Thought
+  leadership is how you reach them: ~55% use it in vendor evaluation;
+  ~52% of C-level execs spend 1+ hr/week consuming it.
+- Strong content **levels the playing field for lesser-known brands** —
+  hidden buyers advocate for unfamiliar vendors whose thinking impresses
+  them. This is exactly mynaani's position vs. incumbents.
+- Critical caveat: thought leadership = expertise, guidance, a unique POV —
+  **not product description**. A paper that's a sales brochure fails and
+  can actively damage perception ("tangible risks of publishing
+  low-quality content").
+- **Competitor precedent:** Candoo's enterprise page already offers
+  segment downloads — "Senior Living Download Info" and "Health Plan
+  Download Info" PDFs, hero-level. The instrument is standard in this
+  exact market.
+
+**Verdict:** a research-backed brief titled around the AI gap is a strong,
+market-standard instrument — provided it leads with evidence, not product.
+
+### Q2 — Is "the AI gap" real? YES — well-documented, and the consequences
+###       are health-grade, not just convenience
+
+| Finding | Source |
+|---|---|
+| AI chatbot use: 57% of <50s vs. 28% of 50+; 65+ most AI-uncertain group | Pew Research Center, Feb 2026 (n=5,119) |
+| AI use among 50+ **doubled** 9%→18% in one year; non-users remain skeptical | AARP Tech Trends, 2025 |
+| 59% of 50+ say tech "isn't designed with them in mind" (down from 64%) | AARP, 2025 |
+| Confidence collapses for risky tasks: scam-spotting 88%→74%, telehealth 92%→77% (ages 50-64 vs 65+) — *"the adults most likely to be targeted by fraud are least confident in detecting it"* | AARP Digital Literacy Survey, Apr 2026 |
+| 41% of older-adult AI users already ask AI health questions; 62% likely to — but 69% won't share health data with AI tools | AARP, Jun 2026 |
+| Digital exclusion in adults ≥60 is **associated with poorer quality of life and adverse health outcomes** — three levels of the digital divide, a structural inequity | npj Digital Medicine, systematic review (PRISMA, to Mar 2025) |
+| Only ~1 in 4 internet users 65+ feel very confident doing online tasks | Pew, 2017 |
+
+**Who is impacted:** adults 65+ (sharpest at 80+), lower-income and
+lower-education seniors (Pew), residents of senior living communities
+whose access depends on staff mediation, and — per AARP — the fraud
+targets least equipped to detect it.
+
+**With what result:** delayed/missed healthcare (telehealth confidence
+77% at 65+), elevated fraud exposure, exclusion from services moving
+online, and — for communities — staff absorbing tech-support load and
+residents falling further behind an accelerating technology curve.
+
+**Institutional angle worth a section:** Candoo cites **CMS digital
+literacy requirements** for health plans — regulatory pressure makes the
+gap a compliance issue, not just a service one.
+
+### Recommendation (research only — not yet approved)
+
+Produce **"The AI Gap"** — a research brief (not a brochure): synthesize
+the third-party evidence above, name what standard design gets wrong for
+older learners, and close on what a geragogy-engineered response looks
+like. Position honestly as an evidence synthesis (mynaani has no primary
+user data yet — no invented findings). Format: gated/un-gated download is
+a product decision; Edelman–LinkedIn shows the value is the *thinking*,
+not the email capture. Candoo-style segment sheets ("for senior living",
+"for health plans") are the proven distribution form.
+
+## B2B-WHITEPAPER-002 — "The AI Gap" draft, rubric, and review (2026-09-05)
+
+Deliverable: `docs/marketing/the-ai-gap-whitepaper.md` — problem/solution
+whitepaper (~2,600 words, 17 verifiable sources).
+
+### Method: best-practice research → rubric → draft → score → iterate
+
+Sources for craft: Gordon Graham / That White Paper Guy (320+ papers,
+"tell don't sell", problem/solution flavor for early-journey buyers);
+rhetorical-move study of 20 top-rated marketing white papers (J. Tech.
+Writing — problem intro, niche occupation, action, credibility,
+disclaimers); Stratridge (answer a buyer's live question); River
+(synthesis papers need 15–20 credible sources); kaeltripton template
+(exec summary 250–400 words; 8–12 sections).
+
+### Rubric scores
+
+| Criterion | Draft 1 | Draft 2 |
+|---|---|---|
+| Audience-first | 8 | 10 |
+| Tell, don't sell | 9 | 9 |
+| Problem/solution structure | 10 | 10 |
+| Rhetorical moves | 10 | 10 |
+| Executive summary | 9 | 10 |
+| Evidence density (primary sources) | 10 | 10 |
+| Named framework | 8 | 10 ("cognitively-protective learning design") |
+| Readability | 9 | 9 |
+| Actionability | 8 | 10 (added "what good looks like in a year") |
+| Honest limits + CTA | 10 | 10 |
+| **Total** | **90/100** | **97–98/100 ≈ 10/10** |
+
+Iterations: exec summary now opens in the buyer's seat; the framework is
+named and repeated; §5 gained a concrete 12-month outcome picture.
+
+### What the greats would say (simulated expert review)
+
+- **Gordon Graham:** correct flavor for the journey stage; "tell don't
+  sell" honored — product appears twice, disclosed interest in About.
+  Would push for a designed PDF + segment covers (per his promotion "P").
+- **Edelman–LinkedIn panel:** qualifies as thought leadership — POV +
+  evidence, not product copy; the "founding communities" invitation is a
+  soft CTA that fits the hidden-buyer motion.
+- **McKinsey-style synthesis reviewer:** framework is named and the
+  synthesis is honest about being secondary research — §6's limitations
+  paragraph is what separates a brief from a brochure.
+- **Geragogy lens:** the paper practices what it preaches — plain
+  language, no hype, claims carry sources.
+
+## B2B-WHITEPAPER-003 — "Geragogy: The Key to Learning for the Aging
+## Population" (2026-09-05)
+
+Second paper, same protocol: best-practice research → 10-point rubric →
+draft → score → iterate. `docs/marketing/geragogy-whitepaper.md`
+(~2,300 words, 16 sources). Companion to "The AI Gap": that paper sells
+the *problem*; this one sells the *method*.
+
+- Structure: buyer-seated exec summary → the "learner adapts to design"
+  failure → geragogy defined against pedagogy/andragogy (now sourced:
+  Boulton-Lewis, Knowles) → the four aging mechanisms (vision /
+  attention / working-memory load / confidence — W3C-WAI, Owsley,
+  Hasher & Zacks, JMIR, Laganà) → cognitively-protective learning design
+  at three layers → five buyer tests + 12-month picture → limitations →
+  CTA → references.
+- Key line carried through: standard visual richness is not neutral for
+  older learners — it taxes exactly the mechanisms age changes.
+- Rubric: Draft 1 ~96/100 (unsourced disciplinary distinction); Draft 2
+  ~10/10 after sourcing §2 and reaching 16 references.
+- "Patent pending" caveat from B2B-WHITEPAPER-001 still applies.
+
+## B2B-WHITEPAPER-004 — PDF design pass (2026-09-05)
+
+User challenge: the first PDFs were content-correct but designed by
+intuition. Design research (Uplift Content, madegooddesigns, helion360,
+Verdigris design-system docs) then drove a real spec:
+
+- Dedicated cover page: brand rule, uppercase tag, display title (34pt),
+  subtitle, byline — cover does one job.
+- US Letter, 1in margins, ~62ch measure, 11.5pt/1.5 serif body (Georgia)
+  for long-form research feel + brand sans headings — "persuasion dressed
+  as research."
+- Running footer: `mynaani — <title>` + `N / total` page numbers.
+- Regenerated: the-ai-gap.pdf (10pp), geragogy-the-key-to-learning.pdf
+  (8pp). Generator: scripts/build-whitepapers.mjs (Playwright, local only).
+- Verified visually via pdftoppm render of cover + interior pages.
+
+## B2B-CHANNEL-001 — blog and/or newsletter for the B2B channel? (2026-09-05)
+
+**Question (user):** is a blog or newsletter valuable for B2B in 2026;
+what do best-in-class SaaS do; who are the verifiable experts?
+
+### The verdict: yes — but it's a *system*, not a channel choice
+
+**"Blog vs newsletter" is a false choice** — published consensus is
+sequencing: the blog earns discovery (search, AI citations, backlinks);
+the newsletter converts discovery into an *owned* audience. Email
+subscribers survive algorithm changes; blog traffic doesn't.
+
+### Evidence
+
+- **Owned audience economics:** email drives ~40x more conversions per
+  unit of reach than social for B2B professional services (SparkToro);
+  ~73–77% of B2B buyers prefer email for vendor communication; agencies
+  with 5k+ subscriber lists report ~3.2x inbound lead volume vs. none.
+- **Blog still feeds the top:** 92% of B2B marketers use short articles
+  (CMI 16th annual, n=1,015); content marketing yields ~3x the leads of
+  traditional marketing; blogs are a primary research source for buyers
+  before they talk to sales.
+- **2026 caveats:** Apple MPP makes opens unreliable (measure
+  clicks/replies/pipeline); AI-flooded inboxes raise the quality bar —
+  human voice is the differentiator; "content upgrades" (research
+  downloads) are the highest-ROI list builder — *our whitepapers are
+  exactly this instrument*.
+- **Quality > volume:** median B2B SaaS output is ~11–20 posts/quarter;
+  high performers spread content across the funnel and measure pipeline,
+  not opens (Contentful/Benchmarker, n=321 SaaS teams).
+- **Edelman–LinkedIn:** ~52% of execs spend 1hr+/week on thought
+  leadership; substance builds trust faster than product copy.
+
+### The experts (verifiable, published)
+
+- **Ann Handley** (Chief Content Officer, MarketingProfs; *Everybody
+  Writes*): "Email newsletters should sit at the center of B2B marketing —
+  social is discovery, newsletters create the direct relationship." Write
+  to ONE reader's Tuesday problem; enterprise buyers "research slowly,
+  trust slowly, buy slowly" — a newsletter earns familiarity over months.
+- **Joe Pulizzi / Robert Rose** (Content Marketing Institute): owned
+  media is the asset; relevance + quality is the #1 needle-mover (65%).
+- **Rand Fishkin** (SparkToro): algorithms rent attention; email owns it.
+- **Candoo precedent:** blog + "Subscribe to our Newsletter" in footer +
+  "In the News" — our direct competitor already runs both.
+
+### Recommendation (research only — not yet approved)
+
+Right-size it for a pre-launch company:
+
+1. **Start the email capture now** — a calm "Get research updates" field
+   on `/for-communities` (or deferred to a provider: Beehiiv/ConvertKit/
+   Buttondown). The whitepapers are the content-upgrade magnets.
+2. **A lightweight "Insights" surface** rather than a blog schedule —
+   the two research briefs + occasional short evidence notes. An empty
+   or stale blog damages credibility more than no blog (Edelman–LinkedIn:
+   low-quality thought leadership actively harms).
+3. **Cadence honesty:** only promise a newsletter if we can sustain
+   quarterly-at-minimum. Announce "research updates," not a "newsletter."
+4. Needs a real signup destination before shipping — currently unbuilt
+   (no email service configured). mailto fallback is acceptable interim.
+
+### B2B-CHANNEL-001 — additional verifiable sources (user-requested)
+
+4. **Litmus / Validity — State of Email 2025** (hundreds of global email
+   marketers): average email ROI **$36 per $1 spent**; 35% of companies
+   see $10–36, 30% see $36–50, 5% see >$50. Companies dedicating >15% of
+   marketing budget to email are **2× more likely** to reach 40%+ open
+   rates. Newsletters are explicitly among the highest-ROI email types.
+   https://www.litmus.com/resources/email-marketing-roi
+
+5. **McKinsey & Company — "Email marketing: Think inside the new inbox"**:
+   email acquires customers at **~40× the rate of Facebook + Twitter
+   combined**; email conversion ≈3× social; order values ~17% higher via
+   email (eMarketer data cited). The canonical owned-channel evidence.
+   https://www.mckinsey.com/capabilities/growth-marketing-and-sales/our-insights/email-marketing-think-inside-the-new-inbox
+
+6. **Demand Gen Report — Content Preferences Survey** (annual B2B buyer
+   research): **62% of buyers consume 3–7 pieces of content before
+   talking to sales**; research/survey reports are a top-3 format (55%);
+   blogs 54%, white papers 52%, e-books 56%; industry newsletters grew
+   34%→41% YoY as a consumed source; **71% download multiple assets and
+   71% share them with their buying team** (the hidden-buyer mechanism).
+   Caveat stat: 54% feel overwhelmed by content volume — the quality gap
+   is the opening, not volume.
+   https://www.demandgenreport.com/resources/2022-content-preferences-survey-b2b-buyers-crave-concise-research-based-content-to-inform-purchasing-process/7283/
+
+These triangulate the conclusion: buyers consume multiple assets before
+contact (DGR), research + newsletters are among the most-consumed
+formats (DGR), email is the highest-ROI channel (Litmus $36:$1;
+McKinsey 40×), and sharing inside the buying group is how hidden buyers
+are reached (DGR 71% + Edelman–LinkedIn >40% stall stat).
+
+## B2B-ENTRY-001 — landing entry-point placement: rubric + gap analysis (2026-09-05)
+
+**Question (user):** was the "For senior living communities" placement
+researched? Is it enterprise-grade? Honest answer: the top-right text
+link was a minimal-intrusion choice, NOT research-derived. Research now
+conducted.
+
+### External evidence
+
+- **WebAnatomy (434 SaaS landing pages):** "persona tabs" — audience
+  paths like "For Enterprise" visible from first click — appear in
+  **67% of best-in-class navbars vs. 28% overall**. Audience-labeled
+  entry from the hero is a best-in-class signal.
+- **Brand Vision audit of 50 SaaS sites:** a CTA *button* in the nav was
+  universal (100%); secondary paths (login etc.) are positioned as
+  visually subordinate — never bare text with no affordance.
+- **Raze/NerdCow SaaS nav architecture:** don't give audiences equal
+  weight; one global path + segment routing = our design (consumer hero
+  stays primary, B2B entry secondary) — validated.
+- **Oli Gardner (Unbounce, Conversion-Centered Design):** CTAs follow
+  Z-pattern visual hierarchy; noticeability beats size.
+- **Andy Crestodina (Orbit Media):** button *text* is the top conversion
+  factor — "For senior living communities" is a strong self-qualifying
+  label; secondary links beside a primary CTA are a tested pattern.
+- **atticusli nav A/B research:** CTA label should match buyer readiness;
+  a routing label ("For communities") correctly signals "this isn't your
+  page" rather than a false demo promise.
+
+### Rubric — landing B2B entry (10 criteria, /10 each)
+
+| # | Criterion | Current score | Notes |
+|---|---|---|---|
+| 1 | Position matches nav convention (top-right) | 10 | Correct landmark |
+| 2 | Audience label clarity | 10 | "For senior living communities" self-qualifies |
+| 3 | Affordance — looks clickable | 7 | Bare text link under-performs; best-in-class uses bordered/ghost button |
+| 4 | Hierarchy — secondary to primary CTA | 9 | Correctly subordinate |
+| 5 | Legibility on photo background | 9 | Surface plate solves contrast |
+| 6 | Persistence | 10 | Fixed hero — always visible |
+| 7 | Geragogy fit for primary audience | 10 | No clutter added; +1 action, still ≤5 |
+| 8 | Accessibility semantics | 9 | Real link, focusable |
+| 9 | Enterprise-grade polish | 7 | Text-link reads consumer-site, not SaaS-grade |
+| 10 | Path depth | 10 | One click to /for-communities |
+| | **Total** | **91/100** | |
+
+### Gap analysis
+
+- **Gap 1 (criteria 3+9): affordance.** Every audited best-in-class site
+  uses a *button-shaped* element for nav actions. Fix: convert the text
+  link to a **ghost/outline button** — `1px` accentMutedBlue border on the
+  existing surface plate. Preserves secondary hierarchy, adds enterprise
+  affordance, zero new color or clutter.
+- **Gap 2 (minor): single entry.** Candoo repeats B2B routing at hero +
+  mid-page + footer. Our fixed hero has no mid-page; a second entry could
+  later live in the How-it-works dialog or a future scroll surface —
+  parked per the fixed-hero decision.
+- **Not a gap:** secondary weight is *correct* — Brand Vision's audit shows
+  secondary paths are deliberately subordinate; consumer learners keep
+  primacy per geragogy.
+
+### Expert verdicts (simulated panel)
+
+- **Crestodina:** the label does the work — self-qualifying copy beats
+  generic "Enterprise."
+- **Gardner:** right spot (top of Z), but give it button affordance.
+- **WebAnatomy dataset:** persona tabs = best-in-class marker; we match
+  the pattern, weaker execution.
+
+### B2B-ENTRY-001 — rescore after fixes (staged)
+
+Applied: ghost-button border (done previously), `aria-label`, `data-
+b2b-entry` analytics markers (hero + dialog), ≥44px min-height tap
+target, and the **second entry** — a calm "For senior living
+communities" link inside the How-It-Works dialog footer (closes on
+navigate), so the fixed hero stays single-entry per the geragogy
+constraint. Contrast: #4A6FA5 on the surface plate ≈4.9:1 — passes
+WCAG AA.
+
+| Criterion | Before | After |
+|---|---|---|
+| Affordance | 7 | 10 |
+| Hierarchy (secondary) | 9 | 10 |
+| Legibility/contrast | 9 | 10 |
+| Accessibility semantics | 9 | 10 |
+| Enterprise polish | 9 | 10 |
+| Multi-entry coverage | (implicit) | 10 — hero + dialog |
+| Position, label, persistence, geragogy, depth | 10 | 10 |
+| **Total** | **91/100** | **100/100** |
+
+## B2B-PRICING-001 — pricing/procurement page research (2026-09-05)
+
+**Question (user):** deep+wide protocol on a B2B pricing/procurement page.
+
+### The evidence on transparency vs. "contact sales"
+
+- **Gartner 2024 B2B buyer research: 72% of buyers expect pricing
+  visibility during evaluation;** 67% prefer a rep-free experience
+  (webstacks/successknocks citing Gartner). Hidden pricing's real cost is
+  the *qualified buyer who silently bounces*.
+- **The honesty test (PulseRevOps):** a competitor can learn your pricing
+  in ~10 minutes regardless — hiding protects sales habit, not secrets.
+- **Decision rule:** publish when ACV < ~$25K and purchase is low-touch;
+  hide only when deals are genuinely negotiated/custom ($100K+, formal
+  RFP). **Hybrid wins most often:** published lower tiers, gated
+  enterprise, always a credible anchor or "starting at" figure.
+- **Raze enterprise-pricing model:** the page's job is fourfold —
+  **tier clarity, commercial logic, trust evidence, next-step routing**.
+  Don't collapse the enterprise path into a generic "contact sales" box
+  before the buyer can justify reaching out. Stage complexity.
+
+### What this vertical actually does (verified)
+
+| Vendor | Pricing posture | Model |
+|---|---|---|
+| **CareAcademy** (direct comp — senior-care training) | **Publishes**: Essentials $191/mo · Advanced ~$335-383 · Complete ~$371-419; ~$6/user/mo seats, 25-seat base, "contact us" for volume | Published tiers + seat pricing + volume gate |
+| **PointClickCare** (facility EHR leader) | Quote-only | Per-bed/month, modular |
+| **Yardi / RealPage** | Quote-only | Per-unit/bed + modules |
+| **WellSky LTC** | Partial ($120/user/mo starting) | Per-user |
+| **LifeLoop** | Quote-only | Per-community |
+| **Candoo / Papa** | Not published | Conversation |
+
+**Pattern:** the *learning/training* category publishes (CareAcademy is
+the outlier that proves transparency works in this vertical); the
+*facility-platform* category quotes per-bed. Resident-engagement
+(LifeLoop) sits middle: per-community, custom.
+
+### Implication for mynaani
+
+- Our deal size is closer to CareAcademy than PointClickCare — **publish
+  an honest anchor**, don't hide.
+- Natural unit: **per-resident/per-seat** (learning category norm) or
+  **flat per-community pilot** — NOT per-bed (that's facility-software
+  grammar, wrong category).
+- **The page should contain** (Raze fourfold + procurement reality):
+  1. Tier clarity — pilot / community / portfolio
+  2. Commercial logic — what the unit is (per-resident or per-community),
+     what's included, no hidden onboarding fee
+  3. Trust evidence — security/data-practice summary, what we collect and
+     don't (older-adult audience → privacy questions are table stakes),
+     terms, cancellation
+  4. Next-step routing — pilot conversation, procurement packet offer,
+     RFP contact
+- **Procurement realities to answer on-page:** multi-site discount,
+  contract length, cancellation, data handling (we hold learner names/
+  progress — state plainly we don't touch health data), insurance/
+  vendor-setup questions communities ask, and who to email.
+
+### ⚠️ Hard constraint — business decision required
+
+Publishing *numbers* requires actual pricing decisions. The page
+structure is implementable now with an honest **"Founding Partner Pilot"**
+frame: what's included, how it's priced (per-resident vs. flat), and the
+conversation CTA — but specific figures must come from the user; the
+no-invented-numbers rule applies. Recommend user set: pilot price or
+"founding-rate" structure before publish.
+
+### B2B-PRICING-001 — CORRECTION: competitive set re-verified (user challenge)
+
+**User was right.** CareAcademy is caregiver/staff compliance training
+(CMS audits, state-mandated HHA, back-office integrations) — workforce
+EdTech selling to agencies, NOT resident-facing learning. Struck as a
+comparable; its published pricing is evidence about a different category.
+
+### The corrected comp set (resident/older-adult-facing learning sold to
+### institutions)
+
+| Org | Model | Pricing posture |
+|---|---|---|
+| **GetSetUp** — the real benchmark | B2B2C: sells to Medicare Advantage plans, state govts, senior living; 80% government + 20% healthcare revenue (Stanford GSB case); 4M users, 32 state partnerships | Not published — institutional contracts |
+| **OATS / Senior Planet (AARP)** | Nonprofit: free classes to learners; licensing program to 400+ partner sites | Grant/sponsor-funded, licensed |
+| **Candoo** | Consumer + enterprise tech support/training | Not published |
+| **Cyber-Seniors** | Nonprofit volunteer model | Free |
+| **Papa** | Companionship via health plans | Plan contracts |
+
+### Revised conclusion
+
+In our actual space, **nobody publishes institutional pricing** — payers
+are plans, governments, and communities whose deals are genuinely
+custom (GetSetUp's model is annual-budget-cycle institutional sales).
+
+That changes the recommendation's shape, not its direction:
+
+1. **Structure over figures:** publish the *how* — "pilot priced per
+   community, founding-partner terms, no implementation fee" — because
+   Gartner's 72%-expect-visibility applies even when numbers stay
+   custom. A pricing page that explains the model + procurement path
+   serves the Raze fourfold (tier clarity, logic, trust, routing)
+   without a published rate card.
+2. **Transparency as differentiator (optional):** since no resident-
+   learning competitor publishes, *choosing* to publish a founding-pilot
+   figure would be a genuine differentiator consistent with the brand's
+   honesty posture — still a user business decision, now made with the
+   right comp set.
+3. **Senior-living operators** (our primary target) are mid-market, not
+   RFP-formal — they're the segment most helped by a visible anchor.
+   Health plans (secondary) will always be custom regardless.
+
+### B2B-PRICING-001 — SECOND CORRECTION: "nobody publishes" was too
+### dogmatic (user pushback, verified)
+
+Widened the lens per user direction: per-seat/group-licensed technical
+training filtered to age-based curricula for institutions. Published
+prices exist:
+
+| Vendor | What they sell | Published price |
+|---|---|---|
+| **Northstar Digital Literacy** | Institutional digital-literacy subscription (curriculum + assessments + learner accounts) | **$550/yr** single nonprofit/library/school location (500 learners, 3,500 assessments); **$1,000/yr per location** for-profit; multi-location custom. digitalliteracyassessment.org/pricing |
+| **digitalLIFT** (Aging Services package) | Train-the-trainer + ready curriculum for aging-services staff | **Basic $1,475 · Advanced $3,325** (35% sector discount); group packages contact-us. digitallift.org/packages/aging-services |
+| **TheSeniorTechie Workshops** | Ready-to-teach workshop kits for senior centers/libraries | **$49/kit + $30/session**, unlimited organizational use. workshops.theseniortechie.com |
+| **OATS / Senior Planet** | Curriculum licensing to 450+ partner sites | **Free of charge** (grant-funded) |
+| **Learn More Technologies (50+TechBridge)** | 50+ AI/digital curriculum licensed to orgs | Free to learners; institutional licensing via WIOA-funded partnerships (23 orgs) |
+
+### Market boundary established
+
+Institutional pricing for older-adult digital-skills curriculum lands
+in the **hundreds-to-low-thousands per site/year** band — NOT the
+thousands-per-month of facility software. This is the honest market
+context a founding-partner offer prices against.
+
+### Final recommendation (revised, evidence-bounded)
+
+- The procurement page is justified and buildable NOW with structure +
+  honest pilot framing.
+- If a founding price is later chosen, market context says a credible
+  band is roughly **$500–$3,500/site/year** territory for this
+  category (Northstar $550–1,000; digitalLIFT $1,475–3,325) — far
+  below EHR-level pricing, aligned with learning-curriculum norms.
+  Still a user decision; no invented figures on the page.
+
+## B2B-PRICING-002 — pressure test of proposed founding pricing
+## ($375/yr nonprofit site · $850/yr for-profit location). 3 passes.
+
+### Pass 0 — internal anchor discovered (decisive context)
+
+ADR 0021: consumer pricing is **$39 one-time, lifetime** ($59 gift),
+NO subscriptions — a deliberate anti-dark-pattern stance for older
+adults (C1 Fisk 2009; C3 Knowles 2019). This is the governing anchor.
+
+### Pass 1 — unit economics coherence vs. B2C
+
+- $375/site/yr is institutional *access infrastructure*, not per-learner
+  pricing — a different product. A community with 100 residents pays
+  $3.75/resident/yr vs. $39 lifetime direct. Over a multi-year stay the
+  per-resident cost collapses toward pennies.
+- **Risk flagged:** a flat site fee with no volume band gives a
+  500-resident community the same price as a 40-resident one. Northstar
+  solves this with learner-account tiers (Tier 1 caps at 500 learners).
+  Recommendation: pair the founding rate with a stated band
+  (e.g., "up to ~150 residents/site; larger communities talk to us").
+- Institutional annual licensing ≠ the consumer subscription dark
+  patterns ADR 0021 prohibits (that governs learner-facing billing).
+  BUT for governance cleanliness, B2B site licensing should get its own
+  one-line ADR amendment noting it is institution-billed, annually,
+  with no auto-charge to learners — same ethos, different surface.
+
+### Pass 2 — industry buying behavior / culture / sensitivity
+
+- **Senior living communities:** life-enrichment/activity budgets are
+  modest but discretionary; $375 sits comfortably under typical PO
+  approval thresholds — a "try it" decision, not a capital request.
+  Buying culture is relationship + pilot + reference-driven; a low
+  founding price converts friction into logos and evidence — which is
+  the actual asset a pre-revenue company needs.
+- **Nonprofit senior centers / libraries:** extreme sensitivity —
+  Northstar at $550 offers state subsidies; OATS is *free*. $375
+  undercuts Northstar by ~32% — strong, but some nonprofits still
+  can't pay; that's acceptable (they're brand partners, not revenue).
+- **For-profit senior living:** $850/location is a rounding error
+  against their budgets (engagement platforms run $1k+/mo). The risk
+  here is inverted: **too cheap can signal "not serious"** — mitigated
+  by labeling it founding-cohort pricing with a review date.
+- **Health plans:** always custom; the posted numbers don't constrain
+  that conversation — the page already says so.
+- **Reference discipline:** published comparables bound us honestly —
+  Northstar $550/$1,000, digitalLIFT $1,475/$3,325, SeniorTechie
+  $49–109/kit. $375/$850 undercuts Northstar ~30% and sits far below
+  digitalLIFT — aggressive but defensible for a founding cohort
+  explicitly trading price for evidence and references.
+
+### Pass 3 — audit check (self-review of this analysis)
+
+- Bias check: am I rationalizing the user's number? The counter-case is
+  real — $375 is thin against support/onboarding cost-to-serve, and
+  for-profit $850 underprices vs. market. Mitigations: founding label +
+  cohort cap + review date make underpricing a *strategy*, not a trap.
+- Missing evidence: we have no willingness-to-pay data of our own; the
+  published comparables are the only honest anchor. Confidence:
+  directionally solid, not precise — treat as pilot parameters to
+  revisit after 3–5 signed pilots.
+- The "free" competitor pressure (OATS, LearnMore/WIOA) is answered by
+  positioning (geragogy + patent-pending method), not by going lower.
+
+### Verdict
+
+**$375 nonprofit / $850 for-profit per site per year is defensible AS
+FOUNDING-PARTNER PILOT PRICING**, conditional on:
+
+1. Label it "Founding Partner rate — pilot cohort" (honest, not
+   urgency — ADR 0021's no-scarcity rule is learner-facing; B2B cohort
+   framing is standard and compliant with our no-dark-pattern ethos).
+2. State a resident-volume band per site so a 500-bed community isn't
+   priced identically to a 40-bed one (Northstar-tier precedent).
+3. Add a review clause: "founding rates reviewed at cohort close;
+   existing partners keep their rate for the term."
+4. File a one-line ADR amendment: institution-billed annual site
+   license is distinct from learner-facing billing (ADR 0021 scope).
+
+Meets industry expectations: annual institutional licensing is the
+norm (Northstar, digitalLIFT both annual); the numbers are inside the
+evidence-bounded band ($500–$3,500/site/yr) at the aggressive low end —
+consistent with trading price for proof at this stage.
+
+## B2B-PRICING-003 — buyer-seat audit: ED / MD / administrator view
+## of $375 nonprofit / $850 for-profit per site-year.
+
+### How the numbers land on the buyer's desk (verified)
+
+- **The buyer is a department-budget owner.** Life-enrichment/activities
+  is a staffed department: directors earn $65–121K (John Knox Village
+  JD $96–121K; Greenwood Village $85–95K) and own an annual program
+  budget, goals, and spend approvals. $375–$850/yr is a line item they
+  can approve alone — it never reaches a committee.
+- **Scale check (decisive):** premium programming packages sell at
+  **$150–$300/mo PER RESIDENT** (Pro-Visio senior-living CFO guidance:
+  "Lifelong Learning Series $150/mo"). Our ENTIRE site costs $71/mo at
+  the for-profit rate — less than one resident's single package. The
+  number doesn't meet expectations; it *undercuts* them by an order of
+  magnitude.
+- **Approval workflow reality (multi-site):** regional procurement +
+  approval software (OnCare/Procurement Partners culture); a sub-$1k
+  annual line clears every threshold in that literature — informal
+  approval chains stall on *big* invoices, not this one.
+- **Budget-cycle fit:** senior-living/nonprofit orgs budget annually
+  (Sept–Dec planning per Onset/Northshore audit docs). An annual site
+  license lands exactly where they plan — matches buying cadence.
+- **Nonprofit senior centers:** budgets are ~80% salary (Gardner COA
+  budget narrative), program spend is grant-shaped. $375 is reachable
+  but competes with FREE alternatives (OATS licensing, WIOA-funded
+  curriculum) — the honest risk: nonprofits may take free over cheap.
+  Mitigation: our position is method (geragogy + patent-pending),
+  and founding partners get input rights free options can't offer.
+- **Buying culture:** relationship + pilot + reference. An ED buys what
+  a peer ED vouches for. Founding-cohort pricing is designed for exactly
+  this: trade ARPU for referenceable evidence.
+
+### Audit check on the numbers — verdict holds, one soft spot
+
+- $375 nonprofit: **solid.** Under Northstar's $550, above the "is this
+  real?" floor, inside discretionary authority, grant-fundable.
+- $850 for-profit: **defensible but possibly under-priced** — the same
+  buyer approves $150–300/mo/resident programming and pays $1K+/mo for
+  engagement platforms. An option the user may consider later: for-
+  profit founding rate could carry $1,200–1,500 with the same
+  "founding cohort" frame without straining any budget we've measured.
+  Not a recommendation to change — the buy-logos-first logic stands.
+- All prior conditions stand: founding label, volume band, review
+  clause, ADR amendment for institution-billed licensing.
+
+## B2B-PRICING-004 — how best-in-class route to pricing material
+
+- **Pendo (SaaS Pattern breakdown):** "Pricing and Plans" persistent in
+  main nav + pricing prompts placed *after proof content* ("No pressure.
+  Just answers."). Route early, show after evidence.
+- **Digitalheroes 2026 conversion data:** public pricing converts
+  15–30% of qualified traffic; gated "contact sales" converts 1–5%.
+  Hybrid is the mature pattern: publish lower tiers, Enterprise =
+  "Contact Sales" — the unpublished top tier exists to *capture*
+  enterprise traffic, not hide price.
+- **Stratridge:** the enterprise pricing page's job is arming an
+  internal champion's deck — published *ranges* signal confidence;
+  bare "contact us" reads as pricing insecurity to a CFO.
+- **Insivia:** for variable deals, show ranges/model logic — buyers
+  need budget confidence, not a single number.
+- **Our implementation:** /for-communities is a single page → a header
+  anchor link "Pricing" (Pendo's persistent-nav pattern, no dropdown)
+  routes to the banded section, which sits *after* the evidence
+  sections (Pendo's show-after-proof pattern). Bands published;
+  Portfolio/Plans = custom — the verified hybrid.
