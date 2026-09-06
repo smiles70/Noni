@@ -170,8 +170,9 @@ def lesson_menu(
       }
 
     Authoritative ordering is the order of each list as defined in the
-    units modules. The menu does NOT include Modules 3+ - those are the
-    paid track and are gated by entitlement (ADR 0022).
+    units modules. The menu does NOT include Modules 2+ - those are the
+    paid track and are gated by entitlement (ADR 0022; boundary moved
+    to Module 2 per intake 2026-09-06-paywall-boundary-m2-001).
     """
 
     def _serialize(u: CurriculumUnit) -> dict:
@@ -425,7 +426,8 @@ def list_module_2_units(
 
 @router.get("/module-2/units/{unit_id}")
 def get_module_2_unit_page(
-    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
+    _account=Depends(paid_bundle_dep),
 ) -> dict:
     """Return the ISCS-approved page from the requested Module 2 unit."""
     unit = get_module_2_unit(unit_id)
@@ -468,7 +470,7 @@ def get_module_2_unit_page(
 
 
 @router.get("/module-2/next")
-def next_module_2_unit() -> dict:
+def next_module_2_unit(_account=Depends(paid_bundle_dep)) -> dict:
     """Recommend the most advanced Module 2 unit reachable at current stability.
 
     Linear walk through UNITS_MODULE_2. Per-learner volatility / strain /
@@ -876,7 +878,8 @@ def get_lesson_module_1(
 
 @router.get("/module-2/units/{unit_id}/lesson")
 def get_lesson_module_2(
-    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+    unit_id: str = Path(..., max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"),
+    _account=Depends(paid_bundle_dep),
 ) -> dict:
     unit = get_module_2_unit(unit_id)
     if unit is None:
