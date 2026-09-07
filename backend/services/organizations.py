@@ -184,6 +184,15 @@ def generate_codes(
             detail={"envelope_id": "org.license_not_found"},
         )
 
+    if (
+        license_.organization is not None
+        and getattr(license_.organization, "status", "active") == "suspended"
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail={"envelope_id": "org.org_suspended"},
+        )
+
     existing_count = (
         db.query(AccessCode).filter(AccessCode.license_id == license_id).count()
     )
@@ -298,6 +307,82 @@ def reinstate_license(
     return lic
 
 
+def _org_or_404(db: DbSession, org_id: uuid.UUID) -> Organization:
+    org = db.query(Organization).filter(Organization.id == org_id).one_or_none()
+    if org is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"envelope_id": "org.org_not_found"},
+        )
+    return org
+
+
+def suspend_org(
+    db: DbSession,
+    staff: Account,
+    org_id: uuid.UUID,
+    *,
+    reason: str,
+    include_children: bool = False,
+) -> Organization:
+    """Soft-first org suspension: blocks new redemptions + code generation
+    for all this org's licenses; granted learner entitlements are
+    untouched (SOC2 CC6.3 / export→revoke→delete ordering). Children are
+    only suspended when explicitly requested — never silently cascaded."""
+    org = _org_or_404(db, org_id)
+    targets = [org]
+    if include_children:
+        targets += (
+            db.query(Organization).filter(Organization.parent_org_id == org.id).all()
+        )
+    now = datetime.now(timezone.utc)
+    for o in targets:
+        if o.status != "suspended":
+            o.status = "suspended"
+            o.suspension_reason = reason
+            o.suspended_at = now
+            db.add(
+                OrgAuditLog(
+                    organization_id=o.id,
+                    actor_account_id=staff.id,
+                    action="org.suspend",
+                    detail=f"reason={reason}",
+                )
+            )
+    db.commit()
+    return org
+
+
+def reinstate_org(
+    db: DbSession,
+    staff: Account,
+    org_id: uuid.UUID,
+    *,
+    include_children: bool = False,
+) -> Organization:
+    org = _org_or_404(db, org_id)
+    targets = [org]
+    if include_children:
+        targets += (
+            db.query(Organization).filter(Organization.parent_org_id == org.id).all()
+        )
+    for o in targets:
+        if o.status == "suspended":
+            o.status = "active"
+            o.suspension_reason = None
+            o.suspended_at = None
+            db.add(
+                OrgAuditLog(
+                    organization_id=o.id,
+                    actor_account_id=staff.id,
+                    action="org.reinstate",
+                    detail="",
+                )
+            )
+    db.commit()
+    return org
+
+
 # ---------- Staff: read surfaces ----------
 
 
@@ -364,6 +449,12 @@ def redeem_code(db: DbSession, account: Account, code: str) -> dict:
         raise HTTPException(
             status_code=status.HTTP_410_GONE,
             detail={"envelope_id": "org.license_suspended"},
+        )
+    org = license_.organization
+    if org is not None and getattr(org, "status", "active") == "suspended":
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail={"envelope_id": "org.org_suspended"},
         )
     if license_.expires_at is not None and license_.expires_at < datetime.now(
         timezone.utc
@@ -675,6 +766,12 @@ def org_detail(db: DbSession, org_id: uuid.UUID) -> dict:
             "org_type": org.org_type,
             "tier": org.tier,
             "slug": org.slug,
+            "suspension_reason": getattr(org, "suspension_reason", None),
+            "suspended_at": (
+                org.suspended_at.isoformat()
+                if getattr(org, "suspended_at", None)
+                else None
+            ),
             "community_size": org.community_size,
             "visible_modules": org.visible_modules,
             "parent_org_id": str(org.parent_org_id) if org.parent_org_id else None,
