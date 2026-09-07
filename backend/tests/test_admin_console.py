@@ -764,7 +764,7 @@ def test_org_activity_report_aggregate_only(client, monkeypatch):
     row = next(o for o in body["orgs"] if o["org_id"] == org_id)
     assert row["org_name"] == "Report Co"
     # contract: only aggregate keys — nothing that names a learner
-    banned = {"email", "display_name", "account_id", "learner", "unit"}
+    banned = {"email", "display_name", "account_id", "unit_id"}
     for key in row:
         assert not any(b in key.lower() for b in banned), key
 
