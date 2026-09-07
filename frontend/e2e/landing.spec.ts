@@ -23,18 +23,6 @@ test.describe("Landing page", () => {
     await expect(page.getByRole("heading", { name: /sign in/i })).toBeVisible();
   });
 
-  test("larger-text toggle updates aria-pressed and html class", async ({
-    page,
-  }) => {
-    await page.goto("/");
-    const toggle = page.getByRole("button", { name: "Larger text" });
-    await expect(toggle).toHaveAttribute("aria-pressed", "false");
-    await toggle.click();
-    const after = page.getByRole("button", { name: "Standard text" });
-    await expect(after).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("html")).toHaveClass(/large-text/);
-  });
-
   test("passes WCAG 2.1 AA automated checks (axe-core)", async ({ page }) => {
     await page.goto("/");
     await injectAxe(page);

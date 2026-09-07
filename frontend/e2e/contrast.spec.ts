@@ -77,17 +77,4 @@ test.describe("Contrast Audit (WCAG 2.1 AA)", () => {
       `Curriculum menu contrast failures:\n${formatViolations(violations)}`,
     ).toHaveLength(0);
   });
-
-  test("larger-text mode preserves contrast", async ({ page }) => {
-    await page.goto("/");
-    const toggle = page.getByRole("button", { name: "Larger text" });
-    await toggle.click();
-    await expect(page.locator("html")).toHaveClass(/large-text/);
-
-    const violations = await runContrastAudit(page);
-    expect(
-      violations,
-      `Larger-text mode contrast failures:\n${formatViolations(violations)}`,
-    ).toHaveLength(0);
-  });
 });

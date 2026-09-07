@@ -35,6 +35,10 @@ for (const viewport of VIEWPORTS) {
         const buttons = await page.locator("button, a, [role='button']").all();
 
         for (const button of buttons) {
+          // Skip-link is a visually-hidden keyboard aid (1x1 clipped until
+          // :focus) — not a touch target by design.
+          const cls = await button.getAttribute("class");
+          if (cls && cls.includes("mynaani-skip-link")) continue;
           const box = await button.boundingBox();
           if (!box) continue;
           // Skip hidden or zero-area controls
