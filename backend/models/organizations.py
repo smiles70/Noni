@@ -9,7 +9,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import (
+from sqlalchemy import JSON, (
     Boolean,
     Column,
     DateTime,
@@ -41,6 +41,8 @@ class Organization(Base):
     community_size = Column(Integer, nullable=True)
     tier = Column(String(32), nullable=False, default="site")
     custom_flag = Column(Boolean, nullable=False, default=False)
+    slug = Column(String(64), nullable=True, unique=True)
+    visible_modules = Column(JSON, nullable=True)  # NULL = all modules
     parent_org_id = Column(
         UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=True
     )

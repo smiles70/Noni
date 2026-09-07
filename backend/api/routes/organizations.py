@@ -9,9 +9,9 @@ from __future__ import annotations
 import hashlib
 import secrets
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import Path, APIRouter, Depends, HTTPException, status
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -317,6 +317,67 @@ def redeem_code(
 # ---------- OB-2: aggregate-only org dashboard (staff) ----------
 
 
+MIN_COHORT = 5  # k-anonymity floor: never report engagement below this
+
+
+def _org_engagement(db: DbSession, org_id: uuid.UUID) -> dict:
+    """Aggregate engagement for the org's claimed seats. Never per-learner:
+    counts only, and only when the cohort meets MIN_COHORT."""
+    from backend.models.learning import Progress
+
+    account_ids = [
+        r[0]
+        for r in db.query(AccessCode.claimed_by_account_id)
+        .join(OrgLicense, AccessCode.license_id == OrgLicense.id)
+        .filter(
+            OrgLicense.organization_id == org_id,
+            AccessCode.claimed_by_account_id.isnot(None),
+        )
+        .all()
+    ]
+    n = len(account_ids)
+    base = {"cohort": n, "min_cohort_met": n >= MIN_COHORT}
+    if n < MIN_COHORT:
+        return base
+    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    rows = db.query(Progress).filter(Progress.account_id.in_(account_ids)).all()
+    completed = sum(1 for r in rows if r.status == "completed")
+    active_7d = sum(
+        1
+        for r in rows
+        if r.completed_at and r.completed_at >= week_ago
+        or r.first_started_at >= week_ago
+    )
+    base.update(
+        {
+            "units_completed": completed,
+            "active_last_7d": min(active_7d, n),
+            "learners_started": sum(1 for r in rows if r.status in ("started", "completed")),
+        }
+    )
+    return base
+
+
+@router.get("/org/by-slug/{slug}")
+def org_public_page(
+    slug: str = Path(..., max_length=64, pattern=r"^[a-z0-9-]+$"),
+    db: DbSession = Depends(get_db),
+) -> dict:
+    """Public hosted-partner page data. Deliberately minimal: name only.
+    Everything else (licenses, engagement) stays behind require_staff."""
+    org = (
+        db.query(Organization)
+        .filter(Organization.slug == slug, Organization.status == "active")
+        .one_or_none()
+    )
+    if org is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"envelope_id": "org.not_found"},
+        )
+    return {"name": org.name, "org_type": org.org_type}
+
+
 @router.get("/org/{org_id}/dashboard")
 def org_dashboard(
     org_id: uuid.UUID,
@@ -362,6 +423,7 @@ def org_dashboard(
             "parent_org_id": str(org.parent_org_id) if org.parent_org_id else None,
         },
         "licenses": lic_rows,
+        "engagement": _org_engagement(db, org_id),
         "children": [
             {"id": str(c.id), "name": c.name, "status": c.status,
              "org_type": c.org_type, "tier": c.tier}
