@@ -303,13 +303,17 @@ class TestScenario4TamperedTokens:
         assert _envelope_code(r) == "auth.no_credential"
 
     def test_wrong_scheme_returns_no_credential(self, client):
-        r = client.get("/api/v1/auth/session", headers={"Authorization": "Basic mock:a@b.c"})
+        r = client.get(
+            "/api/v1/auth/session", headers={"Authorization": "Basic mock:a@b.c"}
+        )
         assert r.status_code == 401
         assert _envelope_code(r) == "auth.no_credential"
 
     def test_mock_token_without_email_returns_malformed(self, client):
         # `mock:` without an email body → MockAuthProvider rejects → malformed
-        r = client.get("/api/v1/auth/session", headers={"Authorization": "Bearer mock:"})
+        r = client.get(
+            "/api/v1/auth/session", headers={"Authorization": "Bearer mock:"}
+        )
         assert r.status_code == 401
         assert _envelope_code(r) == "auth.malformed"
 
@@ -387,7 +391,9 @@ class TestScenario5SoftDeletedTerminal:
     ):
         """The bypass path: attacker hits /init directly, expecting it
         to recreate the row. Must NOT happen."""
-        r = client.post("/api/v1/auth/session/init", headers=_bearer(deleted_account_email))
+        r = client.post(
+            "/api/v1/auth/session/init", headers=_bearer(deleted_account_email)
+        )
         assert r.status_code == 401, r.text
         assert _envelope_code(r) == "auth.account_deleted"
 
@@ -418,7 +424,9 @@ class TestUxTimingBudget:
 
     def test_auth_session_unmaterialized_under_budget(self, client):
         email = _unique_email("ux1")
-        r, dt = self._time(lambda: client.get("/api/v1/auth/session", headers=_bearer(email)))
+        r, dt = self._time(
+            lambda: client.get("/api/v1/auth/session", headers=_bearer(email))
+        )
         assert r.status_code == 200
         assert dt < self.HARD_CEILING_SECONDS, f"/api/v1/auth/session took {dt:.3f}s"
 
@@ -428,4 +436,6 @@ class TestUxTimingBudget:
             lambda: client.post("/api/v1/auth/session/init", headers=_bearer(email))
         )
         assert r.status_code == 200
-        assert dt < self.HARD_CEILING_SECONDS, f"/api/v1/auth/session/init took {dt:.3f}s"
+        assert (
+            dt < self.HARD_CEILING_SECONDS
+        ), f"/api/v1/auth/session/init took {dt:.3f}s"

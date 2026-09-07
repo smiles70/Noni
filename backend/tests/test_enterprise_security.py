@@ -118,7 +118,7 @@ def test_protected_billing_checkout_without_auth_returns_401(client: TestClient)
 
 
 def test_legacy_curriculum_redirects_to_v1_with_302(client: TestClient):
-    res = client.get("/api/v1/curriculum/units", follow_redirects=False)
+    res = client.get("/api/curriculum/units", follow_redirects=False)
     assert res.status_code == 302
     assert "/api/v1/curriculum" in res.headers["location"]
     assert res.headers.get("Deprecation") == "true"

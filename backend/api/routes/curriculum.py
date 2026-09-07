@@ -16,13 +16,16 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session as DbSession
 
-from backend.api.deps import get_current_account, get_optional_account, require_entitlement
+from backend.api.deps import (
+    get_current_account,
+    get_optional_account,
+    require_entitlement,
+)
 from backend.models.accounts import Account
 from backend.core.database import get_db
 from backend.core.interface_control.stability_metric import compute_stability
 from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.state_selector import select_ui_state
-from backend.models.accounts import Account
 from backend.models.curriculum_units import (
     BRIDGE_UNITS,
     UNITS,
@@ -196,21 +199,21 @@ def lesson_menu(
         "modules": [
             m
             for m in [
-            {
-                "id": 0,
-                "title": "Module 0 — Introduction to AI",
-                "units": [_serialize(u) for u in UNITS_MODULE_0],
-            },
-            {
-                "id": 1,
-                "title": "Module 1 — Meeting Claude",
-                "units": [_serialize(u) for u in UNITS],
-            },
-            {
-                "id": 2,
-                "title": "Module 2 — Sustained use over time",
-                "units": [_serialize(u) for u in UNITS_MODULE_2],
-            },
+                {
+                    "id": 0,
+                    "title": "Module 0 — Introduction to AI",
+                    "units": [_serialize(u) for u in UNITS_MODULE_0],
+                },
+                {
+                    "id": 1,
+                    "title": "Module 1 — Meeting Claude",
+                    "units": [_serialize(u) for u in UNITS],
+                },
+                {
+                    "id": 2,
+                    "title": "Module 2 — Sustained use over time",
+                    "units": [_serialize(u) for u in UNITS_MODULE_2],
+                },
             ]
             if _allowed(m["id"])
         ],
@@ -877,8 +880,6 @@ def _build_lesson_payload(module: int, unit: CurriculumUnit, request_path: str) 
         "pages": pages,
         "stability": stability,
     }
-
-
 
 
 def _org_visible_modules(db: DbSession, account_id) -> Optional[list]:

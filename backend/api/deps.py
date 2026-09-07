@@ -112,7 +112,10 @@ def _upsert_account(
         # Throttle the last-seen touch: bumping updated_at on every
         # request makes every authenticated read a DB write + commit.
         # 60s granularity preserves the signal at ~1% of the write cost.
-        if account.updated_at is None or (now - account.updated_at).total_seconds() > 60:
+        if (
+            account.updated_at is None
+            or (now - account.updated_at).total_seconds() > 60
+        ):
             account.updated_at = now
             changed = True
         return account, changed

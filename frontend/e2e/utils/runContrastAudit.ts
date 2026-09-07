@@ -14,16 +14,22 @@ import {
  * @returns Array of contrast violations (empty when all pass)
  */
 export async function runContrastAudit(
-  page: Page
+  page: Page,
 ): Promise<ContrastViolation[]> {
   await injectAxe(page);
 
   const results = await page.evaluate(async (opts) => {
     // axe is attached to window by injectAxe()
-    return await (window as unknown as { axe: { run: (ctx: Document, o: unknown) => Promise<{ violations: unknown[] }> } }).axe.run(
-      document,
-      opts
-    );
+    return await (
+      window as unknown as {
+        axe: {
+          run: (
+            ctx: Document,
+            o: unknown,
+          ) => Promise<{ violations: unknown[] }>;
+        };
+      }
+    ).axe.run(document, opts);
   }, AXE_CONTRAST_OPTIONS);
 
   return (results.violations || []) as ContrastViolation[];
@@ -50,7 +56,7 @@ export function formatViolations(violations: ContrastViolation[]): string {
         ]
           .filter(Boolean)
           .join("\n");
-      })
+      }),
     )
     .join("\n\n");
 }

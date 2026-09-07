@@ -1,4 +1,5 @@
 """Synthetic signature test: does the detector separate shared vs solo?"""
+
 from datetime import datetime, timedelta, timezone
 
 from backend.services.sharing_signals import detect_sharing
@@ -7,6 +8,7 @@ from backend.services.sharing_signals import detect_sharing
 def _row(status="completed", days_ago=0, pre=None, post=None):
     class R:
         pass
+
     r = R()
     r.status = status
     r.completed_at = datetime.now(timezone.utc) - timedelta(days=days_ago)

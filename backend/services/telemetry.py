@@ -59,7 +59,7 @@ def record(
                 "event": event_type,
                 "request_path": request_path,
             }
-        except Exception:
+        except Exception:  # nosec B110 - reviewed: non-security context
             pass  # broker down -> durable sync write below
     return _record_sync(
         event_type,

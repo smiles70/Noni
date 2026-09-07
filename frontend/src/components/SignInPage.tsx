@@ -127,9 +127,8 @@ export default function SignInPage({ onSignedIn, onCancel }: Props) {
           link in a moment. There is no password to remember.
         </p>
         <p style={BODY}>
-          The link arrives by email from an address ending in mynaani.com.
-          We will never email or call you to ask for a password or payment
-          details.
+          The link arrives by email from an address ending in mynaani.com. We
+          will never email or call you to ask for a password or payment details.
         </p>
         {magicSent && (
           <p style={ALERT_TEXT} role="status">

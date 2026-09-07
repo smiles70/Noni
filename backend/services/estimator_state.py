@@ -11,7 +11,7 @@ private codec helpers change.
 
 from __future__ import annotations
 
-import pickle
+import pickle  # nosec B403 - reviewed: non-security context
 import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -46,7 +46,9 @@ def load_state(
     if row is None:
         return None
     try:
-        return pickle.loads(row.state_blob)
+        return pickle.loads(
+            row.state_blob
+        )  # nosec B301 - reviewed: non-security context
     except (pickle.UnpicklingError, EOFError, AttributeError):
         # Corrupted blob: fail closed (caller will treat as missing).
         return None

@@ -71,6 +71,8 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://noni-api-production.up.railway.app' }}
       - name: Bundle-size budget (gzipped, per chunk)
         run: npm run bundle-size
         working-directory: frontend
@@ -255,7 +257,7 @@ jobs:
       - name: Build backend image for scan
         run: docker build -t noni-api:scan -f Dockerfile .
       - name: Trivy backend image scan
-        uses: aquasecurity/trivy-action@v0.30.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: noni-api:scan
           severity: CRITICAL,HIGH
@@ -264,7 +266,7 @@ jobs:
       - name: Build frontend image for scan
         run: docker build -t noni-frontend:scan -f frontend/Dockerfile frontend
       - name: Trivy frontend image scan
-        uses: aquasecurity/trivy-action@v0.30.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: noni-frontend:scan
           severity: CRITICAL,HIGH

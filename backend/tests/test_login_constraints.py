@@ -226,7 +226,9 @@ def test_T_B3_token_rejected_by_signature_or_exp() -> None:
     assert r.json()["error"]["code"] == "auth.no_credential"
 
     # 4. Wrong scheme → also no_credential (parser rejects).
-    r = client.get("/api/v1/auth/session", headers={"Authorization": "Basic mock:x@y.z"})
+    r = client.get(
+        "/api/v1/auth/session", headers={"Authorization": "Basic mock:x@y.z"}
+    )
     assert r.status_code == 401, r.text
     assert r.json()["error"]["code"] == "auth.no_credential"
 

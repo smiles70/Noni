@@ -87,7 +87,12 @@ export default function OrgDashboardPage({ onBack }: { onBack: () => void }) {
 
   return (
     <main style={PAGE}>
-      <button type="button" onClick={onBack} style={BACK_BTN} aria-label="Go back">
+      <button
+        type="button"
+        onClick={onBack}
+        style={BACK_BTN}
+        aria-label="Go back"
+      >
         ← Back
       </button>
 
@@ -129,7 +134,8 @@ export default function OrgDashboardPage({ onBack }: { onBack: () => void }) {
           <section style={CARD}>
             <h2 style={H2}>{data.organization.name}</h2>
             <p style={BODY}>
-              Type: {data.organization.org_type} · Tier: {data.organization.tier}
+              Type: {data.organization.org_type} · Tier:{" "}
+              {data.organization.tier}
               {data.organization.community_size != null &&
                 ` · Community size: ${data.organization.community_size}`}
               {" · Status: "}
@@ -143,14 +149,14 @@ export default function OrgDashboardPage({ onBack }: { onBack: () => void }) {
               <p style={BODY}>Three steps, no rush:</p>
               <ul>
                 <li style={BODY}>1. Add a license — tell us how many seats.</li>
-                <li style={BODY}>2. We issue access codes for your staff to share.</li>
+                <li style={BODY}>
+                  2. We issue access codes for your staff to share.
+                </li>
                 <li style={BODY}>
                   3. Learners enter a code at sign-in — no card, no paywall.
                 </li>
               </ul>
-              <p style={BODY}>
-                Questions any time: help@mynaani.com
-              </p>
+              <p style={BODY}>Questions any time: help@mynaani.com</p>
             </section>
           )}
 
@@ -160,8 +166,9 @@ export default function OrgDashboardPage({ onBack }: { onBack: () => void }) {
               {data.engagement.min_cohort_met ? (
                 <p style={BODY}>
                   {data.engagement.learners_started} of {data.engagement.cohort}{" "}
-                  learners have started · {data.engagement.units_completed} units
-                  completed · {data.engagement.active_last_7d} active this week
+                  learners have started · {data.engagement.units_completed}{" "}
+                  units completed · {data.engagement.active_last_7d} active this
+                  week
                 </p>
               ) : (
                 <p style={BODY}>

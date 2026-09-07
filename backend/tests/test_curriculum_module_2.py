@@ -1,5 +1,6 @@
 """Sprint 17: Module 2 curriculum (sustained Claude use over time)."""
 
+import pytest
 from fastapi import Depends
 from fastapi.testclient import TestClient
 
@@ -14,13 +15,27 @@ def _mock_require_admin(account: Account = Depends(get_current_account)) -> Acco
     return account
 
 
-from backend.api.routes.curriculum import paid_bundle_dep
+from backend.api.routes.curriculum import paid_bundle_dep  # noqa: E402
 
 app.dependency_overrides[_require_admin] = _mock_require_admin
+
+
 # M2 is now paid-track (intake 2026-09-06-paywall-boundary-m2-001): these
 # content tests exercise behavior, not entitlement, so the gate is mocked —
 # same pattern as module_4/module_5 tests.
-app.dependency_overrides[paid_bundle_dep] = lambda: None
+@pytest.fixture(autouse=True)
+def _bypass_paid_gate():
+    """Override the entitlement gate for THIS module's tests only.
+
+    The previous module-level assignment leaked into the whole session
+    (import-time side effect) and masked the 402 contract for other
+    suites — a10 smoke caught it.
+    """
+    app.dependency_overrides[paid_bundle_dep] = lambda: None
+    yield
+    app.dependency_overrides.pop(paid_bundle_dep, None)
+
+
 client = TestClient(app)
 client.headers["Authorization"] = "Bearer mock:test@example.com"
 
@@ -128,7 +143,7 @@ def test_module_2_decision_recorded_with_audit_columns():
     matches = [
         r
         for r in rows
-        if r.get("request_path") == "/api/v1/curriculum/module-2/units/module2-unit-1"
+        if r.get("request_path") == "/api/curriculum/module-2/units/module2-unit-1"
     ]
     assert matches
     row = matches[-1]
@@ -138,7 +153,7 @@ def test_module_2_decision_recorded_with_audit_columns():
     # what matters is that the telemetry_requirements payload is recorded.
     import json
 
-    md = row.get("event_metadata") or {}
+    md = row.get("metadata") or row.get("event_metadata") or {}
     if isinstance(md, str):
         md = json.loads(md)
     assert "telemetry_requirements" in md

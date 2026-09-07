@@ -181,7 +181,7 @@ def test_smoke_signed_in_without_grant_hits_paywall(client):
 # ---------- 3. full purchase -> access -> refund -> no access ----------
 
 
-def test_smoke_full_purchase_grants_then_refund_revokes(client):
+def test_smoke_full_purchase_grants_then_refund_revokes(client, DbSession):
     _signin(client, "a10-buyer@example.test")
 
     # Before purchase: paywalled.
@@ -196,7 +196,12 @@ def test_smoke_full_purchase_grants_then_refund_revokes(client):
         event_type="checkout.session.completed",
         purchase_id=purchase_id,
     )
-    assert out["outcome"] == "granted"
+    assert out["status"] == "accepted"
+    with DbSession() as db:
+        from backend.models.billing import Purchase
+
+        p = db.query(Purchase).filter(Purchase.id == uuid.UUID(purchase_id)).one()
+        assert p.status == "paid"
 
     # Now the paid unit opens.
     r1 = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")
@@ -217,7 +222,12 @@ def test_smoke_full_purchase_grants_then_refund_revokes(client):
         event_type="charge.refunded",
         purchase_id=purchase_id,
     )
-    assert refunded["outcome"] == "refunded"
+    assert refunded["status"] == "accepted"
+    with DbSession() as db:
+        from backend.models.billing import Purchase
+
+        p = db.query(Purchase).filter(Purchase.id == uuid.UUID(purchase_id)).one()
+        assert p.status == "refunded"
 
     # Paid content is paywalled again.
     r3 = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")
@@ -251,7 +261,12 @@ def test_smoke_gift_flow_grants_only_recipient(client, DbSession):
         purchase_id=purchase_id,
         is_gift=True,
     )
-    assert out["outcome"] == "granted"  # purchase marked paid
+    assert out["status"] == "accepted"  # purchase marked paid (eager task)
+    with DbSession() as db:
+        from backend.models.billing import Purchase
+
+        p = db.query(Purchase).filter(Purchase.id == uuid.UUID(purchase_id)).one()
+        assert p.status == "paid"
 
     # Buyer does NOT have access (gift not claimed).
     r_buyer = client.get(f"/api/v1/curriculum/module-4/units/{PAID_UNIT}")

@@ -13,7 +13,7 @@ from sqlalchemy.orm import sessionmaker
 
 from backend.app.main import app
 from backend.core.config import settings
-from backend.models.billing import Entitlement, Product, Purchase
+from backend.models.billing import ProcessedWebhookEvent, Entitlement, Product, Purchase
 
 pytestmark = pytest.mark.skipif(
     "sqlite" in (os.environ.get("DATABASE_URL") or settings.DATABASE_URL),
@@ -153,11 +153,12 @@ def test_checkout_unknown_product_404(client):
 def test_checkout_self_purchase_creates_purchase_row(client, DbSession):
     _signin(client, "a4-self@example.test")
     r = client.post(
-        "/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": False}
+        "/api/v1/billing/checkout",
+        json={"product_code": PRODUCT_CODE, "is_gift": False},
     )
     assert r.status_code == 200, r.text
     body = r.json()
-    assert body["checkout_url"].startswith("https://mock-stripe.local/")
+    assert body["checkout_url"].startswith("/mock-checkout")
     purchase_id = uuid.UUID(body["purchase_id"])
     with DbSession() as db:
         p = db.query(Purchase).filter(Purchase.id == purchase_id).one()
@@ -196,7 +197,8 @@ def test_webhook_rejects_unsigned_body(client):
 def test_checkout_completed_grants_entitlement(client, DbSession):
     _signin(client, "a4-grant@example.test")
     r = client.post(
-        "/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": False}
+        "/api/v1/billing/checkout",
+        json={"product_code": PRODUCT_CODE, "is_gift": False},
     )
     purchase_id = r.json()["purchase_id"]
 
@@ -207,7 +209,11 @@ def test_checkout_completed_grants_entitlement(client, DbSession):
         purchase_id=purchase_id,
     )
     assert rw.status_code == 200, rw.text
-    assert rw.json()["outcome"] == "granted"
+    # Webhook processing is async (Sprint 27 H4); eager tasks finish
+    # before the response returns, so assert the recorded outcome.
+    with DbSession() as db:
+        ev = db.get(ProcessedWebhookEvent, "evt_a4_grant_1")
+        assert ev is not None and ev.idempotency_outcome == "granted"
 
     with DbSession() as db:
         p = db.query(Purchase).filter(Purchase.id == uuid.UUID(purchase_id)).one()
@@ -243,8 +249,14 @@ def test_duplicate_webhook_is_noop(client, DbSession):
     )
     assert r1.status_code == 200
     assert r2.status_code == 200
-    assert r1.json()["outcome"] == "granted"
-    assert r2.json()["outcome"] == "duplicate"
+    with DbSession() as db:
+        ev = db.get(ProcessedWebhookEvent, "evt_a4_dup_1")
+        assert ev is not None and ev.idempotency_outcome == "granted"
+        # second delivery is deduped: still exactly one row
+        assert (
+            db.query(ProcessedWebhookEvent).filter_by(event_id="evt_a4_dup_1").count()
+            == 1
+        )
 
 
 def test_refund_revokes_entitlement(client, DbSession):
@@ -265,7 +277,9 @@ def test_refund_revokes_entitlement(client, DbSession):
         purchase_id=purchase_id,
     )
     assert rr.status_code == 200
-    assert rr.json()["outcome"] == "refunded"
+    with DbSession() as db:
+        ev = db.get(ProcessedWebhookEvent, "evt_a4_refund_2")
+        assert ev is not None and ev.idempotency_outcome == "refunded"
     with DbSession() as db:
         p = db.query(Purchase).filter(Purchase.id == uuid.UUID(purchase_id)).one()
         assert p.status == "refunded"

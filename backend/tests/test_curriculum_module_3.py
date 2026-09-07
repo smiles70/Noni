@@ -9,6 +9,9 @@ from backend.api.deps import get_current_account
 from backend.api.routes.telemetry_export import _require_admin
 from backend.app.main import app
 from backend.models.accounts import Account
+import pytest
+
+from backend.api.routes.curriculum import paid_bundle_dep
 from backend.models.curriculum_units_module_3 import UNITS_MODULE_3
 
 
@@ -17,6 +20,17 @@ def _mock_require_admin(account: Account = Depends(get_current_account)) -> Acco
 
 
 app.dependency_overrides[_require_admin] = _mock_require_admin
+
+
+@pytest.fixture(autouse=True)
+def _bypass_paid_gate():
+    """M3 is paid-track since the M2 boundary move — bypass the gate for
+    content tests, scoped so it cannot leak into other suites."""
+    app.dependency_overrides[paid_bundle_dep] = lambda: None
+    yield
+    app.dependency_overrides.pop(paid_bundle_dep, None)
+
+
 client = TestClient(app)
 client.headers["Authorization"] = "Bearer mock:test@example.com"
 
@@ -117,13 +131,13 @@ def test_module_3_decision_recorded_with_audit_columns():
     matches = [
         r
         for r in rows
-        if r.get("request_path") == "/api/v1/curriculum/module-3/units/module3-unit-1"
+        if r.get("request_path") == "/api/curriculum/module-3/units/module3-unit-1"
     ]
     assert matches
     row = matches[-1]
     assert row["event"] == "iscs_decision"
     assert row["decision_reason"] == "approved"
-    md = row.get("event_metadata") or {}
+    md = row.get("metadata") or row.get("event_metadata") or {}
     if isinstance(md, str):
         md = json.loads(md)
     assert "telemetry_requirements" in md

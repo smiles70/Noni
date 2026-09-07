@@ -46,13 +46,13 @@ _celery_app.conf.update(task_always_eager=True, task_eager_propagates=True)
 # =============================================================================
 
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import pytest  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import create_engine  # noqa: E402
+from sqlalchemy.orm import sessionmaker  # noqa: E402
 
-from backend.app.main import app
-from backend.core.config import settings
+from backend.app.main import app  # noqa: E402
+from backend.core.config import settings  # noqa: E402
 
 # Safe test engine — isolated from production
 _test_engine = create_engine(

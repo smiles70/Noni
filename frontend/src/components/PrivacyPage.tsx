@@ -34,10 +34,9 @@ export default function PrivacyPage({ onBack }: Props) {
       <h1 style={H1}>Your privacy on mynaani</h1>
 
       <p style={BODY}>
-        This page explains, in plain language, what information we keep and
-        what we never collect. If anything here is unclear, the "Help and
-        common questions" page has more detail, and you can always write to
-        us.
+        This page explains, in plain language, what information we keep and what
+        we never collect. If anything here is unclear, the "Help and common
+        questions" page has more detail, and you can always write to us.
       </p>
 
       <div style={DIVIDER} />
@@ -49,17 +48,16 @@ export default function PrivacyPage({ onBack }: Props) {
           <ul style={UL}>
             <li>Your email address, so you can sign in.</li>
             <li>
-              Which lessons you have started and completed, so you can pick
-              up where you left off.
+              Which lessons you have started and completed, so you can pick up
+              where you left off.
             </li>
             <li>
-              If you joined through a gift or a community program, the code
-              you used.
+              If you joined through a gift or a community program, the code you
+              used.
             </li>
           </ul>
           <p>
-            That is the whole list. We do not collect anything else about
-            you.
+            That is the whole list. We do not collect anything else about you.
           </p>
         </div>
       </section>
@@ -72,12 +70,10 @@ export default function PrivacyPage({ onBack }: Props) {
           <ul style={UL}>
             <li>Your contacts, photos, or files.</li>
             <li>Your location.</li>
+            <li>What you do on other websites or in other apps.</li>
             <li>
-              What you do on other websites or in other apps.
-            </li>
-            <li>
-              Your card or bank details. Payment is handled on Stripe's
-              secure checkout page; card numbers never reach our system.
+              Your card or bank details. Payment is handled on Stripe's secure
+              checkout page; card numbers never reach our system.
             </li>
           </ul>
         </div>
@@ -89,14 +85,14 @@ export default function PrivacyPage({ onBack }: Props) {
         <h2 style={H2}>Who can see your progress</h2>
         <div style={BODY}>
           <p>
-            Your lesson progress belongs to you. If you joined through a
-            senior center or community program, the staff there can see
-            whether an access code was used — they cannot see your lessons,
-            your answers, or your activity.
+            Your lesson progress belongs to you. If you joined through a senior
+            center or community program, the staff there can see whether an
+            access code was used — they cannot see your lessons, your answers,
+            or your activity.
           </p>
           <p>
-            We do not sell or share your information with advertisers, and
-            we do not use tracking cookies for advertising.
+            We do not sell or share your information with advertisers, and we do
+            not use tracking cookies for advertising.
           </p>
         </div>
       </section>
@@ -108,9 +104,12 @@ export default function PrivacyPage({ onBack }: Props) {
         <div style={BODY}>
           <p>
             A small number of specialist companies help us run mynaani. Each
-            handles only what it needs to:</p>
+            handles only what it needs to:
+          </p>
           <ul style={UL}>
-            <li>Stripe — processes payments; card details go to them, not us.</li>
+            <li>
+              Stripe — processes payments; card details go to them, not us.
+            </li>
             <li>Magic.link — sends your sign-in link and verifies it.</li>
             <li>Railway — hosts the service and its database.</li>
             <li>Cloudflare — delivers pages quickly and safely.</li>
@@ -125,8 +124,8 @@ export default function PrivacyPage({ onBack }: Props) {
         <h2 style={H2}>Reporting a concern</h2>
         <div style={BODY}>
           <p>
-            If you believe you have found a security problem, or something
-            about your information worries you, write to us at{" "}
+            If you believe you have found a security problem, or something about
+            your information worries you, write to us at{" "}
             <a href="mailto:hello@mynaani.com" style={LINK}>
               hello@mynaani.com
             </a>
@@ -138,14 +137,14 @@ export default function PrivacyPage({ onBack }: Props) {
         <div style={BODY}>
           <p>
             You can delete your account at any time from the "Your account"
-            page. Deletion is scheduled 30 days later, and you can cancel
-            it during that time. After 30 days your account and associated
-            data are removed permanently.
+            page. Deletion is scheduled 30 days later, and you can cancel it
+            during that time. After 30 days your account and associated data are
+            removed permanently.
           </p>
           <p>
-            Your information travels to us over an encrypted connection. We
-            keep your account and progress for as long as your account
-            exists. Purchase records are kept as required for tax purposes.
+            Your information travels to us over an encrypted connection. We keep
+            your account and progress for as long as your account exists.
+            Purchase records are kept as required for tax purposes.
           </p>
           <p>
             Questions are always welcome at{" "}
