@@ -97,6 +97,10 @@ jobs:
     # GitHub `production` environment so protection rules apply.
     environment: production
     env:
+      # Railway project tokens are ENVIRONMENT-SCOPED: the shared
+      # RAILWAY_TOKEN can only see `staging` ("Environment not found" on
+      # production). The `production` GitHub environment must carry its own
+      # token (secrets.RAILWAY_TOKEN set at the environment level).
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       RAILWAY_SERVICE: noni-api
       DEPLOY_ENVIRONMENT: production
