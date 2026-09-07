@@ -14,7 +14,8 @@ from datetime import datetime, timedelta, timezone
 
 from backend.core.database import SessionLocal
 from backend.models.governance import OrgAuditLog
-from backend.models.organizations import OrgLicense
+from backend.models.organizations import Organization, OrgLicense
+from backend.services import email
 from backend.tasks.celery_app import app
 
 log = logging.getLogger(__name__)
@@ -62,6 +63,27 @@ def license_renewal_reminders() -> dict:
                     )
                 )
                 flagged += 1
+                # Deliver the notice (deferred-safe: email never blocks the
+                # audit row; failure only means no email today).
+                org = (
+                    db.query(Organization)
+                    .filter(Organization.id == lic.organization_id)
+                    .one_or_none()
+                )
+                if org is not None and org.admin_email:
+                    days = (lic.expires_at - now).days
+                    text = (
+                        f"A note from mynaani: the site license for {org.name} "
+                        f"renews in about {days} days.\n\n"
+                        "When you are ready, reply to this email or write to "
+                        "help@mynaani.com and we will take care of it together.\n\n"
+                        "— mynaani"
+                    )
+                    email.send(
+                        org.admin_email,
+                        "Your community license renewal is coming up",
+                        text,
+                    )
         db.commit()
         return {"expiring": len(expiring), "flagged": flagged}
     finally:
