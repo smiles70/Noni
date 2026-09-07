@@ -254,8 +254,8 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
         should_log = (
             is_error
             or settings.LOG_SAMPLING_RATE >= 1.0
-            or random.random() < settings.LOG_SAMPLING_RATE
-            # nosec B311 - sampling rate, not crypto
+            or random.random()
+            < settings.LOG_SAMPLING_RATE  # nosec B311 - sampling, not crypto
         )
         if should_log:
             log_level = logging.WARNING if is_error else logging.INFO

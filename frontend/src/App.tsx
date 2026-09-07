@@ -9,10 +9,14 @@
  */
 import { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import LandingPage from "./components/LandingPage";
-import SignInPage from "./components/SignInPage";
-import AuthPendingBanner from "./components/AuthPendingBanner";
-import AuthBlockedNotice from "./components/AuthBlockedNotice";
+const LandingPage = lazy(() => import("./components/LandingPage"));
+const SignInPage = lazy(() => import("./components/SignInPage"));
+const AuthPendingBanner = lazy(
+  () => import("./components/AuthPendingBanner"),
+);
+const AuthBlockedNotice = lazy(
+  () => import("./components/AuthBlockedNotice"),
+);
 import LoadingSkeleton from "./components/LoadingSkeleton";
 import RequireAuth from "./components/RequireAuth";
 import OnboardingErrorBoundary from "./components/OnboardingErrorBoundary";
@@ -163,10 +167,12 @@ const App: React.FC = () => {
     return (
       <>
         <main data-component="BlockedNotice">
-          <AuthBlockedNotice
-            errorCode={state?.errorCode}
-            onSignIn={handleSignInAgain}
-          />
+          <Suspense fallback={<LoadingSkeleton />}>
+            <AuthBlockedNotice
+              errorCode={state?.errorCode}
+              onSignIn={handleSignInAgain}
+            />
+          </Suspense>
         </main>
       </>
     );
@@ -176,7 +182,9 @@ const App: React.FC = () => {
   const loadFallback = <LoadingSkeleton />;
 
   const onSignInPage = (
-    <SignInPage onSignedIn={() => {}} onCancel={goLanding} />
+    <Suspense fallback={<LoadingSkeleton />}>
+      <SignInPage onSignedIn={() => {}} onCancel={goLanding} />
+    </Suspense>
   );
 
   // F6: TRANSIENT_ERROR surfaces a non-alarming reconnect banner above
@@ -184,7 +192,9 @@ const App: React.FC = () => {
   // failures, so we keep rendering routes underneath.
   const transientBanner =
     status === "TRANSIENT_ERROR" ? (
-      <AuthPendingBanner onRetry={retryAuth} />
+      <Suspense fallback={null}>
+        <AuthPendingBanner onRetry={retryAuth} />
+      </Suspense>
     ) : null;
 
   return (
@@ -200,11 +210,13 @@ const App: React.FC = () => {
               <Route
                 path="/"
                 element={
-                  <LandingPage
-                    onBegin={goCurriculum}
-                    signedIn={isReady}
-                    onHelp={goHelp}
-                  />
+                  <Suspense fallback={<LoadingSkeleton />}>
+                    <LandingPage
+                      onBegin={goCurriculum}
+                      signedIn={isReady}
+                      onHelp={goHelp}
+                    />
+                  </Suspense>
                 }
               />
               <Route path="/signin" element={onSignInPage} />

@@ -197,8 +197,10 @@ def client_ip(request: Request) -> str:
         request.headers.get("cf-connecting-ip")
         or request.headers.get("x-forwarded-for", "").split(",")[0].strip()
         or (
-            request.client.host if request.client else "0.0.0.0"
-        )  # nosec B104 - reviewed: non-security context
+            request.client.host
+            if request.client
+            else "0.0.0.0"  # nosec B104 - display fallback, not a bind
+        )
     )
 
 
