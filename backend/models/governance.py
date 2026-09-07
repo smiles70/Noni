@@ -16,6 +16,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
+    Text,
 )
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -73,4 +74,22 @@ class OrgAuditLog(Base):
     )
     action = Column(String(48), nullable=False)
     detail = Column(String(512), nullable=False, default="")
+    created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
+
+
+class AccountFlag(Base):
+    """Internal support flags on accounts — e.g. sharing-signal scan.
+
+    Separate from OrgAuditLog because a flagged account may not belong
+    to any organization (B2C). Never user-facing; support tooling only.
+    """
+
+    __tablename__ = "account_flags"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    account_id = Column(
+        UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=False, index=True
+    )
+    flag = Column(String(64), nullable=False)
+    detail = Column(Text, nullable=False, default="")
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)

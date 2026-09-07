@@ -216,9 +216,14 @@ export default function CurriculumMenu(props: Props) {
           Course overview
         </h1>
         <p style={INTRO} data-component="Body">
-          Here is the full course at a glance. Modules 0–2 are free. Modules 3–5
+          Here is the full course at a glance. Modules 0–1 are free. Modules 2–5
           are available after a one-time purchase. Tap any free lesson to jump
           straight to it.
+        </p>
+        <p style={INTRO} data-component="Body">
+          This journey is shaped around one learner — your answers and your
+          pace make it yours. If friends or neighbours would like their own
+          journey, a community can arrange shared access at mynaani.com/for-communities.
         </p>
 
         {menu.modules.map((mod) => (
