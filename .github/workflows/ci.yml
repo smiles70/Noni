@@ -217,8 +217,10 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
+          # On push, diff against the pre-push commit; on PR, against the
+          # default branch. base==HEAD is a hard error in TruffleHog.
+          base: ${{ github.event_name == 'push' && github.event.before || github.event.repository.default_branch }}
+          head: ${{ github.event_name == 'push' && github.sha || 'HEAD' }}
           extra_args: --only-verified
 
   docker-build:
