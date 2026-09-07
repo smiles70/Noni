@@ -26,6 +26,8 @@ interface OrgDetail {
     contact_email: string;
     admin_email: string;
     status: string;
+    suspension_reason?: string | null;
+    suspended_at?: string | null;
     org_type: string;
     tier: string;
     slug: string | null;
@@ -167,6 +169,65 @@ export function OrgsView({
             {o.org_type} · {o.tier} tier
             {o.community_size ? ` · size ${o.community_size}` : ""}
           </p>
+          {o.status === "suspended" && (
+            <p
+              style={{
+                margin: "4px 0",
+                fontSize: 14,
+                color: COLORS.errorConfirm,
+              }}
+            >
+              Suspended{o.suspension_reason ? ` — ${o.suspension_reason}` : ""}.
+              Learners keep existing access; new code redemption is off.
+            </p>
+          )}
+          <button
+            type="button"
+            style={{
+              fontSize: 13,
+              color: COLORS.accentMutedBlue,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+            }}
+            onClick={() => {
+              if (o.status === "suspended") {
+                if (
+                  window.confirm(
+                    "Reinstate this organization? Child sites stay as they are.",
+                  )
+                ) {
+                  apiClient
+                    .post(`/api/v1/billing/org/${o.id}/reinstate`, {
+                      include_children: false,
+                    })
+                    .then(() => reload(o.id))
+                    .catch(() => setError("Reinstate failed — check the API."));
+                }
+                return;
+              }
+              const reason = window.prompt(
+                "Suspend this organization? Learners keep existing access; all code redemption stops. Reason:",
+                "",
+              );
+              if (!reason) return;
+              const includeChildren = window.confirm(
+                "Also suspend child sites (second buildings)? Cancel = this site only.",
+              );
+              apiClient
+                .post(`/api/v1/billing/org/${o.id}/suspend`, {
+                  reason,
+                  include_children: includeChildren,
+                })
+                .then(() => reload(o.id))
+                .catch(() => setError("Suspend failed — check the API."));
+            }}
+          >
+            {o.status === "suspended"
+              ? "Reinstate organization"
+              : "Suspend organization"}
+          </button>
           <p style={{ margin: "4px 0", fontSize: 14 }}>
             Contact: {o.contact_email}
             {o.phone ? ` · ${o.phone}` : ""}

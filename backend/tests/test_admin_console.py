@@ -308,3 +308,101 @@ def test_license_lifecycle_staff_only(client, authenticated_client):
         headers={},
     )
     assert r.status_code in (401, 403)
+
+
+# ---------- ADMIN-OPS E2: org suspend/reinstate ----------
+
+
+def test_org_suspend_blocks_redeem_and_codes(client, monkeypatch):
+    headers = _staff_headers(client, monkeypatch)
+    org_id = _create_org(client, headers)
+    lic_id = _create_license(client, headers, org_id, seats=2)
+    codes = client.post(
+        f"/api/v1/billing/org/{lic_id}/codes",
+        json={"count": 2},
+        headers=headers,
+    ).json()["codes"]
+
+    r = client.post(
+        f"/api/v1/billing/org/{org_id}/suspend",
+        json={"reason": "contract lapse"},
+        headers=headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["status"] == "suspended"
+
+    # code generation blocked
+    r = client.post(
+        f"/api/v1/billing/org/{lic_id}/codes",
+        json={"count": 1},
+        headers=headers,
+    )
+    assert r.status_code == 410
+    assert r.json()["detail"]["envelope_id"] == "org.org_suspended"
+
+    # redemption blocked
+    r = client.post(
+        "/api/v1/billing/org/redeem",
+        json={"code": codes[0]},
+        headers={"Authorization": "Bearer mock:e2-learner@example.com"},
+    )
+    assert r.status_code == 410
+    assert r.json()["detail"]["envelope_id"] == "org.org_suspended"
+
+    # reinstate restores redemption
+    r = client.post(
+        f"/api/v1/billing/org/{org_id}/reinstate",
+        json={"include_children": False},
+        headers=headers,
+    )
+    assert r.status_code == 200
+    assert r.json()["status"] == "active"
+
+    r = client.post(
+        "/api/v1/billing/org/redeem",
+        json={"code": codes[0]},
+        headers={"Authorization": "Bearer mock:e2-learner@example.com"},
+    )
+    assert r.status_code == 200, r.text
+
+    audit = client.get("/api/v1/admin/audit?q=org.suspend", headers=headers).json()
+    assert any("contract lapse" in e["detail"] for e in audit["entries"])
+
+
+def test_org_suspend_does_not_cascade_by_default(client, monkeypatch):
+    headers = _staff_headers(client, monkeypatch)
+    parent_id = _create_org(client, headers, name="Parent Co")
+    child_id = _create_org(
+        client,
+        headers,
+        name="Child Co",
+        contact_email="c@child.example",
+        admin_email="a@child.example",
+        parent_org_id=parent_id,
+    )
+
+    client.post(
+        f"/api/v1/billing/org/{parent_id}/suspend",
+        json={"reason": "parent suspend"},
+        headers=headers,
+    )
+
+    detail = client.get(f"/api/v1/admin/orgs/{child_id}", headers=headers).json()
+    assert detail["org"]["status"] == "active"
+
+    # explicit include_children cascades
+    client.post(
+        f"/api/v1/billing/org/{parent_id}/suspend",
+        json={"reason": "parent+children", "include_children": True},
+        headers=headers,
+    )
+    detail = client.get(f"/api/v1/admin/orgs/{child_id}", headers=headers).json()
+    assert detail["org"]["status"] == "suspended"
+
+
+def test_org_suspend_staff_only(client):
+    r = client.post(
+        "/api/v1/billing/org/00000000-0000-0000-0000-000000000000/suspend",
+        json={"reason": "x"},
+    )
+    assert r.status_code in (401, 403)

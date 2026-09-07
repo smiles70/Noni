@@ -109,6 +109,21 @@ class LicenseSuspendRequest(BaseModel):
     reason: str = Field(..., min_length=1, max_length=256)
 
 
+class OrgSuspendRequest(BaseModel):
+    reason: str = Field(..., min_length=1, max_length=256)
+    include_children: bool = False
+
+
+class OrgReinstateRequest(BaseModel):
+    include_children: bool = False
+
+
+class OrgStateResponse(BaseModel):
+    id: str
+    status: str
+    suspension_reason: Optional[str]
+
+
 class RedeemRequest(BaseModel):
     code: str = Field(..., min_length=8)
 
@@ -245,6 +260,44 @@ def reinstate_license(
     staff: Account = Depends(require_staff),
 ) -> LicenseStateResponse:
     return _license_state(org_service.reinstate_license(db, staff, license_id))
+
+
+@router.post("/org/{org_id}/suspend", response_model=OrgStateResponse)
+def suspend_org(
+    org_id: uuid.UUID,
+    body: OrgSuspendRequest,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> OrgStateResponse:
+    org = org_service.suspend_org(
+        db,
+        staff,
+        org_id,
+        reason=body.reason,
+        include_children=body.include_children,
+    )
+    return OrgStateResponse(
+        id=str(org.id),
+        status=org.status,
+        suspension_reason=org.suspension_reason,
+    )
+
+
+@router.post("/org/{org_id}/reinstate", response_model=OrgStateResponse)
+def reinstate_org(
+    org_id: uuid.UUID,
+    body: OrgReinstateRequest,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> OrgStateResponse:
+    org = org_service.reinstate_org(
+        db, staff, org_id, include_children=body.include_children
+    )
+    return OrgStateResponse(
+        id=str(org.id),
+        status=org.status,
+        suspension_reason=org.suspension_reason,
+    )
 
 
 @router.post("/org/{license_id}/codes", response_model=CodesResponse, status_code=201)

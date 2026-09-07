@@ -37,6 +37,11 @@ class Organization(Base):
     contact_email = Column(String(256), nullable=False)
     admin_email = Column(String(256), nullable=False)
     status = Column(String(32), nullable=False, default="active")
+    # ADMIN-OPS E2: "suspended" blocks redemption + code generation for
+    # all this org's licenses; granted learner entitlements untouched.
+    # Children are not cascaded by default.
+    suspension_reason = Column(String(256), nullable=True)
+    suspended_at = Column(DateTime(timezone=True), nullable=True)
     # OB-1: B2B onboarding fields (spec 2026-09-06-b2b-onboarding-spec-001).
     org_type = Column(String(16), nullable=False, default="nonprofit")
     community_size = Column(Integer, nullable=True)
