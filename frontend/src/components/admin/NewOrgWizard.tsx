@@ -87,30 +87,33 @@ export function NewOrgWizard({
     setError("");
     try {
       // Step 1: org + location + contacts
-      const c = await apiClient.post<{ id: string }>("/api/v1/org/create", {
-        name: form.name.trim(),
-        contact_email: form.contact_email.trim(),
-        admin_email: form.admin_email.trim() || form.contact_email.trim(),
-        org_type: form.org_type,
-        tier: form.tier,
-        community_size: form.community_size
-          ? Number(form.community_size)
-          : null,
-        address_line1: form.address_line1 || null,
-        city: form.city || null,
-        state: form.state || null,
-        postal_code: form.postal_code || null,
-        phone: form.phone || null,
-        contacts: contacts
-          .filter((x) => x.name.trim())
-          .map((x) => ({
-            name: x.name.trim(),
-            email: x.email || null,
-            phone: x.phone || null,
-            role: x.role,
-            is_primary: x.is_primary,
-          })),
-      });
+      const c = await apiClient.post<{ id: string }>(
+        "/api/v1/billing/org/create",
+        {
+          name: form.name.trim(),
+          contact_email: form.contact_email.trim(),
+          admin_email: form.admin_email.trim() || form.contact_email.trim(),
+          org_type: form.org_type,
+          tier: form.tier,
+          community_size: form.community_size
+            ? Number(form.community_size)
+            : null,
+          address_line1: form.address_line1 || null,
+          city: form.city || null,
+          state: form.state || null,
+          postal_code: form.postal_code || null,
+          phone: form.phone || null,
+          contacts: contacts
+            .filter((x) => x.name.trim())
+            .map((x) => ({
+              name: x.name.trim(),
+              email: x.email || null,
+              phone: x.phone || null,
+              role: x.role,
+              is_primary: x.is_primary,
+            })),
+        },
+      );
       const orgId = c.data.id;
 
       // Step 2: license
@@ -118,7 +121,7 @@ export function NewOrgWizard({
       let codes: string[] = [];
       if (seats > 0) {
         const lic = await apiClient.post<{ id: string }>(
-          `/api/v1/org/${orgId}/license`,
+          `/api/v1/billing/org/${orgId}/license`,
           {
             product_code: "modules_4_5", // the org site-license product (seeded)
             total_seats: seats,
@@ -131,7 +134,7 @@ export function NewOrgWizard({
         );
         // Step 3: codes are generated per-license, not per-org.
         const r = await apiClient.post<{ codes: string[] }>(
-          `/api/v1/org/${lic.data.id}/codes`,
+          `/api/v1/billing/org/${lic.data.id}/codes`,
           { count: seats },
         );
         codes = r.data.codes ?? [];
@@ -141,7 +144,7 @@ export function NewOrgWizard({
       let slug: string | null = null;
       if (form.slug.trim()) {
         try {
-          await apiClient.post(`/api/v1/org/${orgId}/slug`, {
+          await apiClient.post(`/api/v1/billing/org/${orgId}/slug`, {
             slug: form.slug.trim().toLowerCase(),
           });
           slug = form.slug.trim().toLowerCase();
