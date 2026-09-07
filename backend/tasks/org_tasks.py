@@ -88,3 +88,59 @@ def license_renewal_reminders() -> dict:
         return {"expiring": len(expiring), "flagged": flagged}
     finally:
         db.close()
+
+
+@app.task(name="backend.tasks.org_tasks.sharing_pattern_scan")
+def sharing_pattern_scan() -> dict:
+    """Weekly passive scan: flags accounts whose Progress signature looks
+    like several hands on one login. Output is an audit row + a support
+    flag ONLY — it never restricts or notifies the learner. Outreach is
+    a warm human conversation offering a community license."""
+    import uuid as _uuid
+
+    from backend.models.governance import AccountFlag
+    from backend.models.learning import Progress
+    from backend.services.sharing_signals import detect_sharing
+
+    db = SessionLocal()
+    try:
+        account_ids = [r[0] for r in db.query(Progress.account_id).distinct().all()]
+        flagged = 0
+        today = datetime.now(timezone.utc).date().isoformat()
+        for aid in account_ids:
+            rows = db.query(Progress).filter(Progress.account_id == aid).all()
+            res = detect_sharing(rows)
+            if not res["flag"]:
+                continue
+            # idempotent per day
+            already = (
+                db.query(AccountFlag)
+                .filter(
+                    AccountFlag.account_id == aid,
+                    AccountFlag.flag == "sharing_signal",
+                    AccountFlag.detail.like(f"%{today}%"),
+                )
+                .first()
+            )
+            if already is None:
+                db.add(
+                    AccountFlag(
+                        id=_uuid.uuid4(),
+                        account_id=aid,
+                        flag="sharing_signal",
+                        detail=f"date={today} reasons={','.join(res['reasons'])}",
+                    )
+                )
+                flagged += 1
+        db.commit()
+        if flagged:
+            email.send(
+                "help@mynaani.com",
+                f"{flagged} account(s) show a sharing pattern — gentle outreach list",
+                "These accounts show usage patterns consistent with several "
+                "people sharing one login. Please reach out warmly — offer the "
+                "community license; do not mention monitoring or restrict access.",
+            )
+        return {"scanned": len(account_ids), "flagged": flagged}
+    finally:
+        db.close()
