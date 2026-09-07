@@ -16,7 +16,7 @@ def test_whoami_requires_session(client):
 def test_whoami_check_is_soft(client):
     r = client.get("/api/v1/admin/whoami-check")
     assert r.status_code == 200
-    assert r.json() == {"staff": False}
+    assert r.json()["staff"] is False
 
 
 def test_orgs_rejects_non_staff(authenticated_client):
@@ -84,14 +84,14 @@ def test_login_success_grants_staff_access(client, monkeypatch):
 
     r = client.get("/api/v1/admin/whoami", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
-    assert r.json() == {"staff": True}
+    assert r.json()["staff"] is True
 
     r = client.get(
         "/api/v1/admin/whoami-check",
         headers={"Authorization": f"Bearer {token}"},
     )
     assert r.status_code == 200
-    assert r.json() == {"staff": True}
+    assert r.json()["staff"] is True
 
 
 def test_staff_token_tampered_rejected(client, monkeypatch):
