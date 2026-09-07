@@ -56,7 +56,7 @@ class Progress(Base):
     first_started_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     completed_at = Column(DateTime(timezone=True), nullable=True)
     page_count_seen = Column(Integer, nullable=False, default=0)
-    confidence_pre = Column(Integer, nullable=True)   # 1-5, asked at unit start
+    confidence_pre = Column(Integer, nullable=True)  # 1-5, asked at unit start
     confidence_post = Column(Integer, nullable=True)  # 1-5, asked at completion
 
 

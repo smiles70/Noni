@@ -1,4 +1,5 @@
 """Gift-lifecycle email contract tests (intake 2026-09-06)."""
+
 from unittest.mock import patch
 from backend.services import email
 
@@ -9,14 +10,20 @@ def test_send_noops_without_key():
 
 
 def test_send_swallows_provider_errors():
-    with patch.object(email.settings, "RESEND_API_KEY", "re_x"),          patch("backend.services.email.httpx.post", side_effect=Exception("down")):
+    with (
+        patch.object(email.settings, "RESEND_API_KEY", "re_x"),
+        patch("backend.services.email.httpx.post", side_effect=Exception("down")),
+    ):
         assert email.send("a@b.c", "s", "t") is False
 
 
 def test_gift_receipt_copy_is_calm():
     """Geragogy: no exclamation marks, no urgency words."""
     {}
-    with patch.object(email.settings, "RESEND_API_KEY", "re_x"),          patch("backend.services.email.httpx.post") as m:
+    with (
+        patch.object(email.settings, "RESEND_API_KEY", "re_x"),
+        patch("backend.services.email.httpx.post") as m,
+    ):
         m.return_value.status_code = 200
         email.send_gift_receipt("giver@x.com", "https://mynaani.com/gift-redeem")
     body = m.call_args[1]["json"]["text"].lower()
@@ -28,7 +35,10 @@ def test_gift_receipt_copy_is_calm():
 
 def test_gift_claimed_copy_is_calm():
     {}
-    with patch.object(email.settings, "RESEND_API_KEY", "re_x"),          patch("backend.services.email.httpx.post") as m:
+    with (
+        patch.object(email.settings, "RESEND_API_KEY", "re_x"),
+        patch("backend.services.email.httpx.post") as m,
+    ):
         m.return_value.status_code = 200
         email.send_gift_claimed("giver@x.com")
     body = m.call_args[1]["json"]["text"]
@@ -38,7 +48,11 @@ def test_gift_claimed_copy_is_calm():
 
 def test_override_redirects_recipient():
     """EMAIL_OVERRIDE_TO catch-all routes every send to the test address."""
-    with patch.object(email.settings, "RESEND_API_KEY", "re_x"),          patch.object(email.settings, "EMAIL_OVERRIDE_TO", "steven@mindbyndr.com"),          patch("backend.services.email.httpx.post") as m:
+    with (
+        patch.object(email.settings, "RESEND_API_KEY", "re_x"),
+        patch.object(email.settings, "EMAIL_OVERRIDE_TO", "steven@mindbyndr.com"),
+        patch("backend.services.email.httpx.post") as m,
+    ):
         m.return_value.status_code = 200
         email.send("real-user@example.com", "s", "t")
     assert m.call_args[1]["json"]["to"] == ["steven@mindbyndr.com"]

@@ -46,7 +46,9 @@ def load_state(
     if row is None:
         return None
     try:
-        return pickle.loads(row.state_blob)  # nosec B301 - reviewed: non-security context
+        return pickle.loads(
+            row.state_blob
+        )  # nosec B301 - reviewed: non-security context
     except (pickle.UnpicklingError, EOFError, AttributeError):
         # Corrupted blob: fail closed (caller will treat as missing).
         return None

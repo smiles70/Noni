@@ -34,7 +34,9 @@ class OrganizationCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=256)
     contact_email: str = Field(..., min_length=1, max_length=256)
     admin_email: str = Field(..., min_length=1, max_length=256)
-    org_type: str = Field(default="nonprofit", pattern="^(nonprofit|for_profit|health_plan)$")
+    org_type: str = Field(
+        default="nonprofit", pattern="^(nonprofit|for_profit|health_plan)$"
+    )
     community_size: Optional[int] = Field(default=None, ge=1)
     tier: str = Field(default="site", max_length=32)
     custom_flag: bool = False
@@ -125,11 +127,14 @@ def create_organization(
     )
     db.add(org)
     db.flush()
-    db.add(OrgAuditLog(
-        organization_id=org.id, actor_account_id=staff.id,
-        action="org.create",
-        detail=f"name={body.name} type={body.org_type} tier={body.tier}",
-    ))
+    db.add(
+        OrgAuditLog(
+            organization_id=org.id,
+            actor_account_id=staff.id,
+            action="org.create",
+            detail=f"name={body.name} type={body.org_type} tier={body.tier}",
+        )
+    )
     db.flush()
     return org
 
@@ -172,11 +177,14 @@ def create_license(
     )
     db.add(license_)
     db.flush()
-    db.add(OrgAuditLog(
-        organization_id=org_id, actor_account_id=staff.id,
-        action="license.create",
-        detail=f"seats={body.total_seats} amount_cents={body.amount_cents} invoice={body.invoice_ref or 'card'}",
-    ))
+    db.add(
+        OrgAuditLog(
+            organization_id=org_id,
+            actor_account_id=staff.id,
+            action="license.create",
+            detail=f"seats={body.total_seats} amount_cents={body.amount_cents} invoice={body.invoice_ref or 'card'}",
+        )
+    )
     db.flush()
     return license_
 
@@ -287,7 +295,9 @@ def redeem_code(
         )
 
     license_ = access.license
-    if license_.expires_at is not None and license_.expires_at < datetime.now(timezone.utc):
+    if license_.expires_at is not None and license_.expires_at < datetime.now(
+        timezone.utc
+    ):
         raise HTTPException(
             status_code=status.HTTP_410_GONE,
             detail={"envelope_id": "org.license_expired"},
@@ -332,7 +342,11 @@ def _license_engagement(db: DbSession, codes) -> dict:
         .filter(Progress.account_id.in_(ids), Progress.status == "completed")
         .count()
     )
-    return {"cohort": len(ids), "min_cohort_met": True, "units_completed": completed}  # k-anonymity floor: never report engagement below this
+    return {
+        "cohort": len(ids),
+        "min_cohort_met": True,
+        "units_completed": completed,
+    }  # k-anonymity floor: never report engagement below this
 
 
 def _org_engagement(db: DbSession, org_id: uuid.UUID) -> dict:
@@ -360,7 +374,8 @@ def _org_engagement(db: DbSession, org_id: uuid.UUID) -> dict:
     active_7d = sum(
         1
         for r in rows
-        if r.completed_at and r.completed_at >= week_ago
+        if r.completed_at
+        and r.completed_at >= week_ago
         or r.first_started_at >= week_ago
     )
     deltas = [
@@ -373,7 +388,9 @@ def _org_engagement(db: DbSession, org_id: uuid.UUID) -> dict:
             "units_completed": completed,
             "active_last_7d": min(active_7d, n),
             "avg_confidence_delta": (
-                round(sum(deltas) / len(deltas), 2) if len(deltas) >= MIN_COHORT else None
+                round(sum(deltas) / len(deltas), 2)
+                if len(deltas) >= MIN_COHORT
+                else None
             ),
             "learners_started": len(
                 {r.account_id for r in rows if r.status in ("started", "completed")}
@@ -451,22 +468,24 @@ def org_dashboard(
     lic_rows = []
     for lic in licenses:
         codes = db.query(AccessCode).filter(AccessCode.license_id == lic.id).all()
-        lic_rows.append({
-            "license_id": str(lic.id),
-            "product_code": lic.product_code,
-            "total_seats": lic.total_seats,
-            "used_seats": lic.used_seats,
-            "codes_issued": len(codes),
-            "codes_claimed": sum(1 for c in codes if c.claimed_by_account_id),
-            "engagement": _license_engagement(db, codes),
-            "expires_at": lic.expires_at.isoformat() if lic.expires_at else None,
-            "expired": bool(lic.expires_at and lic.expires_at < now),
-            "expiring_soon": bool(
-                lic.expires_at
-                and now < lic.expires_at
-                and (lic.expires_at - now).days <= 30
-            ),
-        })
+        lic_rows.append(
+            {
+                "license_id": str(lic.id),
+                "product_code": lic.product_code,
+                "total_seats": lic.total_seats,
+                "used_seats": lic.used_seats,
+                "codes_issued": len(codes),
+                "codes_claimed": sum(1 for c in codes if c.claimed_by_account_id),
+                "engagement": _license_engagement(db, codes),
+                "expires_at": lic.expires_at.isoformat() if lic.expires_at else None,
+                "expired": bool(lic.expires_at and lic.expires_at < now),
+                "expiring_soon": bool(
+                    lic.expires_at
+                    and now < lic.expires_at
+                    and (lic.expires_at - now).days <= 30
+                ),
+            }
+        )
     return {
         "organization": {
             "id": str(org.id),
@@ -480,8 +499,13 @@ def org_dashboard(
         "licenses": lic_rows,
         "engagement": _org_engagement(db, org_id),
         "children": [
-            {"id": str(c.id), "name": c.name, "status": c.status,
-             "org_type": c.org_type, "tier": c.tier}
+            {
+                "id": str(c.id),
+                "name": c.name,
+                "status": c.status,
+                "org_type": c.org_type,
+                "tier": c.tier,
+            }
             for c in db.query(Organization)
             .filter(Organization.parent_org_id == org_id)
             .all()

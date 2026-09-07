@@ -25,7 +25,11 @@ from sqlalchemy.orm import Session as DbSession
 
 from backend.core.config import settings
 from backend.models.organizations import AccessCode, OrgLicense
-from backend.services.rate_limit import RateLimit, _check_redis_token_bucket, _get_redis_client
+from backend.services.rate_limit import (
+    RateLimit,
+    _check_redis_token_bucket,
+    _get_redis_client,
+)
 
 log = logging.getLogger(__name__)
 
@@ -76,5 +80,7 @@ def resolve_org_id(db: DbSession, account_id: uuid.UUID) -> Optional[str]:
 
 def org_admission_allowed(org_id: str) -> bool:
     """True = proceed. False = over quota. Fails open without Redis."""
-    result = _check_redis_token_bucket(_ORG_QUOTA, hashlib.sha256(org_id.encode()).hexdigest()[:16])
+    result = _check_redis_token_bucket(
+        _ORG_QUOTA, hashlib.sha256(org_id.encode()).hexdigest()[:16]
+    )
     return result is not False

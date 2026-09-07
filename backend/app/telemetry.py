@@ -96,7 +96,8 @@ def record_auth_session_outcome(code: str, latency_ms: int | None = None) -> Non
         logger.info(
             "auth.session.outcome", extra={"code": code, "latency_ms": latency_ms}
         )
-    except Exception:  # nosec B110 - telemetry must not break requests
+    except Exception:
+        # nosec B110 - telemetry must not break requests
         pass
 
 
@@ -107,7 +108,8 @@ def record_materialize_attempt(result: str) -> None:
 
     try:
         logger.info("account.materialize.attempt", extra={"result": result})
-    except Exception:  # nosec B110 - telemetry must not break requests
+    except Exception:
+        # nosec B110 - telemetry must not break requests
         pass
 
 
@@ -118,7 +120,8 @@ def record_email_collision() -> None:
 
     try:
         logger.warning("account.email_collision_observed")
-    except Exception:  # nosec B110 - telemetry must not break requests
+    except Exception:
+        # nosec B110 - telemetry must not break requests
         pass
 
 
@@ -159,7 +162,8 @@ def record_onboarding_event(
                 "metadata": metadata,
             },
         )
-    except Exception:  # nosec B110 - telemetry must not break requests
+    except Exception:
+        # nosec B110 - telemetry must not break requests
         pass
 
     # EPIC-002 Phase 4: Send to BetterStack if configured
@@ -174,7 +178,8 @@ def record_onboarding_event(
             "metadata": metadata,
         }
         client.send_event(event_data)
-    except Exception:  # nosec B110 - silent UX protection intentional
+    except Exception:
+        # nosec B110 - silent UX protection intentional
         # Silently fail to avoid disrupting user experience
         pass
 
@@ -249,7 +254,8 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
         should_log = (
             is_error
             or settings.LOG_SAMPLING_RATE >= 1.0
-            or random.random() < settings.LOG_SAMPLING_RATE  # nosec B311 - sampling rate, not crypto
+            or random.random() < settings.LOG_SAMPLING_RATE
+            # nosec B311 - sampling rate, not crypto
         )
         if should_log:
             log_level = logging.WARNING if is_error else logging.INFO
@@ -264,7 +270,8 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
                         "request_id": request_id,
                     },
                 )
-            except Exception:  # nosec B110 - defensive logging config
+            except Exception:
+                # nosec B110 - defensive logging config
                 # Defensive: malformed logging config (e.g. pythonjsonlogger
                 # KeyError on missing rename field) must not fail the request.
                 pass

@@ -619,7 +619,6 @@ UNITS: List[CurriculumUnit] = [
         max_complexity=2,
         stability_threshold=0.9,
     ),
-
     # --- Unit 8: staying safe (intake 2026-09-06-m1-safety-unit-001) ---
     # Geragogy: mechanism over fear, taught at point of capability. Sources:
     # FTC imposter-scam spotlight (Aug 2025), FBI IC3 2025, AARP/Microsoft

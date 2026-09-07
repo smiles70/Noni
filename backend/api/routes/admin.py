@@ -126,9 +126,7 @@ def org_detail(
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if org is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "org_not_found")
-    licenses = (
-        db.query(OrgLicense).filter(OrgLicense.organization_id == org_id).all()
-    )
+    licenses = db.query(OrgLicense).filter(OrgLicense.organization_id == org_id).all()
     codes_issued = (
         db.query(func.count(AccessCode.id))
         .filter(AccessCode.organization_id == org_id)
@@ -223,10 +221,7 @@ def list_flags(
     _: Account = Depends(require_staff),
 ) -> dict:
     rows = (
-        db.query(AccountFlag)
-        .order_by(AccountFlag.created_at.desc())
-        .limit(200)
-        .all()
+        db.query(AccountFlag).order_by(AccountFlag.created_at.desc()).limit(200).all()
     )
     return {
         "flags": [

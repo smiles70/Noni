@@ -18,9 +18,9 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-VELOCITY_FLAG = 5          # completions/day — beyond plausible solo pace
-OSCILLATION_MIN_ROWS = 6   # need this many confidence points to judge
-OSCILLATION_FLAG = 1.5     # stdev of post scores above this = mixed hands
+VELOCITY_FLAG = 5  # completions/day — beyond plausible solo pace
+OSCILLATION_MIN_ROWS = 6  # need this many confidence points to judge
+OSCILLATION_FLAG = 1.5  # stdev of post scores above this = mixed hands
 
 
 def detect_sharing(rows: list, now: datetime | None = None) -> dict:
@@ -29,19 +29,30 @@ def detect_sharing(rows: list, now: datetime | None = None) -> dict:
     now = now or datetime.now(timezone.utc)
     reasons = []
 
-    completed = [r for r in rows if getattr(r, "status", None) == "completed" and getattr(r, "completed_at", None)]
+    completed = [
+        r
+        for r in rows
+        if getattr(r, "status", None) == "completed"
+        and getattr(r, "completed_at", None)
+    ]
     if len(completed) >= VELOCITY_FLAG * 2:
         completed.sort(key=lambda r: r.completed_at)
-        span = max((completed[-1].completed_at - completed[0].completed_at), timedelta(hours=1))
+        span = max(
+            (completed[-1].completed_at - completed[0].completed_at), timedelta(hours=1)
+        )
         per_day = len(completed) / (span.days or 1)
         if per_day >= VELOCITY_FLAG:
             reasons.append(f"velocity:{round(per_day,1)}/day")
 
-    posts = [r.confidence_post for r in rows if getattr(r, "confidence_post", None) is not None]
+    posts = [
+        r.confidence_post
+        for r in rows
+        if getattr(r, "confidence_post", None) is not None
+    ]
     if len(posts) >= OSCILLATION_MIN_ROWS:
         mean = sum(posts) / len(posts)
         var = sum((p - mean) ** 2 for p in posts) / len(posts)
-        sd = var ** 0.5
+        sd = var**0.5
         # alternating pattern check: count sign flips in successive deltas
         diffs = [posts[i + 1] - posts[i] for i in range(len(posts) - 1)]
         flips = sum(1 for i in range(1, len(diffs)) if diffs[i] * diffs[i - 1] < 0)

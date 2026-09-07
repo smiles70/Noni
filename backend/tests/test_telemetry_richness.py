@@ -34,7 +34,9 @@ def test_what_is_ai_records_iscs_decision_with_audit_columns():
 
     rows = _export()
     assert len(rows) == before + 1
-    matches = [r for r in rows if r.get("request_path") == "/api/v1/curriculum/what-is-ai"]
+    matches = [
+        r for r in rows if r.get("request_path") == "/api/v1/curriculum/what-is-ai"
+    ]
     assert matches, "expected at least one telemetry row for what-is-ai"
     row = matches[0]  # newest first
     assert row["event"] == "iscs_decision"

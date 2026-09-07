@@ -63,18 +63,16 @@ def export_account_data(
         "account": {
             "email": account.email,
             "display_name": account.display_name,
-            "created_at": account.created_at.isoformat()
-            if account.created_at
-            else None,
+            "created_at": (
+                account.created_at.isoformat() if account.created_at else None
+            ),
         },
-        "deletion_scheduled": account.deleted_at.isoformat()
-        if account.deleted_at
-        else None,
+        "deletion_scheduled": (
+            account.deleted_at.isoformat() if account.deleted_at else None
+        ),
     }
     return Response(
         content=json.dumps(body, indent=2),
         media_type="application/json",
-        headers={
-            "Content-Disposition": "attachment; filename=mynaani-my-data.json"
-        },
+        headers={"Content-Disposition": "attachment; filename=mynaani-my-data.json"},
     )

@@ -7,7 +7,6 @@ dashboard tests. whoami-check is the soft probe for the frontend gate.
 from __future__ import annotations
 
 
-
 def test_whoami_requires_session(client):
     r = client.get("/api/v1/admin/whoami")
     assert r.status_code == 401

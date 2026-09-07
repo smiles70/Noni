@@ -153,7 +153,8 @@ def test_checkout_unknown_product_404(client):
 def test_checkout_self_purchase_creates_purchase_row(client, DbSession):
     _signin(client, "a4-self@example.test")
     r = client.post(
-        "/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": False}
+        "/api/v1/billing/checkout",
+        json={"product_code": PRODUCT_CODE, "is_gift": False},
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -196,7 +197,8 @@ def test_webhook_rejects_unsigned_body(client):
 def test_checkout_completed_grants_entitlement(client, DbSession):
     _signin(client, "a4-grant@example.test")
     r = client.post(
-        "/api/v1/billing/checkout", json={"product_code": PRODUCT_CODE, "is_gift": False}
+        "/api/v1/billing/checkout",
+        json={"product_code": PRODUCT_CODE, "is_gift": False},
     )
     purchase_id = r.json()["purchase_id"]
 
