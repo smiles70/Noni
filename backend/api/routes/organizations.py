@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_current_account, get_db, require_staff
 from backend.models.accounts import Account
-from backend.models.organizations import Organization, OrgLicense
+from backend.models.organizations import OrgLicense
 from backend.services import organizations as org_service
 
 router = APIRouter()
@@ -117,8 +117,8 @@ def create_organization(
     body: OrganizationCreate,
     db: DbSession = Depends(get_db),
     staff: Account = Depends(require_staff),
-) -> Organization:
-    return org_service.create_organization(
+) -> OrganizationResponse:
+    org = org_service.create_organization(
         db,
         staff,
         name=body.name,
@@ -136,6 +136,13 @@ def create_organization(
         postal_code=body.postal_code,
         phone=body.phone,
         contacts=[c.model_dump() for c in body.contacts] if body.contacts else None,
+    )
+    return OrganizationResponse(
+        id=str(org.id),
+        name=org.name,
+        contact_email=org.contact_email,
+        admin_email=org.admin_email,
+        status=org.status,
     )
 
 
