@@ -40,7 +40,7 @@ from datetime import datetime, timedelta, timezone
 from backend.models.accounts import Account
 from backend.models.billing import Purchase
 from backend.models.governance import AccountFlag, OrgAuditLog
-from backend.models.organizations import Organization, OrgLicense
+from backend.models.organizations import AccessCode, Organization, OrgLicense
 from backend.services import admin_auth, organizations as org_service
 from backend.services.deletion import cancel_deletion
 from backend.services.rate_limit import RateLimit
@@ -729,3 +729,110 @@ def run_flag_scan(
     )
     db.commit()
     return result
+
+
+# ---------- REPORTS-001: interactive B2B activity reports ----------
+
+
+@router.get("/reports/org-activity")
+def org_activity_report(
+    org_id: Optional[uuid.UUID] = Query(default=None),
+    days: int = Query(default=30, ge=1, le=365),
+    db: DbSession = Depends(get_db),
+    _: Account = Depends(require_staff),
+) -> dict:
+    """Per-org activity rollup for a sliding window (default 30d).
+
+    Aggregate-only by contract: counts and timestamps, never learner
+    names, unit-level rows, or confidence values. The org→learner link
+    is AccessCode.claimed_by_account_id — claimed seat = enrolled learner.
+    """
+    from backend.models.learning import Progress
+
+    window_start = datetime.now(timezone.utc) - timedelta(days=days)
+
+    orgs_q = db.query(Organization)
+    if org_id is not None:
+        orgs_q = orgs_q.filter(Organization.id == org_id)
+    orgs = orgs_q.order_by(Organization.name).all()
+
+    rows = []
+    for o in orgs:
+        licenses = db.query(OrgLicense).filter(OrgLicense.organization_id == o.id).all()
+        lic_ids = [lic.id for lic in licenses]
+        seats_total = sum(lic.total_seats for lic in licenses)
+        seats_used = sum(lic.used_seats or 0 for lic in licenses)
+
+        codes = (
+            db.query(AccessCode).filter(AccessCode.license_id.in_(lic_ids)).all()
+            if lic_ids
+            else []
+        )
+        claimed = [c for c in codes if c.claimed_by_account_id]
+        learner_ids = {c.claimed_by_account_id for c in claimed}
+
+        claimed_in_window = sum(
+            1 for c in claimed if c.claimed_at and c.claimed_at >= window_start
+        )
+
+        prog_q = (
+            db.query(Progress).filter(Progress.account_id.in_(learner_ids))
+            if learner_ids
+            else None
+        )
+        completions_in_window = 0
+        active_learners = set()
+        last_activity = None
+        if prog_q is not None:
+            for p in prog_q.all():
+                started = p.first_started_at
+                completed = p.completed_at
+                if completed and completed >= window_start:
+                    completions_in_window += 1
+                if (started and started >= window_start) or (
+                    completed and completed >= window_start
+                ):
+                    active_learners.add(p.account_id)
+                for ts in (started, completed):
+                    if ts and (last_activity is None or ts > last_activity):
+                        last_activity = ts
+
+        audit_events = (
+            db.query(func.count(OrgAuditLog.id))
+            .filter(
+                OrgAuditLog.organization_id == o.id,
+                OrgAuditLog.created_at >= window_start,
+            )
+            .scalar()
+            or 0
+        )
+
+        rows.append(
+            {
+                "org_id": str(o.id),
+                "org_name": o.name,
+                "status": o.status,
+                "tier": o.tier,
+                "seats_total": seats_total,
+                "seats_used": seats_used,
+                "utilization_pct": (
+                    round(seats_used / seats_total * 100) if seats_total else 0
+                ),
+                "codes_issued": len(codes),
+                "codes_claimed_total": len(claimed),
+                "codes_claimed_in_window": claimed_in_window,
+                "learners_enrolled": len(learner_ids),
+                "active_learners_in_window": len(active_learners),
+                "units_completed_in_window": completions_in_window,
+                "last_activity_utc": (
+                    last_activity.isoformat() if last_activity else None
+                ),
+                "staff_audit_events_in_window": audit_events,
+            }
+        )
+
+    return {
+        "window_days": days,
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "orgs": rows,
+    }
