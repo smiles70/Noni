@@ -176,8 +176,9 @@ def test_retrieval_choice_accepts_module_5():
 
 
 def test_retrieval_choice_rejects_module_out_of_range():
-    """Regression guard for the widened range — 0 and 6 must still 422."""
-    for bad in (0, 6, 99):
+    """Regression guard: Module 0 is now valid (M0 exists); only values
+    above the 0..5 range must 422."""
+    for bad in (6, 99):
         r = client.post(
             "/api/v1/curriculum/retrieval-choice",
             json={

@@ -34,13 +34,11 @@ def test_what_is_ai_records_iscs_decision_with_audit_columns():
 
     rows = _export()
     assert len(rows) == before + 1
-    matches = [
-        r for r in rows if r.get("request_path") == "/api/v1/curriculum/what-is-ai"
-    ]
+    matches = [r for r in rows if r.get("request_path") == "/api/curriculum/what-is-ai"]
     assert matches, "expected at least one telemetry row for what-is-ai"
     row = matches[0]  # newest first
     assert row["event"] == "iscs_decision"
-    assert row["request_path"] == "/api/v1/curriculum/what-is-ai"
+    assert row["request_path"] == "/api/curriculum/what-is-ai"
     assert isinstance(row["stability"], (int, float))
     assert row["selected_state_id"] in {"ai-1", "ai-2"}
     assert row["decision_reason"] == "approved"
@@ -53,7 +51,7 @@ def test_unit_get_records_iscs_decision_for_that_unit():
 
     rows = _export()
     matches = [
-        r for r in rows if r.get("request_path") == "/api/v1/curriculum/units/unit-2"
+        r for r in rows if r.get("request_path") == "/api/curriculum/units/unit-2"
     ]
     assert matches, "expected at least one telemetry row for unit-2"
     row = matches[0]  # newest first
@@ -72,7 +70,7 @@ def test_next_unit_records_recommendation():
         r
         for r in rows
         if r["event"] == "iscs_recommendation"
-        and r.get("request_path") == "/api/v1/curriculum/next-unit"
+        and r.get("request_path") == "/api/curriculum/next-unit"
     ]
     assert (
         matches

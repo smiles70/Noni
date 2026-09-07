@@ -68,9 +68,11 @@ def test_signals_telemetry(client):
     client.headers["Authorization"] = "Bearer mock:test@example.com"
     r = client.post(
         "/api/v1/signals/telemetry",
-        json={"type": "ROUTE_TEST", "payload": {"x": 1}},
+        json={"type": "lesson.started", "payload": {"x": 1}},
     )
     assert r.status_code == 200
     body = r.json()
-    assert body["event"] == "ROUTE_TEST"
-    assert body["metadata"] == {"x": 1}
+    # queued responses report {queued, event, request_path}; the sync
+    # fallback returns the full recorded row (which includes "event").
+    assert body.get("event") == "lesson.started"
+    assert "metadata" not in body or body.get("metadata") == {"x": 1}

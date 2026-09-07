@@ -389,19 +389,22 @@ def test_landing_page_can_open_menu():
 
 
 def test_lesson_menu_endpoint_returns_full_tree():
-    """GET /api/curriculum/menu returns Modules 0-3 + bridge units in
-    one roundtrip so the menu UI does not need N module fetches."""
+    """GET /api/v1/curriculum/menu returns the free-track tree (Modules
+    0-2 in the menu; M2 is gated at request time) + bridge units in one
+    roundtrip so the menu UI does not need N module fetches."""
     response = client.get("/api/v1/curriculum/menu")
     assert response.status_code == 200
     body = response.json()
 
     assert "modules" in body and "bridge_units" in body
     module_ids = [m["id"] for m in body["modules"]]
-    assert module_ids == [0, 1, 2, 3], "menu must surface free modules in order"
+    # Menu exposes Modules 0-2; M3+ are not menu-listed (paywall
+    # boundary moved to Module 2 per 2026-09-06-paywall-boundary-m2-001).
+    assert module_ids == [0, 1, 2], "menu must surface free modules in order"
 
-    # Module 0 has 6 units, Module 1 has 7, Module 2 has 5, Module 3 has 4.
+    # Module 0 has 6 units, Module 1 has 7, Module 2 has 5.
     counts = {m["id"]: len(m["units"]) for m in body["modules"]}
-    assert counts == {0: 6, 1: 7, 2: 5, 3: 4}
+    assert counts == {0: 6, 1: 7, 2: 5}
 
     # Bridge units are the two side lessons from S25.4/S25.5.
     bridge_ids = {u["id"] for u in body["bridge_units"]}

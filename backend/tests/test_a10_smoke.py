@@ -181,7 +181,7 @@ def test_smoke_signed_in_without_grant_hits_paywall(client):
 # ---------- 3. full purchase -> access -> refund -> no access ----------
 
 
-def test_smoke_full_purchase_grants_then_refund_revokes(client):
+def test_smoke_full_purchase_grants_then_refund_revokes(client, DbSession):
     _signin(client, "a10-buyer@example.test")
 
     # Before purchase: paywalled.

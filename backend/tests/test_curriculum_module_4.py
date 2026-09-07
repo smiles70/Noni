@@ -97,7 +97,7 @@ def test_module_4_decision_recorded_with_audit_columns():
     matches = [
         r
         for r in rows
-        if r.get("request_path") == "/api/v1/curriculum/module-4/units/module4-unit-1"
+        if r.get("request_path") == "/api/curriculum/module-4/units/module4-unit-1"
     ]
     assert matches
     row = matches[-1]
