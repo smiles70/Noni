@@ -13,7 +13,7 @@ alembic==1.18.4
 psycopg2-binary==2.9.12
 python-dotenv==1.2.2
 PyJWT[crypto]==2.13.0
-cryptography==49.0.0
+cryptography==50.0.0
 stripe==11.4.1
 httpx==0.28.1
 pybreaker==1.4.1
