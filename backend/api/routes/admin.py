@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session as DbSession
@@ -18,8 +18,8 @@ from sqlalchemy.orm import Session as DbSession
 from backend.api.deps import get_db, get_optional_account, require_staff
 from backend.models.accounts import Account
 from backend.models.billing import Purchase
-from backend.models.governance import AccountFlag, OrgAuditLog
-from backend.models.organizations import AccessCode, Organization, OrgLicense
+from backend.models.governance import AccountFlag
+from backend.services import organizations as org_service
 
 router = APIRouter()
 
@@ -79,42 +79,7 @@ def org_search(
     db: DbSession = Depends(get_db),
     _: Account = Depends(require_staff),
 ) -> list[OrgSummary]:
-    like = f"%{q.lower()}%"
-    orgs = (
-        db.query(Organization)
-        .filter(
-            or_(
-                func.lower(Organization.name).like(like),
-                func.lower(Organization.contact_email).like(like),
-                func.lower(Organization.slug).like(like),
-            )
-        )
-        .order_by(Organization.name)
-        .limit(100)
-        .all()
-    )
-    out: list[OrgSummary] = []
-    for o in orgs:
-        lic = (
-            db.query(OrgLicense)
-            .filter(OrgLicense.organization_id == o.id)
-            .order_by(OrgLicense.expires_at.desc())
-            .first()
-        )
-        out.append(
-            OrgSummary(
-                id=str(o.id),
-                name=o.name,
-                contact_email=o.contact_email,
-                status=o.status,
-                org_type=o.org_type,
-                tier=o.tier,
-                slug=o.slug,
-                seats_total=lic.total_seats if lic else 0,
-                seats_used=lic.used_seats if lic else 0,
-            )
-        )
-    return out
+    return [OrgSummary(**row) for row in org_service.org_search(db, q)]
 
 
 @router.get("/orgs/{org_id}")
@@ -123,56 +88,7 @@ def org_detail(
     db: DbSession = Depends(get_db),
     _: Account = Depends(require_staff),
 ) -> dict:
-    org = db.query(Organization).filter(Organization.id == org_id).first()
-    if org is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "org_not_found")
-    licenses = db.query(OrgLicense).filter(OrgLicense.organization_id == org_id).all()
-    codes_issued = (
-        db.query(func.count(AccessCode.id))
-        .filter(AccessCode.organization_id == org_id)
-        .scalar()
-    ) or 0
-    audit = (
-        db.query(OrgAuditLog)
-        .filter(OrgAuditLog.organization_id == org_id)
-        .order_by(OrgAuditLog.created_at.desc())
-        .limit(50)
-        .all()
-    )
-    return {
-        "org": {
-            "id": str(org.id),
-            "name": org.name,
-            "contact_email": org.contact_email,
-            "admin_email": org.admin_email,
-            "status": org.status,
-            "org_type": org.org_type,
-            "tier": org.tier,
-            "slug": org.slug,
-            "community_size": org.community_size,
-            "visible_modules": org.visible_modules,
-            "parent_org_id": str(org.parent_org_id) if org.parent_org_id else None,
-        },
-        "licenses": [
-            {
-                "id": str(lic.id),
-                "product_code": lic.product_code,
-                "total_seats": lic.total_seats,
-                "used_seats": lic.used_seats,
-                "expires_at": lic.expires_at.isoformat() if lic.expires_at else None,
-            }
-            for lic in licenses
-        ],
-        "codes_issued": codes_issued,
-        "audit": [
-            {
-                "action": a.action,
-                "detail": a.detail,
-                "created_at": a.created_at.isoformat() if a.created_at else None,
-            }
-            for a in audit
-        ],
-    }
+    return org_service.org_detail(db, org_id)
 
 
 # ---------- Account support ----------
