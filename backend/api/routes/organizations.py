@@ -11,7 +11,7 @@ import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
 
-from fastapi import Path, APIRouter, Depends, HTTPException, status
+from fastapi import Path, Body, APIRouter, Depends, HTTPException, status
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -352,7 +352,9 @@ def _org_engagement(db: DbSession, org_id: uuid.UUID) -> dict:
         {
             "units_completed": completed,
             "active_last_7d": min(active_7d, n),
-            "learners_started": sum(1 for r in rows if r.status in ("started", "completed")),
+            "learners_started": len(
+                {r.account_id for r in rows if r.status in ("started", "completed")}
+            ),
         }
     )
     return base
@@ -376,6 +378,35 @@ def org_public_page(
             detail={"envelope_id": "org.not_found"},
         )
     return {"name": org.name, "org_type": org.org_type}
+
+
+@router.post("/org/{org_id}/slug")
+def set_org_slug(
+    org_id: uuid.UUID,
+    slug: str = Body(..., embed=True, max_length=64, pattern=r"^[a-z0-9-]+$"),
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> dict:
+    """Staff sets the hosted-page slug (/c/<slug>). Lowercase url-safe only;
+    unique across orgs. Setting the same slug again is a no-op."""
+    org = db.query(Organization).filter(Organization.id == org_id).one_or_none()
+    if org is None:
+        raise HTTPException(404, detail={"envelope_id": "org.not_found"})
+    if org.slug == slug:
+        return {"slug": slug, "changed": False}
+    clash = (
+        db.query(Organization)
+        .filter(Organization.slug == slug, Organization.id != org_id)
+        .first()
+    )
+    if clash is not None:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            detail={"envelope_id": "org.slug_taken"},
+        )
+    org.slug = slug
+    db.commit()
+    return {"slug": slug, "changed": True}
 
 
 @router.get("/org/{org_id}/dashboard")
