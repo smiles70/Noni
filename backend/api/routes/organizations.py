@@ -320,6 +320,21 @@ def redeem_code(
 MIN_COHORT = 5  # k-anonymity floor: never report engagement below this
 
 
+def _license_engagement(db: DbSession, codes) -> dict:
+    """Per-license aggregate, same k-anonymity floor as the org view."""
+    from backend.models.learning import Progress
+
+    ids = [c.claimed_by_account_id for c in codes if c.claimed_by_account_id]
+    if len(ids) < MIN_COHORT:
+        return {"cohort": len(ids), "min_cohort_met": False}
+    completed = (
+        db.query(Progress)
+        .filter(Progress.account_id.in_(ids), Progress.status == "completed")
+        .count()
+    )
+    return {"cohort": len(ids), "min_cohort_met": True, "units_completed": completed}  # k-anonymity floor: never report engagement below this
+
+
 def _org_engagement(db: DbSession, org_id: uuid.UUID) -> dict:
     """Aggregate engagement for the org's claimed seats. Never per-learner:
     counts only, and only when the cohort meets MIN_COHORT."""
@@ -348,10 +363,18 @@ def _org_engagement(db: DbSession, org_id: uuid.UUID) -> dict:
         if r.completed_at and r.completed_at >= week_ago
         or r.first_started_at >= week_ago
     )
+    deltas = [
+        r.confidence_post - r.confidence_pre
+        for r in rows
+        if r.confidence_pre is not None and r.confidence_post is not None
+    ]
     base.update(
         {
             "units_completed": completed,
             "active_last_7d": min(active_7d, n),
+            "avg_confidence_delta": (
+                round(sum(deltas) / len(deltas), 2) if len(deltas) >= MIN_COHORT else None
+            ),
             "learners_started": len(
                 {r.account_id for r in rows if r.status in ("started", "completed")}
             ),
@@ -435,6 +458,7 @@ def org_dashboard(
             "used_seats": lic.used_seats,
             "codes_issued": len(codes),
             "codes_claimed": sum(1 for c in codes if c.claimed_by_account_id),
+            "engagement": _license_engagement(db, codes),
             "expires_at": lic.expires_at.isoformat() if lic.expires_at else None,
             "expired": bool(lic.expires_at and lic.expires_at < now),
             "expiring_soon": bool(
