@@ -18,9 +18,12 @@ from sqlalchemy import func, or_
 from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_db, get_optional_account, require_staff
+from datetime import datetime, timedelta, timezone
+
 from backend.models.accounts import Account
 from backend.models.billing import Purchase
-from backend.models.governance import AccountFlag
+from backend.models.governance import AccountFlag, OrgAuditLog
+from backend.models.organizations import Organization, OrgLicense
 from backend.services import admin_auth, organizations as org_service
 from backend.services.rate_limit import RateLimit
 
@@ -96,6 +99,112 @@ def org_detail(
     _: Account = Depends(require_staff),
 ) -> dict:
     return org_service.org_detail(db, org_id)
+
+
+# ---------- Overview + audit (ADMIN-IA-001 G2/G6) ----------
+
+
+@router.get("/overview")
+def admin_overview(
+    db: DbSession = Depends(get_db),
+    _: Account = Depends(require_staff),
+) -> dict:
+    """Landing-level operational signal. Aggregate only — the same
+    privacy boundary as everywhere else: counts, never learners."""
+    now = datetime.now(timezone.utc)
+    soon = now + timedelta(days=30)
+    seats = db.query(
+        func.coalesce(func.sum(OrgLicense.total_seats), 0),
+        func.coalesce(func.sum(OrgLicense.used_seats), 0),
+    ).one()
+    expiring = (
+        db.query(OrgLicense, Organization.name)
+        .join(Organization, Organization.id == OrgLicense.organization_id)
+        .filter(
+            OrgLicense.expires_at.isnot(None),
+            OrgLicense.expires_at > now,
+            OrgLicense.expires_at <= soon,
+        )
+        .order_by(OrgLicense.expires_at)
+        .all()
+    )
+    recent_audit = (
+        db.query(OrgAuditLog, Organization.name, Account.display_name)
+        .join(Organization, Organization.id == OrgAuditLog.organization_id)
+        .outerjoin(Account, Account.id == OrgAuditLog.actor_account_id)
+        .order_by(OrgAuditLog.created_at.desc())
+        .limit(10)
+        .all()
+    )
+    return {
+        "orgs_total": db.query(func.count(Organization.id)).scalar() or 0,
+        "seats_total": int(seats[0] or 0),
+        "seats_used": int(seats[1] or 0),
+        "flags_total": db.query(func.count(AccountFlag.id)).scalar() or 0,
+        "licenses_expiring": [
+            {
+                "org_id": str(lic.organization_id),
+                "org_name": name,
+                "total_seats": lic.total_seats,
+                "expires_at": lic.expires_at.isoformat() if lic.expires_at else None,
+            }
+            for lic, name in expiring
+        ],
+        "recent_audit": [
+            {
+                "action": a.action,
+                "detail": a.detail,
+                "org_name": name,
+                "actor": actor or "staff",
+                "created_at": a.created_at.isoformat() if a.created_at else None,
+            }
+            for a, name, actor in recent_audit
+        ],
+    }
+
+
+@router.get("/audit")
+def admin_audit(
+    q: Optional[str] = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
+    db: DbSession = Depends(get_db),
+    _: Account = Depends(require_staff),
+) -> dict:
+    """Searchable audit feed across all orgs (G6). Filter matches
+    action, detail, or org name."""
+    base = (
+        db.query(OrgAuditLog, Organization.name, Account.display_name)
+        .join(Organization, Organization.id == OrgAuditLog.organization_id)
+        .outerjoin(Account, Account.id == OrgAuditLog.actor_account_id)
+    )
+    if q:
+        like = f"%{q.lower()}%"
+        base = base.filter(
+            or_(
+                func.lower(OrgAuditLog.action).like(like),
+                func.lower(OrgAuditLog.detail).like(like),
+                func.lower(Organization.name).like(like),
+            )
+        )
+    rows = (
+        base.order_by(OrgAuditLog.created_at.desc()).offset(offset).limit(limit).all()
+    )
+    return {
+        "entries": [
+            {
+                "action": a.action,
+                "detail": a.detail,
+                "org_id": str(a.organization_id),
+                "org_name": name,
+                "actor": actor or "staff",
+                "created_at": a.created_at.isoformat() if a.created_at else None,
+            }
+            for a, name, actor in rows
+        ],
+        "limit": limit,
+        "offset": offset,
+    }
 
 
 # ---------- Account support ----------

@@ -25,7 +25,12 @@ from sqlalchemy.orm import Session as DbSession
 from backend.models.accounts import Account
 from backend.models.billing import Product, Purchase
 from backend.models.governance import OrgAuditLog
-from backend.models.organizations import AccessCode, Organization, OrgLicense
+from backend.models.organizations import (
+    AccessCode,
+    Organization,
+    OrgContact,
+    OrgLicense,
+)
 from backend.services import entitlements
 
 # ---------- Codes ----------
@@ -55,6 +60,13 @@ def create_organization(
     tier: str,
     custom_flag: bool,
     parent_org_id: Optional[uuid.UUID],
+    address_line1: Optional[str] = None,
+    address_line2: Optional[str] = None,
+    city: Optional[str] = None,
+    state: Optional[str] = None,
+    postal_code: Optional[str] = None,
+    phone: Optional[str] = None,
+    contacts: Optional[list[dict]] = None,
 ) -> Organization:
     org = Organization(
         name=name,
@@ -66,9 +78,33 @@ def create_organization(
         tier=tier,
         custom_flag=custom_flag,
         parent_org_id=parent_org_id,
+        address_line1=address_line1,
+        address_line2=address_line2,
+        city=city,
+        state=state,
+        postal_code=postal_code,
+        phone=phone,
     )
     db.add(org)
     db.flush()
+    # G3: named contacts; exactly one primary enforced here (service
+    # layer, portable across sqlite/postgres — no partial index).
+    if contacts:
+        seen_primary = False
+        for c in contacts:
+            primary = bool(c.get("is_primary")) and not seen_primary
+            seen_primary = seen_primary or primary
+            db.add(
+                OrgContact(
+                    organization_id=org.id,
+                    name=c["name"],
+                    email=c.get("email"),
+                    phone=c.get("phone"),
+                    role=c.get("role") or "contact",
+                    is_primary=primary,
+                )
+            )
+        db.flush()
     db.add(
         OrgAuditLog(
             organization_id=org.id,
@@ -77,7 +113,7 @@ def create_organization(
             detail=f"name={name} type={org_type} tier={tier}",
         )
     )
-    db.flush()
+    db.commit()
     return org
 
 
@@ -131,7 +167,7 @@ def create_license(
             detail=f"seats={total_seats} amount_cents={amount_cents} invoice={invoice_ref or 'card'}",
         )
     )
-    db.flush()
+    db.commit()
     return license_
 
 
@@ -163,7 +199,7 @@ def generate_codes(
         db.add(AccessCode(license_id=license_id, code_hash=hash_code(token)))
         codes.append(token)
 
-    db.flush()
+    db.commit()
     return codes
 
 
@@ -417,7 +453,27 @@ def org_dashboard(db: DbSession, org_id: uuid.UUID) -> dict:
             "community_size": org.community_size,
             "status": org.status,
             "parent_org_id": str(org.parent_org_id) if org.parent_org_id else None,
+            "address_line1": org.address_line1,
+            "address_line2": org.address_line2,
+            "city": org.city,
+            "state": org.state,
+            "postal_code": org.postal_code,
+            "phone": org.phone,
         },
+        "contacts": [
+            {
+                "id": str(c.id),
+                "name": c.name,
+                "email": c.email,
+                "phone": c.phone,
+                "role": c.role,
+                "is_primary": c.is_primary,
+            }
+            for c in db.query(OrgContact)
+            .filter(OrgContact.organization_id == org_id)
+            .order_by(OrgContact.is_primary.desc(), OrgContact.created_at)
+            .all()
+        ],
         "licenses": lic_rows,
         "engagement": org_engagement(db, org_id),
         "children": [
@@ -496,7 +552,8 @@ def org_detail(db: DbSession, org_id: uuid.UUID) -> dict:
     licenses = db.query(OrgLicense).filter(OrgLicense.organization_id == org_id).all()
     codes_issued = (
         db.query(func.count(AccessCode.id))
-        .filter(AccessCode.organization_id == org_id)
+        .join(OrgLicense, OrgLicense.id == AccessCode.license_id)
+        .filter(OrgLicense.organization_id == org_id)
         .scalar()
     ) or 0
     audit = (
@@ -519,7 +576,27 @@ def org_detail(db: DbSession, org_id: uuid.UUID) -> dict:
             "community_size": org.community_size,
             "visible_modules": org.visible_modules,
             "parent_org_id": str(org.parent_org_id) if org.parent_org_id else None,
+            "address_line1": org.address_line1,
+            "address_line2": org.address_line2,
+            "city": org.city,
+            "state": org.state,
+            "postal_code": org.postal_code,
+            "phone": org.phone,
         },
+        "contacts": [
+            {
+                "id": str(c.id),
+                "name": c.name,
+                "email": c.email,
+                "phone": c.phone,
+                "role": c.role,
+                "is_primary": c.is_primary,
+            }
+            for c in db.query(OrgContact)
+            .filter(OrgContact.organization_id == org_id)
+            .order_by(OrgContact.is_primary.desc(), OrgContact.created_at)
+            .all()
+        ],
         "licenses": [
             {
                 "id": str(lic.id),

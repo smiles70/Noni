@@ -20,7 +20,6 @@ from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_current_account, get_db, require_staff
 from backend.models.accounts import Account
-from backend.models.organizations import Organization, OrgLicense
 from backend.services import organizations as org_service
 
 router = APIRouter()
@@ -29,10 +28,27 @@ router = APIRouter()
 # ---------- Models ----------
 
 
+class OrgContactIn(BaseModel):
+    """ADMIN-IA-001 G3: named org contact (business contact data)."""
+
+    name: str = Field(..., min_length=1, max_length=256)
+    email: Optional[str] = Field(default=None, max_length=256)
+    phone: Optional[str] = Field(default=None, max_length=32)
+    role: str = Field(default="contact", max_length=64)
+    is_primary: bool = False
+
+
 class OrganizationCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=256)
     contact_email: str = Field(..., min_length=1, max_length=256)
     admin_email: str = Field(..., min_length=1, max_length=256)
+    address_line1: Optional[str] = Field(default=None, max_length=128)
+    address_line2: Optional[str] = Field(default=None, max_length=128)
+    city: Optional[str] = Field(default=None, max_length=128)
+    state: Optional[str] = Field(default=None, max_length=128)
+    postal_code: Optional[str] = Field(default=None, max_length=128)
+    phone: Optional[str] = Field(default=None, max_length=128)
+    contacts: Optional[list[OrgContactIn]] = None
     org_type: str = Field(
         default="nonprofit", pattern="^(nonprofit|for_profit|health_plan)$"
     )
@@ -100,8 +116,8 @@ def create_organization(
     body: OrganizationCreate,
     db: DbSession = Depends(get_db),
     staff: Account = Depends(require_staff),
-) -> Organization:
-    return org_service.create_organization(
+) -> OrganizationResponse:
+    org = org_service.create_organization(
         db,
         staff,
         name=body.name,
@@ -112,6 +128,20 @@ def create_organization(
         tier=body.tier,
         custom_flag=body.custom_flag,
         parent_org_id=body.parent_org_id,
+        address_line1=body.address_line1,
+        address_line2=body.address_line2,
+        city=body.city,
+        state=body.state,
+        postal_code=body.postal_code,
+        phone=body.phone,
+        contacts=[c.model_dump() for c in body.contacts] if body.contacts else None,
+    )
+    return OrganizationResponse(
+        id=str(org.id),
+        name=org.name,
+        contact_email=org.contact_email,
+        admin_email=org.admin_email,
+        status=org.status,
     )
 
 
@@ -121,8 +151,8 @@ def create_license(
     body: LicenseCreate,
     db: DbSession = Depends(get_db),
     staff: Account = Depends(require_staff),
-) -> OrgLicense:
-    return org_service.create_license(
+) -> LicenseResponse:
+    lic = org_service.create_license(
         db,
         staff,
         org_id,
@@ -131,6 +161,13 @@ def create_license(
         amount_cents=body.amount_cents,
         expires_at=body.expires_at,
         invoice_ref=body.invoice_ref,
+    )
+    return LicenseResponse(
+        id=str(lic.id),
+        organization_id=str(lic.organization_id),
+        product_code=lic.product_code,
+        total_seats=lic.total_seats,
+        used_seats=lic.used_seats,
     )
 
 

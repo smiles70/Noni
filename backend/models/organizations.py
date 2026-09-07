@@ -49,8 +49,19 @@ class Organization(Base):
     )
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
 
+    # ADMIN-IA-001 G3: business location + phone (B2B contact data).
+    address_line1 = Column(String(128), nullable=True)
+    address_line2 = Column(String(128), nullable=True)
+    city = Column(String(128), nullable=True)
+    state = Column(String(128), nullable=True)
+    postal_code = Column(String(128), nullable=True)
+    phone = Column(String(128), nullable=True)
+
     licenses = relationship("OrgLicense", back_populates="organization")
     children = relationship("Organization")
+    contacts = relationship(
+        "OrgContact", back_populates="organization", cascade="all, delete-orphan"
+    )
 
 
 class OrgLicense(Base):
@@ -92,3 +103,29 @@ class AccessCode(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
 
     license = relationship("OrgLicense", back_populates="access_codes")
+
+
+class OrgContact(Base):
+    """ADMIN-IA-001 G3: multiple named contacts per organization.
+
+    Business contact data (facilities directors, program coordinators) —
+    never learner data. One primary contact enforced in the service layer.
+    """
+
+    __tablename__ = "org_contacts"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("organizations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    name = Column(String(256), nullable=False)
+    email = Column(String(256), nullable=True)
+    phone = Column(String(32), nullable=True)
+    role = Column(String(64), nullable=False, default="contact")
+    is_primary = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
+
+    organization = relationship("Organization", back_populates="contacts")

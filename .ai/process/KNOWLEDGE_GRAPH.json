@@ -38,8 +38,9 @@
   "metadata": {
     "repo": "smiles70/Mynaani",
     "date": "2026-08-27",
-    "node_count": 151,
-    "edge_count": 172
+    "node_count": 182,
+    "edge_count": 201,
+    "last_updated": "2026-09-07"
   },
   "nodes": [
     {
@@ -1049,6 +1050,200 @@
       "name": "Railway migration code changes",
       "artifact": ".github/workflows/deploy.yml, infra/scripts/secrets-sync.sh, docs/",
       "date": "2026-08-27"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-INTAKE-ADMINIA",
+      "name": "2026-09-07-admin-console-ia-001.md",
+      "path": ".ai/intake/2026-09-07-admin-console-ia-001.md",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-RR-ADMINIA",
+      "name": "ADMIN_IA_RISK_REGISTER_001.md",
+      "path": ".ai/process/ADMIN_IA_RISK_REGISTER_001.md",
+      "authority": "primary"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-RESEARCH-ADMINIA",
+      "name": "20-source research log (NN/g, GOV.UK, DWP, Stripe, Docebo, Canvas, Rocketlane, SOC2 CC6, WorkOS\u2026)",
+      "authority": "external"
+    },
+    {
+      "kind": "SourceArtifact",
+      "id": "SRC-INTAKE-ADMINLOGIN",
+      "name": "2026-09-07-admin-console-login-001.md",
+      "path": ".ai/intake/2026-09-07-admin-console-login-001.md",
+      "authority": "primary"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-ADMIN-G1",
+      "name": "Org onboarding UI: guided wizard (details+contacts \u2192 license \u2192 codes \u2192 slug)",
+      "status": "approved",
+      "owner": "staff"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-ADMIN-G2",
+      "name": "Operational overview landing: counts, expiring licenses, pending flags, recent audit",
+      "status": "approved"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-ADMIN-G3",
+      "name": "Org contact/location schema: address, city/state/zip, phone, multi-contact org_contacts",
+      "status": "approved"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-ADMIN-G4",
+      "name": "Org detail reachable in console UI (licenses, seats, codes, audit, dashboard link)",
+      "status": "approved"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-ADMIN-G6",
+      "name": "Searchable staff audit feed",
+      "status": "approved"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-ADMIN-G5",
+      "name": "Staff RBAC beyond binary staff flag",
+      "status": "deferred",
+      "rationale": "SOC2 CC6.3; small team; shared-credential caveat recorded"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-ADMIN-G9",
+      "name": "Impersonation/view-as",
+      "status": "deferred",
+      "rationale": "conflicts with learner-privacy boundary (no per-learner data)"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-ADMIN-G7",
+      "name": "Account support actions beyond read-only",
+      "status": "deferred"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-ADMIN-G8",
+      "name": "Billing ops surface",
+      "status": "deferred",
+      "rationale": "awaits live Stripe"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-ADMIN-G10",
+      "name": "System/job health surface",
+      "status": "deferred"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-ADMIN-G11",
+      "name": "Renewal notification tooling",
+      "status": "deferred"
+    },
+    {
+      "kind": "Gap",
+      "id": "GAP-ADMIN-SSO",
+      "name": "SSO/SCIM",
+      "status": "deferred",
+      "rationale": "hard requirement only ~1000-seat customers (CIAM Compass)"
+    },
+    {
+      "kind": "Epic",
+      "id": "E1-ADMIN-BACKEND",
+      "name": "Backend: contacts/location schema + overview + audit endpoints",
+      "status": "in_progress"
+    },
+    {
+      "kind": "Epic",
+      "id": "E2-ADMIN-FRONTEND",
+      "name": "Frontend: console shell, overview, org detail, wizard, audit, accounts, flags",
+      "status": "pending"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B1.1",
+      "name": "alembic migration adminia_org_contacts",
+      "epic": "E1-ADMIN-BACKEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B1.2",
+      "name": "model+pydantic schema updates",
+      "epic": "E1-ADMIN-BACKEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B1.3",
+      "name": "GET /admin/overview",
+      "epic": "E1-ADMIN-BACKEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B1.4",
+      "name": "GET /admin/audit",
+      "epic": "E1-ADMIN-BACKEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B1.5",
+      "name": "backend tests",
+      "epic": "E1-ADMIN-BACKEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B2.1",
+      "name": "console shell + left nav",
+      "epic": "E2-ADMIN-FRONTEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B2.2",
+      "name": "overview page",
+      "epic": "E2-ADMIN-FRONTEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B2.3",
+      "name": "organizations list+detail",
+      "epic": "E2-ADMIN-FRONTEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B2.4",
+      "name": "new-org wizard",
+      "epic": "E2-ADMIN-FRONTEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B2.5",
+      "name": "audit page",
+      "epic": "E2-ADMIN-FRONTEND"
+    },
+    {
+      "kind": "UserStory",
+      "id": "B2.6",
+      "name": "tests+e2e+guide update",
+      "epic": "E2-ADMIN-FRONTEND"
+    },
+    {
+      "kind": "Decision",
+      "id": "DEC-ADMINIA-001",
+      "name": "Console organized by staff jobs (Overview/Orgs/Accounts/Flags), per DWP+Stripe nav-by-jobs evidence",
+      "status": "accepted"
+    },
+    {
+      "kind": "Requirement",
+      "id": "REQ-ADMIN-PRIV",
+      "name": "Aggregate-only learner visibility; MIN_COHORT=5; no per-learner data ever",
+      "status": "invariant"
     }
   ],
   "edges": [
@@ -2248,6 +2443,151 @@
       "target": "EVI-RAILWAY-CODE",
       "provenance": "Phase 3 commit",
       "status": "active"
+    },
+    {
+      "from": "SRC-INTAKE-ADMINIA",
+      "rel": "defines",
+      "to": "REQ-ADMIN-G1"
+    },
+    {
+      "from": "SRC-INTAKE-ADMINIA",
+      "rel": "defines",
+      "to": "REQ-ADMIN-G2"
+    },
+    {
+      "from": "SRC-INTAKE-ADMINIA",
+      "rel": "defines",
+      "to": "REQ-ADMIN-G3"
+    },
+    {
+      "from": "SRC-INTAKE-ADMINIA",
+      "rel": "defines",
+      "to": "REQ-ADMIN-G4"
+    },
+    {
+      "from": "SRC-INTAKE-ADMINIA",
+      "rel": "defines",
+      "to": "REQ-ADMIN-G6"
+    },
+    {
+      "from": "SRC-RR-ADMINIA",
+      "rel": "shapes",
+      "to": "E1-ADMIN-BACKEND"
+    },
+    {
+      "from": "SRC-RR-ADMINIA",
+      "rel": "shapes",
+      "to": "E2-ADMIN-FRONTEND"
+    },
+    {
+      "from": "SRC-RESEARCH-ADMINIA",
+      "rel": "informs",
+      "to": "DEC-ADMINIA-001"
+    },
+    {
+      "from": "DEC-ADMINIA-001",
+      "rel": "shapes",
+      "to": "E2-ADMIN-FRONTEND"
+    },
+    {
+      "from": "REQ-ADMIN-G1",
+      "rel": "implemented_by",
+      "to": "B2.4"
+    },
+    {
+      "from": "REQ-ADMIN-G2",
+      "rel": "implemented_by",
+      "to": "B2.2"
+    },
+    {
+      "from": "REQ-ADMIN-G3",
+      "rel": "implemented_by",
+      "to": "B1.1"
+    },
+    {
+      "from": "REQ-ADMIN-G3",
+      "rel": "implemented_by",
+      "to": "B1.2"
+    },
+    {
+      "from": "REQ-ADMIN-G4",
+      "rel": "implemented_by",
+      "to": "B2.3"
+    },
+    {
+      "from": "REQ-ADMIN-G6",
+      "rel": "implemented_by",
+      "to": "B1.4"
+    },
+    {
+      "from": "REQ-ADMIN-G6",
+      "rel": "implemented_by",
+      "to": "B2.5"
+    },
+    {
+      "from": "REQ-ADMIN-G2",
+      "rel": "implemented_by",
+      "to": "B1.3"
+    },
+    {
+      "from": "B1.2",
+      "rel": "depends_on",
+      "to": "B1.1"
+    },
+    {
+      "from": "B1.5",
+      "rel": "depends_on",
+      "to": "B1.4"
+    },
+    {
+      "from": "B2.2",
+      "rel": "depends_on",
+      "to": "B1.3"
+    },
+    {
+      "from": "B2.3",
+      "rel": "depends_on",
+      "to": "B1.2"
+    },
+    {
+      "from": "B2.4",
+      "rel": "depends_on",
+      "to": "B1.2"
+    },
+    {
+      "from": "B2.5",
+      "rel": "depends_on",
+      "to": "B1.4"
+    },
+    {
+      "from": "B2.6",
+      "rel": "depends_on",
+      "to": "B2.5"
+    },
+    {
+      "from": "E2-ADMIN-FRONTEND",
+      "rel": "depends_on",
+      "to": "E1-ADMIN-BACKEND"
+    },
+    {
+      "from": "REQ-ADMIN-PRIV",
+      "rel": "mandates",
+      "to": "E2-ADMIN-FRONTEND"
+    },
+    {
+      "from": "REQ-ADMIN-PRIV",
+      "rel": "mandates",
+      "to": "B1.3"
+    },
+    {
+      "from": "GAP-ADMIN-G9",
+      "rel": "blocked_by",
+      "to": "REQ-ADMIN-PRIV"
+    },
+    {
+      "from": "SRC-INTAKE-ADMINLOGIN",
+      "rel": "defines",
+      "to": "GAP-ADMIN-G5"
     }
   ]
 }
