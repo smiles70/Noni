@@ -747,3 +747,43 @@ def test_maintenance_flag_scan_runs(client, monkeypatch):
     r = client.post("/api/v1/admin/maintenance/run-flag-scan", headers=headers)
     assert r.status_code == 200
     assert "scanned" in r.json() and "flagged" in r.json()
+
+
+# ---------- ADMIN-REPORTING-001 ----------
+
+
+def test_org_activity_report_aggregate_only(client, monkeypatch):
+    """Reports are aggregate-only: no learner-identifying fields."""
+    headers = _staff_headers(client, monkeypatch)
+    org_id = _create_org(client, headers, name="Report Co")
+
+    r = client.get("/api/v1/admin/reports/org-activity", headers=headers)
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["window_days"] == 30
+    row = next(o for o in body["orgs"] if o["org_id"] == org_id)
+    assert row["org_name"] == "Report Co"
+    # contract: only aggregate keys — nothing that names a learner
+    banned = {"email", "display_name", "account_id", "learner", "unit"}
+    for key in row:
+        assert not any(b in key.lower() for b in banned), key
+
+    # org filter works
+    r = client.get(
+        f"/api/v1/admin/reports/org-activity?org_id={org_id}&days=7",
+        headers=headers,
+    )
+    assert r.json()["window_days"] == 7
+    assert len(r.json()["orgs"]) == 1
+
+
+def test_org_activity_report_staff_only(client):
+    r = client.get("/api/v1/admin/reports/org-activity")
+    assert r.status_code in (401, 403)
+
+
+def test_org_activity_report_support_can_read(client, monkeypatch):
+    """Reads stay staff-level: support role can run reports."""
+    headers = _staff_headers_for(client, monkeypatch, "steven", admins="kim")
+    r = client.get("/api/v1/admin/reports/org-activity", headers=headers)
+    assert r.status_code == 200

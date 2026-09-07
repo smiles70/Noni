@@ -16,6 +16,7 @@ import { OrgsView } from "./admin/OrgsView";
 import { NewOrgWizard } from "./admin/NewOrgWizard";
 import { AccountsView } from "./admin/AccountsView";
 import { AuditView } from "./admin/AuditView";
+import ReportsView from "./admin/ReportsView";
 
 const PAGE: React.CSSProperties = {
   minHeight: "100vh",
@@ -55,13 +56,21 @@ interface FlagRow {
   resolution_note: string | null;
 }
 
-type View = "overview" | "orgs" | "accounts" | "flags" | "audit" | "new-org";
+type View =
+  | "overview"
+  | "orgs"
+  | "accounts"
+  | "flags"
+  | "audit"
+  | "reports"
+  | "new-org";
 
 const NAV: { id: View; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "orgs", label: "Organizations" },
   { id: "accounts", label: "Accounts" },
   { id: "flags", label: "Flags" },
+  { id: "reports", label: "Reports" },
   { id: "audit", label: "Audit" },
 ];
 
@@ -303,6 +312,7 @@ export default function AdminConsolePage() {
           )}
           {view === "accounts" && <AccountsView canWrite={role === "admin"} />}
           {view === "audit" && <AuditView onOpenOrg={openOrg} />}
+          {view === "reports" && <ReportsView />}
           {view === "new-org" && (
             <NewOrgWizard onDone={openOrg} onCancel={() => setView("orgs")} />
           )}
