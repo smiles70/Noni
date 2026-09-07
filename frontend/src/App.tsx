@@ -31,6 +31,7 @@ const PaidLessonRenderer = lazy(
 const CurriculumMenu = lazy(() => import("./components/CurriculumMenu"));
 const PaywallPage = lazy(() => import("./components/PaywallPage"));
 const GiftRedeemPage = lazy(() => import("./components/GiftRedeemPage"));
+const PartnerPage = lazy(() => import("./components/PartnerPage"));
 const MockCheckoutPage = lazy(() => import("./components/MockCheckoutPage"));
 const PurchaseSuccessPage = lazy(
   () => import("./components/PurchaseSuccessPage"),
@@ -206,6 +207,14 @@ const App: React.FC = () => {
                 }
               />
               <Route path="/signin" element={onSignInPage} />
+              <Route
+                path="/c/:slug"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <PartnerPage />
+                  </Suspense>
+                }
+              />
               <Route
                 path="/for-communities"
                 element={
