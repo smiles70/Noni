@@ -15,7 +15,7 @@ Safe to run repeatedly. On each run:
   `active`, etc.) so you can edit them by hand and not lose changes
 
 Pricing source of truth:
-    Stripe dashboard -> Products -> "Modules 4 & 5" -> price ID
+    Stripe dashboard -> Products -> "Mynaani Full Course Access" -> price ID
 
 The price (amount_cents / currency) on the row is informational; the
 real charge is whatever Stripe associates with the price_id.
@@ -31,8 +31,8 @@ from backend.models.billing import Product
 
 CANONICAL = {
     "code": "modules_4_5",
-    "display_name": "Modules 4 & 5: Building & Composing Claude Skills",
-    "price_cents": 4900,  # $49.00, informational; Stripe is source of truth
+    "display_name": "Mynaani Full Course Access — Modules 2–5",
+    "price_cents": 3900,  # $39.00, informational; Stripe is source of truth
     "currency": "usd",
 }
 

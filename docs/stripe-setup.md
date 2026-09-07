@@ -17,8 +17,8 @@ You go through it twice:
 ## 2. Create the product and price
 
 1. **Products -> Add product**.
-2. Name: `Modules 4 & 5: Building & Composing Claude Skills`.
-3. Price model: **One-time**, **USD**, **$49.00**. The recurring/subscription
+2. Name: `Mynaani Full Course Access — Modules 2–5`.
+3. Price model: **One-time**, **USD**, **$39.00**. The recurring/subscription
    options must stay off — Mynaani's billing flow assumes one-time payment.
 4. Save and copy the price ID. It looks like `price_1QABCxxxxxxxxxxxxxxx`.
 
