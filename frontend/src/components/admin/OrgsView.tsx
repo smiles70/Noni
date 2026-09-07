@@ -91,10 +91,12 @@ export function OrgsView({
   selected,
   onSelect,
   onNewOrg,
+  canWrite = true,
 }: {
   selected: string | null;
   onSelect: (id: string | null) => void;
   onNewOrg: () => void;
+  canWrite?: boolean;
 }) {
   const [q, setQ] = useState("");
   const [orgs, setOrgs] = useState<OrgRow[]>([]);
@@ -181,53 +183,57 @@ export function OrgsView({
               Learners keep existing access; new code redemption is off.
             </p>
           )}
-          <button
-            type="button"
-            style={{
-              fontSize: 13,
-              color: COLORS.accentMutedBlue,
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
-            }}
-            onClick={() => {
-              if (o.status === "suspended") {
-                if (
-                  window.confirm(
-                    "Reinstate this organization? Child sites stay as they are.",
-                  )
-                ) {
-                  apiClient
-                    .post(`/api/v1/billing/org/${o.id}/reinstate`, {
-                      include_children: false,
-                    })
-                    .then(() => reload(o.id))
-                    .catch(() => setError("Reinstate failed — check the API."));
+          {canWrite && (
+            <button
+              type="button"
+              style={{
+                fontSize: 13,
+                color: COLORS.accentMutedBlue,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
+              onClick={() => {
+                if (o.status === "suspended") {
+                  if (
+                    window.confirm(
+                      "Reinstate this organization? Child sites stay as they are.",
+                    )
+                  ) {
+                    apiClient
+                      .post(`/api/v1/billing/org/${o.id}/reinstate`, {
+                        include_children: false,
+                      })
+                      .then(() => reload(o.id))
+                      .catch(() =>
+                        setError("Reinstate failed — check the API."),
+                      );
+                  }
+                  return;
                 }
-                return;
-              }
-              const reason = window.prompt(
-                "Suspend this organization? Learners keep existing access; all code redemption stops. Reason:",
-                "",
-              );
-              if (!reason) return;
-              const includeChildren = window.confirm(
-                "Also suspend child sites (second buildings)? Cancel = this site only.",
-              );
-              apiClient
-                .post(`/api/v1/billing/org/${o.id}/suspend`, {
-                  reason,
-                  include_children: includeChildren,
-                })
-                .then(() => reload(o.id))
-                .catch(() => setError("Suspend failed — check the API."));
-            }}
-          >
-            {o.status === "suspended"
-              ? "Reinstate organization"
-              : "Suspend organization"}
-          </button>
+                const reason = window.prompt(
+                  "Suspend this organization? Learners keep existing access; all code redemption stops. Reason:",
+                  "",
+                );
+                if (!reason) return;
+                const includeChildren = window.confirm(
+                  "Also suspend child sites (second buildings)? Cancel = this site only.",
+                );
+                apiClient
+                  .post(`/api/v1/billing/org/${o.id}/suspend`, {
+                    reason,
+                    include_children: includeChildren,
+                  })
+                  .then(() => reload(o.id))
+                  .catch(() => setError("Suspend failed — check the API."));
+              }}
+            >
+              {o.status === "suspended"
+                ? "Reinstate organization"
+                : "Suspend organization"}
+            </button>
+          )}
           <p style={{ margin: "4px 0", fontSize: 14 }}>
             Contact: {o.contact_email}
             {o.phone ? ` · ${o.phone}` : ""}
@@ -277,6 +283,7 @@ export function OrgsView({
                   key={l.id}
                   license={l}
                   onChanged={() => reload(o.id)}
+                  canWrite={canWrite}
                 />
               ))
             )}
@@ -344,21 +351,23 @@ export function OrgsView({
         }}
       >
         <h2 style={{ marginTop: 0 }}>Organizations</h2>
-        <button
-          onClick={onNewOrg}
-          style={{
-            padding: `${SPACING.sm}px ${SPACING.md}px`,
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#fff",
-            backgroundColor: COLORS.accentMutedBlue,
-            border: "none",
-            borderRadius: RADIUS.md,
-            cursor: "pointer",
-          }}
-        >
-          + New organization
-        </button>
+        {canWrite && (
+          <button
+            onClick={onNewOrg}
+            style={{
+              padding: `${SPACING.sm}px ${SPACING.md}px`,
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#fff",
+              backgroundColor: COLORS.accentMutedBlue,
+              border: "none",
+              borderRadius: RADIUS.md,
+              cursor: "pointer",
+            }}
+          >
+            + New organization
+          </button>
+        )}
       </div>
       <div style={{ display: "flex", gap: SPACING.sm }}>
         <input
@@ -445,9 +454,11 @@ const ACT: React.CSSProperties = {
 function LicenseRow({
   license: l,
   onChanged,
+  canWrite = true,
 }: {
   license: OrgDetail["licenses"][number];
   onChanged: () => void;
+  canWrite?: boolean;
 }) {
   const [msg, setMsg] = useState("");
   const suspended = l.status === "suspended";
@@ -540,17 +551,19 @@ function LicenseRow({
           reason: {l.suspension_reason}
         </div>
       )}
-      <div>
-        <button style={ACT} onClick={edit}>
-          edit
-        </button>
-        <button style={ACT} onClick={addCodes}>
-          +codes
-        </button>
-        <button style={ACT} onClick={toggle}>
-          {suspended ? "reinstate" : "suspend"}
-        </button>
-      </div>
+      {canWrite && (
+        <div>
+          <button style={ACT} onClick={edit}>
+            edit
+          </button>
+          <button style={ACT} onClick={addCodes}>
+            +codes
+          </button>
+          <button style={ACT} onClick={toggle}>
+            {suspended ? "reinstate" : "suspend"}
+          </button>
+        </div>
+      )}
       {msg && (
         <div
           role="status"

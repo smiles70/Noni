@@ -69,6 +69,8 @@ class Account(Base):
     # reinstate is the inverse verb. Deletion remains terminal.
     suspended_at = Column(DateTime(timezone=True), nullable=True)
     suspension_reason = Column(String(256), nullable=True)
+    # ADMIN-OPS E5: staff role — 'admin' | 'support', NULL for learners.
+    staff_role = Column(String(16), nullable=True)
 
     learners = relationship(
         "Learner", back_populates="account", cascade="all, delete-orphan"

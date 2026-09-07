@@ -519,3 +519,88 @@ def test_account_cancel_deletion(client, monkeypatch):
     )
     assert r.status_code == 200
     assert r.json()["status"] == "active"
+
+
+# ---------- ADMIN-OPS E5: staff RBAC ----------
+
+
+def _staff_headers_for(client, monkeypatch, username, admins=""):
+    import hashlib
+    from backend.core.config import settings
+
+    monkeypatch.setattr(settings, "ADMIN_CONSOLE_USERS", "kim,steven")
+    monkeypatch.setattr(
+        settings,
+        "ADMIN_CONSOLE_PASSWORD_SHA256",
+        hashlib.sha256(b"test-pass-123").hexdigest(),
+    )
+    monkeypatch.setattr(settings, "ADMIN_CONSOLE_ADMINS", admins)
+    monkeypatch.setattr(settings, "SESSION_SECRET", "test-session-secret")
+    r = client.post(
+        "/api/v1/admin/login",
+        json={"username": username, "password": "test-pass-123"},
+    )
+    assert r.status_code == 200
+    return {"Authorization": f"Bearer {r.json()['token']}"}
+
+
+def test_support_role_blocked_from_mutations(client, monkeypatch):
+    """E5: support reads fine, mutations 403 auth.not_admin."""
+    headers = _staff_headers_for(client, monkeypatch, "steven", admins="kim")
+    assert client.get("/api/v1/admin/orgs?q=", headers=headers).status_code == 200
+    r = client.post(
+        "/api/v1/billing/org/create",
+        json={
+            "name": "Blocked Org",
+            "contact_email": "x@x.example",
+            "admin_email": "x@x.example",
+        },
+        headers=headers,
+    )
+    assert r.status_code == 403
+    assert r.json()["detail"]["envelope_id"] == "auth.not_admin"
+
+
+def test_admin_role_mutations_allowed(client, monkeypatch):
+    headers = _staff_headers_for(client, monkeypatch, "kim", admins="kim")
+    assert client.get("/api/v1/admin/whoami", headers=headers).json()["role"] == "admin"
+    r = client.post(
+        "/api/v1/billing/org/create",
+        json={
+            "name": "Admin Made",
+            "contact_email": "a@a.example",
+            "admin_email": "a@a.example",
+        },
+        headers=headers,
+    )
+    assert r.status_code == 201
+
+
+def test_staff_role_change_and_guards(client, monkeypatch):
+    admin = _staff_headers_for(client, monkeypatch, "kim", admins="kim")
+    steven = _staff_headers_for(client, monkeypatch, "steven", admins="kim")
+    staff = client.get("/api/v1/admin/staff", headers=admin)
+    assert staff.status_code == 200, staff.text
+    rows = {r["display_name"]: r for r in staff.json()}
+    assert rows["kim"]["role"] == "admin"
+    assert rows["steven"]["role"] == "support"
+
+    # support cannot list or mutate staff
+    assert client.get("/api/v1/admin/staff", headers=steven).status_code == 403
+
+    # cannot change own role
+    r = client.post(
+        f"/api/v1/admin/staff/{rows['kim']['id']}/role",
+        json={"role": "support"},
+        headers=admin,
+    )
+    assert r.status_code == 403 or r.status_code == 409
+
+    # promote steven
+    r = client.post(
+        f"/api/v1/admin/staff/{rows['steven']['id']}/role",
+        json={"role": "admin"},
+        headers=admin,
+    )
+    assert r.status_code == 200
+    assert r.json()["role"] == "admin"

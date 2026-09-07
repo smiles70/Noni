@@ -18,7 +18,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session as DbSession
 
-from backend.api.deps import get_current_account, get_db, require_staff
+from backend.api.deps import get_current_account, get_db, require_admin, require_staff
 from backend.models.accounts import Account
 from backend.services import organizations as org_service
 
@@ -148,7 +148,7 @@ class UsageResponse(BaseModel):
 def create_organization(
     body: OrganizationCreate,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> OrganizationResponse:
     org = org_service.create_organization(
         db,
@@ -183,7 +183,7 @@ def create_license(
     org_id: uuid.UUID,
     body: LicenseCreate,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> LicenseResponse:
     lic = org_service.create_license(
         db,
@@ -223,7 +223,7 @@ def update_license(
     license_id: uuid.UUID,
     body: LicenseUpdate,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> LicenseStateResponse:
     lic = org_service.update_license(
         db,
@@ -243,7 +243,7 @@ def suspend_license(
     license_id: uuid.UUID,
     body: LicenseSuspendRequest,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> LicenseStateResponse:
     return _license_state(
         org_service.suspend_license(db, staff, license_id, reason=body.reason)
@@ -257,7 +257,7 @@ def suspend_license(
 def reinstate_license(
     license_id: uuid.UUID,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> LicenseStateResponse:
     return _license_state(org_service.reinstate_license(db, staff, license_id))
 
@@ -267,7 +267,7 @@ def suspend_org(
     org_id: uuid.UUID,
     body: OrgSuspendRequest,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> OrgStateResponse:
     org = org_service.suspend_org(
         db,
@@ -288,7 +288,7 @@ def reinstate_org(
     org_id: uuid.UUID,
     body: OrgReinstateRequest,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> OrgStateResponse:
     org = org_service.reinstate_org(
         db, staff, org_id, include_children=body.include_children
@@ -305,7 +305,7 @@ def generate_codes(
     license_id: uuid.UUID,
     body: CodesCreate,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> dict:
     codes = org_service.generate_codes(db, license_id, count=body.count)
     return {"license_id": str(license_id), "codes": codes}
@@ -348,7 +348,7 @@ def set_org_slug(
     org_id: uuid.UUID,
     slug: str = Body(..., embed=True, max_length=64, pattern=r"^[a-z0-9-]+$"),
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> dict:
     return org_service.set_org_slug(db, org_id, slug)
 
