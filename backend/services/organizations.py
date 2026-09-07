@@ -552,7 +552,8 @@ def org_detail(db: DbSession, org_id: uuid.UUID) -> dict:
     licenses = db.query(OrgLicense).filter(OrgLicense.organization_id == org_id).all()
     codes_issued = (
         db.query(func.count(AccessCode.id))
-        .filter(AccessCode.organization_id == org_id)
+        .join(OrgLicense, OrgLicense.id == AccessCode.license_id)
+        .filter(OrgLicense.organization_id == org_id)
         .scalar()
     ) or 0
     audit = (
