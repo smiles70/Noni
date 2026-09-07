@@ -187,6 +187,10 @@ def get_optional_account(
     token = _parse_bearer(authorization)
     if token is None:
         return None
+    # ADMIN-LOGIN-001: staff-console tokens are not learner credentials —
+    # leave them for require_staff rather than failing learner verification.
+    if token.startswith("staff."):
+        return None
     provider = get_auth_provider()
     claims = provider.verify_credential(token)
     if claims is None:
