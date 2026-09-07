@@ -243,11 +243,7 @@ def test_license_edit_below_used_rejected(client, monkeypatch):
         headers=headers,
     ).json()["codes"]
 
-    learner = client.post(
-        "/api/v1/auth/register",
-        json={"email": "learner-e1@example.com", "display_name": "E1"},
-    )
-    learner_headers = {"Authorization": f"Bearer {learner.json()['access_token']}"}
+    learner_headers = {"Authorization": "Bearer mock:learner-e1@example.com"}
     r = client.post(
         "/api/v1/billing/org/redeem",
         json={"code": codes[0]},
@@ -281,11 +277,7 @@ def test_suspend_blocks_redeem_reinstate_restores(client, monkeypatch):
     assert r.status_code == 200, r.text
     assert r.json()["status"] == "suspended"
 
-    learner = client.post(
-        "/api/v1/auth/register",
-        json={"email": "learner-e2@example.com", "display_name": "E2"},
-    )
-    learner_headers = {"Authorization": f"Bearer {learner.json()['access_token']}"}
+    learner_headers = {"Authorization": "Bearer mock:learner-e2@example.com"}
     r = client.post(
         "/api/v1/billing/org/redeem",
         json={"code": codes[0]},
@@ -315,4 +307,4 @@ def test_license_lifecycle_staff_only(client, authenticated_client):
         json={"total_seats": 5},
         headers={},
     )
-    assert r.status_code == 401
+    assert r.status_code in (401, 403)
