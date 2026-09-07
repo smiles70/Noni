@@ -144,7 +144,7 @@ def admin_overview(
     )
     recent_audit = (
         db.query(OrgAuditLog, Organization.name, Account.display_name)
-        .join(Organization, Organization.id == OrgAuditLog.organization_id)
+        .outerjoin(Organization, Organization.id == OrgAuditLog.organization_id)
         .outerjoin(Account, Account.id == OrgAuditLog.actor_account_id)
         .order_by(OrgAuditLog.created_at.desc())
         .limit(10)
