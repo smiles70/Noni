@@ -153,7 +153,7 @@ def test_module_2_decision_recorded_with_audit_columns():
     # what matters is that the telemetry_requirements payload is recorded.
     import json
 
-    md = row.get("event_metadata") or {}
+    md = row.get("metadata") or row.get("event_metadata") or {}
     if isinstance(md, str):
         md = json.loads(md)
     assert "telemetry_requirements" in md

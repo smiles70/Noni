@@ -137,7 +137,7 @@ def test_module_3_decision_recorded_with_audit_columns():
     row = matches[-1]
     assert row["event"] == "iscs_decision"
     assert row["decision_reason"] == "approved"
-    md = row.get("event_metadata") or {}
+    md = row.get("metadata") or row.get("event_metadata") or {}
     if isinstance(md, str):
         md = json.loads(md)
     assert "telemetry_requirements" in md

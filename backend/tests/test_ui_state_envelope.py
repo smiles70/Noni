@@ -402,9 +402,10 @@ def test_lesson_menu_endpoint_returns_full_tree():
     # boundary moved to Module 2 per 2026-09-06-paywall-boundary-m2-001).
     assert module_ids == [0, 1, 2], "menu must surface free modules in order"
 
-    # Module 0 has 6 units, Module 1 has 7, Module 2 has 5.
+    # Module 0 has 6 units, Module 1 has 8 (incl. the M1 safety unit),
+    # Module 2 has 5.
     counts = {m["id"]: len(m["units"]) for m in body["modules"]}
-    assert counts == {0: 6, 1: 7, 2: 5}
+    assert counts == {0: 6, 1: 8, 2: 5}
 
     # Bridge units are the two side lessons from S25.4/S25.5.
     bridge_ids = {u["id"] for u in body["bridge_units"]}
