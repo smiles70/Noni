@@ -683,3 +683,49 @@ def staff_set_role(
         email=target.email,
         role=target.staff_role,
     )
+
+
+# ---------- ADMIN-OPS-HYGIENE H5: on-demand maintenance ----------
+
+
+@router.post("/maintenance/run-deletion-sweep")
+def run_deletion_sweep(
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_admin),
+) -> dict:
+    """Trigger the GDPR deletion sweep on demand. Returns counts; the
+    beat task still runs daily — this is for verification and ops."""
+    from backend.tasks.webhook_tasks import cleanup_deleted_accounts
+
+    result = cleanup_deleted_accounts()
+    db.add(
+        OrgAuditLog(
+            organization_id=None,
+            actor_account_id=staff.id,
+            action="maintenance.deletion_sweep",
+            detail=f"done={result['done']} failed={result['failed']}",
+        )
+    )
+    db.commit()
+    return result
+
+
+@router.post("/maintenance/run-flag-scan")
+def run_flag_scan(
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_admin),
+) -> dict:
+    """Trigger the weekly sharing-signal scan on demand."""
+    from backend.tasks.org_tasks import sharing_pattern_scan
+
+    result = sharing_pattern_scan()
+    db.add(
+        OrgAuditLog(
+            organization_id=None,
+            actor_account_id=staff.id,
+            action="maintenance.flag_scan",
+            detail=f"scanned={result['scanned']} flagged={result['flagged']}",
+        )
+    )
+    db.commit()
+    return result

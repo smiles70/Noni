@@ -20,3 +20,13 @@ Date: 2026-09-07 · Parent epic: ADMIN-OPS-001 (E1–E6 shipped)
   `status='requested' AND scheduled_for <= now`; per-row commit isolation;
   idempotent; logs counts; no PII in logs.
 - H1: resolve is reversible-in-practice (rows retained, audit-logged).
+
+## Follow-up findings (post-implementation audit)
+
+- **H4 flag producer unscheduled** — `sharing_pattern_scan` (weekly flag
+  writer) exists in `org_tasks` but was never added to `beat_schedule`.
+  The queue could never produce rows. Fix: add weekly beat entry.
+- **H5 on-demand triggers** — staff-only `POST /admin/maintenance/*`
+  endpoints to run the deletion sweep and flag scan synchronously, so
+  first-run behavior is verifiable today rather than at next beat tick.
+  Admin-gated (`require_admin`), audit-logged.
