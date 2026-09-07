@@ -173,10 +173,13 @@ jobs:
     needs: [preflight, virtual-uat-agent]
     if: needs.preflight.outputs.railway_ready == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
+    environment: staging
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       RAILWAY_SERVICE: noni-api
+      DEPLOY_ENVIRONMENT: staging
+      API_URL: https://noni-api-staging.up.railway.app
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -185,7 +188,21 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
       - name: Deploy backend to Railway staging
-        run: railway up -y --detach --service "$RAILWAY_SERVICE" --environment staging
+        run: railway up -y --detach --service "$RAILWAY_SERVICE" --environment "$DEPLOY_ENVIRONMENT"
+      - name: Verify deployment reached staging
+        run: |
+          for i in $(seq 1 40); do
+            env_name=$(curl -sf "$API_URL/health" | python3 -c "import json,sys; print(json.load(sys.stdin).get('environment',''))" 2>/dev/null || echo "")
+            sentinel=$(curl -sf "$API_URL/openapi.json" | python3 -c "import json,sys; print('/api/v1/admin/whoami-check' in json.load(sys.stdin)['paths'])" 2>/dev/null || echo "False")
+            echo "attempt $i: environment=$env_name sentinel=$sentinel"
+            if [ "$env_name" = "$DEPLOY_ENVIRONMENT" ] && [ "$sentinel" = "True" ]; then
+              echo "VERIFIED: staging serving new build"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::Deployment verification FAILED — $API_URL did not converge within 10 minutes"
+          exit 1
 
   cloudflare-pages-deploy:
     needs: [preflight, virtual-uat-agent]

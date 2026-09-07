@@ -90,10 +90,17 @@ jobs:
     needs: [preflight, supabase-db-push]
     if: (success() || needs.supabase-db-push.result == 'skipped') && needs.preflight.outputs.railway_ready == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
+    # DEPLOY-ENV-SYNC-001: `railway up` without --environment deploys to the
+    # token's *default* environment — that silently sent every production
+    # deploy to staging. Pin the environment AND bind the job to the
+    # GitHub `production` environment so protection rules apply.
+    environment: production
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       RAILWAY_SERVICE: noni-api
+      DEPLOY_ENVIRONMENT: production
+      API_URL: https://noni-api-production.up.railway.app
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -101,8 +108,26 @@ jobs:
           node-version: "20"
       - name: Install Railway CLI
         run: npm install -g @railway/cli
-      - name: Deploy backend to Railway
-        run: railway up -y --detach --service "$RAILWAY_SERVICE"
+      - name: Deploy backend to Railway production
+        run: railway up -y --detach --service "$RAILWAY_SERVICE" --environment "$DEPLOY_ENVIRONMENT"
+      - name: Verify deployment reached the right environment
+        run: |
+          # Post-deploy verification: a deploy is not done when `railway up`
+          # returns 0 — it is done when the target env serves the new surface.
+          # Poll until /health reports the right environment AND the route
+          # surface contains a sentinel path from this build.
+          for i in $(seq 1 40); do
+            env_name=$(curl -sf "$API_URL/health" | python3 -c "import json,sys; print(json.load(sys.stdin).get('environment',''))" 2>/dev/null || echo "")
+            sentinel=$(curl -sf "$API_URL/openapi.json" | python3 -c "import json,sys; print('/api/v1/admin/whoami-check' in json.load(sys.stdin)['paths'])" 2>/dev/null || echo "False")
+            echo "attempt $i: environment=$env_name sentinel=$sentinel"
+            if [ "$env_name" = "$DEPLOY_ENVIRONMENT" ] && [ "$sentinel" = "True" ]; then
+              echo "VERIFIED: $DEPLOY_ENVIRONMENT serving new build"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::Deployment verification FAILED — $API_URL did not converge to $DEPLOY_ENVIRONMENT with the new route surface within 10 minutes"
+          exit 1
 
   cloudflare-pages-deploy:
     needs: [preflight]  # DECOUPLED: backend already deployed
