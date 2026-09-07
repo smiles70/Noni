@@ -116,7 +116,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const interceptor = apiClient.interceptors.request.use(async (config) => {
-      const token = await auth.getToken();
+      // ADMIN-LOGIN-001: a staff-console session (own storage key) takes
+      // precedence over any learner credential for API calls.
+      const token =
+        localStorage.getItem("mynaani.staff_token") || (await auth.getToken());
 
       if (token) {
         config.headers = config.headers || {};

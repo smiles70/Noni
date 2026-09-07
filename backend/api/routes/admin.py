@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import uuid
 
-from fastapi import APIRouter, Depends, Query
+from typing import Optional
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
 from pydantic import BaseModel
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session as DbSession
@@ -19,7 +21,8 @@ from backend.api.deps import get_db, get_optional_account, require_staff
 from backend.models.accounts import Account
 from backend.models.billing import Purchase
 from backend.models.governance import AccountFlag
-from backend.services import organizations as org_service
+from backend.services import admin_auth, organizations as org_service
+from backend.services.rate_limit import RateLimit
 
 router = APIRouter()
 
@@ -61,11 +64,15 @@ def whoami(account: Account = Depends(require_staff)) -> WhoAmIResponse:
 
 @router.get("/whoami-check", response_model=WhoAmIResponse)
 def whoami_check(
+    authorization: Optional[str] = Header(default=None),
     account: Account | None = Depends(get_optional_account),
 ) -> WhoAmIResponse:
-    """Soft check for the frontend: returns staff=False rather than 403."""
+    """Soft check for the frontend: returns staff=False rather than 403.
+    Accepts either a staff session token or an allowlisted account."""
     from backend.core.config import settings
 
+    if admin_auth.staff_subject(authorization) is not None:
+        return WhoAmIResponse(staff=True)
     allowed = {s.strip() for s in settings.ADMIN_ACCOUNT_IDS.split(",") if s.strip()}
     return WhoAmIResponse(staff=account is not None and str(account.id) in allowed)
 
@@ -151,3 +158,68 @@ def list_flags(
             for f in rows
         ]
     }
+
+
+# ---------- Staff console login (ADMIN-LOGIN-001) ----------
+
+
+class AdminLoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class AdminLoginResponse(BaseModel):
+    staff: bool
+    token: str
+
+
+LIMIT_ADMIN_LOGIN_PER_IP = RateLimit(
+    action="admin_login", max_per_window=5, window_seconds=60
+)
+
+
+@router.post("/login", response_model=AdminLoginResponse)
+def admin_login(
+    body: AdminLoginRequest,
+    request: "Request",
+    db: DbSession = Depends(get_db),
+) -> AdminLoginResponse:
+    """Internal staff-console login — username+password, not Magic/Stripe.
+
+    Rate-limited per IP. Password checked against the env-stored SHA-256
+    hash (constant-time). On success issues an HMAC staff session token
+    and materializes a per-username staff Account so audit rows keep
+    per-actor attribution (kim vs steven are distinct actors even though
+    they share the password).
+    """
+    from backend.services import rate_limit
+
+    rate_limit.enforce(
+        db,
+        LIMIT_ADMIN_LOGIN_PER_IP,
+        rate_limit.client_ip(request),
+        envelope_id="admin.login_rate_limited",
+    )
+    if not admin_auth.credentials_ok(body.username, body.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"envelope_id": "admin.invalid_credentials"},
+        )
+    username = body.username.strip().lower()
+    auth_id = admin_auth.staff_auth_user_id(username)
+    account = db.query(Account).filter(Account.auth_user_id == auth_id).first()
+    if account is None:
+        account = Account(
+            auth_user_id=auth_id,
+            email=f"{username}@staff.mynaani.internal",
+            display_name=username,
+        )
+        db.add(account)
+        db.commit()
+    token = admin_auth.issue_staff_token(username)
+    if token is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"envelope_id": "admin.session_unavailable"},
+        )
+    return AdminLoginResponse(staff=True, token=token)
