@@ -82,9 +82,7 @@ def test_login_success_grants_staff_access(client, monkeypatch):
     token = r.json()["token"]
     assert token.startswith("staff.")
 
-    r = client.get(
-        "/api/v1/admin/whoami", headers={"Authorization": f"Bearer {token}"}
-    )
+    r = client.get("/api/v1/admin/whoami", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
     assert r.json() == {"staff": True}
 

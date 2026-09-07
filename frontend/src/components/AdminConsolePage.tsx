@@ -125,7 +125,14 @@ export default function AdminConsolePage() {
 
   if (state === "denied")
     return (
-      <main style={{ ...PAGE, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <main
+        style={{
+          ...PAGE,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <form
           aria-label="Staff sign in"
           onSubmit={(e) => {
@@ -144,8 +151,14 @@ export default function AdminConsolePage() {
             minWidth: 340,
           }}
         >
-          <img src="/mynaani-logo.webp" alt="mynaani" style={{ width: 120, height: "auto" }} />
-          <h1 style={{ fontSize: 18, margin: 0, fontWeight: 600 }}>Staff sign in</h1>
+          <img
+            src="/mynaani-logo.webp"
+            alt="mynaani"
+            style={{ width: 120, height: "auto" }}
+          />
+          <h1 style={{ fontSize: 18, margin: 0, fontWeight: 600 }}>
+            Staff sign in
+          </h1>
           <input
             aria-label="Username"
             style={{ ...INPUT, width: "100%", boxSizing: "border-box" }}
@@ -180,7 +193,10 @@ export default function AdminConsolePage() {
             {busy ? "Signing in…" : "Log in"}
           </button>
           {loginError && (
-            <p role="alert" style={{ color: COLORS.errorConfirm, fontSize: 14, margin: 0 }}>
+            <p
+              role="alert"
+              style={{ color: COLORS.errorConfirm, fontSize: 14, margin: 0 }}
+            >
               {loginError}
             </p>
           )}
@@ -190,7 +206,13 @@ export default function AdminConsolePage() {
 
   return (
     <main style={PAGE} data-component="AdminConsole">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <h1 style={{ fontSize: 22, margin: 0 }}>mynaani staff console</h1>
         <button type="button" onClick={signOut} style={{ fontSize: 13 }}>
           Sign out
