@@ -1,6 +1,6 @@
 /** ADMIN-IA-001: account support lookup — read-only per charter. */
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { apiClient } from "../../api/client";
 import { COLORS, SPACING } from "../../design/tokens";
 
@@ -25,7 +25,45 @@ const TD: React.CSSProperties = {
   padding: "8px 10px",
 };
 
-export function AccountsView() {
+export function AccountsView({ canWrite = true }: { canWrite?: boolean }) {
+  const [staff, setStaff] = useState<
+    {
+      id: string;
+      display_name: string | null;
+      email: string | null;
+      role: string | null;
+    }[]
+  >([]);
+
+  const loadStaff = useCallback(() => {
+    if (!canWrite) return;
+    apiClient
+      .get<typeof staff>("/api/v1/admin/staff")
+      .then((r) => setStaff(r.data))
+      .catch(() => setStaff([]));
+  }, [canWrite]);
+
+  useEffect(() => {
+    loadStaff();
+  }, [loadStaff]);
+
+  const setRole = (id: string, role: string) =>
+    apiClient
+      .post(`/api/v1/admin/staff/${id}/role`, { role })
+      .then(loadStaff)
+      .catch((e) => {
+        const msg =
+          (e as { response?: { data?: { detail?: { envelope_id?: string } } } })
+            ?.response?.data?.detail?.envelope_id ?? "admin.role_failed";
+        setError(
+          msg === "admin.cannot_change_own_role"
+            ? "You can't change your own role."
+            : msg === "admin.last_admin"
+              ? "There must be at least one admin."
+              : "Role change failed.",
+        );
+      });
+
   const [q, setQ] = useState("");
   const [rows, setRows] = useState<AccountRow[]>([]);
   const [error, setError] = useState("");
@@ -75,6 +113,30 @@ export function AccountsView() {
   return (
     <section aria-label="Accounts">
       <h2 style={{ marginTop: 0 }}>Accounts</h2>
+      {canWrite && staff.length > 0 && (
+        <div style={{ marginBottom: SPACING.md }}>
+          <h3 style={{ fontSize: 15 }}>Staff roles</h3>
+          <table style={{ borderCollapse: "collapse", fontSize: 13 }}>
+            <tbody>
+              {staff.map((p) => (
+                <tr key={p.id}>
+                  <td style={{ padding: "4px 10px" }}>{p.display_name}</td>
+                  <td style={{ padding: "4px 10px" }}>{p.role}</td>
+                  <td style={{ padding: "4px 10px" }}>
+                    <select
+                      value={p.role ?? ""}
+                      onChange={(e) => setRole(p.id, e.target.value)}
+                    >
+                      <option value="admin">admin</option>
+                      <option value="support">support</option>
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       <p style={{ fontSize: 13, color: "#666", marginTop: 0 }}>
         Support lookup with account actions. Individual learning progress is
         never shown here.
@@ -131,30 +193,32 @@ export function AccountsView() {
                       : "active"}
                 </td>
                 <td style={TD}>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    {a.deleted_at ? (
-                      <button
-                        style={{ cursor: "pointer" }}
-                        onClick={() => void act(a.id, "cancel-deletion")}
-                      >
-                        Restore
-                      </button>
-                    ) : a.suspended_at ? (
-                      <button
-                        style={{ cursor: "pointer" }}
-                        onClick={() => void act(a.id, "reinstate")}
-                      >
-                        Reinstate
-                      </button>
-                    ) : (
-                      <button
-                        style={{ cursor: "pointer" }}
-                        onClick={() => void act(a.id, "suspend")}
-                      >
-                        Suspend
-                      </button>
-                    )}
-                  </div>
+                  {canWrite && (
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {a.deleted_at ? (
+                        <button
+                          style={{ cursor: "pointer" }}
+                          onClick={() => void act(a.id, "cancel-deletion")}
+                        >
+                          Restore
+                        </button>
+                      ) : a.suspended_at ? (
+                        <button
+                          style={{ cursor: "pointer" }}
+                          onClick={() => void act(a.id, "reinstate")}
+                        >
+                          Reinstate
+                        </button>
+                      ) : (
+                        <button
+                          style={{ cursor: "pointer" }}
+                          onClick={() => void act(a.id, "suspend")}
+                        >
+                          Suspend
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}

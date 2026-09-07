@@ -55,6 +55,11 @@ class Settings(BaseSettings):
     # ADMIN-LOGIN-001: internal staff console (username+password, not
     # learner auth). Password stored as SHA-256 hex only — never plaintext.
     ADMIN_CONSOLE_USERS: str = "kim,steven"
+    # ADMIN-OPS E5: usernames (subset of ADMIN_CONSOLE_USERS) holding the
+    # 'admin' role. Empty = every configured user is admin — preserves
+    # pre-RBAC behavior and prevents lockout; least privilege applies
+    # only once the list is populated.
+    ADMIN_CONSOLE_ADMINS: str = ""
     ADMIN_CONSOLE_PASSWORD_SHA256: str = ""
 
     # Sprint 27 #92: log sampling rate (0.0–1.0) for info-level request logs.

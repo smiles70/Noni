@@ -285,6 +285,33 @@ def require_staff(
     return account
 
 
+def require_admin(account: Account = Depends(require_staff)) -> Account:
+    """ADMIN-OPS E5: mutation verbs need the 'admin' staff role.
+
+    'support' staff keep every read surface (overview, audit, exports,
+    org/account search, dashboards). Mutations — org/license/account
+    lifecycle, slug, codes, staff roles — are admin-only.
+
+    Accounts arriving via the ADMIN_ACCOUNT_IDS allowlist (env-managed,
+    no staff session) are already vetted operators — they keep full
+    rights. Token-session staff need staff_role='admin'.
+    """
+    from backend.core.config import settings
+
+    allowlisted = {
+        s.strip() for s in settings.ADMIN_ACCOUNT_IDS.split(",") if s.strip()
+    }
+    if (
+        getattr(account, "staff_role", None) != "admin"
+        and str(account.id) not in allowlisted
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"envelope_id": "auth.not_admin"},
+        )
+    return account
+
+
 def require_entitlement(product_code: str):
     """Dependency factory that gates a route behind an active entitlement.
 

@@ -65,6 +65,7 @@ const NAV: { id: View; label: string }[] = [
 
 export default function AdminConsolePage() {
   const [state, setState] = useState<"loading" | "staff" | "denied">("loading");
+  const [role, setRole] = useState<string | null>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -75,10 +76,24 @@ export default function AdminConsolePage() {
 
   useEffect(() => {
     apiClient
-      .get<{ staff: boolean }>("/api/v1/admin/whoami-check")
-      .then((r) => setState(r.data.staff ? "staff" : "denied"))
+      .get<{ staff: boolean; role: string | null }>(
+        "/api/v1/admin/whoami-check",
+      )
+      .then((r) => {
+        setRole(r.data.role);
+        setState(r.data.staff ? "staff" : "denied");
+      })
       .catch(() => setState("denied"));
   }, []);
+
+  useEffect(() => {
+    if (state === "staff") {
+      apiClient
+        .get<{ role: string | null }>("/api/v1/admin/whoami")
+        .then((r) => setRole(r.data.role))
+        .catch(() => undefined);
+    }
+  }, [state]);
 
   useEffect(() => {
     if (state === "staff" && view === "flags") {
@@ -281,9 +296,10 @@ export default function AdminConsolePage() {
               selected={selectedOrg}
               onSelect={setSelectedOrg}
               onNewOrg={() => setView("new-org")}
+              canWrite={role === "admin"}
             />
           )}
-          {view === "accounts" && <AccountsView />}
+          {view === "accounts" && <AccountsView canWrite={role === "admin"} />}
           {view === "audit" && <AuditView onOpenOrg={openOrg} />}
           {view === "new-org" && (
             <NewOrgWizard onDone={openOrg} onCancel={() => setView("orgs")} />

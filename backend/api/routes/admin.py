@@ -28,7 +28,13 @@ from pydantic import BaseModel
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session as DbSession
 
-from backend.api.deps import get_db, get_optional_account, require_staff
+from backend.api.deps import (
+    get_db,
+    get_optional_account,
+    require_admin,
+    require_staff,
+)
+from backend.core.config import settings
 from datetime import datetime, timedelta, timezone
 
 from backend.models.accounts import Account
@@ -47,6 +53,7 @@ router = APIRouter()
 
 class WhoAmIResponse(BaseModel):
     staff: bool
+    role: str | None = None
 
 
 class OrgSummary(BaseModel):
@@ -76,7 +83,7 @@ class AccountSummary(BaseModel):
 
 @router.get("/whoami", response_model=WhoAmIResponse)
 def whoami(account: Account = Depends(require_staff)) -> WhoAmIResponse:
-    return WhoAmIResponse(staff=True)
+    return WhoAmIResponse(staff=True, role=getattr(account, "staff_role", None))
 
 
 @router.get("/whoami-check", response_model=WhoAmIResponse)
@@ -86,10 +93,8 @@ def whoami_check(
 ) -> WhoAmIResponse:
     """Soft check for the frontend: returns staff=False rather than 403.
     Accepts either a staff session token or an allowlisted account."""
-    from backend.core.config import settings
-
     if admin_auth.staff_subject(authorization) is not None:
-        return WhoAmIResponse(staff=True)
+        return WhoAmIResponse(staff=True, role=getattr(account, "staff_role", None))
     allowed = {s.strip() for s in settings.ADMIN_ACCOUNT_IDS.split(",") if s.strip()}
     return WhoAmIResponse(staff=account is not None and str(account.id) in allowed)
 
@@ -306,7 +311,7 @@ def account_suspend(
     account_id: uuid.UUID,
     body: AccountSuspendBody,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> AccountActionResponse:
     account = _account_or_404(db, account_id)
     if account.suspended_at is None:  # idempotent verb
@@ -326,7 +331,7 @@ def account_suspend(
 def account_reinstate(
     account_id: uuid.UUID,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> AccountActionResponse:
     account = _account_or_404(db, account_id)
     if account.suspended_at is not None:  # idempotent verb
@@ -342,7 +347,7 @@ def account_reinstate(
 def account_cancel_deletion(
     account_id: uuid.UUID,
     db: DbSession = Depends(get_db),
-    staff: Account = Depends(require_staff),
+    staff: Account = Depends(require_admin),
 ) -> AccountActionResponse:
     account = _account_or_404(db, account_id)
     # Route through the deletion service — it flips the pending request
@@ -439,6 +444,16 @@ def admin_login(
             display_name=username,
         )
         db.add(account)
+        db.commit()
+    # E5: resolve role on every login so config changes take effect.
+    admins = {
+        u.strip().lower()
+        for u in (settings.ADMIN_CONSOLE_ADMINS or "").split(",")
+        if u.strip()
+    }
+    role = "admin" if (not admins or username in admins) else "support"
+    if account.staff_role != role:
+        account.staff_role = role
         db.commit()
     token = admin_auth.issue_staff_token(username)
     if token is None:
@@ -538,4 +553,95 @@ def export_audit(
             ]
             for a, name, actor in rows
         ],
+    )
+
+
+# ---------- ADMIN-OPS E5: staff administration (RBAC) ----------
+
+
+class StaffRow(BaseModel):
+    id: str
+    display_name: str | None
+    email: str | None
+    role: str | None
+
+
+class StaffRoleBody(BaseModel):
+    role: str  # 'admin' | 'support'
+
+
+@router.get("/staff", response_model=list[StaffRow])
+def staff_list(
+    db: DbSession = Depends(get_db),
+    _: Account = Depends(require_admin),
+) -> list[StaffRow]:
+    """Accounts with a staff role — the @staff.mynaani.internal cohort."""
+    rows = (
+        db.query(Account)
+        .filter(Account.staff_role.isnot(None))
+        .order_by(Account.display_name)
+        .all()
+    )
+    return [
+        StaffRow(
+            id=str(a.id),
+            display_name=a.display_name,
+            email=a.email,
+            role=a.staff_role,
+        )
+        for a in rows
+    ]
+
+
+@router.post("/staff/{account_id}/role", response_model=StaffRow)
+def staff_set_role(
+    account_id: uuid.UUID,
+    body: StaffRoleBody,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_admin),
+) -> StaffRow:
+    if body.role not in ("admin", "support"):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail={"envelope_id": "admin.invalid_role"},
+        )
+    target = db.query(Account).filter(Account.id == account_id).first()
+    if target is None or target.staff_role is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"envelope_id": "admin.staff_not_found"},
+        )
+    if target.id == staff.id:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"envelope_id": "admin.cannot_change_own_role"},
+        )
+    if body.role == "support" and target.staff_role == "admin":
+        admins = (
+            db.query(func.count(Account.id))
+            .filter(Account.staff_role == "admin")
+            .scalar()
+            or 0
+        )
+        if admins <= 1:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={"envelope_id": "admin.last_admin"},
+            )
+    if target.staff_role != body.role:
+        target.staff_role = body.role
+        db.add(
+            OrgAuditLog(
+                organization_id=None,
+                actor_account_id=staff.id,
+                action="staff.role",
+                detail=f"account={target.id} role={body.role}",
+            )
+        )
+        db.commit()
+    return StaffRow(
+        id=str(target.id),
+        display_name=target.display_name,
+        email=target.email,
+        role=target.staff_role,
     )
