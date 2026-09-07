@@ -257,7 +257,7 @@ jobs:
       - name: Build backend image for scan
         run: docker build -t noni-api:scan -f Dockerfile .
       - name: Trivy backend image scan
-        uses: aquasecurity/trivy-action@v0.30.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: noni-api:scan
           severity: CRITICAL,HIGH
@@ -266,7 +266,7 @@ jobs:
       - name: Build frontend image for scan
         run: docker build -t noni-frontend:scan -f frontend/Dockerfile frontend
       - name: Trivy frontend image scan
-        uses: aquasecurity/trivy-action@v0.30.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: noni-frontend:scan
           severity: CRITICAL,HIGH
