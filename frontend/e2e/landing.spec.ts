@@ -5,17 +5,27 @@ test.describe("Landing page", () => {
   test("renders backend-served copy and primary CTA", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByText("Begin calmly")).toBeVisible();
-    await expect(page.getByText("Learn how it works")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "How it works" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /communities/i }),
+    ).toBeVisible();
   });
 
   test("primary CTA advances to curriculum view", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Begin calmly" }).click();
-    await expect(page.getByText("Begin calmly")).not.toBeVisible();
+    await page.getByRole("button", { name: "How it works" }).click();
+    await page
+      .getByRole("button", { name: "Continue to my account — free" })
+      .click();
+    // unauthenticated begin routes through the sign-in gate
+    await expect(page.getByRole("heading", { name: /sign in/i })).toBeVisible();
   });
 
-  test("larger-text toggle updates aria-pressed and html class", async ({ page }) => {
+  test("larger-text toggle updates aria-pressed and html class", async ({
+    page,
+  }) => {
     await page.goto("/");
     const toggle = page.getByRole("button", { name: "Larger text" });
     await expect(toggle).toHaveAttribute("aria-pressed", "false");
@@ -32,7 +42,10 @@ test.describe("Landing page", () => {
       detailedReport: true,
       detailedReportOptions: { html: false },
       axeOptions: {
-        runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] },
+        runOnly: {
+          type: "tag",
+          values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+        },
       },
     });
   });

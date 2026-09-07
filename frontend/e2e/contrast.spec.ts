@@ -1,6 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { runContrastAudit, formatViolations } from "./utils/runContrastAudit";
 
+async function beginJourney(page) {
+  await page.getByRole("button", { name: "How it works" }).click();
+  await page
+    .getByRole("button", { name: "Continue to my account — free" })
+    .click();
+}
+
 /**
  * Contrast Audit
  *
@@ -22,7 +29,7 @@ test.describe("Contrast Audit (WCAG 2.1 AA)", () => {
     const violations = await runContrastAudit(page);
     expect(
       violations,
-      `Landing page contrast failures:\n${formatViolations(violations)}`
+      `Landing page contrast failures:\n${formatViolations(violations)}`,
     ).toHaveLength(0);
   });
 
@@ -37,25 +44,25 @@ test.describe("Contrast Audit (WCAG 2.1 AA)", () => {
     const violations = await runContrastAudit(page);
     expect(
       violations,
-      `Sign-in page contrast failures:\n${formatViolations(violations)}`
+      `Sign-in page contrast failures:\n${formatViolations(violations)}`,
     ).toHaveLength(0);
   });
 
   test("curriculum view (free track)", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Begin calmly" }).click();
+    await beginJourney(page);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
     const violations = await runContrastAudit(page);
     expect(
       violations,
-      `Curriculum view contrast failures:\n${formatViolations(violations)}`
+      `Curriculum view contrast failures:\n${formatViolations(violations)}`,
     ).toHaveLength(0);
   });
 
   test("curriculum menu (lessons list)", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Begin calmly" }).click();
+    await beginJourney(page);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
     const lessons = page.getByRole("button", { name: /lessons/i });
@@ -67,7 +74,7 @@ test.describe("Contrast Audit (WCAG 2.1 AA)", () => {
     const violations = await runContrastAudit(page);
     expect(
       violations,
-      `Curriculum menu contrast failures:\n${formatViolations(violations)}`
+      `Curriculum menu contrast failures:\n${formatViolations(violations)}`,
     ).toHaveLength(0);
   });
 
@@ -80,7 +87,7 @@ test.describe("Contrast Audit (WCAG 2.1 AA)", () => {
     const violations = await runContrastAudit(page);
     expect(
       violations,
-      `Larger-text mode contrast failures:\n${formatViolations(violations)}`
+      `Larger-text mode contrast failures:\n${formatViolations(violations)}`,
     ).toHaveLength(0);
   });
 });

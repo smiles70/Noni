@@ -20,15 +20,17 @@ for (const viewport of VIEWPORTS) {
       test(`no horizontal scroll on ${route || "root"}`, async ({ page }) => {
         await page.goto(route);
         const scrollWidth = await page.evaluate(
-          () => document.documentElement.scrollWidth
+          () => document.documentElement.scrollWidth,
         );
         const clientWidth = await page.evaluate(
-          () => document.documentElement.clientWidth
+          () => document.documentElement.clientWidth,
         );
         expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
       });
 
-      test(`all buttons meet minimum touch target on ${route || "root"}`, async ({ page }) => {
+      test(`all buttons meet minimum touch target on ${route || "root"}`, async ({
+        page,
+      }) => {
         await page.goto(route);
         const buttons = await page.locator("button, a, [role='button']").all();
 
@@ -42,7 +44,9 @@ for (const viewport of VIEWPORTS) {
         }
       });
 
-      test(`text is readable without zoom on ${route || "root"}`, async ({ page }) => {
+      test(`text is readable without zoom on ${route || "root"}`, async ({
+        page,
+      }) => {
         await page.goto(route);
         const fontSizes = await page.evaluate(() => {
           const allText = Array.from(document.querySelectorAll("*"));
@@ -61,14 +65,18 @@ for (const viewport of VIEWPORTS) {
       });
     }
 
-    test("landing hero serves mobile art-directed image on iPhoneSE", async ({ page }) => {
+    test("landing hero serves mobile art-directed image on iPhoneSE", async ({
+      page,
+    }) => {
       // Only meaningful for the mobile viewport
       if (viewport.name !== "iPhoneSE") {
         test.skip();
       }
 
       await page.goto("/");
-      const source = await page.locator("picture source").getAttribute("srcset");
+      const source = await page
+        .locator("picture source")
+        .getAttribute("srcset");
       expect(source).toBe("/hero-mobile.jpg");
     });
   });
