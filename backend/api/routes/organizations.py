@@ -20,7 +20,6 @@ from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_current_account, get_db, require_staff
 from backend.models.accounts import Account
-from backend.models.organizations import OrgLicense
 from backend.services import organizations as org_service
 
 router = APIRouter()
@@ -152,8 +151,8 @@ def create_license(
     body: LicenseCreate,
     db: DbSession = Depends(get_db),
     staff: Account = Depends(require_staff),
-) -> OrgLicense:
-    return org_service.create_license(
+) -> LicenseResponse:
+    lic = org_service.create_license(
         db,
         staff,
         org_id,
@@ -162,6 +161,13 @@ def create_license(
         amount_cents=body.amount_cents,
         expires_at=body.expires_at,
         invoice_ref=body.invoice_ref,
+    )
+    return LicenseResponse(
+        id=str(lic.id),
+        organization_id=str(lic.organization_id),
+        product_code=lic.product_code,
+        total_seats=lic.total_seats,
+        used_seats=lic.used_seats,
     )
 
 
