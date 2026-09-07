@@ -724,3 +724,26 @@ def test_deletion_sweep_leaves_pending_alone(client, monkeypatch):
         assert req.status == "requested"
     finally:
         db.close()
+
+
+def test_maintenance_endpoints_staff_only_and_admin_gated(client, monkeypatch):
+    """H5: maintenance triggers need admin role; support gets 403."""
+    r = client.post("/api/v1/admin/maintenance/run-deletion-sweep")
+    assert r.status_code in (401, 403)
+
+    headers = _staff_headers(client, monkeypatch)  # admins unset → admin
+    r = client.post("/api/v1/admin/maintenance/run-deletion-sweep", headers=headers)
+    assert r.status_code == 200
+    body = r.json()
+    assert "done" in body and "failed" in body and "due" in body
+
+    # audit row written
+    csv = client.get("/api/v1/admin/export/audit.csv", headers=headers)
+    assert "maintenance.deletion_sweep" in csv.text
+
+
+def test_maintenance_flag_scan_runs(client, monkeypatch):
+    headers = _staff_headers(client, monkeypatch)
+    r = client.post("/api/v1/admin/maintenance/run-flag-scan", headers=headers)
+    assert r.status_code == 200
+    assert "scanned" in r.json() and "flagged" in r.json()

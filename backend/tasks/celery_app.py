@@ -64,5 +64,11 @@ app.conf.update(
             "task": "backend.tasks.org_tasks.license_renewal_reminders",
             "schedule": 86400.0,
         },
+        # HYGIENE H4: the flag producer was never scheduled — without this
+        # the flags queue can never receive rows.
+        "sharing-pattern-scan-weekly": {
+            "task": "backend.tasks.org_tasks.sharing_pattern_scan",
+            "schedule": 604800.0,  # weekly
+        },
     },
 )
