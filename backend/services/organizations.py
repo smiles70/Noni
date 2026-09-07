@@ -792,6 +792,18 @@ def org_detail(db: DbSession, org_id: uuid.UUID) -> dict:
             "postal_code": org.postal_code,
             "phone": org.phone,
         },
+        "children": [
+            {
+                "id": str(c.id),
+                "name": c.name,
+                "status": c.status,
+                "org_type": c.org_type,
+                "tier": c.tier,
+            }
+            for c in db.query(Organization)
+            .filter(Organization.parent_org_id == org_id)
+            .all()
+        ],
         "contacts": [
             {
                 "id": str(c.id),

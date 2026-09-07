@@ -489,8 +489,8 @@ def test_account_suspend_blocks_auth_and_reinstate(client, monkeypatch):
     assert r.status_code == 200
     assert client.get("/api/v1/me/export", headers=learner).status_code == 200
 
-    # audit entry exists
-    audit = client.get("/api/v1/admin/audit?q=account.suspend", headers=headers)
+    # audit entry exists — verify via the audit CSV export (aggregate feed)
+    audit = client.get("/api/v1/admin/export/audit.csv", headers=headers)
     assert "account.suspend" in audit.text
 
 
