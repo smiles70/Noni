@@ -16,7 +16,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session as DbSession
 
-from backend.api.deps import get_optional_account, require_entitlement
+from backend.api.deps import get_current_account, get_optional_account, require_entitlement
 from backend.models.accounts import Account
 from backend.core.database import get_db
 from backend.core.interface_control.stability_metric import compute_stability
@@ -877,6 +877,71 @@ def _build_lesson_payload(module: int, unit: CurriculumUnit, request_path: str) 
         "pages": pages,
         "stability": stability,
     }
+
+
+
+
+def _org_visible_modules(db: DbSession, account_id) -> Optional[list]:
+    """Return the org's visible_modules list, or None for unrestricted.
+    Free modules (0, 1) are always visible — curation only filters the
+    paid track, so a partner can never hide the safety unit or basics."""
+    from backend.models.organizations import AccessCode, OrgLicense, Organization
+
+    org = (
+        db.query(Organization)
+        .join(OrgLicense, OrgLicense.organization_id == Organization.id)
+        .join(AccessCode, AccessCode.license_id == OrgLicense.id)
+        .filter(AccessCode.claimed_by_account_id == account_id)
+        .first()
+    )
+    if org is None or org.visible_modules is None:
+        return None
+    return list(org.visible_modules)
+
+
+class ProgressReport(BaseModel):
+    unit_id: str = Field(max_length=128)
+    status: str = Field(pattern=r"^(started|completed)$")
+    confidence: Optional[int] = Field(default=None, ge=1, le=5)
+
+
+@router.post("/progress", status_code=204)
+def report_progress(
+    body: ProgressReport,
+    db: DbSession = Depends(get_db),
+    account: Account = Depends(get_current_account),
+) -> None:
+    """Learner progress write-path (previously the table had no writer).
+    Upserts per (account, unit). `confidence` is a calm 1-5 self-report:
+    confidence_pre on status=started, confidence_post on completed.
+    Aggregate-only downstream — staff never see individuals."""
+    from datetime import datetime, timezone
+
+    from backend.models.learning import Progress
+
+    row = (
+        db.query(Progress)
+        .filter(Progress.account_id == account.id, Progress.unit_id == body.unit_id)
+        .one_or_none()
+    )
+    if row is None:
+        row = Progress(
+            account_id=account.id,
+            unit_id=body.unit_id,
+            status=body.status,
+        )
+        db.add(row)
+    if body.status == "completed":
+        row.status = "completed"
+        row.completed_at = row.completed_at or datetime.now(timezone.utc)
+        if body.confidence is not None:
+            row.confidence_post = body.confidence
+    else:
+        if row.status != "completed":
+            row.status = "started"
+        if body.confidence is not None:
+            row.confidence_pre = body.confidence
+    db.commit()
 
 
 @router.get("/units/{unit_id}/lesson")
