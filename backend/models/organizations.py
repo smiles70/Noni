@@ -9,7 +9,8 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, (
+from sqlalchemy import (
+    JSON,
     Boolean,
     Column,
     DateTime,
