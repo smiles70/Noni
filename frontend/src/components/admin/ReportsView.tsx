@@ -64,7 +64,8 @@ const CELL: React.CSSProperties = {
  * healthy, >90% expansion signal. */
 function utilizationLabel(pct: number): { text: string; color: string } {
   if (pct < 50) return { text: `${pct}% — at risk`, color: "#b3543f" };
-  if (pct <= 85) return { text: `${pct}% — healthy`, color: COLORS.accentDesatGreen };
+  if (pct <= 85)
+    return { text: `${pct}% — healthy`, color: COLORS.accentDesatGreen };
   return { text: `${pct}% — expansion`, color: COLORS.accentMutedBlue };
 }
 
@@ -104,10 +105,10 @@ export default function ReportsView() {
     <section aria-label="Reports">
       <h2 style={{ marginTop: 0 }}>Reports — customer activity</h2>
       <p style={{ fontSize: 14, color: COLORS.disabled, maxWidth: 640 }}>
-        Aggregate org-level rollups over a sliding window. Counts and
-        timestamps only — never individual learner records, unit detail,
-        or confidence values. “Active learner” = a claimed seat with
-        progress activity in the window.
+        Aggregate org-level rollups over a sliding window. Counts and timestamps
+        only — never individual learner records, unit detail, or confidence
+        values. “Active learner” = a claimed seat with progress activity in the
+        window.
       </p>
 
       <div
@@ -170,8 +171,8 @@ export default function ReportsView() {
         <>
           <p style={{ fontSize: 13, color: COLORS.disabled }}>
             Window: last {report.window_days} days · generated{" "}
-            {report.generated_at_utc.slice(0, 19)}Z ·{" "}
-            {report.orgs.length} organization(s)
+            {report.generated_at_utc.slice(0, 19)}Z · {report.orgs.length}{" "}
+            organization(s)
           </p>
           <div
             style={{
@@ -215,10 +216,7 @@ export default function ReportsView() {
                 Codes claimed in window
               </div>
               <div style={{ fontSize: 28, fontWeight: 700 }}>
-                {report.orgs.reduce(
-                  (s, o) => s + o.codes_claimed_in_window,
-                  0,
-                )}
+                {report.orgs.reduce((s, o) => s + o.codes_claimed_in_window, 0)}
               </div>
             </div>
           </div>

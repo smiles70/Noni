@@ -57,13 +57,7 @@ interface FlagRow {
 }
 
 type View =
-  | "overview"
-  | "orgs"
-  | "accounts"
-  | "flags"
-  | "audit"
-  | "reports"
-  | "new-org";
+  "overview" | "orgs" | "accounts" | "flags" | "audit" | "reports" | "new-org";
 
 const NAV: { id: View; label: string }[] = [
   { id: "overview", label: "Overview" },

@@ -761,7 +761,7 @@ def org_activity_report(
         licenses = db.query(OrgLicense).filter(OrgLicense.organization_id == o.id).all()
         lic_ids = [lic.id for lic in licenses]
         seats_total = sum(lic.total_seats for lic in licenses)
-        seats_used = sum(lic.seats_used or 0 for lic in licenses)
+        seats_used = sum(lic.used_seats or 0 for lic in licenses)
 
         codes = (
             db.query(AccessCode).filter(AccessCode.license_id.in_(lic_ids)).all()
