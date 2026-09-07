@@ -52,6 +52,10 @@ class Settings(BaseSettings):
 
     # Admin account UUIDs (comma-separated) for telemetry export gating.
     ADMIN_ACCOUNT_IDS: str = ""
+    # ADMIN-LOGIN-001: internal staff console (username+password, not
+    # learner auth). Password stored as SHA-256 hex only — never plaintext.
+    ADMIN_CONSOLE_USERS: str = "kim,steven"
+    ADMIN_CONSOLE_PASSWORD_SHA256: str = ""
 
     # Sprint 27 #92: log sampling rate (0.0–1.0) for info-level request logs.
     # Errors and warnings are always logged at 100%.
