@@ -6,7 +6,6 @@ dashboard tests. whoami-check is the soft probe for the frontend gate.
 
 from __future__ import annotations
 
-import uuid
 
 
 def test_whoami_requires_session(client):

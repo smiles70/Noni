@@ -221,9 +221,9 @@ export default function CurriculumMenu(props: Props) {
           straight to it.
         </p>
         <p style={INTRO} data-component="Body">
-          This journey is shaped around one learner — your answers and your
-          pace make it yours. If friends or neighbours would like their own
-          journey, a community can arrange shared access at mynaani.com/for-communities.
+          This journey is shaped around one learner — your answers and your pace
+          make it yours. If friends or neighbours would like their own journey,
+          a community can arrange shared access at mynaani.com/for-communities.
         </p>
 
         {menu.modules.map((mod) => (

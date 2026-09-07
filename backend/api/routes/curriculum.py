@@ -22,7 +22,6 @@ from backend.core.database import get_db
 from backend.core.interface_control.stability_metric import compute_stability
 from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.state_selector import select_ui_state
-from backend.models.accounts import Account
 from backend.models.curriculum_units import (
     BRIDGE_UNITS,
     UNITS,

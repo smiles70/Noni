@@ -16,8 +16,12 @@ vi.mock("../../api/client", () => ({
     get: vi.fn().mockResolvedValue({
       data: {
         organization: {
-          id: "x", name: "Test Org", org_type: "nonprofit",
-          tier: "site", community_size: 25, status: "active",
+          id: "x",
+          name: "Test Org",
+          org_type: "nonprofit",
+          tier: "site",
+          community_size: 25,
+          status: "active",
           parent_org_id: null,
         },
         licenses: [],
@@ -59,7 +63,9 @@ describe("OrgDashboardPage — aggregate-only staff view", () => {
     const { apiClient } = await import("../../api/client");
     const host = await render();
     const btn = host.querySelector("button:not([aria-label])")!;
-    await act(async () => btn.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+    await act(async () =>
+      btn.dispatchEvent(new MouseEvent("click", { bubbles: true })),
+    );
     expect(apiClient.get).not.toHaveBeenCalled();
   });
 });

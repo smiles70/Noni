@@ -32,9 +32,7 @@ const CurriculumMenu = lazy(() => import("./components/CurriculumMenu"));
 const PaywallPage = lazy(() => import("./components/PaywallPage"));
 const GiftRedeemPage = lazy(() => import("./components/GiftRedeemPage"));
 const PartnerPage = lazy(() => import("./components/PartnerPage"));
-const AdminConsolePage = lazy(
-  () => import("./components/AdminConsolePage"),
-);
+const AdminConsolePage = lazy(() => import("./components/AdminConsolePage"));
 const MockCheckoutPage = lazy(() => import("./components/MockCheckoutPage"));
 const PurchaseSuccessPage = lazy(
   () => import("./components/PurchaseSuccessPage"),

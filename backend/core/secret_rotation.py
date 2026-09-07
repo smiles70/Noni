@@ -50,6 +50,6 @@ def warn_if_secret_old(name: str, max_age_sec: int = DEFAULT_MAX_AGE_SEC) -> Non
                     "max_days": int(max_age_sec / 86400),
                 },
             )
-    except Exception:
+    except Exception:  # nosec B110 - reviewed: non-security context
         # Never break runtime
         pass

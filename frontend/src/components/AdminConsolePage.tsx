@@ -65,14 +65,16 @@ export default function AdminConsolePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    apiClient.get<{ staff: boolean }>("/api/v1/admin/whoami-check")
+    apiClient
+      .get<{ staff: boolean }>("/api/v1/admin/whoami-check")
       .then((r) => setState(r.data.staff ? "staff" : "denied"))
       .catch(() => setState("denied"));
   }, []);
 
   useEffect(() => {
     if (state === "staff") {
-      apiClient.get<{ flags: FlagRow[] }>("/api/v1/admin/flags")
+      apiClient
+        .get<{ flags: FlagRow[] }>("/api/v1/admin/flags")
         .then((r) => setFlags(r.data.flags))
         .catch(() => setFlags([]));
     }
@@ -118,16 +120,28 @@ export default function AdminConsolePage() {
         <button type="button" onClick={search}>
           Search
         </button>
-        {error && <p role="alert" style={{ color: "#a33" }}>{error}</p>}
+        {error && (
+          <p role="alert" style={{ color: "#a33" }}>
+            {error}
+          </p>
+        )}
         {orgs.length > 0 && (
           <table style={TABLE}>
             <thead>
               <tr>
-                {["Name", "Contact", "Status", "Type", "Tier", "Slug", "Seats"].map(
-                  (h) => (
-                    <th key={h} style={CELL}>{h}</th>
-                  ),
-                )}
+                {[
+                  "Name",
+                  "Contact",
+                  "Status",
+                  "Type",
+                  "Tier",
+                  "Slug",
+                  "Seats",
+                ].map((h) => (
+                  <th key={h} style={CELL}>
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -160,7 +174,9 @@ export default function AdminConsolePage() {
             <thead>
               <tr>
                 {["Account", "Flag", "Detail", "Date"].map((h) => (
-                  <th key={h} style={CELL}>{h}</th>
+                  <th key={h} style={CELL}>
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>

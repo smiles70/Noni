@@ -14,7 +14,7 @@ def _mock_require_admin(account: Account = Depends(get_current_account)) -> Acco
     return account
 
 
-from backend.api.routes.curriculum import paid_bundle_dep
+from backend.api.routes.curriculum import paid_bundle_dep  # noqa: E402
 
 app.dependency_overrides[_require_admin] = _mock_require_admin
 # M2 is now paid-track (intake 2026-09-06-paywall-boundary-m2-001): these

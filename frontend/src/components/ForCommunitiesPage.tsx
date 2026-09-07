@@ -543,7 +543,7 @@ export default function ForCommunitiesPage() {
             Program partners hear back from a person within one business day —
             same day for anything urgent like a sign-in or payment problem.
           </p>
-          
+
           <table
             style={{
               width: "100%",

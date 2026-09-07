@@ -161,18 +161,19 @@ export default function PaywallPage({
           You will keep what you have learned either way; this is your choice.
         </p>
         <p style={BODY}>
-          This is a single payment, not a subscription — you will not be
-          charged again. Checkout happens on Stripe's secure payment page —
-          the address in your browser will begin with checkout.stripe.com.
-          Your card details never reach our system, and we will never email
-          or call you to ask for payment.
+          This is a single payment, not a subscription — you will not be charged
+          again. Checkout happens on Stripe's secure payment page — the address
+          in your browser will begin with checkout.stripe.com. Your card details
+          never reach our system, and we will never email or call you to ask for
+          payment.
         </p>
 
         <section style={CARD}>
           <h2 style={H2}>What you get</h2>
           <ul>
             <li>
-              Modules 2, 3, 4, and 5, with their full set of practice activities.
+              Modules 2, 3, 4, and 5, with their full set of practice
+              activities.
             </li>
             <li>
               The same calm, paced pace as the earlier modules — no urgency, no

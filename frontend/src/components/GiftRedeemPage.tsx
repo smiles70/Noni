@@ -67,7 +67,11 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
             setPhase("preview_ok");
           }
         })
-        .catch(() => setError("That link did not work. You can enter the token below instead."));
+        .catch(() =>
+          setError(
+            "That link did not work. You can enter the token below instead.",
+          ),
+        );
     }
     loadEnvelope("account.gift_redeem")
       .then(setEnvelope)

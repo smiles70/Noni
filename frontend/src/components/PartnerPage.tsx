@@ -15,7 +15,10 @@ const PAGE: React.CSSProperties = {
   color: COLORS.textPrimary,
 };
 const H1: React.CSSProperties = { fontSize: 32, marginBottom: SPACING.md };
-const BODY: React.CSSProperties = { fontSize: TYPOGRAPHY.bodySizePx + 2, lineHeight: 1.6 };
+const BODY: React.CSSProperties = {
+  fontSize: TYPOGRAPHY.bodySizePx + 2,
+  lineHeight: 1.6,
+};
 const BTN: React.CSSProperties = {
   fontSize: TYPOGRAPHY.bodySizePx + 2,
   padding: `${SPACING.sm}px ${SPACING.lg}px`,
@@ -55,9 +58,9 @@ export default function PartnerPage() {
     <main style={PAGE}>
       <h1 style={H1}>{name ?? "Welcome"}</h1>
       <p style={BODY}>
-        Your community has arranged free access to mynaani for you. All you
-        need is the access code your community gave you — no card, no payment,
-        no password to remember.
+        Your community has arranged free access to mynaani for you. All you need
+        is the access code your community gave you — no card, no payment, no
+        password to remember.
       </p>
       <button style={BTN} onClick={() => navigate("/signin")}>
         I have my access code — sign me in

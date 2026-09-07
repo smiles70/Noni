@@ -54,7 +54,7 @@ def resolve_org_id(db: DbSession, account_id: uuid.UUID) -> Optional[str]:
             cached = client.get(cache_key)
             if cached is not None:
                 return cached or None
-        except Exception:
+        except Exception:  # nosec B110 - reviewed: non-security context
             pass
 
     row = (
@@ -69,7 +69,7 @@ def resolve_org_id(db: DbSession, account_id: uuid.UUID) -> Optional[str]:
         try:
             # Empty string = known "no org" so negatives cache too.
             client.setex(cache_key, _ORG_CACHE_TTL_SECONDS, org_id or "")
-        except Exception:
+        except Exception:  # nosec B110 - reviewed: non-security context
             pass
     return org_id
 

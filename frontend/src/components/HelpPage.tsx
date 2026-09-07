@@ -299,19 +299,19 @@ function YourAccountSection() {
 
         <h3 style={H3}>Recognizing our emails</h3>
         <p>
-          Sign-in links and receipts only ever come from an address ending
-          in mynaani.com. We will never email or call you to ask for a
-          password, a card number, or any personal details. If a message
-          claiming to be from us asks for those, it is not from us.
+          Sign-in links and receipts only ever come from an address ending in
+          mynaani.com. We will never email or call you to ask for a password, a
+          card number, or any personal details. If a message claiming to be from
+          us asks for those, it is not from us.
         </p>
 
         <h3 style={H3}>Using a shared device</h3>
         <p>
-          You can sign in on any computer, tablet, or phone using the link
-          we email you — there is nothing to install and no password to
-          remember. If you share the device with others, sign out from the
-          "Your account" page when you are finished. For your privacy, you
-          are also signed out automatically after 30 minutes of inactivity.
+          You can sign in on any computer, tablet, or phone using the link we
+          email you — there is nothing to install and no password to remember.
+          If you share the device with others, sign out from the "Your account"
+          page when you are finished. For your privacy, you are also signed out
+          automatically after 30 minutes of inactivity.
         </p>
 
         <h3 style={H3}>If you joined through a program</h3>
@@ -336,8 +336,12 @@ function YourAccountSection() {
           occurred.
         </p>
         <p>
-          Our privacy statement — what we keep and what we never collect — is
-          on the <a href="/privacy" style={LINK}>privacy page</a>.
+          Our privacy statement — what we keep and what we never collect — is on
+          the{" "}
+          <a href="/privacy" style={LINK}>
+            privacy page
+          </a>
+          .
         </p>
       </div>
     </section>
