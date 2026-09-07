@@ -67,7 +67,9 @@ class OrgAuditLog(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     organization_id = Column(
-        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
+        # nullable=True since ADMIN-OPS E6: account-level staff actions
+        # (account.suspend etc.) are audited without an org.
+        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=True
     )
     actor_account_id = Column(
         UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True

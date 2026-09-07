@@ -35,6 +35,18 @@ const CARD: React.CSSProperties = {
   minWidth: 150,
 };
 
+/** E4: staff-gated CSV download — fetches with the session token, saves
+ * as a blob. Reports are audit artifacts (aggregate-only server-side). */
+async function downloadCsv(path: string, filename: string) {
+  const r = await apiClient.get<Blob>(path, { responseType: "blob" });
+  const url = URL.createObjectURL(r.data);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function OverviewView({
   onNewOrg,
   onOpenOrg,
@@ -128,6 +140,15 @@ export default function OverviewView({
           </table>
         </>
       )}
+
+      <button
+        style={{ cursor: "pointer", fontSize: 13 }}
+        onClick={() =>
+          void downloadCsv("/api/v1/admin/export/orgs.csv", "orgs.csv")
+        }
+      >
+        Download seat/utilization CSV
+      </button>
 
       <h3 style={{ marginTop: SPACING.xl }}>Recent activity</h3>
       {data.recent_audit.length === 0 ? (
