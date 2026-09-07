@@ -51,6 +51,8 @@ interface OrgDetail {
     total_seats: number;
     used_seats: number;
     expires_at: string | null;
+    status?: string;
+    suspension_reason?: string | null;
   }[];
   codes_issued: number;
   audit: { action: string; detail: string; created_at: string | null }[];
@@ -113,16 +115,20 @@ export function OrgsView({
     }
   }, [q]);
 
+  const reload = useCallback((id: string) => {
+    apiClient
+      .get<OrgDetail>(`/api/v1/admin/orgs/${id}`)
+      .then((r) => setDetail(r.data))
+      .catch(() => setError("Couldn't load that organization."));
+  }, []);
+
   useEffect(() => {
     if (!selected) {
       setDetail(null);
       return;
     }
-    apiClient
-      .get<OrgDetail>(`/api/v1/admin/orgs/${selected}`)
-      .then((r) => setDetail(r.data))
-      .catch(() => setError("Couldn't load that organization."));
-  }, [selected]);
+    reload(selected);
+  }, [selected, reload]);
 
   if (detail) {
     const o = detail.org;
@@ -206,10 +212,11 @@ export function OrgsView({
               <div style={{ fontSize: 14, color: "#666" }}>None yet.</div>
             ) : (
               detail.licenses.map((l) => (
-                <div key={l.id} style={{ fontSize: 14 }}>
-                  {l.total_seats} seats · ends{" "}
-                  {l.expires_at?.slice(0, 10) ?? "—"}
-                </div>
+                <LicenseRow
+                  key={l.id}
+                  license={l}
+                  onChanged={() => reload(o.id)}
+                />
               ))
             )}
           </div>
@@ -357,5 +364,140 @@ export function OrgsView({
         </table>
       )}
     </section>
+  );
+}
+
+const ACT: React.CSSProperties = {
+  fontSize: 13,
+  color: COLORS.accentMutedBlue,
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  padding: "0 6px 0 0",
+};
+
+/**
+ * One license row with lifecycle actions: edit seats/expiry, suspend or
+ * reinstate, and top up codes. Every action maps to a staff-gated API
+ * and writes an audit entry (ADMIN-OPS E1).
+ */
+function LicenseRow({
+  license: l,
+  onChanged,
+}: {
+  license: OrgDetail["licenses"][number];
+  onChanged: () => void;
+}) {
+  const [msg, setMsg] = useState("");
+  const suspended = l.status === "suspended";
+
+  const run = async (fn: () => Promise<unknown>, ok: string) => {
+    setMsg("");
+    try {
+      await fn();
+      setMsg(ok);
+      onChanged();
+    } catch {
+      setMsg("That didn't go through — try again.");
+    }
+  };
+
+  const edit = () => {
+    const seats = window.prompt("Seats (total):", String(l.total_seats));
+    if (seats === null) return;
+    const n = parseInt(seats, 10);
+    if (!Number.isFinite(n) || n < 1) {
+      setMsg("Seats must be a whole number ≥ 1.");
+      return;
+    }
+    const expiry = window.prompt(
+      "License end date (YYYY-MM-DD, blank keeps current):",
+      l.expires_at?.slice(0, 10) ?? "",
+    );
+    if (expiry === null) return;
+    void run(
+      () =>
+        apiClient.patch(`/api/v1/billing/org/license/${l.id}`, {
+          total_seats: n,
+          expires_at: expiry ? `${expiry}T00:00:00Z` : undefined,
+        }),
+      "Saved.",
+    );
+  };
+
+  const addCodes = () => {
+    const c = window.prompt("How many additional codes?", "5");
+    if (c === null) return;
+    const n = parseInt(c, 10);
+    if (!Number.isFinite(n) || n < 1 || n > 1000) {
+      setMsg("Codes must be 1–1000.");
+      return;
+    }
+    void run(async () => {
+      const r = await apiClient.post<{ codes: string[] }>(
+        `/api/v1/billing/org/${l.id}/codes`,
+        { count: n },
+      );
+      setMsg(`${n} new codes — copy now: ${r.data.codes.join(", ")}`);
+    }, "");
+  };
+
+  const toggle = () => {
+    if (suspended) {
+      void run(
+        () =>
+          apiClient.post(`/api/v1/billing/org/license/${l.id}/reinstate`, {}),
+        "License reinstated.",
+      );
+      return;
+    }
+    const reason = window.prompt(
+      "Suspend this license? Learners keep existing access; new code redemption stops. Reason:",
+      "",
+    );
+    if (!reason) return;
+    void run(
+      () =>
+        apiClient.post(`/api/v1/billing/org/license/${l.id}/suspend`, {
+          reason,
+        }),
+      "License suspended.",
+    );
+  };
+
+  return (
+    <div style={{ fontSize: 14, marginBottom: SPACING.sm }}>
+      <div>
+        {l.used_seats}/{l.total_seats} seats · ends{" "}
+        {l.expires_at?.slice(0, 10) ?? "—"}
+        {suspended && (
+          <span style={{ color: COLORS.errorConfirm }}> · suspended</span>
+        )}
+      </div>
+      {suspended && l.suspension_reason && (
+        <div style={{ fontSize: 12, color: "#666" }}>
+          reason: {l.suspension_reason}
+        </div>
+      )}
+      <div>
+        <button style={ACT} onClick={edit}>
+          edit
+        </button>
+        <button style={ACT} onClick={addCodes}>
+          +codes
+        </button>
+        <button style={ACT} onClick={toggle}>
+          {suspended ? "reinstate" : "suspend"}
+        </button>
+      </div>
+      {msg && (
+        <div
+          role="status"
+          style={{ fontSize: 12, color: COLORS.accentDesatGreen, marginTop: 2 }}
+        >
+          {msg}
+        </div>
+      )}
+    </div>
   );
 }

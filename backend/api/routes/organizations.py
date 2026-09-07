@@ -91,6 +91,24 @@ class CodesResponse(BaseModel):
     codes: list[str]
 
 
+class LicenseUpdate(BaseModel):
+    total_seats: Optional[int] = Field(default=None, ge=1)
+    expires_at: Optional[datetime] = None
+
+
+class LicenseStateResponse(BaseModel):
+    id: str
+    status: str
+    total_seats: int
+    used_seats: int
+    expires_at: Optional[str]
+    suspension_reason: Optional[str]
+
+
+class LicenseSuspendRequest(BaseModel):
+    reason: str = Field(..., min_length=1, max_length=256)
+
+
 class RedeemRequest(BaseModel):
     code: str = Field(..., min_length=8)
 
@@ -169,6 +187,64 @@ def create_license(
         total_seats=lic.total_seats,
         used_seats=lic.used_seats,
     )
+
+
+def _license_state(lic) -> LicenseStateResponse:
+    return LicenseStateResponse(
+        id=str(lic.id),
+        status=getattr(lic, "status", "active"),
+        total_seats=lic.total_seats,
+        used_seats=lic.used_seats,
+        expires_at=lic.expires_at.isoformat() if lic.expires_at else None,
+        suspension_reason=getattr(lic, "suspension_reason", None),
+    )
+
+
+@router.patch(
+    "/org/license/{license_id}",
+    response_model=LicenseStateResponse,
+)
+def update_license(
+    license_id: uuid.UUID,
+    body: LicenseUpdate,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> LicenseStateResponse:
+    lic = org_service.update_license(
+        db,
+        staff,
+        license_id,
+        total_seats=body.total_seats,
+        expires_at=body.expires_at,
+    )
+    return _license_state(lic)
+
+
+@router.post(
+    "/org/license/{license_id}/suspend",
+    response_model=LicenseStateResponse,
+)
+def suspend_license(
+    license_id: uuid.UUID,
+    body: LicenseSuspendRequest,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> LicenseStateResponse:
+    return _license_state(
+        org_service.suspend_license(db, staff, license_id, reason=body.reason)
+    )
+
+
+@router.post(
+    "/org/license/{license_id}/reinstate",
+    response_model=LicenseStateResponse,
+)
+def reinstate_license(
+    license_id: uuid.UUID,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> LicenseStateResponse:
+    return _license_state(org_service.reinstate_license(db, staff, license_id))
 
 
 @router.post("/org/{license_id}/codes", response_model=CodesResponse, status_code=201)

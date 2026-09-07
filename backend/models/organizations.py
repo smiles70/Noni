@@ -79,6 +79,13 @@ class OrgLicense(Base):
     total_seats = Column(Integer, nullable=False, default=0)
     used_seats = Column(Integer, nullable=False, default=0)
     expires_at = Column(DateTime(timezone=True), nullable=True)
+    # ADMIN-OPS E1: lifecycle status. "active" | "suspended" — suspended
+    # blocks new code redemption (redeem_code → org.license_suspended);
+    # already-granted learner entitlements are untouched (soft-first
+    # deprovisioning per SOC2 CC6.3 / export→revoke→delete ordering).
+    status = Column(String(32), nullable=False, default="active")
+    suspension_reason = Column(String(256), nullable=True)
+    suspended_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
 
     organization = relationship("Organization", back_populates="licenses")

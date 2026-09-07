@@ -203,6 +203,101 @@ def generate_codes(
     return codes
 
 
+def _get_license(db: DbSession, license_id: uuid.UUID) -> OrgLicense:
+    lic = db.query(OrgLicense).filter(OrgLicense.id == license_id).one_or_none()
+    if lic is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"envelope_id": "org.license_not_found"},
+        )
+    return lic
+
+
+def update_license(
+    db: DbSession,
+    staff: Account,
+    license_id: uuid.UUID,
+    *,
+    total_seats: Optional[int] = None,
+    expires_at: Optional[datetime] = None,
+) -> OrgLicense:
+    """In-place license edit — never cancel+recreate (Stripe/Chargebee
+    guidance). Seat decrease below used seats is rejected; per-learner
+    seat revocation is a separate, deliberate operation."""
+    lic = _get_license(db, license_id)
+    changes = []
+    if total_seats is not None and total_seats != lic.total_seats:
+        if total_seats < lic.used_seats:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={"envelope_id": "org.seat_below_used"},
+            )
+        changes.append(f"seats={lic.total_seats}->{total_seats}")
+        lic.total_seats = total_seats
+    if expires_at is not None:
+        changes.append(f"expires={expires_at.date().isoformat()}")
+        lic.expires_at = expires_at
+    if changes:
+        db.add(
+            OrgAuditLog(
+                organization_id=lic.organization_id,
+                actor_account_id=staff.id,
+                action="license.edit",
+                detail=" ".join(changes),
+            )
+        )
+    db.commit()
+    return lic
+
+
+def suspend_license(
+    db: DbSession,
+    staff: Account,
+    license_id: uuid.UUID,
+    *,
+    reason: str,
+) -> OrgLicense:
+    lic = _get_license(db, license_id)
+    if lic.status == "suspended":
+        return lic  # idempotent
+    lic.status = "suspended"
+    lic.suspension_reason = reason
+    lic.suspended_at = datetime.now(timezone.utc)
+    db.add(
+        OrgAuditLog(
+            organization_id=lic.organization_id,
+            actor_account_id=staff.id,
+            action="license.suspend",
+            detail=f"reason={reason}",
+        )
+    )
+    db.commit()
+    return lic
+
+
+def reinstate_license(
+    db: DbSession,
+    staff: Account,
+    license_id: uuid.UUID,
+) -> OrgLicense:
+    lic = _get_license(db, license_id)
+    if lic.status == "active":
+        return lic  # idempotent
+    lic.status = "active"
+    lic.suspension_reason = None
+    lic.suspended_at = None
+    db.add(
+        OrgAuditLog(
+            organization_id=lic.organization_id,
+            actor_account_id=staff.id,
+            action="license.reinstate",
+            detail="",
+        )
+    )
+    db.commit()
+    return lic
+
+
 # ---------- Staff: read surfaces ----------
 
 
@@ -265,6 +360,11 @@ def redeem_code(db: DbSession, account: Account, code: str) -> dict:
         )
 
     license_ = access.license
+    if getattr(license_, "status", "active") == "suspended":
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail={"envelope_id": "org.license_suspended"},
+        )
     if license_.expires_at is not None and license_.expires_at < datetime.now(
         timezone.utc
     ):
@@ -435,6 +535,8 @@ def org_dashboard(db: DbSession, org_id: uuid.UUID) -> dict:
                 "codes_issued": len(codes),
                 "codes_claimed": sum(1 for c in codes if c.claimed_by_account_id),
                 "engagement": license_engagement(db, codes),
+                "status": getattr(lic, "status", "active"),
+                "suspension_reason": getattr(lic, "suspension_reason", None),
                 "expires_at": lic.expires_at.isoformat() if lic.expires_at else None,
                 "expired": bool(lic.expires_at and lic.expires_at < now),
                 "expiring_soon": bool(
