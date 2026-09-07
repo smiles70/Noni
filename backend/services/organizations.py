@@ -113,7 +113,7 @@ def create_organization(
             detail=f"name={name} type={org_type} tier={tier}",
         )
     )
-    db.flush()
+    db.commit()
     return org
 
 
@@ -167,7 +167,7 @@ def create_license(
             detail=f"seats={total_seats} amount_cents={amount_cents} invoice={invoice_ref or 'card'}",
         )
     )
-    db.flush()
+    db.commit()
     return license_
 
 
@@ -199,7 +199,7 @@ def generate_codes(
         db.add(AccessCode(license_id=license_id, code_hash=hash_code(token)))
         codes.append(token)
 
-    db.flush()
+    db.commit()
     return codes
 
 
