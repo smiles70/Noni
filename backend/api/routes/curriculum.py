@@ -58,7 +58,8 @@ from backend.services.rate_limit import RateLimit, client_ip, enforce
 router = APIRouter()
 estimator = InterfaceStateEstimator()
 
-# Modules 4 and 5 ship as a single paid bundle (ADR 0021).
+# Modules 2–5 ship as a single paid bundle (ADR 0021; boundary
+# moved to Module 2 per intake 2026-09-06-paywall-boundary-m2-001).
 PAID_BUNDLE_CODE = "modules_4_5"
 
 # Single dependency instance, shared by every paid route. Exposed at module
