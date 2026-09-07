@@ -29,10 +29,27 @@ router = APIRouter()
 # ---------- Models ----------
 
 
+class OrgContactIn(BaseModel):
+    """ADMIN-IA-001 G3: named org contact (business contact data)."""
+
+    name: str = Field(..., min_length=1, max_length=256)
+    email: Optional[str] = Field(default=None, max_length=256)
+    phone: Optional[str] = Field(default=None, max_length=32)
+    role: str = Field(default="contact", max_length=64)
+    is_primary: bool = False
+
+
 class OrganizationCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=256)
     contact_email: str = Field(..., min_length=1, max_length=256)
     admin_email: str = Field(..., min_length=1, max_length=256)
+    address_line1: Optional[str] = Field(default=None, max_length=128)
+    address_line2: Optional[str] = Field(default=None, max_length=128)
+    city: Optional[str] = Field(default=None, max_length=128)
+    state: Optional[str] = Field(default=None, max_length=128)
+    postal_code: Optional[str] = Field(default=None, max_length=128)
+    phone: Optional[str] = Field(default=None, max_length=128)
+    contacts: Optional[list[OrgContactIn]] = None
     org_type: str = Field(
         default="nonprofit", pattern="^(nonprofit|for_profit|health_plan)$"
     )
@@ -112,6 +129,13 @@ def create_organization(
         tier=body.tier,
         custom_flag=body.custom_flag,
         parent_org_id=body.parent_org_id,
+        address_line1=body.address_line1,
+        address_line2=body.address_line2,
+        city=body.city,
+        state=body.state,
+        postal_code=body.postal_code,
+        phone=body.phone,
+        contacts=[c.model_dump() for c in body.contacts] if body.contacts else None,
     )
 
 
