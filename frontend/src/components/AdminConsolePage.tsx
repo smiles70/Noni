@@ -51,6 +51,8 @@ interface FlagRow {
   flag: string;
   detail: string;
   created_at: string | null;
+  resolved_at: string | null;
+  resolution_note: string | null;
 }
 
 type View = "overview" | "orgs" | "accounts" | "flags" | "audit" | "new-org";
@@ -98,7 +100,7 @@ export default function AdminConsolePage() {
   useEffect(() => {
     if (state === "staff" && view === "flags") {
       apiClient
-        .get<{ flags: FlagRow[] }>("/api/v1/admin/flags")
+        .get<{ flags: FlagRow[] }>("/api/v1/admin/flags?open_only=1")
         .then((r) => setFlags(r.data.flags))
         .catch(() => setFlags([]));
     }
@@ -309,13 +311,13 @@ export default function AdminConsolePage() {
               <h2 style={{ marginTop: 0 }}>Flags — sharing signals</h2>
               {flags.length === 0 ? (
                 <p style={{ fontSize: 14, color: COLORS.disabled }}>
-                  No flags — the weekly scan has found nothing to review.
+                  No open flags — the queue is clear.
                 </p>
               ) : (
                 <table style={TABLE}>
                   <thead>
                     <tr>
-                      {["Account", "Flag", "Detail", "Date"].map((h) => (
+                      {["Account", "Flag", "Detail", "Date", ""].map((h) => (
                         <th key={h} style={CELL}>
                           {h}
                         </th>
@@ -329,6 +331,31 @@ export default function AdminConsolePage() {
                         <td style={CELL}>{f.flag}</td>
                         <td style={CELL}>{f.detail}</td>
                         <td style={CELL}>{f.created_at?.slice(0, 10)}</td>
+                        <td style={CELL}>
+                          <button
+                            style={{ cursor: "pointer", fontSize: 13 }}
+                            onClick={() => {
+                              const note = window.prompt(
+                                "Resolution note (optional):",
+                              );
+                              if (note === null) return;
+                              apiClient
+                                .post(`/api/v1/admin/flags/${f.id}/resolve`, {
+                                  note,
+                                })
+                                .then(() =>
+                                  apiClient
+                                    .get<{ flags: FlagRow[] }>(
+                                      "/api/v1/admin/flags?open_only=1",
+                                    )
+                                    .then((r) => setFlags(r.data.flags)),
+                                )
+                                .catch(() => undefined);
+                            }}
+                          >
+                            Resolve
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

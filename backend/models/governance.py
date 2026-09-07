@@ -97,3 +97,7 @@ class AccountFlag(Base):
     flag = Column(String(64), nullable=False)
     detail = Column(Text, nullable=False, default="")
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
+    # ADMIN-OPS-HYGIENE H1: triage lifecycle — resolve with note + actor.
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+    resolved_by = Column(UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True)
+    resolution_note = Column(String(512), nullable=True)

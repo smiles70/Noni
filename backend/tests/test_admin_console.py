@@ -6,6 +6,9 @@ dashboard tests. whoami-check is the soft probe for the frontend gate.
 
 from __future__ import annotations
 
+import uuid
+from datetime import timedelta
+
 
 def test_whoami_requires_session(client):
     r = client.get("/api/v1/admin/whoami")
@@ -604,3 +607,120 @@ def test_staff_role_change_and_guards(client, monkeypatch):
     )
     assert r.status_code == 200
     assert r.json()["role"] == "admin"
+
+
+# ---------- ADMIN-OPS-HYGIENE ----------
+
+
+def test_flag_resolve_idempotent_and_audited(client, monkeypatch):
+    """Route and task see committed rows only — use the app session."""
+    from backend.core.database import SessionLocal
+    from backend.models.governance import AccountFlag
+
+    headers = _staff_headers(client, monkeypatch)
+    client.get(
+        "/api/v1/me/export",
+        headers={"Authorization": "Bearer mock:h1-learner@example.com"},
+    )
+    acct = client.get("/api/v1/admin/accounts?q=h1-learner", headers=headers)
+    acct_id = acct.json()[0]["id"]
+
+    db = SessionLocal()
+    try:
+        flag = AccountFlag(
+            account_id=uuid.UUID(acct_id),
+            flag="sharing_signal",
+            detail="test flag",
+        )
+        db.add(flag)
+        db.commit()
+        flag_id = flag.id
+    finally:
+        db.close()
+
+    r = client.post(
+        f"/api/v1/admin/flags/{flag_id}/resolve",
+        json={"note": "contacted, legit family"},
+        headers=headers,
+    )
+    assert r.status_code == 200, r.text
+
+    open_list = client.get("/api/v1/admin/flags?open_only=1", headers=headers)
+    assert all(f["id"] != str(flag_id) for f in open_list.json()["flags"])
+
+    # idempotent — second resolve is a no-op 200
+    assert (
+        client.post(
+            f"/api/v1/admin/flags/{flag_id}/resolve", json={}, headers=headers
+        ).status_code
+        == 200
+    )
+
+    # audited
+    csv = client.get("/api/v1/admin/export/audit.csv", headers=headers)
+    assert "flag.resolve" in csv.text
+
+
+def test_flag_resolve_staff_only(client):
+    r = client.post(
+        "/api/v1/admin/flags/00000000-0000-0000-0000-000000000000/resolve",
+        json={},
+    )
+    assert r.status_code in (401, 403)
+
+
+def test_deletion_sweep_executes_due_requests(client, monkeypatch):
+    """H2: past-grace requests are executed; pending ones untouched."""
+    from backend.core.database import SessionLocal
+    from backend.models.accounts import Account
+    from backend.models.governance import DeletionRequest
+    from backend.services.deletion import request_deletion, _utcnow
+    from backend.tasks.webhook_tasks import cleanup_deleted_accounts
+
+    db = SessionLocal()
+    acct = None
+    try:
+        acct = Account(email="sweep@example.com", display_name="Sweep")
+        db.add(acct)
+        db.commit()
+        req = request_deletion(db, acct, grace_days=0)
+        req.scheduled_for = _utcnow() - timedelta(days=1)
+        db.commit()
+        acct_id = acct.id
+        req_id = req.id
+    finally:
+        db.close()
+
+    try:
+        result = cleanup_deleted_accounts()
+        assert result["done"] >= 1
+        db = SessionLocal()
+        acct = db.get(Account, acct_id)
+        assert acct.email.startswith("deleted+")
+        req = db.get(DeletionRequest, req_id)
+        assert req.status == "completed"
+    finally:
+        db.close()
+
+
+def test_deletion_sweep_leaves_pending_alone(client, monkeypatch):
+    from backend.core.database import SessionLocal
+    from backend.models.accounts import Account
+    from backend.services.deletion import request_deletion
+    from backend.tasks.webhook_tasks import cleanup_deleted_accounts
+
+    db = SessionLocal()
+    try:
+        acct = Account(email="pending@example.com", display_name="Pending")
+        db.add(acct)
+        db.commit()
+        req = request_deletion(db, acct, grace_days=30)
+        db.commit()
+
+        cleanup_deleted_accounts()
+        db.refresh(acct)
+        assert acct.email == "pending@example.com"  # not executed
+        db.refresh(req)
+        assert req.status == "requested"
+    finally:
+        db.close()

@@ -369,12 +369,14 @@ def account_cancel_deletion(
 
 @router.get("/flags")
 def list_flags(
+    open_only: bool = Query(default=False),
     db: DbSession = Depends(get_db),
     _: Account = Depends(require_staff),
 ) -> dict:
-    rows = (
-        db.query(AccountFlag).order_by(AccountFlag.created_at.desc()).limit(200).all()
-    )
+    query = db.query(AccountFlag)
+    if open_only:
+        query = query.filter(AccountFlag.resolved_at.is_(None))
+    rows = query.order_by(AccountFlag.created_at.desc()).limit(200).all()
     return {
         "flags": [
             {
@@ -383,10 +385,46 @@ def list_flags(
                 "flag": f.flag,
                 "detail": f.detail,
                 "created_at": f.created_at.isoformat() if f.created_at else None,
+                "resolved_at": f.resolved_at.isoformat() if f.resolved_at else None,
+                "resolution_note": f.resolution_note,
             }
             for f in rows
         ]
     }
+
+
+class FlagResolveBody(BaseModel):
+    note: str | None = None
+
+
+@router.post("/flags/{flag_id}/resolve")
+def resolve_flag(
+    flag_id: uuid.UUID,
+    body: FlagResolveBody,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> dict:
+    """H1: triage verb — support-level, idempotent, audit-logged."""
+    flag = db.query(AccountFlag).filter(AccountFlag.id == flag_id).first()
+    if flag is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"envelope_id": "admin.flag_not_found"},
+        )
+    if flag.resolved_at is None:
+        flag.resolved_at = datetime.now(timezone.utc)
+        flag.resolved_by = staff.id
+        flag.resolution_note = (body.note or "")[:512]
+        db.add(
+            OrgAuditLog(
+                organization_id=None,
+                actor_account_id=staff.id,
+                action="flag.resolve",
+                detail=f"flag={flag.id} note={flag.resolution_note}",
+            )
+        )
+        db.commit()
+    return {"id": str(flag.id), "resolved": True}
 
 
 # ---------- Staff console login (ADMIN-LOGIN-001) ----------
