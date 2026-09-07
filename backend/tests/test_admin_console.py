@@ -130,7 +130,7 @@ def _create_org(client, headers, **extra):
         "tier": "site",
     }
     body.update(extra)
-    r = client.post("/api/v1/org/create", json=body, headers=headers)
+    r = client.post("/api/v1/billing/org/create", json=body, headers=headers)
     assert r.status_code == 201, r.text
     return r.json()["id"]
 
