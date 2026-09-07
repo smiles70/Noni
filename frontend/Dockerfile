@@ -31,7 +31,11 @@ ENV VITE_MAGIC_PUBLISHABLE_KEY=$VITE_MAGIC_PUBLISHABLE_KEY
 RUN npm run build
 
 # ---------- Stage 2: runtime ----------
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.29-alpine AS runtime
+
+# Pull patched OS packages (openssl/c-ares/etc.) at build time so the
+# published image does not carry base-image CVEs that trivy gates on.
+RUN apk upgrade --no-cache
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
