@@ -91,11 +91,12 @@
 <div class="card toc">
   <strong>In this guide</strong>
   <ol>
-    <li><a href="#access">Signing in to the admin console</a></li>
-    <li><a href="#onboard">Onboarding a company or community (organization)</a></li>
+    <li><a href="#access">Signing in and finding your way around</a></li>
+    <li><a href="#overview">The Overview — your landing screen</a></li>
+    <li><a href="#onboard">Onboarding a company or community</a></li>
     <li><a href="#seats">Managing seats and licenses</a></li>
     <li><a href="#search">Finding organizations and accounts</a></li>
-    <li><a href="#reports">Reports: the organization dashboard</a></li>
+    <li><a href="#reports">Reports: organization detail and the audit feed</a></li>
     <li><a href="#flags">Reviewing flags</a></li>
     <li><a href="#scenarios">End-to-end scenarios</a></li>
     <li><a href="#privacy">The privacy boundary — what you can never see</a></li>
@@ -103,201 +104,225 @@
   </ol>
 </div>
 
-<h2 id="access">1. Signing in to the admin console</h2>
+<h2 id="access">1. Signing in and finding your way around</h2>
 <div class="card">
   <div class="step"><span class="num">1</span>
-    <div>Open <span class="url">https://www.mynaani.com/admin</span> in any browser.
-    You will see the mynaani logo with a <b>Username</b> field, a <b>Password</b>
-    field, and a <b>Log in</b> button.</div></div>
+    <div>Open <span class="url">https://www.mynaani.com/admin</span>. You will see
+    the mynaani logo with <b>Username</b> and <b>Password</b> fields and a
+    <b>Log in</b> button.</div></div>
   <div class="step"><span class="num">2</span>
-    <div>Enter your staff username and the staff password, then click
-    <b>Log in</b>. Usernames are <b>not case-sensitive</b> —
-    <code>Kim</code>, <code>KIM</code>, and <code>kim</code> all work.</div></div>
+    <div>Enter your staff username and password, then <b>Log in</b>.
+    Usernames are <b>not case-sensitive</b>.</div></div>
   <div class="step"><span class="num">3</span>
-    <div>The console opens. You are signed in for up to <b>8 hours</b>;
-    after that you will be asked to sign in again. Use the
-    <b>Sign out</b> button (top right) when you finish, especially on a
-    shared computer.</div></div>
+    <div>The console opens on the <b>Overview</b> screen. You are signed in
+    for up to <b>8 hours</b>. Use <b>Sign out</b> (top right) when you
+    finish — especially on a shared computer.</div></div>
+</div>
+<div class="card">
+  <h3>The console is organized by the jobs you do</h3>
+  <p>Down the left side:</p>
+  <ul>
+    <li><b>Overview</b> — the landing screen: what needs attention</li>
+    <li><b>Organizations</b> — find and open organizations; onboard new ones</li>
+    <li><b>Accounts</b> — look up a learner's account (support)</li>
+    <li><b>Flags</b> — sharing signals waiting for review</li>
+    <li><b>Audit</b> — every staff change, who made it, and when</li>
+  </ul>
 </div>
 <div class="note">
-  This login is separate from the learner sign-in. It is for employees only —
-  no magic link, no payment account, nothing to do with Stripe.
+  This login is separate from the learner sign-in — employees only. No
+  magic link, no Stripe, nothing to do with learner accounts.
 </div>
 <div class="warn">
-  If the page shows an error like “username or password didn't match”,
-  check spelling and try again. After 5 tries in a minute the page pauses
-  sign-ins for that minute — this is a security brake, not a bug.
+  “That username or password didn't match” — check spelling. After 5 tries
+  in a minute, sign-in pauses for a minute. That is a security brake, not
+  a bug.
 </div>
 
-<h2 id="onboard">2. Onboarding a company or community</h2>
-<p>Onboarding a customer means creating their <b>organization</b>, attaching a
-<b>license</b> (how many seats), generating <b>access codes</b>, and giving the
-customer a link to redeem them.</p>
+<h2 id="overview">2. The Overview — your landing screen</h2>
+<div class="card">
+  <ul>
+    <li><b>Needs attention</b> — four cards: organizations on file, seats
+      used across all licenses, pending flags, licenses expiring within
+      30 days.</li>
+    <li><b>+ New organization</b> — the big button that starts onboarding
+      (section 3).</li>
+    <li><b>Expiring soon</b> — orgs whose licenses end within 30 days;
+      click a name to open it.</li>
+    <li><b>Recent activity</b> — the last staff changes (who, what, which
+      org) straight from the audit log.</li>
+  </ul>
+</div>
+
+<h2 id="onboard">3. Onboarding a company or community</h2>
+<p>Everything is done in one guided form — <b>+ New organization</b>.</p>
 <div class="card">
   <div class="step"><span class="num">1</span>
     <div><b>Open the wizard.</b> From <i>Overview</i> or
     <i>Organizations</i>, click <b>+ New organization</b>.</div></div>
   <div class="step"><span class="num">2</span>
-    <div><b>Details + location.</b> Name, type (nonprofit, for-profit /
-    senior living, health plan), tier, community size — plus street,
-    city, state, ZIP, and phone for the facility.</div></div>
+    <div><b>Details.</b> Name, type (nonprofit/community, for-profit or
+    senior living, health plan), tier, and community size.</div></div>
   <div class="step"><span class="num">3</span>
-    <div><b>Contacts.</b> Add one or more named contacts (name, email,
-    phone) and mark the primary one — the person you send codes to.</div></div>
+    <div><b>Location.</b> Street, city, state, ZIP, phone — the
+    facility's business address.</div></div>
   <div class="step"><span class="num">4</span>
-    <div><b>License & go-live.</b> Set seats, the license end date, and
-    the slug (e.g. <code>oaktown-seniors</code> →
-    <span class="url">mynaani.com/for/oaktown-seniors</span>), then
-    <b>Create organization</b>. The console creates the org, attaches
-    the license, generates one access code per seat, and shows a
-    summary with the link and codes to copy.</div></div>
+    <div><b>Contacts.</b> Add one or more named contacts (name, email,
+    phone) and tick <b>primary</b> on the person you send codes to.
+    <b>Primary contact email</b> at the bottom is required.</div></div>
   <div class="step"><span class="num">5</span>
+    <div><b>License &amp; go-live.</b> Seats, license end date, and the
+    slug (e.g. <code>oaktown-seniors</code> →
+    <span class="url">mynaani.com/for/oaktown-seniors</span>). Click
+    <b>Create organization</b> — the console creates the org, attaches
+    the license, generates one access code per seat, and sets the
+    public page in order.</div></div>
+  <div class="step"><span class="num">6</span>
+    <div><b>Copy the results.</b> The success screen shows the
+    redemption link and the full code list. <b>Copy them now</b> —
+    send the link and one code per learner to the primary contact.</div></div>
+  <div class="step"><span class="num">7</span>
     <div><b>Learners redeem.</b> Each learner opens the link, signs in
     with their own email, enters their code, and the seat is theirs.
-    Watch <i>seats used</i> fill up on the org's detail page.</div></div>
+    Watch <i>seats used</i> fill on the org's page.</div></div>
 </div>
-<div class="note">
-  Every onboarding action is written to the <b>audit log</b> with your
-  username — kim and steven are recorded as separate people even though
-  you share one password.
+<div class="warn">
+  If onboarding stops partway, the message says so — the organization may
+  already exist. Check <i>Organizations</i> before retrying so you don't
+  create a duplicate.
 </div>
 
-<h2 id="seats">3. Managing seats and licenses</h2>
+<h2 id="seats">4. Managing seats and licenses</h2>
 <div class="card">
   <ul>
-    <li><b>Seats used vs seats total</b> — visible on every org row in
-      search results and in the org detail page.</li>
-    <li><b>Expiring licenses</b> — the org detail page shows license
-      expiry dates; the dashboard flags licenses nearing expiry so a
-      renewal reminder can go out before learners lose access.</li>
-    <li><b>Renewal</b> — create a new license on the same org; seats and
-      learner access continue without interruption.</li>
-    <li><b>Soft de-provisioning</b> — when a license ends, learner access
-      is removed gently (data is kept), not hard-deleted.</li>
+    <li><b>Seats used / total</b> — on every org row and at the top of the
+      org page.</li>
+    <li><b>Expiring licenses</b> — the Overview lists any license ending
+      within 30 days; the org page shows each license's end date.</li>
+    <li><b>Renewal</b> — create a new license on the same org; learner
+      access continues without interruption.</li>
+    <li><b>When a license ends</b> — access is removed gently (data kept),
+      never hard-deleted.</li>
   </ul>
 </div>
 
-<h2 id="search">4. Finding organizations and accounts</h2>
+<h2 id="search">5. Finding organizations and accounts</h2>
 <div class="card">
-  <h3>Organization search</h3>
-  <p>Type at least 3 characters into the <b>Organizations</b> search box.
-  It matches name, contact email, and slug. Each result shows status,
-  type, tier, slug, and seats used / total. Click an org to open its
-  detail page: licenses, how many codes have been issued, and recent
-  audit entries.</p>
-  <h3>Account search (support)</h3>
-  <p>The <b>Accounts</b> search finds a learner by email or display name
-  and shows their account id, whether the account is scheduled for
-  deletion, and how many purchases they have — enough for support
-  questions like “did my purchase go through?”</p>
+  <h3>Organizations</h3>
+  <p><i>Organizations</i> search matches name, contact email, and slug —
+  type at least 3 characters. Click an org to open its page: status,
+  type, tier, slug, public link, address, contacts, seats, licenses,
+  and its audit trail.</p>
+  <h3>Accounts (support)</h3>
+  <p><i>Accounts</i> finds a learner by email or name and shows their
+  account status, whether deletion is scheduled, and how many purchases
+  they have — enough for “did my purchase go through?” questions.</p>
 </div>
 
-<h2 id="reports">5. Reports — the organization dashboard</h2>
-<p>Open an organization, then open its <b>dashboard</b>. This is the
-reporting view an enterprise customer (or you) sees.</p>
+<h2 id="reports">6. Reports — org detail and the audit feed</h2>
 <div class="card">
+  <p><b>Per-organization:</b> open the org — you see seats used/issued,
+  licenses with expiry dates, contacts, and its full audit trail. The
+  aggregate-only engagement dashboard for the customer's own admin lives
+  at <span class="url">/org</span>.</p>
+  <p><b>Across everything:</b> the <i>Audit</i> section is the full
+  staff-activity feed — filterable by action, detail, or org name, with
+  Newer/Older paging. This is the record an enterprise or health-plan
+  buyer asks for.</p>
   <table>
-    <tr><th>Report element</th><th>What it tells you</th></tr>
-    <tr><td>Licenses</td><td>Active licenses, seat totals, expiry dates</td></tr>
-    <tr><td>Seats used / remaining</td><td>Adoption of the purchased seats</td></tr>
-    <tr><td>Codes issued / redeemed</td><td>How many invitations are still outstanding</td></tr>
-    <tr><td>Aggregate engagement</td><td>Course-start and progress rates across the cohort —
-      <b>only shown when at least 5 learners are enrolled</b> (privacy floor)</td></tr>
-    <tr><td>Child organizations</td><td>Rollup for portfolio/parent orgs with sub-sites</td></tr>
-    <tr><td>Audit trail</td><td>Who changed what, and when</td></tr>
+    <tr><th>Report element</th><th>Where</th></tr>
+    <tr><td>Seats / adoption</td><td>Overview cards and each org page</td></tr>
+    <tr><td>License expiry</td><td>Overview “Expiring soon” + org page</td></tr>
+    <tr><td>Codes issued / redeemed</td><td>Org page</td></tr>
+    <tr><td>Aggregate engagement</td><td>Org dashboard (<span class="url">/org</span>) — cohort ≥5 only</td></tr>
+    <tr><td>Audit trail</td><td>Per-org on the org page; global feed under <i>Audit</i></td></tr>
   </table>
   <p class="note" style="margin-top:12px">
-    There is no separate “generate report” button — the dashboard <i>is</i>
-    the report. If a customer asks for a written export, that is a known
-    gap to raise with engineering rather than something to improvise with
-    screenshots of learner data.
+    There is no “export to file” button yet — that's a known gap to raise
+    with engineering rather than something to improvise.
   </p>
 </div>
 
-<h2 id="flags">6. Reviewing flags</h2>
+<h2 id="flags">7. Reviewing flags</h2>
 <div class="card">
-  <p>The <b>Flags</b> list shows sharing signals raised by the system —
-  for example, an access code pattern suggesting account sharing.
-  Review each flag, look at the account detail, and act according to
-  the support playbook. Flags are a review queue, not an automatic
-  punishment — a human decides.</p>
+  <p><i>Flags</i> lists sharing signals raised by the weekly scan — for
+  example, a code pattern suggesting account sharing. Open the account
+  detail, decide as a human, act per the support playbook. A flag is a
+  prompt to review, not an automatic penalty.</p>
 </div>
 
-<h2 id="scenarios">7. End-to-end scenarios</h2>
+<h2 id="scenarios">8. End-to-end scenarios</h2>
 <p>Real tasks, start to finish, using only the console.</p>
 
 <div class="card">
   <h3>Scenario 1 — A new senior care facility signs up</h3>
   <p><i>“Sunrise Gardens Senior Living wants 25 seats for their residents.”</i></p>
   <div class="step"><span class="num">1</span><div>Sign in at <span class="url">mynaani.com/admin</span>.</div></div>
-  <div class="step"><span class="num">2</span><div>In <b>Organizations</b>, search “Sunrise” first — the org may already exist from a sales conversation.</div></div>
-  <div class="step"><span class="num">3</span><div>Create the organization: name <code>Sunrise Gardens</code>, contact email (their activities director), type <code>senior_living</code>, community size, tier.</div></div>
-  <div class="step"><span class="num">4</span><div>Attach a license: <b>25 seats</b>, expiry one year out.</div></div>
-  <div class="step"><span class="num">5</span><div>Generate <b>25 access codes</b>.</div></div>
-  <div class="step"><span class="num">6</span><div>Set the slug <code>sunrise-gardens</code> → their page is <span class="url">mynaani.com/for/sunrise-gardens</span>.</div></div>
-  <div class="step"><span class="num">7</span><div>Send the contact the link and the codes. Done — watch seats fill on the org page.</div></div>
+  <div class="step"><span class="num">2</span><div>In <b>Organizations</b>, search “Sunrise” first — the org may already exist.</div></div>
+  <div class="step"><span class="num">3</span><div>Click <b>+ New organization</b>: name <code>Sunrise Gardens</code>, type <code>for_profit</code> (senior living), tier, community size.</div></div>
+  <div class="step"><span class="num">4</span><div>Fill in their street address, city, state, ZIP, phone — and add the activities director as a contact, marked primary.</div></div>
+  <div class="step"><span class="num">5</span><div>License &amp; go-live: <b>25 seats</b>, end date a year out, slug <code>sunrise-gardens</code>. Create.</div></div>
+  <div class="step"><span class="num">6</span><div>Copy the link <span class="url">mynaani.com/for/sunrise-gardens</span> and the 25 codes from the success screen; send them to the contact.</div></div>
 </div>
 
 <div class="card">
   <h3>Scenario 2 — A facility adds a second building</h3>
-  <p><i>“Sunrise Gardens opened a second location across town.”</i></p>
-  <div class="step"><span class="num">1</span><div>Create the new organization for the second site, and set its <b>parent org</b> to Sunrise Gardens.</div></div>
-  <div class="step"><span class="num">2</span><div>Attach its own license and codes — each site has its own seats.</div></div>
-  <div class="step"><span class="num">3</span><div>The parent org's dashboard now rolls up both sites automatically — no extra wiring.</div></div>
+  <div class="step"><span class="num">1</span><div>Create the second org the same way; when the parent-org field is available, link it under Sunrise Gardens.</div></div>
+  <div class="step"><span class="num">2</span><div>Each site keeps its own license, seats, and codes.</div></div>
+  <div class="step"><span class="num">3</span><div>The parent's dashboard rolls both sites up automatically.</div></div>
 </div>
 
 <div class="card">
   <h3>Scenario 3 — A learner says “my code doesn't work”</h3>
-  <div class="step"><span class="num">1</span><div>Open the org, check <b>codes issued vs redeemed</b> — is the code still unused?</div></div>
-  <div class="step"><span class="num">2</span><div>Search the learner's email in <b>Accounts</b> — did they already redeem a code under a different email?</div></div>
-  <div class="step"><span class="num">3</span><div>If the seat count is exhausted, issue more codes or raise the license seat total.</div></div>
+  <div class="step"><span class="num">1</span><div>Open the org — compare <b>codes issued</b> vs <b>seats used</b>.</div></div>
+  <div class="step"><span class="num">2</span><div>Search the learner's email in <b>Accounts</b> — did they redeem under a different email?</div></div>
+  <div class="step"><span class="num">3</span><div>If seats are exhausted, raise a bigger license or generate more codes.</div></div>
 </div>
 
 <div class="card">
   <h3>Scenario 4 — Renewal season</h3>
-  <div class="step"><span class="num">1</span><div>Open each org's dashboard — licenses nearing expiry are flagged.</div></div>
-  <div class="step"><span class="num">2</span><div>On renewal, create a <b>new license</b> on the same org — learners keep access without interruption.</div></div>
-  <div class="step"><span class="num">3</span><div>If they don't renew, the license expires and access de-provisions gently — data is kept, not deleted.</div></div>
+  <div class="step"><span class="num">1</span><div>Open <b>Overview</b> — “Expiring soon” lists licenses ending within 30 days.</div></div>
+  <div class="step"><span class="num">2</span><div>On renewal, attach a new license to the same org — learners keep access.</div></div>
+  <div class="step"><span class="num">3</span><div>If they don't renew, access de-provisions gently — data kept, not deleted.</div></div>
 </div>
 
 <div class="card">
   <h3>Scenario 5 — A flag appears: suspected code sharing</h3>
-  <div class="step"><span class="num">1</span><div>Open the <b>Flags</b> list, read the signal detail and the account row.</div></div>
-  <div class="step"><span class="num">2</span><div>Decide as a human — a flag is a prompt to review, not an automatic penalty. Contact the org contact first; a facility may simply be onboarding a group session.</div></div>
+  <div class="step"><span class="num">1</span><div>Open <b>Flags</b>, read the signal and look up the account in <b>Accounts</b>.</div></div>
+  <div class="step"><span class="num">2</span><div>Decide as a human — a facility may simply be onboarding a group session. Contact the org's primary contact first.</div></div>
 </div>
 
 <div class="card">
   <h3>Scenario 6 — Weekly ops review</h3>
-  <div class="step"><span class="num">1</span><div>Scan <b>Flags</b> — anything new?</div></div>
-  <div class="step"><span class="num">2</span><div>Spot-check orgs' <b>seats used / total</b> — customers nearing capacity deserve a heads-up before they hit the wall.</div></div>
-  <div class="step"><span class="num">3</span><div>Check licenses expiring in the next 30 days and queue renewal outreach.</div></div>
-  <div class="step"><span class="num">4</span><div>Glance at the audit trail on busy orgs to confirm every change has a named actor.</div></div>
+  <div class="step"><span class="num">1</span><div><b>Overview</b>: pending flags? Seats nearing capacity? Licenses expiring?</div></div>
+  <div class="step"><span class="num">2</span><div><b>Flags</b>: clear the queue.</div></div>
+  <div class="step"><span class="num">3</span><div><b>Audit</b>: scan the recent feed — every change has a named actor.</div></div>
 </div>
 
-<h2 id="privacy">8. The privacy boundary — what you can never see</h2>
+<h2 id="privacy">9. The privacy boundary — what you can never see</h2>
 <div class="card">
   <ul>
     <li>You can <b>never</b> see an individual learner's lesson progress,
-      quiz answers, or confidence scores — not through the console, not
-      through the API. That boundary is built into the code, not just
-      policy.</li>
+      quiz answers, or confidence scores — the boundary is built into the
+      code, not just policy.</li>
     <li>Engagement numbers are <b>aggregate-only</b> and suppressed
-      entirely under 5 learners, so no one can be singled out.</li>
-    <li>Staff actions are audit-logged. Treat the console like cash
-      handling: only open what you need for the task.</li>
-    <li>Never share your login. If a password needs to change, tell
-      engineering — it is rotated as a secret, not sent around.</li>
+      entirely under 5 learners.</li>
+    <li>Staff actions are audit-logged with your username. Only open what
+      you need.</li>
+    <li>Never share your login. Password changes go through engineering —
+      rotated as secrets, never sent around.</li>
   </ul>
 </div>
 
-<h2 id="trouble">9. Troubleshooting</h2>
+<h2 id="trouble">10. Troubleshooting</h2>
 <div class="card">
   <table>
     <tr><th>Symptom</th><th>What it means / what to do</th></tr>
     <tr><td>Login page keeps showing</td><td>Wrong credentials, or the 5-per-minute limiter — wait a minute, retype carefully.</td></tr>
-    <tr><td>Signed in but console vanished</td><td>Your 8-hour session expired — sign in again.</td></tr>
-    <tr><td>“This area is for mynaani staff” after login</td><td>Tell engineering: your username may not be in the staff list.</td></tr>
-    <tr><td>Org not found by slug</td><td>Check spelling; slugs are lowercase letters, numbers, and dashes only.</td></tr>
+    <tr><td>Signed in but back at login</td><td>Your 8-hour session expired — sign in again.</td></tr>
+    <tr><td>“This area is for mynaani staff”</td><td>Your username isn't on the staff list — tell engineering.</td></tr>
+    <tr><td>Wizard says it stopped partway</td><td>The org may exist — check <i>Organizations</i> before retrying.</td></tr>
+    <tr><td>Slug rejected</td><td>Taken already, or has characters outside lowercase letters/numbers/dashes — pick another.</td></tr>
     <tr><td>Engagement section empty</td><td>Fewer than 5 enrolled learners — suppressed on purpose for privacy.</td></tr>
   </table>
 </div>
