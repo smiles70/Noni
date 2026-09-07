@@ -11,12 +11,8 @@ import { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 const LandingPage = lazy(() => import("./components/LandingPage"));
 const SignInPage = lazy(() => import("./components/SignInPage"));
-const AuthPendingBanner = lazy(
-  () => import("./components/AuthPendingBanner"),
-);
-const AuthBlockedNotice = lazy(
-  () => import("./components/AuthBlockedNotice"),
-);
+const AuthPendingBanner = lazy(() => import("./components/AuthPendingBanner"));
+const AuthBlockedNotice = lazy(() => import("./components/AuthBlockedNotice"));
 import LoadingSkeleton from "./components/LoadingSkeleton";
 import RequireAuth from "./components/RequireAuth";
 import OnboardingErrorBoundary from "./components/OnboardingErrorBoundary";

@@ -158,7 +158,7 @@ def test_checkout_self_purchase_creates_purchase_row(client, DbSession):
     )
     assert r.status_code == 200, r.text
     body = r.json()
-    assert body["checkout_url"].startswith("https://mock-stripe.local/")
+    assert body["checkout_url"].startswith("/mock-checkout")
     purchase_id = uuid.UUID(body["purchase_id"])
     with DbSession() as db:
         p = db.query(Purchase).filter(Purchase.id == purchase_id).one()
