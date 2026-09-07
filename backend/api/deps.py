@@ -240,11 +240,35 @@ def get_current_account(
 
 
 def require_staff(
-    account: Account = Depends(get_current_account),
+    authorization: Optional[str] = Header(default=None),
+    db: DbSession = Depends(get_db),
+    account: Optional[Account] = Depends(get_optional_account),
 ) -> Account:
-    """Require a staff/admin account for org management."""
-    from backend.core.config import settings
+    """Require a staff/admin account for org management.
 
+    Two accepted identities (ADMIN-LOGIN-001):
+      1. `Bearer staff.<…>` — HMAC staff session from POST /admin/login;
+         resolves to the staff account keyed by a dedicated uuid5 ns.
+      2. A signed-in account whose id is in ADMIN_ACCOUNT_IDS.
+    """
+    from backend.core.config import settings
+    from backend.services import admin_auth
+
+    username = admin_auth.staff_subject(authorization)
+    if username is not None:
+        staff_account = (
+            db.query(Account)
+            .filter(Account.auth_user_id == admin_auth.staff_auth_user_id(username))
+            .first()
+        )
+        if staff_account is not None and staff_account.deleted_at is None:
+            return staff_account
+
+    if account is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"envelope_id": "auth.signed_out"},
+        )
     allowed = {s.strip() for s in settings.ADMIN_ACCOUNT_IDS.split(",") if s.strip()}
     if str(account.id) not in allowed:
         raise HTTPException(
