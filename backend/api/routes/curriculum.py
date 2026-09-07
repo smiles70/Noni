@@ -10,15 +10,19 @@ with promoted audit columns (request_path, stability, selected_state_id,
 decision_reason, max_complexity).
 """
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session as DbSession
 
-from backend.api.deps import require_entitlement
+from backend.api.deps import get_optional_account, require_entitlement
+from backend.models.accounts import Account
 from backend.core.database import get_db
 from backend.core.interface_control.stability_metric import compute_stability
 from backend.core.interface_control.state_estimator import InterfaceStateEstimator
 from backend.core.interface_control.state_selector import select_ui_state
+from backend.models.accounts import Account
 from backend.models.curriculum_units import (
     BRIDGE_UNITS,
     UNITS,
@@ -152,6 +156,7 @@ def list_units(
 def lesson_menu(
     request: Request,
     db: DbSession = Depends(get_db),
+    account: Optional[Account] = Depends(get_optional_account),
 ) -> dict:
     enforce(db, LIMIT_CURRICULUM_PER_IP, client_ip(request))
     db.commit()
@@ -182,8 +187,15 @@ def lesson_menu(
             "description": u.description,
         }
 
+    visible = _org_visible_modules(db, account.id) if account else None
+
+    def _allowed(module_id: int) -> bool:
+        return module_id <= 1 or visible is None or module_id in visible
+
     return {
         "modules": [
+            m
+            for m in [
             {
                 "id": 0,
                 "title": "Module 0 — Introduction to AI",
@@ -199,6 +211,8 @@ def lesson_menu(
                 "title": "Module 2 — Sustained use over time",
                 "units": [_serialize(u) for u in UNITS_MODULE_2],
             },
+            ]
+            if _allowed(m["id"])
         ],
         "bridge_units": [_serialize(u) for u in BRIDGE_UNITS],
     }
