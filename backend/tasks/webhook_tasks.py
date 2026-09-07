@@ -70,8 +70,45 @@ def export_telemetry_csv(self, start_date: str, end_date: str, admin_email: str)
 
 
 @app.task(bind=True, max_retries=2, default_retry_delay=60)
-def cleanup_deleted_accounts(self) -> str:
-    """Periodic cleanup of accounts past grace period."""
-    # TODO: implement hard deletion after grace period
-    logger.info("cleanup_deleted_accounts_task")
-    return "not_implemented"
+def cleanup_deleted_accounts(self) -> dict:
+    """Daily: execute GDPR deletion for requests past their grace period.
+
+    Safety envelope:
+      - only `status='requested' AND scheduled_for <= now` rows
+      - per-request commit isolation: one failure doesn't block the rest
+      - idempotent by construction (status flips to 'completed')
+      - logs counts only — never PII
+    """
+    from datetime import datetime, timezone
+
+    from backend.models.accounts import Account
+    from backend.models.governance import DeletionRequest
+    from backend.services.deletion import execute_deletion
+
+    db = SessionLocal()
+    now = datetime.now(timezone.utc)
+    done, failed = 0, 0
+    try:
+        due = (
+            db.query(DeletionRequest)
+            .filter(
+                DeletionRequest.status == "requested",
+                DeletionRequest.scheduled_for <= now,
+            )
+            .all()
+        )
+        for req in due:
+            try:
+                account = db.query(Account).filter(Account.id == req.account_id).first()
+                if account is not None:
+                    execute_deletion(db, account)
+                    db.commit()
+                    done += 1
+            except Exception:  # noqa: BLE001 — isolate, log id only
+                db.rollback()
+                failed += 1
+                logger.error("deletion_execute_failed request_id=%s", req.id)
+        logger.info("deletion_sweep done=%d failed=%d due=%d", done, failed, len(due))
+        return {"done": done, "failed": failed, "due": len(due)}
+    finally:
+        db.close()
