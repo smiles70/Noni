@@ -36,6 +36,7 @@ interface RequestConfig {
   validateStatus?: (status: number) => boolean;
   retry?: boolean;
   timeout?: number;
+  responseType?: "blob";
 }
 
 interface ApiResponse<T = unknown> {
@@ -165,7 +166,9 @@ class FetchClient {
 
     let parsed: unknown;
     const contentType = response.headers.get("content-type") || "";
-    if (contentType.includes("application/json")) {
+    if (merged.responseType === "blob") {
+      parsed = await response.blob();
+    } else if (contentType.includes("application/json")) {
       parsed = await response.json();
     } else {
       parsed = await response.text();

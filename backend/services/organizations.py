@@ -700,20 +700,30 @@ def org_dashboard(db: DbSession, org_id: uuid.UUID) -> dict:
 
 
 def org_search(db: DbSession, q: str) -> list[dict]:
-    like = f"%{q.lower()}%"
-    orgs = (
-        db.query(Organization)
-        .filter(
-            or_(
-                func.lower(Organization.name).like(like),
-                func.lower(Organization.contact_email).like(like),
-                func.lower(Organization.slug).like(like),
-            )
+    # ADMIN-OPS E3: empty query returns recent orgs — the wizard's parent
+    # picker needs a list without a search term.
+    if not q.strip():
+        orgs = (
+            db.query(Organization)
+            .order_by(Organization.created_at.desc())
+            .limit(50)
+            .all()
         )
-        .order_by(Organization.name)
-        .limit(100)
-        .all()
-    )
+    else:
+        like = f"%{q.lower()}%"
+        orgs = (
+            db.query(Organization)
+            .filter(
+                or_(
+                    func.lower(Organization.name).like(like),
+                    func.lower(Organization.contact_email).like(like),
+                    func.lower(Organization.slug).like(like),
+                )
+            )
+            .order_by(Organization.name)
+            .limit(100)
+            .all()
+        )
     out: list[dict] = []
     for o in orgs:
         lic = (
@@ -782,6 +792,18 @@ def org_detail(db: DbSession, org_id: uuid.UUID) -> dict:
             "postal_code": org.postal_code,
             "phone": org.phone,
         },
+        "children": [
+            {
+                "id": str(c.id),
+                "name": c.name,
+                "status": c.status,
+                "org_type": c.org_type,
+                "tier": c.tier,
+            }
+            for c in db.query(Organization)
+            .filter(Organization.parent_org_id == org_id)
+            .all()
+        ],
         "contacts": [
             {
                 "id": str(c.id),

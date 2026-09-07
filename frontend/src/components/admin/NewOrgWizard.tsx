@@ -6,7 +6,7 @@
  * step failed instead of pretending success.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiClient } from "../../api/client";
 import { COLORS, RADIUS, SPACING } from "../../design/tokens";
 
@@ -64,7 +64,11 @@ export function NewOrgWizard({
     seats: "25",
     expires_at: "",
     slug: "",
+    parent_org_id: "",
   });
+  const [parentOptions, setParentOptions] = useState<
+    { id: string; name: string }[]
+  >([]);
   const [contacts, setContacts] = useState<ContactForm[]>([
     { name: "", email: "", phone: "", role: "primary", is_primary: true },
   ]);
@@ -75,6 +79,14 @@ export function NewOrgWizard({
     codes: string[];
     slug: string | null;
   } | null>(null);
+
+  useEffect(() => {
+    // E3: recent orgs for the "part of a larger family" picker.
+    apiClient
+      .get<{ id: string; name: string }[]>("/api/v1/admin/orgs?q=")
+      .then((r) => setParentOptions(r.data))
+      .catch(() => setParentOptions([]));
+  }, []);
 
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -103,6 +115,7 @@ export function NewOrgWizard({
           state: form.state || null,
           postal_code: form.postal_code || null,
           phone: form.phone || null,
+          parent_org_id: form.parent_org_id || null,
           contacts: contacts
             .filter((x) => x.name.trim())
             .map((x) => ({
@@ -261,6 +274,23 @@ export function NewOrgWizard({
             />
           </div>
         </div>
+        {parentOptions.length > 0 && (
+          <div style={{ marginTop: SPACING.sm }}>
+            <label style={LABEL}>Part of a larger family? (optional)</label>
+            <select
+              style={INPUT}
+              value={form.parent_org_id}
+              onChange={set("parent_org_id")}
+            >
+              <option value="">— standalone —</option>
+              {parentOptions.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </fieldset>
 
       <fieldset style={FIELDSET}>

@@ -8,11 +8,22 @@ or confidence values — that boundary is structural, not conventional.
 
 from __future__ import annotations
 
+import csv
+import io
 import uuid
 
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    Header,
+    HTTPException,
+    Query,
+    Request,
+    status,
+)
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session as DbSession
@@ -25,6 +36,7 @@ from backend.models.billing import Purchase
 from backend.models.governance import AccountFlag, OrgAuditLog
 from backend.models.organizations import Organization, OrgLicense
 from backend.services import admin_auth, organizations as org_service
+from backend.services.deletion import cancel_deletion
 from backend.services.rate_limit import RateLimit
 
 router = APIRouter()
@@ -54,6 +66,8 @@ class AccountSummary(BaseModel):
     email: str | None
     display_name: str | None
     deleted_at: str | None
+    suspended_at: str | None = None
+    suspension_reason: str | None = None
     purchase_count: int
 
 
@@ -85,7 +99,7 @@ def whoami_check(
 
 @router.get("/orgs", response_model=list[OrgSummary])
 def org_search(
-    q: str = Query(..., min_length=3),
+    q: str = Query(default="", min_length=0),
     db: DbSession = Depends(get_db),
     _: Account = Depends(require_staff),
 ) -> list[OrgSummary]:
@@ -130,7 +144,7 @@ def admin_overview(
     )
     recent_audit = (
         db.query(OrgAuditLog, Organization.name, Account.display_name)
-        .join(Organization, Organization.id == OrgAuditLog.organization_id)
+        .outerjoin(Organization, Organization.id == OrgAuditLog.organization_id)
         .outerjoin(Account, Account.id == OrgAuditLog.actor_account_id)
         .order_by(OrgAuditLog.created_at.desc())
         .limit(10)
@@ -235,6 +249,8 @@ def account_search(
             email=a.email,
             display_name=a.display_name,
             deleted_at=a.deleted_at.isoformat() if a.deleted_at else None,
+            suspended_at=a.suspended_at.isoformat() if a.suspended_at else None,
+            suspension_reason=a.suspension_reason,
             purchase_count=db.query(func.count(Purchase.id))
             .filter(Purchase.buyer_account_id == a.id)
             .scalar()
@@ -242,6 +258,105 @@ def account_search(
         )
         for a in accounts
     ]
+
+
+class AccountSuspendBody(BaseModel):
+    reason: str
+
+
+class AccountActionResponse(BaseModel):
+    id: str
+    status: str
+    suspension_reason: str | None = None
+    deleted_at: str | None = None
+
+
+# ---------- ADMIN-OPS E6: account lifecycle actions ----------
+# Learner accounts only — never staff. Suspension gates every
+# authenticated call (get_current_account); reinstate is the inverse;
+# cancel-deletion restores a soft-deleted account. All audit-logged.
+
+
+def _account_or_404(db: DbSession, account_id: uuid.UUID) -> Account:
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if account is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"envelope_id": "admin.account_not_found"},
+        )
+    return account
+
+
+def _audit_account_action(
+    db: DbSession, staff: Account, action: str, account: Account, detail: str
+) -> None:
+    db.add(
+        OrgAuditLog(
+            organization_id=None,
+            actor_account_id=staff.id,
+            action=action,
+            detail=f"account={account.id} {detail}",
+        )
+    )
+    db.commit()
+
+
+@router.post("/accounts/{account_id}/suspend", response_model=AccountActionResponse)
+def account_suspend(
+    account_id: uuid.UUID,
+    body: AccountSuspendBody,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> AccountActionResponse:
+    account = _account_or_404(db, account_id)
+    if account.suspended_at is None:  # idempotent verb
+        account.suspended_at = datetime.now(timezone.utc)
+        account.suspension_reason = body.reason[:256]
+        _audit_account_action(
+            db, staff, "account.suspend", account, f"reason={account.suspension_reason}"
+        )
+    return AccountActionResponse(
+        id=str(account.id),
+        status="suspended",
+        suspension_reason=account.suspension_reason,
+    )
+
+
+@router.post("/accounts/{account_id}/reinstate", response_model=AccountActionResponse)
+def account_reinstate(
+    account_id: uuid.UUID,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> AccountActionResponse:
+    account = _account_or_404(db, account_id)
+    if account.suspended_at is not None:  # idempotent verb
+        account.suspended_at = None
+        account.suspension_reason = None
+        _audit_account_action(db, staff, "account.reinstate", account, "")
+    return AccountActionResponse(id=str(account.id), status="active")
+
+
+@router.post(
+    "/accounts/{account_id}/cancel-deletion", response_model=AccountActionResponse
+)
+def account_cancel_deletion(
+    account_id: uuid.UUID,
+    db: DbSession = Depends(get_db),
+    staff: Account = Depends(require_staff),
+) -> AccountActionResponse:
+    account = _account_or_404(db, account_id)
+    # Route through the deletion service — it flips the pending request
+    # to cancelled AND restores deleted_at inside the grace window.
+    req = cancel_deletion(db, account)
+    if req is not None:
+        _audit_account_action(db, staff, "account.cancel_deletion", account, "")
+    else:
+        db.commit()
+    return AccountActionResponse(
+        id=str(account.id),
+        status="active" if account.deleted_at is None else "deleted",
+        deleted_at=account.deleted_at.isoformat() if account.deleted_at else None,
+    )
 
 
 # ---------- Flags (sharing-signal review) ----------
@@ -332,3 +447,95 @@ def admin_login(
             detail={"envelope_id": "admin.session_unavailable"},
         )
     return AdminLoginResponse(staff=True, token=token)
+
+
+# ---------- ADMIN-OPS E4: aggregate exports (CSV, UTC/ISO-8601) ----------
+# Reports are audit artifacts (research: Coggno/AccountableHQ) — counts
+# and timestamps, never per-learner rows. Staff-only, same boundary.
+
+
+def _csv(filename: str, header: list[str], rows) -> StreamingResponse:
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["# generated_at_utc", datetime.now(timezone.utc).isoformat()])
+    w.writerow(header)
+    w.writerows(rows)
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get("/export/orgs.csv")
+def export_orgs(
+    db: DbSession = Depends(get_db),
+    _: Account = Depends(require_staff),
+):
+    """Seat/license utilization per org — aggregate only."""
+    rows = []
+    for org in db.query(Organization).order_by(Organization.name).all():
+        lic = (
+            db.query(OrgLicense)
+            .filter(OrgLicense.organization_id == org.id)
+            .order_by(OrgLicense.expires_at.desc().nullslast())
+            .first()
+        )
+        rows.append(
+            [
+                org.name,
+                org.org_type,
+                org.tier,
+                org.status,
+                org.slug or "",
+                lic.total_seats if lic else 0,
+                lic.used_seats if lic else 0,
+                lic.expires_at.isoformat() if lic and lic.expires_at else "",
+                lic.status if lic else "",
+            ]
+        )
+    return _csv(
+        "orgs.csv",
+        [
+            "org",
+            "type",
+            "tier",
+            "status",
+            "slug",
+            "seats_total",
+            "seats_used",
+            "license_expires_utc",
+            "license_status",
+        ],
+        rows,
+    )
+
+
+@router.get("/export/audit.csv")
+def export_audit(
+    db: DbSession = Depends(get_db),
+    _: Account = Depends(require_staff),
+):
+    """Full staff-action audit feed — append-only evidence."""
+    rows = (
+        db.query(OrgAuditLog, Organization.name, Account.display_name)
+        .outerjoin(Organization, Organization.id == OrgAuditLog.organization_id)
+        .outerjoin(Account, Account.id == OrgAuditLog.actor_account_id)
+        .order_by(OrgAuditLog.created_at.desc())
+        .all()
+    )
+    return _csv(
+        "audit.csv",
+        ["at_utc", "actor", "action", "org", "detail"],
+        [
+            [
+                a.created_at.isoformat() if a.created_at else "",
+                actor or "",
+                a.action,
+                name or "",
+                a.detail or "",
+            ]
+            for a, name, actor in rows
+        ],
+    )

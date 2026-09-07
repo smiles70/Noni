@@ -4,6 +4,18 @@ import { useCallback, useEffect, useState } from "react";
 import { apiClient } from "../../api/client";
 import { COLORS, SPACING } from "../../design/tokens";
 
+/** E4: staff-gated CSV download — fetches with the session token, saves
+ * as a blob. Reports are audit artifacts (aggregate-only server-side). */
+async function downloadCsv(path: string, filename: string) {
+  const r = await apiClient.get<Blob>(path, { responseType: "blob" });
+  const url = URL.createObjectURL(r.data);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 interface AuditEntry {
   action: string;
   detail: string;
@@ -126,6 +138,14 @@ export function AuditView({ onOpenOrg }: { onOpenOrg: (id: string) => void }) {
           <div
             style={{ marginTop: SPACING.sm, display: "flex", gap: SPACING.md }}
           >
+            <button
+              style={{ cursor: "pointer" }}
+              onClick={() =>
+                void downloadCsv("/api/v1/admin/export/audit.csv", "audit.csv")
+              }
+            >
+              Download CSV
+            </button>
             <button
               disabled={offset === 0}
               onClick={() => void load(q.trim(), Math.max(0, offset - limit))}

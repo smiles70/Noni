@@ -64,6 +64,11 @@ class Account(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+    # ADMIN-OPS E6: staff suspension — blocks all authenticated calls via
+    # get_current_account (auth.account_suspended). Learner data stays;
+    # reinstate is the inverse verb. Deletion remains terminal.
+    suspended_at = Column(DateTime(timezone=True), nullable=True)
+    suspension_reason = Column(String(256), nullable=True)
 
     learners = relationship(
         "Learner", back_populates="account", cascade="all, delete-orphan"

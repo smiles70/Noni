@@ -236,6 +236,13 @@ def get_current_account(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={"envelope_id": "auth.signed_out"},
         )
+    # ADMIN-OPS E6: staff suspension blocks every authenticated call —
+    # same terminal gate shape as the deleted-account check (B7, I-E).
+    if account.suspended_at is not None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"envelope_id": "auth.account_suspended"},
+        )
     return account
 
 

@@ -9,6 +9,8 @@ interface AccountRow {
   email: string | null;
   display_name: string | null;
   deleted_at: string | null;
+  suspended_at: string | null;
+  suspension_reason: string | null;
   purchase_count: number;
 }
 
@@ -44,12 +46,38 @@ export function AccountsView() {
     }
   }, [q]);
 
+  const act = useCallback(
+    async (
+      accountId: string,
+      verb: "suspend" | "reinstate" | "cancel-deletion",
+    ) => {
+      let body: object | undefined;
+      if (verb === "suspend") {
+        const reason = window.prompt("Reason (visible in the audit log):");
+        if (!reason) return;
+        body = { reason };
+      } else if (!window.confirm(`${verb.replace("-", " ")} this account?`)) {
+        return;
+      }
+      try {
+        await apiClient.post(
+          `/api/v1/admin/accounts/${accountId}/${verb}`,
+          body,
+        );
+        await search();
+      } catch {
+        setError("Action failed — check the API.");
+      }
+    },
+    [search],
+  );
+
   return (
     <section aria-label="Accounts">
       <h2 style={{ marginTop: 0 }}>Accounts</h2>
       <p style={{ fontSize: 13, color: "#666", marginTop: 0 }}>
-        Support lookup — read-only. Individual learning progress is never shown
-        here.
+        Support lookup with account actions. Individual learning progress is
+        never shown here.
       </p>
       <div style={{ display: "flex", gap: SPACING.sm }}>
         <input
@@ -86,6 +114,7 @@ export function AccountsView() {
               <th style={TH}>Name</th>
               <th style={TH}>Purchases</th>
               <th style={TH}>Status</th>
+              <th style={TH}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -95,7 +124,37 @@ export function AccountsView() {
                 <td style={TD}>{a.display_name ?? "—"}</td>
                 <td style={TD}>{a.purchase_count}</td>
                 <td style={TD}>
-                  {a.deleted_at ? "deletion scheduled" : "active"}
+                  {a.deleted_at
+                    ? "deleted"
+                    : a.suspended_at
+                      ? `suspended${a.suspension_reason ? ` — ${a.suspension_reason}` : ""}`
+                      : "active"}
+                </td>
+                <td style={TD}>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {a.deleted_at ? (
+                      <button
+                        style={{ cursor: "pointer" }}
+                        onClick={() => void act(a.id, "cancel-deletion")}
+                      >
+                        Restore
+                      </button>
+                    ) : a.suspended_at ? (
+                      <button
+                        style={{ cursor: "pointer" }}
+                        onClick={() => void act(a.id, "reinstate")}
+                      >
+                        Reinstate
+                      </button>
+                    ) : (
+                      <button
+                        style={{ cursor: "pointer" }}
+                        onClick={() => void act(a.id, "suspend")}
+                      >
+                        Suspend
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

@@ -406,3 +406,116 @@ def test_org_suspend_staff_only(client):
         json={"reason": "x"},
     )
     assert r.status_code in (401, 403)
+
+
+# ---------- ADMIN-OPS E3/E4/E6 ----------
+
+
+def test_org_search_empty_returns_recent(client, monkeypatch):
+    """E3: empty query returns recent orgs for the wizard parent picker."""
+    headers = _staff_headers(client, monkeypatch)
+    _create_org(client, headers, name="Recent Org Alpha")
+    r = client.get("/api/v1/admin/orgs?q=", headers=headers)
+    assert r.status_code == 200, r.text
+    assert any(o["name"] == "Recent Org Alpha" for o in r.json())
+
+
+def test_org_create_with_parent(client, monkeypatch):
+    headers = _staff_headers(client, monkeypatch)
+    parent = _create_org(client, headers, name="Parent Org E3")
+    child = _create_org(client, headers, name="Child Org E3", parent_org_id=parent)
+    detail = client.get(f"/api/v1/admin/orgs/{parent}", headers=headers).json()
+    assert any(c["id"] == child for c in detail["children"])
+
+
+def test_export_orgs_csv(client, monkeypatch):
+    headers = _staff_headers(client, monkeypatch)
+    _create_org(client, headers, name="Export Org")
+    r = client.get("/api/v1/admin/export/orgs.csv", headers=headers)
+    assert r.status_code == 200, r.text
+    assert "generated_at_utc" in r.text
+    assert "Export Org" in r.text
+    assert r.headers["content-type"].startswith("text/csv")
+
+
+def test_export_audit_csv(client, monkeypatch):
+    headers = _staff_headers(client, monkeypatch)
+    _create_org(client, headers, name="Audit Export Org")
+    r = client.get("/api/v1/admin/export/audit.csv", headers=headers)
+    assert r.status_code == 200, r.text
+    assert "org.create" in r.text
+    assert "at_utc" in r.text
+
+
+def test_export_staff_only(client):
+    r = client.get("/api/v1/admin/export/orgs.csv")
+    assert r.status_code in (401, 403)
+
+
+def test_account_suspend_blocks_auth_and_reinstate(client, monkeypatch):
+    """E6: suspended learner account gets 401 on authed routes; reinstate restores."""
+    headers = _staff_headers(client, monkeypatch)
+    email = "e6-learner@example.com"
+    learner = {"Authorization": f"Bearer mock:{email}"}
+    # materialize the account via a learner authed route
+    r = client.get("/api/v1/me/export", headers=learner)
+    assert r.status_code == 200, r.text
+    found = client.get(f"/api/v1/admin/accounts?q={email}", headers=headers)
+    assert found.status_code == 200, found.text
+    acct_id = found.json()[0]["id"]
+
+    r = client.post(
+        f"/api/v1/admin/accounts/{acct_id}/suspend",
+        json={"reason": "e6 verify"},
+        headers=headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["status"] == "suspended"
+
+    # learner authed route now blocked
+    r = client.get("/api/v1/me/export", headers=learner)
+    assert r.status_code == 401
+    assert r.json()["detail"]["envelope_id"] == "auth.account_suspended"
+
+    # idempotent
+    r = client.post(
+        f"/api/v1/admin/accounts/{acct_id}/suspend",
+        json={"reason": "again"},
+        headers=headers,
+    )
+    assert r.status_code == 200
+
+    r = client.post(f"/api/v1/admin/accounts/{acct_id}/reinstate", headers=headers)
+    assert r.status_code == 200
+    assert client.get("/api/v1/me/export", headers=learner).status_code == 200
+
+    # audit entry exists — verify via the audit CSV export (aggregate feed)
+    audit = client.get("/api/v1/admin/export/audit.csv", headers=headers)
+    assert "account.suspend" in audit.text
+
+
+def test_account_actions_staff_only(client):
+    r = client.post(
+        "/api/v1/admin/accounts/00000000-0000-0000-0000-000000000000/suspend",
+        json={"reason": "x"},
+    )
+    assert r.status_code in (401, 403)
+
+
+def test_account_cancel_deletion(client, monkeypatch):
+    headers = _staff_headers(client, monkeypatch)
+    email = "e6-deleted@example.com"
+    learner = {"Authorization": f"Bearer mock:{email}"}
+    client.get("/api/v1/me/export", headers=learner)
+    found = client.get(f"/api/v1/admin/accounts?q={email}", headers=headers)
+    assert found.status_code == 200, found.text
+    acct_id = found.json()[0]["id"]
+
+    # soft-delete via direct row update through a second authed hit isn't
+    # exposed; use the staff search to find then flip via service path —
+    # here we just verify cancel-deletion is idempotent on a live account.
+    r = client.post(
+        f"/api/v1/admin/accounts/{acct_id}/cancel-deletion", headers=headers
+    )
+    assert r.status_code == 200
+    assert r.json()["status"] == "active"
