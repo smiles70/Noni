@@ -301,11 +301,12 @@ const App: React.FC = () => {
               <Route
                 path="/admin"
                 element={
-                  <RequireAuth>
-                    <Suspense fallback={loadFallback}>
-                      <AdminConsolePage />
-                    </Suspense>
-                  </RequireAuth>
+                  // ADMIN-LOGIN-001: no RequireAuth here — the page renders
+                  // its own staff login card when not staff. Learner auth
+                  // must not intercept the staff route.
+                  <Suspense fallback={loadFallback}>
+                    <AdminConsolePage />
+                  </Suspense>
                 }
               />
               <Route
