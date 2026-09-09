@@ -96,6 +96,7 @@ const LOGO_PLATE: CSSProperties = {
   position: "absolute",
   top: SPACING.xl,
   left: SPACING.xl,
+  right: 0,
   zIndex: 1,
   padding: SPACING.sm,
   backgroundColor: "rgba(250, 250, 248, 0.85)",
@@ -137,7 +138,7 @@ const B2B_ENTRY: CSSProperties = {
   alignItems: "center",
   minHeight: 44,
   padding: `${SPACING.sm}px ${SPACING.md}px`,
-  backgroundColor: "rgba(250, 250, 248, 0.85)",
+  backgroundColor: "transparent",
   borderRadius: RADIUS.lg,
   // B2B-ENTRY-001 gap fix: ghost-button border gives the enterprise
   // affordance every audited best-in-class SaaS nav uses, while the
@@ -401,7 +402,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
           </Link>
 
           {/* Fixed help bubble */}
-          {onHelp && (
+          {onHelp && signedIn && (
             <button
               type="button"
               onClick={onHelp}
