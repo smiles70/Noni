@@ -127,6 +127,16 @@ const LOGO_IMG_MOBILE: CSSProperties = {
   height: LOGO_IMG_HEIGHT_MOBILE,
 };
 
+// Logo well — an opaque surface backing behind the mark so it remains
+// legible over the busy hero photograph. Keeps the surrounding plate
+// transparent while intensifying only the logo area.
+const LOGO_WELL: CSSProperties = {
+  display: "inline-block",
+  padding: SPACING.sm,
+  backgroundColor: "rgba(250, 250, 248, 0.9)",
+  borderRadius: RADIUS.md,
+};
+
 // Hero image is full-bleed; the light top overlay now sits on top of it.
 const PICTURE_TOP = 0;
 const PICTURE_TOP_MOBILE = 0;
@@ -376,14 +386,20 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             data-contract-exemption="landing.hero"
             data-brand-plate="landing.hero"
           >
-            <img
-              src="/mynaani-logo.webp"
-              alt="mynaani"
-              width={123}
-              height={128}
-              style={isMobile ? LOGO_IMG_MOBILE : LOGO_IMG}
+            <div
+              style={LOGO_WELL}
+              data-logo-well="landing.hero"
               data-contract-exemption="landing.hero"
-            />
+            >
+              <img
+                src="/mynaani-logo.webp"
+                alt="mynaani"
+                width={123}
+                height={128}
+                style={isMobile ? LOGO_IMG_MOBILE : LOGO_IMG}
+                data-contract-exemption="landing.hero"
+              />
+            </div>
           </div>
 
           {/* Floating action card, right side */}
@@ -419,11 +435,11 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             data-b2b-stack="hero"
           >
             <Link
-              to="/caregiver"
+              to="/paywall"
               style={B2B_BUTTON}
               data-contract-exemption="landing.hero"
               data-caregiver-entry="hero"
-              aria-label="Caregiver — the mynaani enterprise pathway"
+              aria-label="Caregiver — purchase mynaani as a gift"
             >
               Caregiver
             </Link>
