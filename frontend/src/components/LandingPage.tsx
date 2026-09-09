@@ -86,20 +86,18 @@ const ACTION_STACK: CSSProperties = {
   gap: SPACING.md,
 };
 
-// Brand plate — top-left of the hero. The muted mark needs separation from
-// the photo's dark region to remain legible for presbyopic users and to read
-// as an identity/legitimacy signal (BRAND-LOGO-002 findings F1–F3). The plate
-// reuses the action card's surface family (COLORS.surface at 85% opacity),
-// RADIUS.lg corners, SPACING.sm clear space — no new tokens, no shadow, no
-// motion. Position stays the NN/g-validated top-left landmark.
+// Brand plate — a light, almost-transparent top bar that sits slightly
+// inside the hero image on all sides. The muted logo needs just enough
+// separation from the photo, while the rounded edges and low opacity keep
+// the edge from feeling like a hard cut across the image.
 const LOGO_PLATE: CSSProperties = {
   position: "absolute",
   top: SPACING.xl,
   left: SPACING.xl,
-  right: 0,
+  right: SPACING.xl,
   zIndex: 1,
   padding: SPACING.sm,
-  backgroundColor: "rgba(250, 250, 248, 0.85)",
+  backgroundColor: "rgba(250, 250, 248, 0.25)",
   borderRadius: RADIUS.lg,
 };
 
@@ -107,6 +105,7 @@ const LOGO_PLATE_MOBILE: CSSProperties = {
   ...LOGO_PLATE,
   top: SPACING.lg,
   left: SPACING.lg,
+  right: SPACING.lg,
 };
 
 // Logo heights used for both the mark and the hero top offset.
@@ -128,25 +127,27 @@ const LOGO_IMG_MOBILE: CSSProperties = {
   height: LOGO_IMG_HEIGHT_MOBILE,
 };
 
-// Shift the hero image down so the top overlay does not cut across
-// the women's heads. The top edge aligns with the bottom of the brand
-// plate for each viewport.
-const PICTURE_TOP = SPACING.xl + SPACING.sm + LOGO_IMG_HEIGHT + SPACING.sm;
-const PICTURE_TOP_MOBILE =
-  SPACING.lg + SPACING.sm + LOGO_IMG_HEIGHT_MOBILE + SPACING.sm;
+// Hero image is full-bleed; the light top overlay now sits on top of it.
+const PICTURE_TOP = 0;
+const PICTURE_TOP_MOBILE = 0;
 
 // B2B pathway — primary-style enterprise route stack at top-right.
 // The hero stays visually unchanged for learners; institutional visitors
 // get clearly labelled routes without a prohibited dropdown.
 const B2B_BUTTON: CSSProperties = {
-  // B2B-ENTRY-001: ≥44px target + inline-flex for a11y polish.
+  // B2B-ENTRY-001: same shape as the primary CTA — centered, fixed
+  // green button with 44px touch target and 2px border.
   display: "inline-flex",
+  justifyContent: "center",
   alignItems: "center",
+  textAlign: "center",
+  whiteSpace: "nowrap",
   minHeight: 44,
+  width: 200,
+  boxSizing: "border-box",
   padding: `${SPACING.md}px ${SPACING.lg}px`,
   backgroundColor: COLORS.accentDesatGreen,
   borderRadius: RADIUS.lg,
-  // Match the primary CTA's green treatment for visual consistency.
   border: `2px solid ${COLORS.accentDesatGreen}`,
   color: COLORS.surface,
   textDecoration: "none",
@@ -170,6 +171,8 @@ const B2B_STACK_MOBILE: CSSProperties = {
   ...B2B_STACK,
   top: SPACING.lg,
   right: SPACING.lg,
+  flexDirection: "column",
+  gap: SPACING.sm,
 };
 
 const HELP_BUBBLE: CSSProperties = {
@@ -336,7 +339,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             color: COLORS.textPrimary,
           }}
         >
-          {/* Hero image — art-directed for mobile, shifted below the brand plate */}
+          {/* Hero image — full-bleed, art-directed for mobile */}
           <picture
             style={{
               position: "absolute",
@@ -362,7 +365,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
-                objectPosition: "center 15%",
+                objectPosition: "center 10%",
               }}
             />
           </picture>

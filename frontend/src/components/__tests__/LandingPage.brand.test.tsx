@@ -103,8 +103,8 @@ describe("LandingPage — brand plate (BRAND-LOGO-002)", () => {
     expect(plate!.style.position).toBe("absolute");
     expect(plate!.style.top).toBe("32px");
     expect(plate!.style.left).toBe("32px");
-    // Surface plate: COLORS.surface (#FAFAF8) at 85% opacity, RADIUS.lg.
-    expect(plate!.style.backgroundColor).toBe("rgba(250, 250, 248, 0.85)");
+    // Surface plate: COLORS.surface (#FAFAF8) at 25% opacity, RADIUS.lg.
+    expect(plate!.style.backgroundColor).toBe("rgba(250, 250, 248, 0.25)");
     expect(plate!.style.borderRadius).toBe("12px");
     // Contract audit markers retained on plate and mark.
     expect(plate!.dataset.contractExemption).toBe("landing.hero");
