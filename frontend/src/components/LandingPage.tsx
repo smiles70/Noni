@@ -135,15 +135,10 @@ const PICTURE_TOP = SPACING.xl + SPACING.sm + LOGO_IMG_HEIGHT + SPACING.sm;
 const PICTURE_TOP_MOBILE =
   SPACING.lg + SPACING.sm + LOGO_IMG_HEIGHT_MOBILE + SPACING.sm;
 
-// B2B pathway — Candoo-pattern entry: a calm text link top-right on a
-// surface plate (same treatment family as the brand plate). The hero stays
-// visually unchanged for learners; institutional visitors get a clearly
-// labelled route to /for-communities without a prohibited dropdown.
-const B2B_ENTRY: CSSProperties = {
-  position: "absolute",
-  top: SPACING.xl,
-  right: SPACING.xl,
-  zIndex: 1,
+// B2B pathway — primary-style enterprise route stack at top-right.
+// The hero stays visually unchanged for learners; institutional visitors
+// get clearly labelled routes without a prohibited dropdown.
+const B2B_BUTTON: CSSProperties = {
   // B2B-ENTRY-001: ≥44px target + inline-flex for a11y polish.
   display: "inline-flex",
   alignItems: "center",
@@ -161,8 +156,18 @@ const B2B_ENTRY: CSSProperties = {
   transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
 };
 
-const B2B_ENTRY_MOBILE: CSSProperties = {
-  ...B2B_ENTRY,
+const B2B_STACK: CSSProperties = {
+  position: "absolute",
+  top: SPACING.xl,
+  right: SPACING.xl,
+  zIndex: 1,
+  display: "inline-flex",
+  alignItems: "center",
+  gap: SPACING.md,
+};
+
+const B2B_STACK_MOBILE: CSSProperties = {
+  ...B2B_STACK,
   top: SPACING.lg,
   right: SPACING.lg,
 };
@@ -357,7 +362,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
-                objectPosition: "center top",
+                objectPosition: "center 15%",
               }}
             />
           </picture>
@@ -404,16 +409,31 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             </div>
           </div>
 
-          {/* B2B pathway — top-right primary-style link, exempt marketing route */}
-          <Link
-            to="/for-communities"
-            style={isMobile ? B2B_ENTRY_MOBILE : B2B_ENTRY}
+          {/* B2B pathway — top-right primary-style links, exempt marketing route */}
+          <div
+            style={isMobile ? B2B_STACK_MOBILE : B2B_STACK}
             data-contract-exemption="landing.hero"
-            data-b2b-entry="hero"
-            aria-label="Senior facilities — the mynaani enterprise pathway"
+            data-b2b-stack="hero"
           >
-            Senior facilities
-          </Link>
+            <Link
+              to="/caregiver"
+              style={B2B_BUTTON}
+              data-contract-exemption="landing.hero"
+              data-caregiver-entry="hero"
+              aria-label="Caregiver — the mynaani enterprise pathway"
+            >
+              Caregiver
+            </Link>
+            <Link
+              to="/for-communities"
+              style={B2B_BUTTON}
+              data-contract-exemption="landing.hero"
+              data-b2b-entry="hero"
+              aria-label="Senior facilities — the mynaani enterprise pathway"
+            >
+              Senior facilities
+            </Link>
+          </div>
 
           {/* Fixed help bubble */}
           {onHelp && signedIn && (

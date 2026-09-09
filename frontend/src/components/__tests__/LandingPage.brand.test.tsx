@@ -115,18 +115,20 @@ describe("LandingPage — brand plate (BRAND-LOGO-002)", () => {
 });
 
 describe("LandingPage — B2B pathway entry (B2B-LANDING-001)", () => {
-  it("offers a calm top-right text link to /for-communities", async () => {
+  it("offers a primary-style top-right B2B stack with Senior facilities", async () => {
     const host = await render();
     const link = host.querySelector<HTMLAnchorElement>(
       'a[href="/for-communities"]',
     );
     expect(link).not.toBeNull();
     expect(link!.textContent).toBe("Senior facilities");
-    expect(link!.style.position).toBe("absolute");
-    expect(link!.style.top).toBe("32px");
-    expect(link!.style.right).toBe("32px");
+    const stack = link!.closest<HTMLElement>('[data-b2b-stack="hero"]');
+    expect(stack).not.toBeNull();
+    expect(stack!.style.position).toBe("absolute");
+    expect(stack!.style.top).toBe("32px");
+    expect(stack!.style.right).toBe("32px");
     // Audit marker inside the ADR-0029 exempt hero.
-    expect(link!.dataset.contractExemption).toBe("landing.hero");
+    expect(stack!.dataset.contractExemption).toBe("landing.hero");
     // B2B-ENTRY-001: matches primary CTA green treatment,
     // ≥44px target, aria-label, and analytics marker.
     expect(link!.style.border).toContain("2px solid");
