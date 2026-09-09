@@ -121,15 +121,15 @@ describe("LandingPage — B2B pathway entry (B2B-LANDING-001)", () => {
       'a[href="/for-communities"]',
     );
     expect(link).not.toBeNull();
-    expect(link!.textContent).toBe("For senior living communities");
+    expect(link!.textContent).toBe("Senior facilities");
     expect(link!.style.position).toBe("absolute");
     expect(link!.style.top).toBe("32px");
     expect(link!.style.right).toBe("32px");
     // Audit marker inside the ADR-0029 exempt hero.
     expect(link!.dataset.contractExemption).toBe("landing.hero");
-    // B2B-ENTRY-001: ghost-button affordance (bordered, still secondary),
+    // B2B-ENTRY-001: matches primary CTA green treatment,
     // ≥44px target, aria-label, and analytics marker.
-    expect(link!.style.border).toContain("1px solid");
+    expect(link!.style.border).toContain("2px solid");
     expect(link!.style.minHeight).toBe("44px");
     expect(link!.getAttribute("aria-label")).toContain("enterprise pathway");
     expect(link!.dataset.b2bEntry).toBe("hero");

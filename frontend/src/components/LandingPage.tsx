@@ -109,20 +109,31 @@ const LOGO_PLATE_MOBILE: CSSProperties = {
   left: SPACING.lg,
 };
 
+// Logo heights used for both the mark and the hero top offset.
+const LOGO_IMG_HEIGHT = 128;
+const LOGO_IMG_HEIGHT_MOBILE = 96;
+
 // Stacked ~1:1 lockup, so height is fixed and width derives from the asset
 // (921×957). Sizes honour the 8px grid: 128px desktop (16×8) / 96px mobile
 // (12×8). Non-interactive: this page is already home, and adding a link would
 // add an actionable element for no gain.
 const LOGO_IMG: CSSProperties = {
   display: "block",
-  height: 128,
+  height: LOGO_IMG_HEIGHT,
   width: "auto",
 };
 
 const LOGO_IMG_MOBILE: CSSProperties = {
   ...LOGO_IMG,
-  height: 96,
+  height: LOGO_IMG_HEIGHT_MOBILE,
 };
+
+// Shift the hero image down so the top overlay does not cut across
+// the women's heads. The top edge aligns with the bottom of the brand
+// plate for each viewport.
+const PICTURE_TOP = SPACING.xl + SPACING.sm + LOGO_IMG_HEIGHT + SPACING.sm;
+const PICTURE_TOP_MOBILE =
+  SPACING.lg + SPACING.sm + LOGO_IMG_HEIGHT_MOBILE + SPACING.sm;
 
 // B2B pathway — Candoo-pattern entry: a calm text link top-right on a
 // surface plate (same treatment family as the brand plate). The hero stays
@@ -137,16 +148,17 @@ const B2B_ENTRY: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   minHeight: 44,
-  padding: `${SPACING.sm}px ${SPACING.md}px`,
-  backgroundColor: "transparent",
+  padding: `${SPACING.md}px ${SPACING.lg}px`,
+  backgroundColor: COLORS.accentDesatGreen,
   borderRadius: RADIUS.lg,
-  // B2B-ENTRY-001 gap fix: ghost-button border gives the enterprise
-  // affordance every audited best-in-class SaaS nav uses, while the
-  // muted treatment keeps it correctly secondary to the primary CTA.
-  border: `1px solid ${COLORS.accentMutedBlue}`,
-  color: COLORS.accentMutedBlue,
+  // Match the primary CTA's green treatment for visual consistency.
+  border: `2px solid ${COLORS.accentDesatGreen}`,
+  color: COLORS.surface,
   textDecoration: "none",
   fontSize: TYPOGRAPHY.bodySizePx,
+  fontWeight: 600,
+  cursor: "pointer",
+  transition: `opacity ${MOTION.defaultFadeMs}ms ease-out`,
 };
 
 const B2B_ENTRY_MOBILE: CSSProperties = {
@@ -319,14 +331,16 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             color: COLORS.textPrimary,
           }}
         >
-          {/* Full-bleed hero image — art-directed for mobile */}
+          {/* Hero image — art-directed for mobile, shifted below the brand plate */}
           <picture
             style={{
               position: "absolute",
-              top: 0,
+              top: isMobile ? PICTURE_TOP_MOBILE : PICTURE_TOP,
               left: 0,
               width: "100%",
-              height: "100%",
+              height: isMobile
+                ? `calc(100% - ${PICTURE_TOP_MOBILE}px)`
+                : `calc(100% - ${PICTURE_TOP}px)`,
               zIndex: 0,
             }}
           >
@@ -343,7 +357,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
-                objectPosition: "center center",
+                objectPosition: "center top",
               }}
             />
           </picture>
@@ -390,15 +404,15 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             </div>
           </div>
 
-          {/* B2B pathway — top-right text link, exempt marketing route */}
+          {/* B2B pathway — top-right primary-style link, exempt marketing route */}
           <Link
             to="/for-communities"
             style={isMobile ? B2B_ENTRY_MOBILE : B2B_ENTRY}
             data-contract-exemption="landing.hero"
             data-b2b-entry="hero"
-            aria-label="For senior living communities — the mynaani enterprise pathway"
+            aria-label="Senior facilities — the mynaani enterprise pathway"
           >
-            For senior living communities
+            Senior facilities
           </Link>
 
           {/* Fixed help bubble */}

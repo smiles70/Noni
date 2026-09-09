@@ -9,7 +9,7 @@ test.describe("Landing page", () => {
       page.getByRole("button", { name: "How it works" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("link", { name: /communities/i }),
+      page.getByRole("link", { name: /Senior facilities/i }),
     ).toBeVisible();
   });
 
