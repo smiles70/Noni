@@ -250,33 +250,33 @@ Every rack must:
 - Backend source coverage is **85.61 %** (3 788 source statements, 545 misses).
 - Commit: `7ac3c6a` on `feat/testing-maturity-004`.
 
-### Block 3 — Frontend unit/component backfill (IN PROGRESS)
+### Block 3 — Frontend unit/component backfill (GRADE A)
 
-- Rack 3.1 committed on `feat/testing-maturity-004` (`1e359b2`).
-- Rack 3.2 committed on `feat/testing-maturity-004` (`959c03d`).
-- Added / extended tests for:
-  - `PurchaseCancelPage`, `EmptyState`, `LoadingSkeleton`, `ErrorBoundary`
-    (`MissingComponents.test.tsx`)
-  - `api/client.ts` (`client.test.ts`)
-  - `lib/logger.ts` (`logger.test.ts`)
-  - `hooks/useViewport.ts` (`useViewport.test.ts`)
-- Raised `frontend/vitest.config.ts` coverage thresholds to the current baseline:
-  - statements 81 %
-  - branches 67 %
-  - functions 71 %
-  - lines 82 %
-- Frontend test run: **22 test files, 170 passed, 15 expected fail**.
-- Latest `feat/testing-maturity-004` pushed to `staging` (`959c03d`) for UAT.
+- Rack 3.1 (`1e359b2`): `MissingComponents.test.tsx`.
+- Rack 3.2 (`959c03d`): `client.test.ts`, `logger.test.ts`, extended
+  `useViewport.test.ts`.
+- Rack 3.3 (`710c59a`): extended `PurchaseSuccessPage.test.tsx`.
+- Rack 3.4 (`1abbf24`): `HowItWorksDialog.test.tsx`.
+- Rack 3.5-3.6 (`a699164`): `PageTypes.render.test.tsx`, extended
+  `LandingPage.brand.test.tsx`.
+- Final `frontend/vitest.config.ts` coverage thresholds locked at grade-A
+  floors:
+  - statements 87 %
+  - branches 75 %
+  - functions 84 %
+  - lines 88 %
+- Frontend test run: **24 test files, 195 passed, 15 expected fail**.
+- Latest `feat/testing-maturity-004` pushed to `staging` (`a699164`) for UAT.
 
 ### Next block
 
-**Block 3 Rack 3.3** — continue component backfill for the largest uncovered
-surfaces (`HowItWorksDialog`, `OrgDashboardPage`, `PageTypes`, `LandingPage`
-branches, `PurchaseSuccessPage`, auth hooks).
+**Block 4 — E2E journey and a11y expansion** can now run against the staged
+frontend. Priority journeys: gifting, onboarding, paywall, admin, account,
+partner/community, auth callback, cross-browser route checks.
 
-**Block 4 — E2E journey and a11y expansion** can be run in parallel once a
-Playwright staging target is available.
+**Block 2 (backend placeholder files)** remains optional because the 85 %
+backend source-coverage gate is met, but the 9 empty-ish files should still be
+converted or removed before final A-grade certification.
 
-Block 2 (backend placeholder files) remains optional for now because the 85 %
-source-coverage gate is met, but the 9 empty-ish files should still be converted
-or removed before final A-grade certification.
+**Block 5 — Performance/load/smoke validation** (k6 smoke, Lighthouse/pa11y
+baseline, backend latency gate) can run once E2E journeys are stable.

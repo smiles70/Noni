@@ -51,21 +51,25 @@
 - Coverage gate committed in `7ac3c6a` on `feat/testing-maturity-004`.
 - Pushed to `staging` (`7ac3c6a`).
 
-## Block 3 — Frontend unit/component backfill (Racks 3.1 + 3.2 COMPLETE)
+## Block 3 — Frontend unit/component backfill (GRADE A — COMPLETE)
 
-- Rack 3.1: `MissingComponents.test.tsx` for `PurchaseCancelPage`, `EmptyState`,
-  `LoadingSkeleton`, `ErrorBoundary` (`1e359b2`).
-- Rack 3.2: `client.test.ts`, `logger.test.ts`, extended `useViewport.test.ts`
-  (`959c03d`).
-- Locked `vitest.config.ts` coverage thresholds at the current baseline
-  (statements 81 %, branches 67 %, functions 71 %, lines 82 %).
-- Frontend unit test run: **22 files, 170 passed, 15 expected fail**.
-- Latest `feat/testing-maturity-004` pushed to `staging` (`959c03d`).
+- Rack 3.1 (`1e359b2`): `MissingComponents.test.tsx`.
+- Rack 3.2 (`959c03d`): `client.test.ts`, `logger.test.ts`, extended
+  `useViewport.test.ts`.
+- Rack 3.3 (`710c59a`): extended `PurchaseSuccessPage.test.tsx`.
+- Rack 3.4 (`1abbf24`): `HowItWorksDialog.test.tsx`.
+- Rack 3.5-3.6 (`a699164`): `PageTypes.render.test.tsx`, extended
+  `LandingPage.brand.test.tsx`.
+- Locked `vitest.config.ts` coverage thresholds at grade-A floors:
+  - statements 87 %, branches 75 %, functions 84 %, lines 88 %.
+- Frontend unit test run: **24 files, 195 passed, 15 expected fail**.
+- Latest `feat/testing-maturity-004` pushed to `staging` (`a699164`).
 
 ## Next go / no-go
 
-**GO** for **Block 3 Rack 3.3** (largest uncovered component/hook surfaces)
-OR **Block 4 — E2E journey and a11y expansion** if staging UAT is ready.
+**GO** for **Block 4 — E2E journey and a11y expansion** against staging,
+OR **Block 2 — backend placeholder file disposition**, OR **Block 5 —
+performance/load/smoke validation**.
 
 ## Definition of Done for this preflight
 

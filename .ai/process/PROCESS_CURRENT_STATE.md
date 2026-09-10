@@ -29,5 +29,7 @@
 
 - Frontend dependency vulnerabilities need breaking-change upgrades (`vite`, `react-router-dom`).
 - Backend local test environment verified on Python 3.12.7 via uv + tinypg; pytest passes with 451 passed, 2 skipped, 14 xfailed and source coverage >= 85%.
+- Frontend unit tests: 24 test files, 195 passed, 15 expected fail; coverage
+  locked at grade-A floors (87/75/84/88 statements/branches/functions/lines).
 - Performance baseline not established (Lighthouse / pa11y).
 - SIEM integration not configured.
