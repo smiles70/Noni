@@ -16,11 +16,11 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "lcov"],
       thresholds: {
-        // Rack 3.3 baseline; raise toward 85/75/80 as backfill continues.
-        lines: 83,
-        functions: 72,
+        // Rack 3.4 baseline; branch remains the main gap to grade A.
+        lines: 86,
+        functions: 78,
         branches: 69,
-        statements: 82,
+        statements: 85,
       },
     },
   },
