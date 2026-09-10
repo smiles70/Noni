@@ -253,22 +253,26 @@ Every rack must:
 ### Block 3 — Frontend unit/component backfill (IN PROGRESS)
 
 - Rack 3.1 committed on `feat/testing-maturity-004` (`1e359b2`).
-- Added `frontend/src/components/__tests__/MissingComponents.test.tsx` covering
-  `PurchaseCancelPage`, `EmptyState`, `LoadingSkeleton`, and `ErrorBoundary`.
-- Raised `frontend/vitest.config.ts` coverage thresholds from 1 % to the
-  current baseline:
-  - statements 76 %
-  - branches 62 %
-  - functions 63 %
-  - lines 77 %
-- Frontend test run: **20 test files, 145 passed, 15 expected fail**.
-- Pushed to `staging` (`1e359b2`) for UAT.
+- Rack 3.2 committed on `feat/testing-maturity-004` (`959c03d`).
+- Added / extended tests for:
+  - `PurchaseCancelPage`, `EmptyState`, `LoadingSkeleton`, `ErrorBoundary`
+    (`MissingComponents.test.tsx`)
+  - `api/client.ts` (`client.test.ts`)
+  - `lib/logger.ts` (`logger.test.ts`)
+  - `hooks/useViewport.ts` (`useViewport.test.ts`)
+- Raised `frontend/vitest.config.ts` coverage thresholds to the current baseline:
+  - statements 81 %
+  - branches 67 %
+  - functions 71 %
+  - lines 82 %
+- Frontend test run: **22 test files, 170 passed, 15 expected fail**.
+- Latest `feat/testing-maturity-004` pushed to `staging` (`959c03d`) for UAT.
 
 ### Next block
 
-**Block 3 Rack 3.2** — continue component backfill for the largest uncovered
+**Block 3 Rack 3.3** — continue component backfill for the largest uncovered
 surfaces (`HowItWorksDialog`, `OrgDashboardPage`, `PageTypes`, `LandingPage`
-branches, `useViewport`, `api/client.ts`, auth hooks).
+branches, `PurchaseSuccessPage`, auth hooks).
 
 **Block 4 — E2E journey and a11y expansion** can be run in parallel once a
 Playwright staging target is available.

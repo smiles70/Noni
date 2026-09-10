@@ -51,18 +51,20 @@
 - Coverage gate committed in `7ac3c6a` on `feat/testing-maturity-004`.
 - Pushed to `staging` (`7ac3c6a`).
 
-## Block 3 — Frontend unit/component backfill (Rack 3.1 COMPLETE)
+## Block 3 — Frontend unit/component backfill (Racks 3.1 + 3.2 COMPLETE)
 
-- Added `frontend/src/components/__tests__/MissingComponents.test.tsx` covering
-  `PurchaseCancelPage`, `EmptyState`, `LoadingSkeleton`, and `ErrorBoundary`.
+- Rack 3.1: `MissingComponents.test.tsx` for `PurchaseCancelPage`, `EmptyState`,
+  `LoadingSkeleton`, `ErrorBoundary` (`1e359b2`).
+- Rack 3.2: `client.test.ts`, `logger.test.ts`, extended `useViewport.test.ts`
+  (`959c03d`).
 - Locked `vitest.config.ts` coverage thresholds at the current baseline
-  (statements 76 %, branches 62 %, functions 63 %, lines 77 %).
-- Frontend unit test run: **20 files, 145 passed, 15 expected fail**.
-- Committed and pushed to `staging` (`1e359b2`).
+  (statements 81 %, branches 67 %, functions 71 %, lines 82 %).
+- Frontend unit test run: **22 files, 170 passed, 15 expected fail**.
+- Latest `feat/testing-maturity-004` pushed to `staging` (`959c03d`).
 
 ## Next go / no-go
 
-**GO** for **Block 3 Rack 3.2** (largest uncovered component/hook surfaces)
+**GO** for **Block 3 Rack 3.3** (largest uncovered component/hook surfaces)
 OR **Block 4 — E2E journey and a11y expansion** if staging UAT is ready.
 
 ## Definition of Done for this preflight
