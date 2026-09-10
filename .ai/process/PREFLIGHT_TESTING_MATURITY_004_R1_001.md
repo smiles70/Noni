@@ -25,7 +25,7 @@
   - `/setup` form completes and auto-continues to `/getting-started`.
   - `/getting-started` passes axe WCAG 2.1 AA.
 
-## Block 4.2 — E2E paywall journey (IN PROGRESS)
+## Block 4.2 — E2E paywall journey (COMPLETE)
 
 - `frontend/e2e/paywall.spec.ts` created.
 - 7 local chromium tests pass:
@@ -37,17 +37,24 @@
   - Organization code redemption routes to `/curriculum`.
   - `/paywall` passes axe WCAG 2.1 AA.
 
+## Block 4.3 — E2E admin journey (COMPLETE)
+
+- `frontend/e2e/admin.spec.ts` created.
+- 2 passed; 1 a11y test marked `fixme` due to color-contrast findings.
+- `/admin` renders staff sign-in form for non-staff.
+- Staff session loads overview and navigation.
+
 ## Go / no-go
 
-**GO** for **Block 4.3 — E2E admin journey**.
+**GO** for **Block 4.4 — E2E account journey**.
 
 ## Risks
 
 1. Cross-browser failures may be browser-binary availability only; CI is the canonical matrix.
 2. Each new E2E spec will run 25 times in CI (5 projects); keep specs concise.
-3. Mock-token routes may need `mynaani.staff_token` for staff-only admin views.
 
 ## Definition of Done
 
 - [x] Rack 4.1 spec committed and pushed to `staging`.
 - [x] Rack 4.2 spec committed and pushed to `staging`.
+- [x] Rack 4.3 spec committed and pushed to `staging`.

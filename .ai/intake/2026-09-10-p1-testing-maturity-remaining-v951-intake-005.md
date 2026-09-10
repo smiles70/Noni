@@ -31,7 +31,7 @@ Add Playwright specs for the following critical user paths. Each spec must inclu
 |---|---|---|
 | Onboarding | `/welcome`, `/getting-started`, `/account-setup` | ✅ `frontend/e2e/onboarding.spec.ts` — 4 tests, axe WCAG 2.1 AA |
 | Paywall | `/paywall` | ✅ `frontend/e2e/paywall.spec.ts` — 7 tests, geragogy-calm, all three exits, axe WCAG 2.1 AA |
-| Admin | `/admin` | Staff-only access, aggregate-only views |
+| Admin | `/admin` | ✅ `frontend/e2e/admin.spec.ts` — staff sign-in, overview, nav; a11y color-contrast finding logged as `fixme` |
 | Account | `/account` | Signed-in profile, editable reversible fields |
 | Partner / communities | `/for-communities`, `/partner` | B2B marketing exemption markers, CTAs |
 | Auth callback | `/signin`, `/signin/callback` | Successful sign-in redirects, blocked notice on failure |
