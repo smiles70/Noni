@@ -228,29 +228,24 @@ class StripePaymentProvider:
         buyer_account_id: Optional[uuid.UUID] = None,
         buyer_email: Optional[str] = None,
     ) -> CheckoutSession:
-        buyer_reference = (
-            str(buyer_account_id)
-            if buyer_account_id
-            else (buyer_email or "guest")
-        )
+        base_metadata = {
+            "product_code": product_code,
+            "purchase_id": str(purchase_id),
+            "is_gift": "true" if is_gift else "false",
+        }
+        if buyer_account_id:
+            base_metadata["buyer_account_id"] = str(buyer_account_id)
+        if buyer_email:
+            base_metadata["buyer_email"] = buyer_email
+
         session = self._stripe.checkout.Session.create(
             mode="payment",
             line_items=[{"price": price_id, "quantity": 1}],
             success_url=success_url + "?cs={CHECKOUT_SESSION_ID}",
             cancel_url=cancel_url,
-            metadata={
-                "product_code": product_code,
-                "buyer_reference": buyer_reference,
-                "purchase_id": str(purchase_id),
-                "is_gift": "true" if is_gift else "false",
-            },
+            metadata=base_metadata,
             payment_intent_data={
-                "metadata": {
-                    "product_code": product_code,
-                    "buyer_reference": buyer_reference,
-                    "purchase_id": str(purchase_id),
-                    "is_gift": "true" if is_gift else "false",
-                }
+                "metadata": base_metadata,
             },
         )
         return CheckoutSession(provider_session_id=session.id, url=session.url)
