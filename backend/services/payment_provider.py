@@ -90,11 +90,12 @@ class PaymentProvider(Protocol):
         price_id: str,
         amount_cents: int,
         currency: str,
-        buyer_account_id: uuid.UUID,
         purchase_id: uuid.UUID,
         success_url: str,
         cancel_url: str,
         is_gift: bool,
+        buyer_account_id: Optional[uuid.UUID] = None,
+        buyer_email: Optional[str] = None,
     ) -> CheckoutSession: ...
 
     def verify_webhook(
@@ -124,11 +125,12 @@ class MockPaymentProvider:
         price_id: str,
         amount_cents: int,
         currency: str,
-        buyer_account_id: uuid.UUID,
         purchase_id: uuid.UUID,
         success_url: str,
         cancel_url: str,
         is_gift: bool,
+        buyer_account_id: Optional[uuid.UUID] = None,
+        buyer_email: Optional[str] = None,
     ) -> CheckoutSession:
         session_id = f"cs_mock_{purchase_id.hex[:12]}"
         # For mock mode we show a local test checkout page where the user
@@ -219,12 +221,18 @@ class StripePaymentProvider:
         price_id: str,
         amount_cents: int,
         currency: str,
-        buyer_account_id: uuid.UUID,
         purchase_id: uuid.UUID,
         success_url: str,
         cancel_url: str,
         is_gift: bool,
+        buyer_account_id: Optional[uuid.UUID] = None,
+        buyer_email: Optional[str] = None,
     ) -> CheckoutSession:
+        buyer_reference = (
+            str(buyer_account_id)
+            if buyer_account_id
+            else (buyer_email or "guest")
+        )
         session = self._stripe.checkout.Session.create(
             mode="payment",
             line_items=[{"price": price_id, "quantity": 1}],
@@ -232,14 +240,14 @@ class StripePaymentProvider:
             cancel_url=cancel_url,
             metadata={
                 "product_code": product_code,
-                "buyer_account_id": str(buyer_account_id),
+                "buyer_reference": buyer_reference,
                 "purchase_id": str(purchase_id),
                 "is_gift": "true" if is_gift else "false",
             },
             payment_intent_data={
                 "metadata": {
                     "product_code": product_code,
-                    "buyer_account_id": str(buyer_account_id),
+                    "buyer_reference": buyer_reference,
                     "purchase_id": str(purchase_id),
                     "is_gift": "true" if is_gift else "false",
                 }

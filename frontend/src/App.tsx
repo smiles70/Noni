@@ -30,6 +30,7 @@ const PaidLessonRenderer = lazy(
 );
 const CurriculumMenu = lazy(() => import("./components/CurriculumMenu"));
 const PaywallPage = lazy(() => import("./components/PaywallPage"));
+const GiftCheckoutPage = lazy(() => import("./components/GiftCheckoutPage"));
 const GiftRedeemPage = lazy(() => import("./components/GiftRedeemPage"));
 const PartnerPage = lazy(() => import("./components/PartnerPage"));
 const AdminConsolePage = lazy(() => import("./components/AdminConsolePage"));
@@ -393,6 +394,17 @@ const App: React.FC = () => {
                 }
               />
               <Route
+                path="/gift"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <GiftCheckoutPage
+                      productCode="modules_4_5"
+                      onBack={goLanding}
+                    />
+                  </Suspense>
+                }
+              />
+              <Route
                 path="/gift-redeem"
                 element={
                   <RequireAuth>
@@ -419,21 +431,17 @@ const App: React.FC = () => {
               <Route
                 path="/purchase/success"
                 element={
-                  <RequireAuth>
-                    <Suspense fallback={loadFallback}>
-                      <PurchaseSuccessPage />
-                    </Suspense>
-                  </RequireAuth>
+                  <Suspense fallback={loadFallback}>
+                    <PurchaseSuccessPage />
+                  </Suspense>
                 }
               />
               <Route
                 path="/purchase/cancel"
                 element={
-                  <RequireAuth>
-                    <Suspense fallback={loadFallback}>
-                      <PurchaseCancelPage />
-                    </Suspense>
-                  </RequireAuth>
+                  <Suspense fallback={loadFallback}>
+                    <PurchaseCancelPage />
+                  </Suspense>
                 }
               />
               <Route
