@@ -122,16 +122,16 @@ export default function PurchaseSuccessPage() {
             <button
               type="button"
               style={PRIMARY_BTN}
-              onClick={() => navigate("/curriculum")}
+              onClick={() => navigate(isGift ? "/" : "/paid-curriculum")}
             >
-              Continue to the curriculum
+              {isGift ? "Return to home" : "Continue to the paid modules"}
             </button>
             <button
               type="button"
               style={SECONDARY_BTN}
-              onClick={() => navigate("/paywall")}
+              onClick={() => navigate("/")}
             >
-              Go back
+              Go home
             </button>
           </div>
         </>
