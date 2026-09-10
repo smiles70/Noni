@@ -60,25 +60,26 @@ vi.mock("../../api/envelope", () => ({
 
 import LandingPage from "../LandingPage";
 
-async function render() {
+async function render(props: { signedIn?: boolean; onHelp?: () => void } = {}) {
   const host = document.createElement("div");
   document.body.appendChild(host);
   const root = createRoot(host);
+  const onBegin = vi.fn();
   await act(async () => {
     root.render(
       createElement(
         MemoryRouter,
         null,
-        createElement(LandingPage, { onBegin: () => {} }),
+        createElement(LandingPage, { onBegin, ...props }),
       ),
     );
   });
-  return host;
+  return { host, onBegin };
 }
 
 describe("LandingPage — brand logo (BRAND-LOGO-001)", () => {
   it("renders the mynaani logo in the upper-left, non-interactive", async () => {
-    const host = await render();
+    const { host } = await render();
     const logo = host.querySelector<HTMLImageElement>('img[alt="mynaani"]');
     expect(logo).not.toBeNull();
     expect(logo!.src).toContain("/mynaani-logo.webp");
@@ -92,7 +93,7 @@ describe("LandingPage — brand logo (BRAND-LOGO-001)", () => {
 
 describe("LandingPage — brand plate (BRAND-LOGO-002)", () => {
   it("sits the logo on a calm surface plate in the upper-left landmark", async () => {
-    const host = await render();
+    const { host } = await render();
     const logo = host.querySelector<HTMLImageElement>('img[alt="mynaani"]');
     expect(logo).not.toBeNull();
     const plate = logo!.closest<HTMLElement>(
@@ -116,7 +117,7 @@ describe("LandingPage — brand plate (BRAND-LOGO-002)", () => {
 
 describe("LandingPage — B2B pathway entry (B2B-LANDING-001)", () => {
   it("offers a primary-style top-right B2B stack with Senior facilities", async () => {
-    const host = await render();
+    const { host } = await render();
     const link = host.querySelector<HTMLAnchorElement>(
       'a[href="/for-communities"]',
     );
@@ -135,5 +136,47 @@ describe("LandingPage — B2B pathway entry (B2B-LANDING-001)", () => {
     expect(link!.style.minHeight).toBe("44px");
     expect(link!.getAttribute("aria-label")).toContain("enterprise pathway");
     expect(link!.dataset.b2bEntry).toBe("hero");
+  });
+});
+
+describe("LandingPage — signed-in and help states", () => {
+  it("shows Continue learning when signed in and calls onBegin", async () => {
+    const { host, onBegin } = await render({ signedIn: true });
+    const btn = Array.from(host.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Continue learning"),
+    );
+    expect(btn).toBeDefined();
+    await act(async () => btn!.click());
+    expect(onBegin).toHaveBeenCalled();
+  });
+
+  it("shows the help bubble when signed in and onHelp is provided", async () => {
+    const onHelp = vi.fn();
+    const { host } = await render({ signedIn: true, onHelp });
+    const helpBtn = Array.from(host.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Need help?"),
+    );
+    expect(helpBtn).toBeDefined();
+    await act(async () => helpBtn!.click());
+    expect(onHelp).toHaveBeenCalled();
+  });
+
+  it("does not show the help bubble when signed out", async () => {
+    const onHelp = vi.fn();
+    const { host } = await render({ signedIn: false, onHelp });
+    const helpBtn = Array.from(host.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Need help?"),
+    );
+    expect(helpBtn).toBeUndefined();
+  });
+
+  it("opens the How it works dialog for signed-out visitors", async () => {
+    const { host } = await render();
+    const primary = Array.from(host.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Begin"),
+    );
+    expect(primary).toBeDefined();
+    await act(async () => primary!.click());
+    expect(host.textContent).toContain("How Mynaani works");
   });
 });

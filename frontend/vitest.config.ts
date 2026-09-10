@@ -16,11 +16,12 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "lcov"],
       thresholds: {
-        // Rack 3.4 baseline; branch remains the main gap to grade A.
-        lines: 86,
-        functions: 78,
-        branches: 69,
-        statements: 85,
+        // Grade-A frontend coverage floor (statements 85%, branches 75%,
+        // functions 80%, lines 85%) now met and locked.
+        lines: 88,
+        functions: 84,
+        branches: 75,
+        statements: 87,
       },
     },
   },
