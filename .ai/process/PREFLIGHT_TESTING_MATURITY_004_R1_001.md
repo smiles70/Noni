@@ -70,30 +70,52 @@
   - `/auth/callback` renders pending message.
   - `/auth/callback` passes axe WCAG 2.1 AA.
 
-## Block 5 — Performance/load/smoke validation (PENDING)
+## Production deploy and smoke
 
-- Isolated backend A10 smoke: `backend/tests/test_a10_smoke.py` exists.
-  Local Python environment lacks `pytest`; the canonical run is CI or the
-  backend venv.
-- k6 / Lighthouse / pa11y smoke gates not yet wired into `package.json`
-  or CI.
+- Pushed `feat/testing-maturity-004` to `main`.
+- Commit range: `efb7072..18d6753`.
+- Production smoke (curl) all green:
+  - `https://www.mynaani.com/` — 200 in 423 ms
+  - `https://www.mynaani.com/gift` — 200 in 140 ms
+  - `https://www.mynaani.com/for-communities` — 200 in 128 ms
+  - `https://noni-api-production.up.railway.app/` — 200 in 238 ms
+  - `https://noni-api-production.up.railway.app/api/v1/landing/page` — 200 in 206 ms
+
+## Block 5 — Performance/load/smoke validation (IN PROGRESS)
+
+### 5.1 Isolated backend A10 smoke
+
+- `backend/tests/test_a10_smoke.py` exists.
+- Local Python environment lacks the backend venv; the canonical run is CI
+  or the configured backend venv.
+
+### 5.2 k6 / Lighthouse / pa11y smoke gates
+
+- Wired in `frontend/package.json`:
+  - `npm run smoke:lighthouse`
+  - `npm run smoke:pa11y`
+  - `npm run smoke:k6`
+- Created runners:
+  - `frontend/scripts/smoke-lighthouse.mjs`
+  - `frontend/scripts/smoke-pa11y.mjs`
+  - `frontend/scripts/smoke-k6.mjs`
+  - `frontend/scripts/smoke-k6.js`
+- Tools are not yet installed: `lighthouse` and `pa11y` are `npm add -D`,
+  `k6` is a system binary.
 
 ## Go / no-go
 
-**GO** for **Block 5.1 — backend A10 isolated smoke run** in the configured
-backend venv/CI.
+**GO** for installing the tools and running the gates in CI.
 
 ## Risks
 
-1. Cross-browser failures may be browser-binary availability only; CI is the canonical matrix.
-2. Each new E2E spec will run 25 times in CI (5 projects); keep specs concise.
-3. k6/Lighthouse/pa11y tooling may require package or binary installation.
+1. k6 is a system binary; CI runner must have it or use the Grafana docker image.
+2. Lighthouse and pa11y add dependency weight; use pinned exact versions.
+3. Production smoke gates should target the staging environment, never run against prod in CI by default.
 
 ## Definition of Done
 
-- [x] Rack 4.1 spec committed and pushed to `staging`.
-- [x] Rack 4.2 spec committed and pushed to `staging`.
-- [x] Rack 4.3 spec committed and pushed to `staging`.
-- [x] Rack 4.4 spec committed and pushed to `staging`.
-- [x] Rack 4.5 spec committed and pushed to `staging`.
-- [x] Rack 4.6 spec committed and pushed to `staging`.
+- [x] Rack 4.1-4.6 specs committed and pushed to `staging` and `main`.
+- [x] Production push and smoke complete.
+- [x] Smoke-gate scripts and package.json scripts created.
+- [ ] Install and validate `lighthouse`, `pa11y`, and `k6` in a safe environment.
