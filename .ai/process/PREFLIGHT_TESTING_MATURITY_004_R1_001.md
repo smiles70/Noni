@@ -44,9 +44,19 @@
 - `/admin` renders staff sign-in form for non-staff.
 - Staff session loads overview and navigation.
 
+## Block 4.4 — E2E account journey (COMPLETE)
+
+- `frontend/e2e/account.spec.ts` created.
+- 5 local chromium tests pass:
+  - `/account` requires auth.
+  - `/account` renders identity and reversible actions.
+  - Sign out returns to `/`.
+  - Delete account requires confirmation and is scheduled.
+  - `/account` passes axe WCAG 2.1 AA.
+
 ## Go / no-go
 
-**GO** for **Block 4.4 — E2E account journey**.
+**GO** for **Block 4.5 — E2E partner/community journey**.
 
 ## Risks
 
@@ -58,3 +68,4 @@
 - [x] Rack 4.1 spec committed and pushed to `staging`.
 - [x] Rack 4.2 spec committed and pushed to `staging`.
 - [x] Rack 4.3 spec committed and pushed to `staging`.
+- [x] Rack 4.4 spec committed and pushed to `staging`.

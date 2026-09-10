@@ -9,6 +9,7 @@ export const genericEnvelope = {
     "Body",
     "Button",
     "Card",
+    "ConfirmDialog",
     "Divider",
     "Field",
     "Indicator",
@@ -34,6 +35,7 @@ interface SetupAuthOptions {
   profileOk?: boolean;
   checkout?: { isGift: boolean; checkoutUrl: string; giftToken?: string };
   orgRedeem?: { productCode: string };
+  deleteOk?: boolean;
 }
 
 export async function setupAuth(page: Page, opts: SetupAuthOptions = {}) {
@@ -126,6 +128,16 @@ export async function setupAuth(page: Page, opts: SetupAuthOptions = {}) {
           granted: true,
           product_code: opts.orgRedeem!.productCode,
         }),
+      });
+    });
+  }
+
+  if (opts.deleteOk) {
+    await page.route("**/api/v1/me/delete", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ scheduled: true }),
       });
     });
   }
