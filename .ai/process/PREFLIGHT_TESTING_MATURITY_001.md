@@ -71,10 +71,25 @@
 - All 9 now contain real `def test_` functions and participate in the suite.
 - No removal or conversion is required.
 
+## Block 4 — E2E journey and a11y expansion (IN PROGRESS)
+
+- Added `frontend/e2e/gift.spec.ts` (public guest-gift checkout + a11y).
+- Local chromium: **5 passed**; mobile-pixel: **5 passed**.
+- Firefox/WebKit/mobile-iphone binaries not installed locally; CI covers full
+  5-project matrix.
+- Remaining journeys: onboarding, paywall, admin, account, partner/community,
+  auth callback.
+
+## Block 5 — Performance/load/smoke validation (IN PROGRESS)
+
+- Production build succeeded.
+- Bundle-size budget: all 29 chunks within 100 kB gzipped; `index` 99.26 kB.
+- Full backend A10 smoke green in the backend suite.
+
 ## Next go / no-go
 
-**GO** for **Block 4 — E2E journey and a11y expansion** against staging,
-OR **Block 5 — performance/load/smoke validation**.
+**GO** for finalizing the remaining E2E journeys and wiring k6/LightHouse
+smoke gates.
 
 ## Definition of Done for this preflight
 

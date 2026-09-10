@@ -270,13 +270,33 @@ Every rack must:
 
 ### Next block
 
-**Block 4 — E2E journey and a11y expansion** can now run against the staged
-frontend. Priority journeys: gifting, onboarding, paywall, admin, account,
-partner/community, auth callback, cross-browser route checks.
+### Block 4 — E2E journey and a11y expansion (IN PROGRESS)
+
+- Added `frontend/e2e/gift.spec.ts` covering the public guest-gift checkout:
+  - `/gift` renders the gift form.
+  - Invalid email shows a reversible error.
+  - Valid email triggers a mocked `/api/v1/billing/checkout` call with
+    `is_gift: true` and redirects to the payment provider.
+  - `/gift-redeem` requires an authenticated session.
+  - axe WCAG 2.1 AA scan on `/gift` passes.
+- Local `chromium` run: **5 passed**.
+- Local `mobile-pixel` run: **5 passed**.
+- Firefox/WebKit/mobile-iphone browser binaries are not installed locally;
+  the CI `test:e2e:install` step will cover the full 5-project matrix.
+- Remaining E2E priority journeys: onboarding, paywall, admin, account,
+  partner/community, auth callback, cross-browser route checks.
 
 **Block 2 — Backend placeholder file disposition (COMPLETE).** Re-reviewed the
 9 previously-empty files: all now contain real `def test_` functions. No
 removal/conversion required.
 
-**Block 5 — Performance/load/smoke validation** (k6 smoke, Lighthouse/pa11y
-baseline, backend latency gate) can run once E2E journeys are stable.
+### Block 5 — Performance/load/smoke validation (IN PROGRESS)
+
+- Production build (`npm run build`) succeeded.
+- Bundle-size budget (`scripts/check-bundle-size.mjs`): **all 29 chunks within
+  100 kB gzipped budget**; largest `index` chunk is 99.26 kB gz.
+- Backend A10 full-launch smoke test (`test_a10_smoke.py`) is defined and
+  green in the full backend suite; needs a dedicated Postgres run for
+  isolated Block 5 evidence.
+- Remaining: wire k6 smoke / backend latency gate and Lighthouse/pa11y CI
+  reporting.
