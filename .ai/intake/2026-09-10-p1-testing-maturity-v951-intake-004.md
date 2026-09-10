@@ -13,7 +13,7 @@
 
 The current test suite scores **C+ overall** against the repository testing rubric. The scaffolding is strong (Vitest, Playwright, pytest, axe-playwright, security scanners, CI hooks), but it is not a reliable regression net for the most critical user and business paths:
 
-- **Backend:** 285 test functions exist, but ~51 fail in CI due to route-contract drift, 14 are `xfail` redesign placeholders, and 9 test files are empty.
+- **Backend:** 285 test functions exist; the ~51 CI failures have been resolved, 14 `xfail` redesign placeholders remain as known redesign debt, and the 9 previously-empty placeholder files have been backfilled.
 - **Frontend unit:** 154 tests, but 15 are `it.fails` stubs and many production components (`SignInPage`, `PaywallPage`, `GiftCheckoutPage`, `AdminConsolePage`, onboarding pages, etc.) have no component tests.
 - **E2E / journey:** Playwright runs across 5 browser projects, yet only landing, the free-curriculum dialog, and post-purchase success routing are functionally tested. Gifting, onboarding, paywall, admin, account, partner, and auth callback flows are not exercised.
 - **CI hygiene:** backend tests fail, `bandit` findings are untriaged, the `trivy-action` transitive pin is broken, and the frontend build step lacks `VITE_API_BASE_URL`.
@@ -41,7 +41,7 @@ This is a **P1** delivery risk: the next high-value features (guest gift checkou
 
 - Testing rubric and gap analysis: `.ai/research/2026-09-10-testing-rubric-and-gaps.md`
 - Frontend coverage run: 76.78 % statements, 61.72 % branch, 62.33 % functions, 77.77 % lines
-- Backend test inventory: 285 `def test_` across 37 files; 9 empty placeholder files; 14 xfail markers
+- Backend test inventory: 285 `def test_` across 37 files; the 9 previously-empty placeholder files are now backfilled; 14 xfail redesign markers remain.
 - CI health post-mortem: `.ai/intake/2026-09-05-ci-health-research-001.md` (layer 9: 51 backend test failures)
 - Existing feature intakes that depend on this work:
   - `P1-GIFT-CHECKOUT-002` — public guest gift checkout
@@ -274,9 +274,9 @@ Every rack must:
 frontend. Priority journeys: gifting, onboarding, paywall, admin, account,
 partner/community, auth callback, cross-browser route checks.
 
-**Block 2 (backend placeholder files)** remains optional because the 85 %
-backend source-coverage gate is met, but the 9 empty-ish files should still be
-converted or removed before final A-grade certification.
+**Block 2 — Backend placeholder file disposition (COMPLETE).** Re-reviewed the
+9 previously-empty files: all now contain real `def test_` functions. No
+removal/conversion required.
 
 **Block 5 — Performance/load/smoke validation** (k6 smoke, Lighthouse/pa11y
 baseline, backend latency gate) can run once E2E journeys are stable.

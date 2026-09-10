@@ -65,11 +65,16 @@
 - Frontend unit test run: **24 files, 195 passed, 15 expected fail**.
 - Latest `feat/testing-maturity-004` pushed to `staging` (`a699164`).
 
+## Block 2 — Backend placeholder file disposition (COMPLETE)
+
+- Re-reviewed the 9 files previously listed as empty placeholders.
+- All 9 now contain real `def test_` functions and participate in the suite.
+- No removal or conversion is required.
+
 ## Next go / no-go
 
 **GO** for **Block 4 — E2E journey and a11y expansion** against staging,
-OR **Block 2 — backend placeholder file disposition**, OR **Block 5 —
-performance/load/smoke validation**.
+OR **Block 5 — performance/load/smoke validation**.
 
 ## Definition of Done for this preflight
 
