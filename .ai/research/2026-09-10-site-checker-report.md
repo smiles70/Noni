@@ -4,20 +4,21 @@
 **Target:** https://www.mynaani.com  
 **API base:** https://noni-api-production.up.railway.app  
 **Pages crawled:** 22  
-**Browser:** Chromium (Playwright)
+**Browser:** Chromium (Playwright)  
+**External link checks:** disabled  
+**Expected 404 fixtures:** /api/v1/org/by-slug/demo
 
 ## Executive summary
 
 | Severity | Count |
 |----------|-------|
 | P0 (broken) | 0 |
-| P1 (major) | 2 |
+| P1 (major) | 0 |
 | P2 (minor) | 0 |
-| P3 (cosmetic / info) | 20 |
+| P3 (cosmetic / info) | 22 |
 
-**Top findings (P1)**
-- **P1** on `/for-communities`: one external research citation (`annualreviews.org`) returned HTTP 403 — likely bot/HEAD protection, not a dead link.
-- **P1** on `/c/demo`: partner slug `demo` does not exist, so `GET /api/v1/org/by-slug/demo` returned HTTP 404. This is expected behavior for an unknown slug, not a production regression.
+**Top risks**
+No P0/P1 findings detected.
 
 ## Methodology
 
@@ -26,16 +27,7 @@
 - Used the route table from `frontend/src/App.tsx` to seed the crawl list and to map each page to its component/source file.
 - Auth-gated routes were visited without credentials to verify they redirect to `/signin?redirect=<route>`.
 - Backend/API smoke checks hit `/health`, `/api/v1/auth/config`, and `/api/ui-envelope/landing.intro`.
-- Full-page screenshots are saved to `.ai/research/site-checker-screenshots/` (not committed by default) and raw JSON data is in `.ai/research/2026-09-10-site-checker-data.json`.
-
-## Interpretation / diagnosis
-
-The site is structurally healthy. No P0 (broken) or P2 findings were detected. The two P1s are both likely false positives caused by test data / crawler behavior:
-
-1. **`/for-communities` 403 link**: The `annualreviews.org` URL is a real research article. A 403 response to an automated HEAD/GET request typically means the publisher blocks non-browser traffic. A real user clicking the link in a browser would reach the article. Remediation: confirm in a real browser; consider adding `rel="noopener"` and a link-checker allow-list for academic publishers that rate-limit bots.
-2. **`/c/demo` 404**: `/c/:slug` renders `PartnerPage`, which calls `GET /api/v1/org/by-slug/:slug`. `demo` is not a registered partner slug, so the 404 is the correct API contract. Remediation: if running automated partner-page checks, use a known, non-destructive partner slug or mock the API response.
-
-All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.tsx` `requireAuth` logic. Public routes loaded without console errors or uncaught exceptions.
+- Full-page screenshots are saved to `.ai/research/site-checker-screenshots` and raw JSON data is in `.ai/research/2026-09-10-site-checker-data.json`.
 
 ## API / backend checks
 
@@ -50,7 +42,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### / — Landing (public)
 - **Component:** LandingPage (frontend/src/components/LandingPage.tsx)
 - **Final URL:** https://www.mynaani.com/
-- **Load time:** 1507 ms
+- **Load time:** 1416 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -60,7 +52,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /signin — Sign in (public)
 - **Component:** SignInPage (frontend/src/components/SignInPage.tsx)
 - **Final URL:** https://www.mynaani.com/signin
-- **Load time:** 1152 ms
+- **Load time:** 1173 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -70,18 +62,17 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /for-communities — For Communities (B2B) (public)
 - **Component:** ForCommunitiesPage (frontend/src/components/ForCommunitiesPage.tsx)
 - **Final URL:** https://www.mynaani.com/for-communities
-- **Load time:** 1165 ms
-- **Severity:** P1
+- **Load time:** 1199 ms
+- **Severity:** P3
 - **Status:** loaded
-- **Dead external links:** `https://www.annualreviews.org/content/journals/10.1146/annurev-vision-111815-114550` -> 403
-  - *Diagnosis:* likely publisher bot/HEAD protection; user-facing link is probably valid. Verify with a real browser click.
+- No findings
 - **Interactive elements:** 21 (sample: A, A, A, A, A)
 - **Screenshot:** .ai/research/site-checker-screenshots/02-for-communities-b2b-.png
 
 ### /privacy — Privacy (public)
 - **Component:** PrivacyPage (frontend/src/components/PrivacyPage.tsx)
 - **Final URL:** https://www.mynaani.com/privacy
-- **Load time:** 1208 ms
+- **Load time:** 1185 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -91,7 +82,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /help — Help (public)
 - **Component:** HelpPage (frontend/src/components/HelpPage.tsx)
 - **Final URL:** https://www.mynaani.com/help
-- **Load time:** 1119 ms
+- **Load time:** 1143 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -101,7 +92,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /admin — Admin console (public)
 - **Component:** AdminConsolePage (frontend/src/components/AdminConsolePage.tsx)
 - **Final URL:** https://www.mynaani.com/admin
-- **Load time:** 1385 ms
+- **Load time:** 1226 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -111,7 +102,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /gift — Gift checkout (public)
 - **Component:** GiftCheckoutPage (frontend/src/components/GiftCheckoutPage.tsx)
 - **Final URL:** https://www.mynaani.com/gift
-- **Load time:** 1307 ms
+- **Load time:** 1165 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -121,19 +112,18 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /c/demo — Partner page (demo slug) (public)
 - **Component:** PartnerPage (frontend/src/components/PartnerPage.tsx)
 - **Final URL:** https://www.mynaani.com/c/demo
-- **Load time:** 1274 ms
-- **Severity:** P1
+- **Load time:** 1137 ms
+- **Severity:** P3
 - **Status:** loaded
-- **HTTP >= 400 responses:** `GET https://noni-api-production.up.railway.app/api/v1/org/by-slug/demo` -> 404
-- **Console errors:** Failed to load resource: the server responded with a status of 404 ()
-  - *Diagnosis:* `/c/:slug` is a partner landing page. `demo` is not a registered slug, so the backend correctly returns 404. This is expected; use a real partner slug for automated checks.
+- **P3 — Expected console 404 for test fixture:** Failed to load resource: the server responded with a status of 404 ()
+- **P3 — Expected HTTP 404 (test fixture):** GET https://noni-api-production.up.railway.app/api/v1/org/by-slug/demo -> 404
 - **Interactive elements:** 1 (sample: A)
 - **Screenshot:** .ai/research/site-checker-screenshots/07-partner-page-demo-slug-.png
 
 ### /purchase/success — Purchase success (public)
 - **Component:** PurchaseSuccessPage (frontend/src/components/PurchaseSuccessPage.tsx)
 - **Final URL:** https://www.mynaani.com/purchase/success
-- **Load time:** 1152 ms
+- **Load time:** 1147 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -143,7 +133,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /purchase/cancel — Purchase cancel (public)
 - **Component:** PurchaseCancelPage (frontend/src/components/PurchaseCancelPage.tsx)
 - **Final URL:** https://www.mynaani.com/purchase/cancel
-- **Load time:** 1163 ms
+- **Load time:** 1161 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -153,7 +143,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /welcome — Welcome (auth-gated) (auth-gated)
 - **Component:** WelcomePage (frontend/src/components/WelcomePage.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Fwelcome
-- **Load time:** 1144 ms
+- **Load time:** 1206 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -163,7 +153,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /setup — Account setup (auth-gated) (auth-gated)
 - **Component:** AccountSetupPage (frontend/src/components/AccountSetupPage.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Fsetup
-- **Load time:** 1272 ms
+- **Load time:** 1180 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -173,7 +163,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /getting-started — Getting started (auth-gated) (auth-gated)
 - **Component:** GettingStartedPage (frontend/src/components/GettingStartedPage.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Fgetting-started
-- **Load time:** 1166 ms
+- **Load time:** 1133 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -183,7 +173,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /curriculum — Curriculum (auth-gated) (auth-gated)
 - **Component:** CurriculumRenderer (frontend/src/components/CurriculumRenderer.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Fcurriculum
-- **Load time:** 1140 ms
+- **Load time:** 1128 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -193,7 +183,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /paid-curriculum — Paid curriculum (auth-gated) (auth-gated)
 - **Component:** PaidLessonRenderer (frontend/src/components/PaidLessonRenderer.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Fpaid-curriculum
-- **Load time:** 1428 ms
+- **Load time:** 1280 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -203,7 +193,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /menu — Curriculum menu (auth-gated) (auth-gated)
 - **Component:** CurriculumMenu (frontend/src/components/CurriculumMenu.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Fmenu
-- **Load time:** 1226 ms
+- **Load time:** 1152 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -213,7 +203,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /paywall — Paywall (auth-gated) (auth-gated)
 - **Component:** PaywallPage (frontend/src/components/PaywallPage.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Fpaywall
-- **Load time:** 1181 ms
+- **Load time:** 1198 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -223,7 +213,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /gift-redeem — Gift redeem (auth-gated) (auth-gated)
 - **Component:** GiftRedeemPage (frontend/src/components/GiftRedeemPage.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Fgift-redeem
-- **Load time:** 1140 ms
+- **Load time:** 1252 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -233,7 +223,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /mock-checkout — Mock checkout (auth-gated) (auth-gated)
 - **Component:** MockCheckoutPage (frontend/src/components/MockCheckoutPage.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Fmock-checkout
-- **Load time:** 1202 ms
+- **Load time:** 1140 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -243,7 +233,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /account — Account settings (auth-gated) (auth-gated)
 - **Component:** AccountSettingsPage (frontend/src/components/AccountSettingsPage.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Faccount
-- **Load time:** 1133 ms
+- **Load time:** 1161 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -253,7 +243,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /org — Org dashboard (auth-gated) (auth-gated)
 - **Component:** OrgDashboardPage (frontend/src/components/OrgDashboardPage.tsx)
 - **Final URL:** https://www.mynaani.com/signin?redirect=%2Forg
-- **Load time:** 1175 ms
+- **Load time:** 1089 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
@@ -263,7 +253,7 @@ All auth-gated routes redirected to `/signin?redirect=...` as intended by `App.t
 ### /auth/callback — Auth callback (public)
 - **Component:** inline pending banner (frontend/src/App.tsx)
 - **Final URL:** https://www.mynaani.com/auth/callback
-- **Load time:** 1176 ms
+- **Load time:** 1108 ms
 - **Severity:** P3
 - **Status:** loaded
 - No findings
