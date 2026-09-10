@@ -3,7 +3,7 @@
 # PROCESS_CURRENT_STATE — Mynaani
 
 **Process version:** v9.51
-**Last refreshed:** 2026-08-26
+**Last refreshed:** 2026-09-10
 **Repository:** smiles70/Mynaani
 
 ## Current-state snapshot
@@ -28,6 +28,6 @@
 ## Open items from latest PRA
 
 - Frontend dependency vulnerabilities need breaking-change upgrades (`vite`, `react-router-dom`).
-- Backend local test environment not verified in this session (Python 3.14.4 available, dependencies not installed).
+- Backend local test environment verified on Python 3.12.7 via uv + tinypg; pytest passes with 451 passed, 2 skipped, 14 xfailed and source coverage >= 85%.
 - Performance baseline not established (Lighthouse / pa11y).
 - SIEM integration not configured.

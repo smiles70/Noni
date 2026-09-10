@@ -233,3 +233,23 @@ Every rack must:
 - `frontend/src/App.tsx` — route surface
 - `backend/api/routes/*.py` — API surface
 - `.github/workflows/ci.yml` — current CI gates
+
+---
+
+## 15. Execution progress
+
+### Block 1 — CI hygiene and backend contract convergence (COMPLETED)
+
+- Branch `feat/testing-maturity-004` created and pushed.
+- Reproduced `pytest backend/tests/` with `tinypg` (Python 3.12.7 uv venv): **451 passed, 2 skipped, 14 xfailed**.
+- `bandit -r backend -x backend/tests` returned **No issues identified.**
+- `npm audit --audit-level=high` in `frontend/` returned **found 0 vulnerabilities.**
+- Added `backend/tests/test_backfill_small_modules.py` covering sessions, security, account materializer, curriculum loader, telemetry tasks, BetterStack onboarding, and small diagnostic modules.
+- Raised `pytest.ini` coverage gate from 25 % to **85 %**; added `pyproject.toml` coverage source/omit config to measure only backend source code.
+- `ruff check backend/` and `black --check backend/` pass.
+- Backend source coverage is **85.61 %** (3 788 source statements, 545 misses).
+- Commit: `7ac3c6a` on `feat/testing-maturity-004`.
+
+### Next block
+
+**Block 3 — Frontend unit/component backfill** OR **Block 4 — E2E journey and a11y expansion** depending on product priority. Block 2 (backend test backfill for empty placeholder files) is optional because the 85 % source-coverage gate is met, but the 9 files containing only class-level helpers should still be converted to real tests or removed before final A-grade certification.
