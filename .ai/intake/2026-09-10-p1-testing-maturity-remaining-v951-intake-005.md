@@ -14,7 +14,7 @@
 Testing Maturity v9.51 (`P1-TEST-MATURITY-004`) has reached grade A for frontend unit coverage and cleared all backend placeholder files. The remaining gaps that block full A-grade certification are:
 
 - **E2E / journey coverage:** only landing, free-curriculum dialog, post-purchase success, and guest-gift checkout are exercised. Onboarding, paywall, admin, account, partner/community, and auth callback flows are not covered.
-- **Performance / smoke gates:** bundle-size is verified; k6, Lighthouse, and pa11y ran successfully against `https://www.mynaani.com`. The backend A10 full-launch smoke has not been run in isolation against a clean Postgres instance.
+- **Performance / smoke gates:** bundle-size is verified; k6, Lighthouse, and pa11y ran successfully against `https://www.mynaani.com`. `npm audit` is clean (0 vulnerabilities). The backend A10 full-launch smoke has not been run in isolation against a clean Postgres instance.
 - **Cross-browser matrix:** Firefox / WebKit / mobile-iphone binaries are not installed in the local environment; CI is the canonical runner for the 5-project Playwright matrix.
 
 This is a **P1** delivery risk: the next high-value releases (guest gift checkout, entitlement-aware routing, onboarding) cannot move to `main` with confidence unless the critical journeys and smoke gates are automated.

@@ -91,7 +91,8 @@
 
 ### 5.2 k6 / Lighthouse / pa11y smoke gates — LOCAL RUN COMPLETE
 
-- Installed `lighthouse@13.2.0` and `pa11y@8.0.0` as dev dependencies.
+- Installed `lighthouse@13.4.1` and `pa11y@10.0.0` as dev dependencies.
+- `npm audit` now reports `found 0 vulnerabilities`.
 - Downloaded `k6` v0.54.0 binary to `frontend/.bin/k6` (not committed).
 - Wired in `frontend/package.json`:
   - `npm run smoke:lighthouse`
