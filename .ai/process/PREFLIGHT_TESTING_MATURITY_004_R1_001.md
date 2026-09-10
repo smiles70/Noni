@@ -70,14 +70,24 @@
   - `/auth/callback` renders pending message.
   - `/auth/callback` passes axe WCAG 2.1 AA.
 
+## Block 5 — Performance/load/smoke validation (PENDING)
+
+- Isolated backend A10 smoke: `backend/tests/test_a10_smoke.py` exists.
+  Local Python environment lacks `pytest`; the canonical run is CI or the
+  backend venv.
+- k6 / Lighthouse / pa11y smoke gates not yet wired into `package.json`
+  or CI.
+
 ## Go / no-go
 
-**GO** for **Block 5.1 — backend A10 isolated smoke run**.
+**GO** for **Block 5.1 — backend A10 isolated smoke run** in the configured
+backend venv/CI.
 
 ## Risks
 
 1. Cross-browser failures may be browser-binary availability only; CI is the canonical matrix.
 2. Each new E2E spec will run 25 times in CI (5 projects); keep specs concise.
+3. k6/Lighthouse/pa11y tooling may require package or binary installation.
 
 ## Definition of Done
 
