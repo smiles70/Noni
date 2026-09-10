@@ -33,14 +33,26 @@
 - Unrelated untracked/modified files in the working tree belong to the
   human — leave them alone, don't stage, don't delete.
 
-## Post-purchase and post-redemption routing
+## Journey loop and paywall guard
 
+- Load `.devin/skills/journey-loop-guard/SKILL.md` when modifying any
+  curriculum end-state, paywall, purchase success/cancel, gift redemption,
+  or progress-resume surface.
 - After a successful **self-purchase of `modules_4_5`**, the primary
   success CTA must route to `/paid-curriculum`, not `/curriculum`.
 - After a successful **gift redemption**, the primary "continue" CTA
   must also route to `/paid-curriculum`, not `/curriculum`.
-- Dropping an entitled learner onto the free `/curriculum` track causes
-  a paywall loop because the free track ends with a CTA back to `/paywall`.
-- Any change to `PurchaseSuccessPage`, `GiftRedeemPage`, or the success
-  CTA routes must be accompanied by both a unit/journey-contract test and
-  a Playwright E2E test.
+- The free `/curriculum` track ends with a CTA to `/paywall`. If the
+  learner is already entitled, that CTA must route to `/paid-curriculum`.
+- `/paywall` must detect an active `modules_4_5` entitlement and offer
+  "Continue to the paid modules" instead of a "Buy" CTA.
+- `goCurriculum` is a progress-based resume helper. Never use it in a
+  post-purchase or post-redemption flow; it sends entitled learners with no
+  paid progress back to the free track.
+- `PurchaseCancelPage` must not route an already-entitled learner back
+  to `/paywall`; use `/` or the appropriate curriculum track.
+- Progress stored only in `localStorage` does not resume across devices.
+  Any cross-device resume feature must use server-side progress.
+- Any change to `PurchaseSuccessPage`, `GiftRedeemPage`,
+  `PurchaseCancelPage`, `PaywallPage`, or the resume/route helpers must be
+  accompanied by both a unit/journey-contract test and a Playwright E2E test.
