@@ -94,15 +94,15 @@ def create_checkout(
 ) -> CheckoutCreateResponse:
     is_guest = account is None
     if is_guest:
-        if not body.buyer_email:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail={"envelope_id": "billing.guest_email_required"},
-            )
         if not body.is_gift:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail={"envelope_id": "auth.signed_out"},
+            )
+        if not body.buyer_email:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={"envelope_id": "billing.guest_email_required"},
             )
 
     # Sprint 27 M1: Idempotency-Key dedup.
