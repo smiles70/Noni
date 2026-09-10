@@ -86,8 +86,12 @@
 ### 5.1 Isolated backend A10 smoke
 
 - `backend/tests/test_a10_smoke.py` exists.
-- Local Python environment lacks the backend venv; the canonical run is CI
-  or the configured backend venv.
+- Local environment has no Postgres; the canonical run is CI.
+- Drafted `.github/workflows/a10-smoke.yml` with a Postgres service,
+  dependency install, alembic upgrade, and `pytest backend/tests/test_a10_smoke.py -v`.
+- The workflow file was not pushed because the git OAuth token lacks
+  the `workflow` scope; it is available as `.github/workflows/a10-smoke.yml`
+  in the working tree and can be committed manually or via a workflow-scoped token.
 
 ### 5.2 k6 / Lighthouse / pa11y smoke gates — LOCAL RUN COMPLETE
 
