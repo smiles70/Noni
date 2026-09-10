@@ -250,6 +250,29 @@ Every rack must:
 - Backend source coverage is **85.61 %** (3 788 source statements, 545 misses).
 - Commit: `7ac3c6a` on `feat/testing-maturity-004`.
 
+### Block 3 — Frontend unit/component backfill (IN PROGRESS)
+
+- Rack 3.1 committed on `feat/testing-maturity-004` (`1e359b2`).
+- Added `frontend/src/components/__tests__/MissingComponents.test.tsx` covering
+  `PurchaseCancelPage`, `EmptyState`, `LoadingSkeleton`, and `ErrorBoundary`.
+- Raised `frontend/vitest.config.ts` coverage thresholds from 1 % to the
+  current baseline:
+  - statements 76 %
+  - branches 62 %
+  - functions 63 %
+  - lines 77 %
+- Frontend test run: **20 test files, 145 passed, 15 expected fail**.
+- Pushed to `staging` (`1e359b2`) for UAT.
+
 ### Next block
 
-**Block 3 — Frontend unit/component backfill** OR **Block 4 — E2E journey and a11y expansion** depending on product priority. Block 2 (backend test backfill for empty placeholder files) is optional because the 85 % source-coverage gate is met, but the 9 files containing only class-level helpers should still be converted to real tests or removed before final A-grade certification.
+**Block 3 Rack 3.2** — continue component backfill for the largest uncovered
+surfaces (`HowItWorksDialog`, `OrgDashboardPage`, `PageTypes`, `LandingPage`
+branches, `useViewport`, `api/client.ts`, auth hooks).
+
+**Block 4 — E2E journey and a11y expansion** can be run in parallel once a
+Playwright staging target is available.
+
+Block 2 (backend placeholder files) remains optional for now because the 85 %
+source-coverage gate is met, but the 9 empty-ish files should still be converted
+or removed before final A-grade certification.

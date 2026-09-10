@@ -49,10 +49,21 @@
 - `bandit -r backend -x backend/tests` returns no issues.
 - `npm audit --audit-level=high` in `frontend/` returns 0 vulnerabilities.
 - Coverage gate committed in `7ac3c6a` on `feat/testing-maturity-004`.
+- Pushed to `staging` (`7ac3c6a`).
+
+## Block 3 — Frontend unit/component backfill (Rack 3.1 COMPLETE)
+
+- Added `frontend/src/components/__tests__/MissingComponents.test.tsx` covering
+  `PurchaseCancelPage`, `EmptyState`, `LoadingSkeleton`, and `ErrorBoundary`.
+- Locked `vitest.config.ts` coverage thresholds at the current baseline
+  (statements 76 %, branches 62 %, functions 63 %, lines 77 %).
+- Frontend unit test run: **20 files, 145 passed, 15 expected fail**.
+- Committed and pushed to `staging` (`1e359b2`).
 
 ## Next go / no-go
 
-**GO** for **Block 3 — Frontend unit/component backfill** OR **Block 4 — E2E journey and a11y expansion**.
+**GO** for **Block 3 Rack 3.2** (largest uncovered component/hook surfaces)
+OR **Block 4 — E2E journey and a11y expansion** if staging UAT is ready.
 
 ## Definition of Done for this preflight
 
