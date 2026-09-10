@@ -67,8 +67,9 @@ class Purchase(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     buyer_account_id = Column(
-        UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=False
+        UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True
     )
+    buyer_email = Column(String(256), nullable=True)
     beneficiary_account_id = Column(
         UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True
     )

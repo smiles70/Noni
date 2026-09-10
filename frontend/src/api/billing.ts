@@ -29,6 +29,18 @@ export async function startCheckout(
   return res.data;
 }
 
+export async function startGuestCheckout(
+  productCode: string,
+  buyerEmail: string,
+): Promise<CheckoutResponse> {
+  const res = await apiClient.post<CheckoutResponse>("/api/billing/checkout", {
+    product_code: productCode,
+    is_gift: true,
+    buyer_email: buyerEmail,
+  });
+  return res.data;
+}
+
 export interface MockCheckoutCompleteResponse {
   outcome: string;
   purchase_id: string;

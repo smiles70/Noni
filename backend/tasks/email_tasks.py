@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 def _buyer_email(db: DbSession, purchase: Purchase) -> str | None:
+    if purchase.buyer_email:
+        return purchase.buyer_email
     buyer = (
         db.query(Account).filter(Account.id == purchase.buyer_account_id).one_or_none()
     )

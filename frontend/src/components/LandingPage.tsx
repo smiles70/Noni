@@ -435,7 +435,7 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             data-b2b-stack="hero"
           >
             <Link
-              to="/paywall"
+              to="/gift"
               style={B2B_BUTTON}
               data-contract-exemption="landing.hero"
               data-caregiver-entry="hero"

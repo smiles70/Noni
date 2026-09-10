@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session as DbSession
 
-from backend.api.deps import get_current_account, get_db
+from backend.api.deps import get_current_account, get_db, get_optional_account
 from backend.core.config import settings
 from backend.models.accounts import Account
 from backend.models.billing import IdempotencyKey, Product, Purchase
@@ -37,6 +37,7 @@ LIMIT_WEBHOOK_PER_IP = RateLimit(action="webhook", max_per_window=10, window_sec
 class CheckoutCreateRequest(BaseModel):
     product_code: str
     is_gift: bool = False
+    buyer_email: str | None = None
 
 
 class CheckoutCreateResponse(BaseModel):
@@ -87,10 +88,23 @@ def billing_health() -> BillingHealthResponse:
 @router.post("/checkout", response_model=CheckoutCreateResponse)
 def create_checkout(
     body: CheckoutCreateRequest,
-    account: Account = Depends(get_current_account),
+    account: Account | None = Depends(get_optional_account),
     db: DbSession = Depends(get_db),
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> CheckoutCreateResponse:
+    is_guest = account is None
+    if is_guest:
+        if not body.is_gift:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={"envelope_id": "auth.signed_out"},
+            )
+        if not body.buyer_email:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail={"envelope_id": "billing.guest_email_required"},
+            )
+
     # Sprint 27 M1: Idempotency-Key dedup.
     if idempotency_key:
         cached = (
@@ -117,8 +131,11 @@ def create_checkout(
     purchase_id = uuid.uuid4()
     purchase = Purchase(
         id=purchase_id,
-        buyer_account_id=account.id,
-        beneficiary_account_id=None if body.is_gift else account.id,
+        buyer_account_id=account.id if account else None,
+        buyer_email=body.buyer_email if is_guest and body.is_gift else None,
+        beneficiary_account_id=(
+            None if body.is_gift else account.id if account else None
+        ),
         product_code=product.code,
         amount_cents=product.price_cents,
         currency=product.currency,
@@ -141,11 +158,12 @@ def create_checkout(
             price_id=product.stripe_price_id or f"price_dev_{product.code}",
             amount_cents=product.price_cents,
             currency=product.currency,
-            buyer_account_id=account.id,
             purchase_id=purchase.id,
             success_url=settings.STRIPE_SUCCESS_URL,
             cancel_url=settings.STRIPE_CANCEL_URL,
             is_gift=body.is_gift,
+            buyer_account_id=account.id if account else None,
+            buyer_email=body.buyer_email if is_guest and body.is_gift else None,
         )
     except CircuitBreakerError:
         db.rollback()
