@@ -133,7 +133,9 @@ def create_checkout(
         id=purchase_id,
         buyer_account_id=account.id if account else None,
         buyer_email=body.buyer_email if is_guest and body.is_gift else None,
-        beneficiary_account_id=None if body.is_gift else account.id if account else None,
+        beneficiary_account_id=(
+            None if body.is_gift else account.id if account else None
+        ),
         product_code=product.code,
         amount_cents=product.price_cents,
         currency=product.currency,
