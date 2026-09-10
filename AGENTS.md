@@ -32,3 +32,15 @@
   workflow changes ship as their own commit, never riding along.
 - Unrelated untracked/modified files in the working tree belong to the
   human — leave them alone, don't stage, don't delete.
+
+## Post-purchase and post-redemption routing
+
+- After a successful **self-purchase of `modules_4_5`**, the primary
+  success CTA must route to `/paid-curriculum`, not `/curriculum`.
+- After a successful **gift redemption**, the primary "continue" CTA
+  must also route to `/paid-curriculum`, not `/curriculum`.
+- Dropping an entitled learner onto the free `/curriculum` track causes
+  a paywall loop because the free track ends with a CTA back to `/paywall`.
+- Any change to `PurchaseSuccessPage`, `GiftRedeemPage`, or the success
+  CTA routes must be accompanied by both a unit/journey-contract test and
+  a Playwright E2E test.

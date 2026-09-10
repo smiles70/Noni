@@ -129,6 +129,7 @@ const App: React.FC = () => {
   };
 
   const goPaywall = () => requireAuth("/paywall");
+  const goPaidCurriculum = () => requireAuth("/paid-curriculum");
   const goAccount = () => requireAuth("/account");
 
   const handleSelectUnit = (module: number, unitId: string) => {
@@ -410,7 +411,7 @@ const App: React.FC = () => {
                   <RequireAuth>
                     <Suspense fallback={loadFallback}>
                       <GiftRedeemPage
-                        onClaimed={goCurriculum}
+                        onClaimed={goPaidCurriculum}
                         onBack={() => navigate("/paywall")}
                         onHelp={goHelp}
                       />
