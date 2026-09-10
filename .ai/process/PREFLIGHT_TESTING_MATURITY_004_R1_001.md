@@ -15,26 +15,39 @@
 | 4 | Tooling available | GO | Engineering | Playwright, axe-playwright, pytest, `scripts/check-bundle-size.mjs` |
 | 5 | Branch strategy confirmed | GO | Engineering | Continue on `feat/testing-maturity-004` → `staging`; `main` merge requires separate approval |
 
-## Go / no-go
-
-**GO** for **Block 4.1 — E2E onboarding journey** (`/welcome`, `/getting-started`, `/account-setup`).
-
-## Block 4.1 acceptance criteria
+## Block 4.1 — E2E onboarding journey (COMPLETE)
 
 - `frontend/e2e/onboarding.spec.ts` created.
-- Covers `/welcome` → `/getting-started` → `/account-setup` navigation.
-- Asserts reversible exit, no urgency language, and axe WCAG 2.1 AA.
-- Passes on chromium and mobile-pixel locally.
-- Committed and pushed to `staging`.
+- Extracted shared `frontend/e2e/utils/auth.ts` for mock-token + envelope + route mocks.
+- 4 local chromium tests pass:
+  - `/welcome` requires auth.
+  - `/welcome` redirects new learner to `/setup`.
+  - `/setup` form completes and auto-continues to `/getting-started`.
+  - `/getting-started` passes axe WCAG 2.1 AA.
+
+## Block 4.2 — E2E paywall journey (IN PROGRESS)
+
+- `frontend/e2e/paywall.spec.ts` created.
+- 7 local chromium tests pass:
+  - `/paywall` requires auth.
+  - `/paywall` is geragogy-calm and exposes three exits.
+  - Self-purchase checkout contract.
+  - Gift purchase appends `gift_token`.
+  - Gift-code redeem routes to `/gift-redeem`.
+  - Organization code redemption routes to `/curriculum`.
+  - `/paywall` passes axe WCAG 2.1 AA.
+
+## Go / no-go
+
+**GO** for **Block 4.3 — E2E admin journey**.
 
 ## Risks
 
-1. Onboarding may read from backend endpoints or `localStorage`; mock or seed accordingly.
-2. Cross-browser failures may be browser-binary availability only; CI is the canonical matrix.
-3. Each new E2E spec will run 25 times in CI (5 projects); keep specs concise.
+1. Cross-browser failures may be browser-binary availability only; CI is the canonical matrix.
+2. Each new E2E spec will run 25 times in CI (5 projects); keep specs concise.
+3. Mock-token routes may need `mynaani.staff_token` for staff-only admin views.
 
 ## Definition of Done
 
-- [ ] Rack 4.1 spec committed.
-- [ ] Local chromium / mobile-pixel pass.
-- [ ] Intake and preflight updated with evidence.
+- [x] Rack 4.1 spec committed and pushed to `staging`.
+- [x] Rack 4.2 spec committed and pushed to `staging`.

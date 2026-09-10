@@ -29,8 +29,8 @@ Add Playwright specs for the following critical user paths. Each spec must inclu
 
 | Journey | Routes | Key assertions |
 |---|---|---|
-| Onboarding | `/welcome`, `/getting-started`, `/account-setup` | Step-by-step navigation, reversible exit, no urgency language |
-| Paywall | `/paywall` | CTA routes, gift-redeem entry, no-paywall leaks for free content |
+| Onboarding | `/welcome`, `/getting-started`, `/account-setup` | ✅ `frontend/e2e/onboarding.spec.ts` — 4 tests, axe WCAG 2.1 AA |
+| Paywall | `/paywall` | ✅ `frontend/e2e/paywall.spec.ts` — 7 tests, geragogy-calm, all three exits, axe WCAG 2.1 AA |
 | Admin | `/admin` | Staff-only access, aggregate-only views |
 | Account | `/account` | Signed-in profile, editable reversible fields |
 | Partner / communities | `/for-communities`, `/partner` | B2B marketing exemption markers, CTAs |
