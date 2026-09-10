@@ -11,7 +11,7 @@
  */
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const url = process.env.SMOKE_URL || "https://www.mynaani.com";
@@ -19,7 +19,12 @@ const standard = process.env.PA11Y_STANDARD || "WCAG2AA";
 
 const child = spawn(
   "pa11y",
-  [url, `--standard=${standard}`, "--reporter=json"],
+  [
+    url,
+    `--standard=${standard}`,
+    "--reporter=json",
+    `--config=${resolve(__dirname, "../pa11y.json")}`,
+  ],
   { stdio: "inherit", shell: true, cwd: __dirname },
 );
 

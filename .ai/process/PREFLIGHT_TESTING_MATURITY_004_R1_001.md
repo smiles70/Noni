@@ -89,8 +89,10 @@
 - Local Python environment lacks the backend venv; the canonical run is CI
   or the configured backend venv.
 
-### 5.2 k6 / Lighthouse / pa11y smoke gates
+### 5.2 k6 / Lighthouse / pa11y smoke gates — LOCAL RUN COMPLETE
 
+- Installed `lighthouse@13.2.0` and `pa11y@8.0.0` as dev dependencies.
+- Downloaded `k6` v0.54.0 binary to `frontend/.bin/k6` (not committed).
 - Wired in `frontend/package.json`:
   - `npm run smoke:lighthouse`
   - `npm run smoke:pa11y`
@@ -100,8 +102,17 @@
   - `frontend/scripts/smoke-pa11y.mjs`
   - `frontend/scripts/smoke-k6.mjs`
   - `frontend/scripts/smoke-k6.js`
-- Tools are not yet installed: `lighthouse` and `pa11y` are `npm add -D`,
-  `k6` is a system binary.
+  - `frontend/pa11y.json`
+
+### Results against `https://www.mynaani.com`
+
+| Gate | Result | Key metric |
+|---|---|---|
+| k6 | ✅ pass | 1 VU, 10s, p95 latency 57 ms, 0% failures |
+| pa11y | ✅ pass | 0 WCAG 2.1 AA violations on `/` |
+| Lighthouse | ✅ pass | performance 99, accessibility 100, best-practices 100 |
+
+Lighthouse report written to `frontend/.ai/audit/lighthouse-smoke.json`.
 
 ## Go / no-go
 

@@ -10,6 +10,7 @@
  *   SMOKE_URL=https://www.mynaani.com npm run smoke:lighthouse
  */
 import { spawn } from "node:child_process";
+import { existsSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -17,8 +18,18 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const url = process.env.SMOKE_URL || "https://www.mynaani.com";
 const budget = process.env.LIGHTHOUSE_BUDGET || "lighthouse-budget.json";
 
-const args = [url, "--output=json", `--output-path=${resolve(__dirname, "../.ai/audit/lighthouse-smoke.json")}`];
-if (budget) args.push(`--budget-path=${resolve(__dirname, budget)}`);
+const outDir = resolve(__dirname, "../.ai/audit");
+mkdirSync(outDir, { recursive: true });
+const outPath = resolve(outDir, "lighthouse-smoke.json");
+
+const args = [url, "--output=json", `--output-path=${outPath}`];
+args.push(
+  '--chrome-flags="--headless --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --single-process"',
+);
+args.push("--only-categories=performance,accessibility,best-practices");
+if (budget && existsSync(resolve(__dirname, budget))) {
+  args.push(`--budget-path=${resolve(__dirname, budget)}`);
+}
 
 const child = spawn("lighthouse", args, { stdio: "inherit", shell: true });
 

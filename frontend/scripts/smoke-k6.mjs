@@ -15,15 +15,19 @@ import { dirname, resolve } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const binary = process.env.K6_PATH || "k6";
+
 const child = spawn(
-  "k6",
+  binary,
   ["run", resolve(__dirname, "smoke-k6.js")],
   { stdio: "inherit", shell: true, env: { ...process.env } },
 );
 
 child.on("error", (err) => {
   if (err.code === "ENOENT") {
-    console.error("k6 binary not found. Install: https://grafana.com/docs/k6/latest/set-up/install-k6/");
+    console.error(
+      `k6 binary not found at ${binary}. Set K6_PATH or install from https://grafana.com/docs/k6/latest/set-up/install-k6/`,
+    );
     process.exit(1);
   }
   throw err;
