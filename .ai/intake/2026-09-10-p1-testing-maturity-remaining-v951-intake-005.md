@@ -33,8 +33,8 @@ Add Playwright specs for the following critical user paths. Each spec must inclu
 | Paywall | `/paywall` | ✅ `frontend/e2e/paywall.spec.ts` — 7 tests, geragogy-calm, all three exits, axe WCAG 2.1 AA |
 | Admin | `/admin` | ✅ `frontend/e2e/admin.spec.ts` — staff sign-in, overview, nav; a11y color-contrast finding logged as `fixme` |
 | Account | `/account` | ✅ `frontend/e2e/account.spec.ts` — auth, sign out, delete confirmation, a11y |
-| Partner / communities | `/for-communities`, `/partner` | B2B marketing exemption markers, CTAs |
-| Auth callback | `/signin`, `/signin/callback` | Successful sign-in redirects, blocked notice on failure |
+| Partner / communities | `/for-communities` | ✅ `frontend/e2e/community.spec.ts` — B2B surface, mailto CTAs, no paywall, a11y |
+| Auth callback | `/auth/callback` | ✅ `frontend/e2e/auth-callback.spec.ts` — pending message, a11y |
 | Cross-browser | all of the above | 5-project matrix green in CI |
 
 ### Block 5 — Performance, load, and isolated smoke

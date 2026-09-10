@@ -54,9 +54,25 @@
   - Delete account requires confirmation and is scheduled.
   - `/account` passes axe WCAG 2.1 AA.
 
+## Block 4.5 — E2E partner/community journey (COMPLETE)
+
+- `frontend/e2e/community.spec.ts` created.
+- 4 local chromium tests pass:
+  - `/for-communities` renders B2B surface.
+  - Mailto contact CTAs visible.
+  - Public, no paywall.
+  - `/for-communities` passes axe WCAG 2.1 AA.
+
+## Block 4.6 — E2E auth callback journey (COMPLETE)
+
+- `frontend/e2e/auth-callback.spec.ts` created.
+- 2 local chromium tests pass:
+  - `/auth/callback` renders pending message.
+  - `/auth/callback` passes axe WCAG 2.1 AA.
+
 ## Go / no-go
 
-**GO** for **Block 4.5 — E2E partner/community journey**.
+**GO** for **Block 5.1 — backend A10 isolated smoke run**.
 
 ## Risks
 
@@ -69,3 +85,5 @@
 - [x] Rack 4.2 spec committed and pushed to `staging`.
 - [x] Rack 4.3 spec committed and pushed to `staging`.
 - [x] Rack 4.4 spec committed and pushed to `staging`.
+- [x] Rack 4.5 spec committed and pushed to `staging`.
+- [x] Rack 4.6 spec committed and pushed to `staging`.
