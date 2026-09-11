@@ -209,11 +209,7 @@ const App: React.FC = () => {
                 path="/"
                 element={
                   <Suspense fallback={<LoadingSkeleton />}>
-                    <LandingPage
-                      onBegin={goCurriculum}
-                      signedIn={isReady}
-                      onHelp={goHelp}
-                    />
+                    <LandingPage onBegin={goCurriculum} signedIn={isReady} />
                   </Suspense>
                 }
               />
