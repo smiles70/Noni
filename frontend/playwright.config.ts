@@ -15,10 +15,14 @@ export default defineConfig({
     screenshot: isCI ? "only-on-failure" : "off",
   },
   webServer: {
-    command: "npm run dev",
+    command:
+      "VITE_API_BASE_URL=https://noni-api-production.up.railway.app npm run dev",
     url: "http://127.0.0.1:5173",
     reuseExistingServer: !isCI,
     timeout: 60_000,
+    env: {
+      VITE_API_BASE_URL: "https://noni-api-production.up.railway.app",
+    },
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
