@@ -3,7 +3,7 @@
 **Process:** v9.51  
 **Date:** 2026-09-11  
 **ID:** P1-BE-COVERAGE-006  
-**Status:** INTAKE — research and design complete; build NOT authorized.  
+**Status:** INTAKE — BUILD AUTHORIZED — implementation ready.  
 **Owner:** Backend + QA  
 **Source:** `.ai/research/2026-09-11-backend-maturity-research-protocol.md` §1
 
