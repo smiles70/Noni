@@ -257,3 +257,55 @@ jobs:
           projectName: ${{ env.CLOUDFLARE_PAGES_PROJECT }}
           directory: frontend/dist
           branch: staging
+
+  verify-staging-sync:
+    name: Verify frontend and backend are in sync
+    needs: [railway-deploy-backend, cloudflare-pages-deploy]
+    runs-on: ubuntu-latest
+    env:
+      STAGING_URL: https://staging.noni-web.pages.dev
+      STAGING_API_URL: https://noni-api-staging.up.railway.app
+    steps:
+      - name: Wait for frontend edge propagation
+        run: sleep 60
+
+      - name: Verify backend is reporting staging
+        run: |
+          env_name=$(curl -sf "$STAGING_API_URL/health" | python3 -c "import json,sys; print(json.load(sys.stdin).get('environment',''))" 2>/dev/null || echo "")
+          if [ "$env_name" != "staging" ]; then
+            echo "::error::Staging backend /health did not report environment=staging (got '$env_name')"
+            exit 1
+          fi
+          echo "VERIFIED: staging backend is healthy"
+
+      - name: Verify frontend bundle points to staging backend
+        run: |
+          for i in $(seq 1 40); do
+            bundle_path=$(curl -sf "$STAGING_URL/" | grep -oP 'src="/assets/[^"]+\.js"' | head -1 | sed 's/src="//;s/"$//')
+            if [ -z "$bundle_path" ]; then
+              echo "attempt $i: no bundle found"
+              sleep 10
+              continue
+            fi
+            bundle_url="$STAGING_URL$bundle_path"
+            if curl -sf "$bundle_url" | grep -q "$STAGING_API_URL"; then
+              echo "VERIFIED: frontend bundle references staging API ($STAGING_API_URL)"
+              exit 0
+            fi
+            if curl -sf "$bundle_url" | grep -qoP 'https://[^"\s]*-api-production[^"\s]*\.up\.railway\.app'; then
+              echo "::error::frontend bundle still contains a production API URL"
+              exit 1
+            fi
+            echo "attempt $i: bundle does not contain staging API URL yet"
+            sleep 15
+          done
+          echo "::error::frontend bundle did not converge to staging API URL within 10 minutes"
+          exit 1
+
+      - name: Verify backend endpoints support the frontend build
+        run: |
+          if ! curl -sf "$STAGING_API_URL/openapi.json" | python3 -c "import json,sys; d=json.load(sys.stdin); paths=d.get('paths',{}); exit('/api/v1/help/requests' in paths)"; then
+            echo "::error::Staging backend /openapi.json is missing /api/v1/help/requests"
+            exit 1
+          fi
+          echo "VERIFIED: frontend help flow has matching backend endpoints"
