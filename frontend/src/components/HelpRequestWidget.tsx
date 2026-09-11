@@ -135,6 +135,7 @@ export default function HelpRequestWidget({
   const [categoryId, setCategoryId] = useState(categories[0]?.id || "");
   const [email, setEmail] = useState(prefilledEmail);
   const [message, setMessage] = useState("");
+  const [n8nMessage, setN8nMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
@@ -169,13 +170,14 @@ export default function HelpRequestWidget({
     setSending(true);
     setError(null);
     try {
-      await submitHelpRequest(
+      const res = await submitHelpRequest(
         context,
         categoryId,
         message.trim(),
         pagePath,
         emailValue || undefined,
       );
+      setN8nMessage(res.n8n_message || null);
       setSubmitted(true);
       setMessage("");
     } catch (err: unknown) {
@@ -197,11 +199,19 @@ export default function HelpRequestWidget({
     const responseTime = category?.initialResponseTime || "one week";
     return (
       <aside style={PANEL} data-context={context} data-help-widget="submitted">
+        {n8nMessage ? (
+          <p style={{ ...BODY, margin: 0, marginBottom: SPACING.sm }}>
+            {n8nMessage}
+          </p>
+        ) : (
+          <p style={{ ...BODY, margin: 0, marginBottom: SPACING.sm }}>
+            Thank you. We received your message.
+          </p>
+        )}
         <p style={{ ...BODY, margin: 0 }}>
-          Thank you. We received your message.
           {email
-            ? ` We will reply to ${email} within ${responseTime}.`
-            : ` We will reply within ${responseTime}.`}
+            ? `We will reply to ${email} within ${responseTime}.`
+            : `We will also reply within ${responseTime} if you need more help.`}
         </p>
         <button
           type="button"

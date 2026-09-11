@@ -147,6 +147,7 @@ export interface HelpRequestResponse {
   page_path: string | null;
   status: string;
   n8n_status: string;
+  n8n_message?: string;
   created_at: string;
 }
 

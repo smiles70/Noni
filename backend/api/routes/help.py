@@ -7,12 +7,16 @@ Staff admin:   GET /api/v1/help/requests
 
 from __future__ import annotations
 
+import json
+import logging
 from enum import Enum
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session as DbSession
+
+logger = logging.getLogger(__name__)
 
 from backend.api.deps import get_db, require_staff
 from backend.core.config import settings
@@ -99,7 +103,20 @@ class HelpRequestResponse(BaseModel):
     page_path: Optional[str]
     status: str
     n8n_status: str
+    n8n_message: Optional[str]
     created_at: str
+
+
+def _n8n_message(req: SupportRequest) -> Optional[str]:
+    if req.n8n_status != "delivered" or not req.n8n_response_text:
+        return None
+    try:
+        data = json.loads(req.n8n_response_text)
+        if isinstance(data, dict):
+            return data.get("message")
+    except (json.JSONDecodeError, AttributeError, TypeError):
+        pass
+    return req.n8n_response_text[:512]
 
 
 def _serialize(req: SupportRequest) -> HelpRequestResponse:
@@ -115,6 +132,7 @@ def _serialize(req: SupportRequest) -> HelpRequestResponse:
         page_path=req.page_path,
         status=req.status,
         n8n_status=req.n8n_status,
+        n8n_message=_n8n_message(req),
         created_at=req.created_at.isoformat() if req.created_at else "",
     )
 
@@ -186,7 +204,14 @@ def create_help_request(
     )
     db.commit()
 
-    deliver_help_request_to_n8n.delay(str(support.id))
+    task = deliver_help_request_to_n8n.delay(str(support.id))
+    try:
+        # Wait up to 5 seconds for the n8n auto-ack so the widget can show
+        # the immediate answer (e.g., "$39.00") without a separate poll.
+        task.get(timeout=5, propagate=False)
+    except Exception as exc:
+        logger.warning("n8n_delivery_wait_failed id=%s: %s", support.id, exc)
+    db.refresh(support)
 
     return _serialize(support)
 
