@@ -17,11 +17,17 @@ happens to set. Clerk-specific values are blanked for the same reason
 (`get_auth_provider` would otherwise raise if AUTH_PROVIDER=clerk and
 CLERK_JWKS_URL=""). Tests that need the Clerk provider should override
 these explicitly via monkeypatch.
+
+This conftest also starts an embedded PostgreSQL server via
+`embedded-postgres` so the integration suite can run without a local
+Docker daemon or system Postgres installation.
 """
 
 from __future__ import annotations
 
+import atexit
 import os
+import tempfile
 
 # Must run before `backend.core.config.settings` is imported by any test
 # module. Pytest evaluates conftest.py first per `testpaths`, so setting
@@ -33,12 +39,49 @@ os.environ.setdefault("CLERK_JWKS_URL", "")
 os.environ.setdefault("CLERK_ISSUER", "")
 os.environ.setdefault("CLERK_SECRET_KEY", "")
 
+# Suppress secret-age warnings in the test environment.
+os.environ.setdefault("SECRET_KEY", "test-secret-key-at-least-32-characters")
+os.environ.setdefault("SESSION_SECRET", "test-session-secret-at-least-32-characters")
+
+# ---------------------------------------------------------------------------
+# Embedded PostgreSQL for hermetic integration tests
+# ---------------------------------------------------------------------------
+
+import embedded_postgres  # noqa: E402
+
+_pgdata = tempfile.mkdtemp(prefix="noni-pg-")
+_pg_server = embedded_postgres.get_server(_pgdata, cleanup_mode="stop")
+_pg_server.__enter__()
+_pg_uri = _pg_server.get_uri()
+
+os.environ.setdefault("DATABASE_URL", _pg_uri)
+os.environ["DATABASE_URL"] = _pg_uri
+os.environ.setdefault("DATABASE_URL_DIRECT", _pg_uri)
+os.environ["DATABASE_URL_DIRECT"] = _pg_uri
+
+# Ensure the embedded server is stopped when the pytest process exits.
+atexit.register(_pg_server.cleanup)
+
 # Sprint 27 H4 moved webhook/side-effect work onto a Celery+Redis queue.
-# Tests assert synchronous effects and run without a broker — force eager
-# execution so .delay() runs inline (standard Celery test pattern).
-from backend.tasks.celery_app import app as _celery_app
+# Import Celery *before* create_all so every model module is registered on
+# Base.metadata. Tests assert synchronous effects and run without a broker —
+# force eager execution so .delay() runs inline (standard Celery pattern).
+from backend.tasks.celery_app import app as _celery_app  # noqa: E402
 
 _celery_app.conf.update(task_always_eager=True, task_eager_propagates=True)
+
+# Create the schema from SQLAlchemy metadata so the test database has all
+# launch tables without requiring the pgcrypto extension used by the
+# production Alembic migration. CITEXT is used by several models, so we
+# enable it explicitly before create_all.
+from sqlalchemy import text  # noqa: E402
+from backend.core.database import Base, engine as _global_engine  # noqa: E402
+
+with _global_engine.connect() as conn:
+    conn.execute(text("CREATE EXTENSION IF NOT EXISTS citext"))
+    conn.commit()
+
+Base.metadata.create_all(bind=_global_engine)
 
 
 # =============================================================================

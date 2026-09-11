@@ -9,6 +9,7 @@ import signal
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
+from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -38,6 +39,7 @@ from backend.app.telemetry import (
     metrics_handler,
 )
 from backend.core.config import settings, validate_settings
+from backend.core.database import engine
 
 
 def _verify_crypto_dependency() -> None:
@@ -397,6 +399,23 @@ async def health_check():
         "version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
     }
+
+
+@app.get("/health/live")
+async def liveness():
+    """Kubernetes-style liveness probe. Always returns 200 if process is up."""
+    return {"status": "alive"}
+
+
+@app.get("/health/ready")
+async def readiness():
+    """Kubernetes-style readiness probe. Verifies Postgres connectivity."""
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"not ready: {exc}") from exc
+    return {"status": "ready"}
 
 
 @app.get("/metrics")
