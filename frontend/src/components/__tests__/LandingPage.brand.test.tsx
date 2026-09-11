@@ -60,7 +60,7 @@ vi.mock("../../api/envelope", () => ({
 
 import LandingPage from "../LandingPage";
 
-async function render(props: { signedIn?: boolean; onHelp?: () => void } = {}) {
+async function render(props: { signedIn?: boolean } = {}) {
   const host = document.createElement("div");
   document.body.appendChild(host);
   const root = createRoot(host);
@@ -150,20 +150,8 @@ describe("LandingPage — signed-in and help states", () => {
     expect(onBegin).toHaveBeenCalled();
   });
 
-  it("shows the help bubble when signed in and onHelp is provided", async () => {
-    const onHelp = vi.fn();
-    const { host } = await render({ signedIn: true, onHelp });
-    const helpBtn = Array.from(host.querySelectorAll("button")).find((b) =>
-      b.textContent?.includes("Need help?"),
-    );
-    expect(helpBtn).toBeDefined();
-    await act(async () => helpBtn!.click());
-    expect(onHelp).toHaveBeenCalled();
-  });
-
-  it("does not show the help bubble when signed out", async () => {
-    const onHelp = vi.fn();
-    const { host } = await render({ signedIn: false, onHelp });
+  it("does not show a landing help bubble", async () => {
+    const { host } = await render({ signedIn: true });
     const helpBtn = Array.from(host.querySelectorAll("button")).find((b) =>
       b.textContent?.includes("Need help?"),
     );
