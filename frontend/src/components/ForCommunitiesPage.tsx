@@ -15,6 +15,7 @@
 import { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
+import HelpRequestWidget from "./HelpRequestWidget";
 
 const CONTACT = "hello@mynaani.com";
 const MAILTO = `mailto:${CONTACT}?subject=Community%20partnership%20inquiry`;
@@ -319,9 +320,10 @@ export default function ForCommunitiesPage() {
             confidence. Your residents learn AI — your staff doesn't have to run
             the program.
           </p>
-          <a href={MAILTO} style={PRIMARY_BTN}>
-            Talk to us about a pilot
-          </a>
+          <HelpRequestWidget
+            context="facility"
+            pagePath={window.location.pathname}
+          />
           <Link to="/" style={TEXT_LINK}>
             See the learner experience
           </Link>

@@ -66,6 +66,10 @@ class Settings(BaseSettings):
     # Errors and warnings are always logged at 100%.
     LOG_SAMPLING_RATE: float = 1.0
 
+    # N8N help-flow integration (N8N-HELP-001)
+    N8N_WEBHOOK_URL: str = ""
+    N8N_WEBHOOK_TOKEN: str = ""
+
     # CORS allowlist (comma-separated origins). Empty -> dev fallback in main.py.
     CORS_ORIGINS: str = ""
 

@@ -31,6 +31,7 @@ app = Celery(
         "backend.tasks.telemetry_tasks",
         "backend.tasks.org_tasks",
         "backend.tasks.email_tasks",
+        "backend.tasks.help_tasks",
     ],
 )
 
@@ -47,6 +48,7 @@ app.conf.update(
     # default "celery" queue that specialized workers don't consume.
     task_routes={
         "backend.tasks.webhook_tasks.process_stripe_webhook": {"queue": "realtime"},
+        "backend.tasks.help_tasks.deliver_help_request_to_n8n": {"queue": "realtime"},
         "backend.tasks.telemetry_tasks.*": {"queue": "events"},
         "backend.tasks.webhook_tasks.export_telemetry_csv": {"queue": "batch"},
         "backend.tasks.webhook_tasks.cleanup_deleted_accounts": {"queue": "batch"},

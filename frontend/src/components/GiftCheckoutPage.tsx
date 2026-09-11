@@ -19,6 +19,7 @@ import {
   SECONDARY_BTN,
   STACK,
 } from "./AccountStyles";
+import HelpRequestWidget from "./HelpRequestWidget";
 
 interface Props {
   productCode: string;
@@ -114,6 +115,12 @@ export default function GiftCheckoutPage({ productCode, onBack }: Props) {
         >
           Go back
         </button>
+        <div style={{ marginTop: SPACING.lg }}>
+          <HelpRequestWidget
+            context="caregiver"
+            pagePath={window.location.pathname}
+          />
+        </div>
       </div>
     </main>
   );

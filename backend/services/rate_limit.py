@@ -214,3 +214,6 @@ LIMIT_DELETION_PER_ACCOUNT = RateLimit(
 LIMIT_GIFT_CLAIM_PER_IP = RateLimit(
     action="gift_claim", max_per_window=10, window_seconds=600
 )
+LIMIT_HELP_REQUESTS_PER_IP = RateLimit(
+    action="help_request", max_per_window=5, window_seconds=3600
+)

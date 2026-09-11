@@ -22,6 +22,7 @@ from backend.models import auth as _auth  # noqa: F401
 from backend.models import billing as _billing  # noqa: F401
 from backend.models import learning as _learning  # noqa: F401
 from backend.models import governance as _governance  # noqa: F401
+from backend.models import support_request as _support_request  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)

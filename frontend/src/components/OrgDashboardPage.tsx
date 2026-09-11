@@ -25,6 +25,7 @@ import {
   STACK,
 } from "./AccountStyles";
 import { COLORS, SPACING } from "../design/tokens";
+import HelpRequestWidget from "./HelpRequestWidget";
 
 interface License {
   license_id: string;
@@ -229,6 +230,12 @@ export default function OrgDashboardPage({ onBack }: { onBack: () => void }) {
           )}
         </>
       )}
+      <div style={{ marginTop: SPACING.lg }}>
+        <HelpRequestWidget
+          context="facility"
+          pagePath={window.location.pathname}
+        />
+      </div>
     </main>
   );
 }
