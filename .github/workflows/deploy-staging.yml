@@ -226,7 +226,7 @@ jobs:
       - name: Verify build environment
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL || 'https://noni-api-staging.up.railway.app' }}
           VITE_AUTH_PROVIDER: 'mock'
           VITE_MAGIC_PUBLISHABLE_KEY: ''
           CI: true
@@ -236,7 +236,7 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL || 'https://noni-api-staging.up.railway.app' }}
           VITE_AUTH_PROVIDER: 'mock'
           VITE_MAGIC_PUBLISHABLE_KEY: ''
           CI: true
@@ -246,7 +246,7 @@ jobs:
       - name: Verify bundle (G3 guard)
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL || 'https://noni-api-staging.up.railway.app' }}
         run: npm run postbuild
 
       - name: Publish to Cloudflare Pages
