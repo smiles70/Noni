@@ -67,16 +67,18 @@ warn_unused_configs = true
 line-length = 88
 target-version = "py311"
 
-[tool.pytest.ini_options]
-testpaths = ["backend/tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
+# NOTE: pytest configuration lives in `pytest.ini`, which takes precedence
+# over this file. A duplicate [tool.pytest.ini_options] block was removed
+# here because pytest silently ignored it ("WARNING: ignoring pytest config
+# in pyproject.toml"), making the two copies a drift hazard.
 
 [tool.coverage.run]
 source = ["backend"]
 omit = ["backend/tests/*"]
+branch = true
 
 [tool.coverage.report]
-fail_under = 85
+# No `fail_under` here on purpose: it would apply to the combined
+# statement+branch score (~82%), not to either threshold we gate on.
+# See `scripts/agentic-ci/coverage-gate.py`.
 show_missing = true

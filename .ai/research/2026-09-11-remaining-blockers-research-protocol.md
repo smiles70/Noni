@@ -47,7 +47,76 @@ points** of the 87 % target. **Branch coverage is the real gap** at 61.95 %
 against a 75 % target, and it had never been measured because
 `[tool.coverage.run]` does not set `branch = true`.
 
-### Lowest-coverage modules (statement %)
+### Targeting correction — rank by missing branches, not coverage %
+
+A first pass ranked remediation targets by statement-coverage percentage.
+That is the **wrong sort key**: coverage percentage does not indicate where
+the uncovered branches live. Ranked by absolute missing-branch count:
+
+| Missing | Of | Module | Stmt % | Cumulative |
+|---|---|---|---|---|
+| **38** | 80 | `services/organizations.py` | 66 % | 13 % |
+| **34** | 84 | `api/routes/curriculum.py` | 82 % | 24 % |
+| **22** | 56 | `api/routes/admin.py` | 88 % | 32 % |
+| **18** | 32 | `services/webhook_handler.py` | 63 % | 38 % |
+| **17** | 54 | `api/deps.py` | 77 % | 44 % |
+| 16 | 30 | `api/routes/billing.py` | 69 % | 49 % |
+| 16 | 16 | `api/routes/account.py` | 29 % | 54 % |
+| 15 | 24 | `app/main.py` | 78 % | 59 % |
+| 10 | 24 | `api/routes/auth.py` | 75 % | 63 % |
+| 10 | 14 | `tasks/org_tasks.py` | 51 % | 66 % |
+
+`curriculum.py`, `admin.py`, and `deps.py` together hold **73 missing
+branches** yet never appeared in a percentage-ranked list because their
+statement coverage looks healthy. Conversely `session_validation.py`
+(43 % statements) has only **6 branches in total**. Percentage-based
+targeting would spend effort on modules with almost no branches to win.
+
+### Arithmetic — how much work is actually required
+
+| Metric | Current | Target | Delta |
+|---|---|---|---|
+| Covered branches | 482 / 778 | 584 (75 %) | **+102 branches** |
+| Covered statements | 3,284 / 3,834 | 3,336 (87 %) | **+52 statements** |
+
+Cumulative effect of covering modules in missing-branch order:
+
+| After | Branch % | Clears 75 %? |
+|---|---|---|
+| `organizations.py` (+38) | 66.84 % | no |
+| `curriculum.py` (+34) | 71.21 % | no |
+| `admin.py` (+22) | 74.04 % | no |
+| `webhook_handler.py` (+18) | **76.35 %** | **yes** |
+
+**Four modules clear the gate**, not fourteen. The +52 statements arrive
+largely for free, because most uncovered statements sit inside these same
+untaken branches.
+
+### What the 296 missing branches actually are
+
+Classified by the source construct at each missing arc:
+
+| Count | Kind | Example |
+|---|---|---|
+| 139 | plain `if` guard | `if len(parts) != 2 or parts[0].lower() != "bearer":` |
+| 124 | None / falsy guard | `if not display_name:` |
+| 17 | status / role guard | `if body.role not in ("admin", "support"):` |
+| 13 | loop zero-iteration path | `for p in prog_q.all():` |
+| 3 | `elif` | `elif event.event_type == "charge.refunded":` |
+
+**263 of 296 (89 %) are simple conditional guards.** Almost no `except:`
+arcs are missing, so error handling is already well covered — what is
+absent is the **negative side of validation guards**.
+
+This changes the shape of the work: these are not new test scenarios but
+**one additional parametrized case per guard** on tests that already
+exist. `if product is None:` at `services/organizations.py:136` needs a
+single case passing an unknown product code.
+
+The 13 zero-iteration loop arcs need empty-collection fixtures and are
+suitable filler if a rack lands short of target.
+
+### Lowest-coverage modules (statement %) — secondary view
 
 | Module | Stmt cover | Missing lines | Risk |
 |---|---|---|---|
@@ -66,8 +135,9 @@ against a 75 % target, and it had never been measured because
 | `backend/api/routes/me.py` | 73 % | 45-52 | Profile route |
 | `backend/api/routes/auth.py` | 75 % | 266-282 | Auth callback error branches |
 
-Models and small utilities are already at or near 100 %, so the remaining
-gap is concentrated in **6 route modules and 8 service/task modules**.
+Models and small utilities are already at or near 100 %. Note that this
+percentage view is **not** the remediation order — see the targeting
+correction above; use missing-branch count instead.
 
 ### Acceptance criteria
 

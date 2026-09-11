@@ -72,11 +72,60 @@ pattern.
 | Option | Description | Verdict |
 |---|---|---|
 | A — bulk statement backfill | Write tests until statements hit 87 % | Insufficient; ignores the 296 missing branches |
-| B — branch-first, module-targeted | Target the 14 lowest-coverage modules, whose missing branches dominate the gap | **Selected** |
-| C — lower the targets to current | Set gates at 85/62 | Rejected; codifies the debt |
-| D — wait for `magic-admin` upstream | Take no dependency action | Rejected; no release pipeline visible |
+| B — target the lowest-coverage-% modules | Rank remediation by statement percentage | **Rejected on measurement** — percentage does not indicate where branches live; see below |
+| C — target by missing-branch count | Rank by absolute uncovered branches; parametrize existing tests | **Selected** |
+| D — lower the targets to current | Set gates at 85/62 | Rejected; codifies the debt |
+| E — wait for `magic-admin` upstream | Take no dependency action | Rejected; no release pipeline visible |
 
-**Selected:** Option B, plus a `requests` pin override guarded by an import
+**Selected:** Option C.
+
+### Why option B was rejected
+
+An earlier draft of this intake specified "the 14 lowest-coverage
+route/service modules." Re-ranking by missing-branch count invalidated that
+targeting:
+
+- `api/routes/curriculum.py` (82 % statements) holds **34** missing
+  branches — second-most in the codebase — and did not appear in a
+  percentage-ranked list at all.
+- `api/routes/admin.py` (88 %) holds **22**; `api/deps.py` (77 %) holds
+  **17**. Neither appeared either. Together: **73 missing branches invisible
+  to percentage ranking.**
+- Conversely `api/routes/session_validation.py` (43 % statements) was
+  ranked second-most urgent but has only **6 branches in total**.
+
+Percentage ranking would have spent the first two racks on modules with
+almost no branches available to win.
+
+### Scope is four modules, not fourteen
+
+| Metric | Current | Target | Delta |
+|---|---|---|---|
+| Covered branches | 482 / 778 | 584 | **+102** |
+| Covered statements | 3,284 / 3,834 | 3,336 | **+52** |
+
+Covering `organizations.py` (38) + `curriculum.py` (34) + `admin.py` (22) +
+`webhook_handler.py` (18) = 112 branches → **76.35 %**, clearing the gate.
+
+### The work is parametrization, not new suites
+
+Classifying all 296 missing arcs by source construct:
+
+| Count | Kind |
+|---|---|
+| 139 | plain `if` guard |
+| 124 | None / falsy guard |
+| 17 | status / role guard |
+| 13 | loop zero-iteration path |
+| 3 | `elif` |
+
+**263 of 296 (89 %) are conditional guards**, and almost no `except:` arcs
+are missing — error handling is already covered. What is absent is the
+*negative* side of validation guards, which is one additional
+`@pytest.mark.parametrize` case on tests that already exist, not a new
+scenario.
+
+Alongside option C: a `requests` pin override guarded by an import
 regression test, and a target state of replacing `magic-admin` with a small
 owned verifier.
 
@@ -108,8 +157,10 @@ configuration, dependency constraints, and one logging call.
 | Coverage measurement | single `--branch` run, JSON-asserted | `fail_under` cannot express two thresholds |
 | Coverage config location | consolidate into `pyproject.toml` | pytest already warns it is ignoring it; the split is drift risk |
 | Statement target | 87 % | 1.35 pt from current; achievable |
-| Branch target | 75 % | Requires ~101 additional covered branches |
-| Backfill order | route modules before services | Routes exercise service branches transitively |
+| Branch target | 75 % | Requires **+102** covered branches (482 → 584) |
+| Backfill order | **descending missing-branch count** | Percentage ranking hides where branches live (see §4) |
+| Test style | `@pytest.mark.parametrize` on existing tests | 89 % of missing arcs are guard negatives, not new scenarios |
+| Stop condition | re-measure after each rack | Gate clears at module four; further work is optional |
 | `requests` strategy | pin ours + import regression test | Vendor upgrade is impossible; the shim is the only real risk |
 | `magic-admin` target state | owned verifier | Surface is four calls and four exceptions |
 | Downgrade test scope | `downgrade base`, not `-1` | `-1` is ambiguous across the branch/merge pair |
@@ -142,18 +193,20 @@ Build is **not authorized** at this intake. Proposed plan:
 | Block | Rack | Deliverable | Owner |
 |---|---|---|---|
 | **0. Preflight** | 0.1 | Preflight doc approved; branch created | Platform |
-| **1. Coverage instrumentation** | 1.1 | `branch = true`; consolidate coverage config | Platform |
-| | 1.2 | CI step asserting statement ≥ 87 % and branch ≥ 75 % separately | Platform |
-| | 1.3 | Baseline HTML/JSON report committed as evidence | QA |
-| **2. Route branch coverage** | 2.1 | `account.py` 29 % → ≥ 85 % | Backend |
-| | 2.2 | `session_validation.py` 43 % → ≥ 85 % | Backend |
-| | 2.3 | `billing.py` 69 % → ≥ 85 % (lines 248-299) | Backend |
-| | 2.4 | `auth.py` + `me.py` error branches | Backend |
-| **3. Service/task branch coverage** | 3.1 | `magic_verifier.py` 54 % → ≥ 85 % | Backend |
-| | 3.2 | `webhook_handler.py` 63 % → ≥ 85 % | Backend |
-| | 3.3 | `org_tasks.py` 51 % and `org_quota.py` 61 % | Backend |
-| | 3.4 | `organizations.py` 66 % (lines 390-640) | Backend |
-| | 3.5 | `secret_rotation.py`, `database.py`, `entitlements.py`, `auth_verifier.py` | Backend |
+| **1. Coverage instrumentation** | 1.1 | ✅ **DONE** — `branch = true`; duplicate config removed; `fail_under` retired | Platform |
+| | 1.2 | ✅ **DONE** — `scripts/agentic-ci/coverage-gate.py` asserts both thresholds separately | Platform |
+| | 1.3 | ⛔ **BLOCKED** — add the gate step to `ci.yml` (needs `workflow` token scope; see block 7) | Platform |
+| **2. Branch coverage — gate-clearing set** | 2.1 | `services/organizations.py` — 38 missing branches → 66.84 % | Backend |
+| | 2.2 | `api/routes/curriculum.py` — 34 missing → 71.21 % | Backend |
+| | 2.3 | `api/routes/admin.py` — 22 missing → 74.04 % | Backend |
+| | 2.4 | `services/webhook_handler.py` — 18 missing → **76.35 %, gate clears** | Backend |
+| | 2.5 | Re-measure; stop if ≥ 75 % and statements ≥ 87 % | QA |
+| **3. Branch coverage — reserve set** (only if block 2 lands short) | 3.1 | `api/deps.py` — 17 missing | Backend |
+| | 3.2 | `api/routes/billing.py` — 16 missing | Backend |
+| | 3.3 | `api/routes/account.py` — 16 missing (all 16 of its branches) | Backend |
+| | 3.4 | `app/main.py` — 15 missing | Backend |
+| | 3.5 | `api/routes/auth.py` + `tasks/org_tasks.py` — 20 missing | Backend |
+| | 3.6 | 13 zero-iteration loop arcs via empty-collection fixtures | Backend |
 | **4. Dependency remediation** | 4.1 | Pin `requests`; explicit `magic-admin` override | Security |
 | | 4.2 | Import regression test for `magic_admin.http_client` | Security |
 | | 4.3 | `pip-audit` against the declared graph in CI | Security |
@@ -169,6 +222,58 @@ Build is **not authorized** at this intake. Proposed plan:
 | **8. UAT & close** | 8.1 | Full CI green with both coverage gates | QA |
 | | 8.2 | Command-center report refreshed with measured values | Platform |
 | | 8.3 | Production deploy — explicit owner approval per `AGENTS.md` | Product |
+
+### Block 1 execution record (2026-09-11)
+
+Racks 1.1 and 1.2 are implemented and verified locally.
+
+**Changed:**
+
+- `pytest.ini` — added `--cov-branch` and `--cov-report=json:coverage.json`;
+  **removed `--cov-fail-under=85`**; absorbed the `python_files` /
+  `python_classes` / `python_functions` settings that were previously dead in
+  `pyproject.toml`.
+- `pyproject.toml` — added `branch = true` under `[tool.coverage.run]`;
+  removed `fail_under` from `[tool.coverage.report]`; deleted the duplicate
+  `[tool.pytest.ini_options]` block that pytest was silently ignoring.
+- `scripts/agentic-ci/coverage-gate.py` — new; reads `coverage.json` and
+  asserts statement and branch thresholds independently.
+- `.gitignore` — ignore `coverage.json`.
+
+**Why `fail_under` had to be removed, not raised:** with `branch = true`,
+coverage.py's `fail_under` applies to a single *combined* statement+branch
+score (81.66 %). The pre-existing gate was 85 %, so merely enabling branch
+coverage turned the suite red — `Coverage failure: total of 82 is less than
+fail-under=85` — on a codebase whose statement coverage is 85.65 %. The
+threshold is not expressible in coverage.py and had to move to a script.
+
+**Verification:**
+
+| Check | Result |
+|---|---|
+| `pytest backend/tests` | 454 passed, 2 skipped, 14 xfailed — no coverage failure |
+| gate, enforce mode | exit 1, correctly reports both shortfalls |
+| gate, `--warn` | exit 0 (rollout mode) |
+| gate, thresholds met (`--statement 85 --branch 60`) | exit 0, both PASS |
+| gate, missing report | exit 2 with remediation hint |
+| `ruff` + `black` | clean |
+
+The gate independently reproduced the hand-derived figures — **+102 branches
+needed** and the same missing-branch module ranking — which cross-validates
+§4 of this intake.
+
+**Rack 1.3 is blocked.** The CI step below cannot be committed because
+pushing `.github/` requires the `workflow` scope the active token lacks
+(block 7), and `.github/workflows/ci.yml` currently carries unrelated
+uncommitted human changes. Per `AGENTS.md`, workflow edits ship as their own
+commit. Step to add once unblocked, after the existing backend pytest step:
+
+```yaml
+      - name: Backend coverage gate
+        run: python scripts/agentic-ci/coverage-gate.py --warn
+```
+
+Drop `--warn` after one green cycle to make the gate blocking.
 
 ## 10. Test plan
 
