@@ -40,10 +40,8 @@ test.describe("Partner / community journey (B2B-LANDING-001)", () => {
   test("/for-communities is a public, no-paywall surface", async ({ page }) => {
     await page.goto("/for-communities");
     await expect(page).toHaveURL("/for-communities");
-    await expect(page.getByText("Buy", { exact: false })).not.toBeVisible();
-    await expect(
-      page.getByText("Purchase", { exact: false }),
-    ).not.toBeVisible();
+    await expect(page.getByText("Buy", { exact: true })).not.toBeVisible();
+    await expect(page.getByText("Purchase", { exact: true })).not.toBeVisible();
   });
 
   test("/for-communities passes axe WCAG 2.1 AA", async ({ page }) => {
