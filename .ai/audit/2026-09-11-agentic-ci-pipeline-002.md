@@ -84,9 +84,118 @@ export PATH="$HOME/.local/bin:$PATH"
 k6 run scripts/agentic-ci/backend-load.js
 ```
 
+## CI/CD status
+
+- Source commit `12a63a1` pushed to `origin/staging` successfully.
+- Workflow commit `f6d9718` (`.github/workflows/a10-smoke.yml`) could **not** be pushed because the active GitHub OAuth token lacks the `workflow` scope:
+  ```text
+  refusing to allow an OAuth App to create or update workflow
+  `.github/workflows/a10-smoke.yml` without `workflow` scope
+  ```
+- Corrected workflow YAML is committed locally and reproduced below. Re-authenticate with a token that has `workflow` scope, or apply the file manually in the GitHub UI.
+
+```yaml
+name: Backend A10 isolated smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - staging
+    paths:
+      - 'backend/**'
+      - '.github/workflows/a10-smoke.yml'
+      - 'pyproject.toml'
+      - 'pytest.ini'
+  pull_request:
+    branches:
+      - main
+      - staging
+    paths:
+      - 'backend/**'
+      - 'pyproject.toml'
+      - 'pytest.ini'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  a10-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpq-dev python3-dev
+
+      - name: Install Python dependencies
+        env:
+          PIP_NO_CACHE_DIR: '1'
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -e '.[dev,test]'
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL_DIRECT: postgresql://postgres:postgres@localhost:5432/postgres
+        run: |
+          python -m alembic upgrade head
+
+      - name: A10 isolated smoke
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL_DIRECT: postgresql://postgres:postgres@localhost:5432/postgres
+        run: |
+          python -m pytest backend/tests/test_a10_smoke.py -v --no-cov
+
+      - name: Full backend test suite
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          DATABASE_URL_DIRECT: postgresql://postgres:postgres@localhost:5432/postgres
+        run: |
+          python -m pytest backend/tests -v --no-cov
+```
+
 ## Remaining blockers
+
+A research protocol with detailed definitions, evidence, questions, and acceptance criteria for each blocker has been initiated at:
+
+`.ai/research/2026-09-11-backend-maturity-research-protocol.md`
 
 1. Coverage is 42% — far below the 85% launch gate. Need focused backend route/service unit tests.
 2. `magic-admin` pins `requests==2.32.5` (CVE). Needs vendor update or replacement.
 3. Branch-coverage gate is not yet wired.
 4. Feature flags, migration rollback, and PII scanning still to implement.
+5. Workflow file requires a GitHub token with `workflow` scope to be pushed.
+
+## Glossary
+
+A full glossary of test and quality terms (unit, integration, E2E, smoke, load, SAST, coverage, etc.) is included in the research protocol.
