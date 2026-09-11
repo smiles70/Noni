@@ -57,9 +57,6 @@ class HelpRequestCreate(BaseModel):
     request_id: str = Field(..., max_length=64, min_length=8)
     page_path: Optional[str] = Field(None, max_length=256)
 
-    class Config:
-        use_enum_values = True
-
 
 class HelpRequestUpdate(BaseModel):
     status: str = Field(..., pattern=r"^(submitted|n8n_delivered|n8n_failed|resolved)$")
