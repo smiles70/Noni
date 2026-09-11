@@ -40,17 +40,20 @@ def deliver_help_request_to_n8n(self, support_request_id: str) -> str:
             logger.warning("help_request_not_found id=%s", support_request_id)
             return "not_found"
 
+        request.n8n_retry_count = self.request.retries
         webhook_url = getattr(settings, "N8N_WEBHOOK_URL", None)
         if not webhook_url:
             logger.info("n8n_webhook_not_configured id=%s", support_request_id)
-            request.status = "n8n_failed"
+            request.n8n_status = "failed"
             request.n8n_response_code = 0
             request.n8n_response_text = "n8n not configured"
             db.add(
                 SupportRequestAudit(
                     support_request_id=request.id,
-                    action="n8n_not_configured",
-                    detail="N8N_WEBHOOK_URL is empty",
+                    actor="system",
+                    old_status=request.n8n_status,
+                    new_status="failed",
+                    note="N8N_WEBHOOK_URL is empty",
                 )
             )
             db.commit()
@@ -60,10 +63,12 @@ def deliver_help_request_to_n8n(self, support_request_id: str) -> str:
             "request_id": request.request_id,
             "context": request.context,
             "category": request.category,
-            "email": request.email,
+            "sub_category": request.sub_category,
+            "severity": request.severity,
+            "reply_email": request.reply_email,
             "message": request.message,
             "page_path": request.page_path,
-            "ip_address": request.ip_address,
+            "client_ip": request.client_ip,
             "created_at": request.created_at.isoformat() if request.created_at else None,
         }
 
@@ -83,23 +88,27 @@ def deliver_help_request_to_n8n(self, support_request_id: str) -> str:
             request.n8n_response_code = resp.status_code
             request.n8n_response_text = resp.text[:2000]
             resp.raise_for_status()
-            request.status = "n8n_delivered"
+            request.n8n_status = "delivered"
             db.add(
                 SupportRequestAudit(
                     support_request_id=request.id,
-                    action="n8n_delivered",
-                    detail=f"status={resp.status_code}",
+                    actor="system",
+                    old_status="pending",
+                    new_status="delivered",
+                    note=f"status={resp.status_code}",
                 )
             )
             db.commit()
             return "delivered"
         except httpx.HTTPError as exc:
-            request.status = "n8n_failed"
+            request.n8n_status = "failed"
             db.add(
                 SupportRequestAudit(
                     support_request_id=request.id,
-                    action="n8n_failed",
-                    detail=str(exc)[:512],
+                    actor="system",
+                    old_status="pending",
+                    new_status="failed",
+                    note=str(exc)[:512],
                 )
             )
             db.commit()

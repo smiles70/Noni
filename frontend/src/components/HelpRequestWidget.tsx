@@ -157,8 +157,13 @@ export default function HelpRequestWidget({
       setError("Please choose a topic.");
       return;
     }
-    if (email && !email.includes("@")) {
-      setError("Please enter a valid email if you would like a reply.");
+    const emailValue = email.trim();
+    if (
+      !emailValue ||
+      !emailValue.includes("@") ||
+      !emailValue.includes(".", emailValue.indexOf("@"))
+    ) {
+      setError("Please enter a valid email for your reply.");
       return;
     }
     setSending(true);
@@ -169,7 +174,7 @@ export default function HelpRequestWidget({
         categoryId,
         message.trim(),
         pagePath,
-        email || undefined,
+        emailValue,
       );
       setSubmitted(true);
       setMessage("");
@@ -260,7 +265,7 @@ export default function HelpRequestWidget({
         </div>
         <div style={FIELD}>
           <label htmlFor="help-email" style={LABEL}>
-            Email for reply (optional)
+            Email for reply
           </label>
           <input
             id="help-email"
@@ -270,6 +275,7 @@ export default function HelpRequestWidget({
             placeholder="you@example.com"
             style={INPUT}
             autoComplete="email"
+            required
           />
         </div>
         <div style={FIELD}>

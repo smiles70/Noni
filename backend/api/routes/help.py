@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_db, require_staff
+from backend.core.config import settings
 from backend.models.accounts import Account
 from backend.models.support_request import SupportRequest, SupportRequestAudit
 from backend.services.rate_limit import LIMIT_HELP_REQUESTS_PER_IP, client_ip, enforce
@@ -52,20 +53,36 @@ CATEGORY_BY_CONTEXT = {
     HelpContext.facility: FACILITY_CATEGORIES,
 }
 
+CATEGORY_SEVERITY: dict[str, str] = {
+    "buying_gift": "P3",
+    "payment_issue": "P1",
+    "gift_not_received": "P1",
+    "redeeming_gift": "P2",
+    "managing_recipient_access": "P2",
+    "partnership_inquiry": "P2",
+    "licensing_and_seats": "P2",
+    "onboarding_staff": "P2",
+    "technical_setup": "P1",
+    "billing_and_invoice": "P1",
+    "existing_account_issue": "P2",
+    "something_else": "P3",
+}
+
 
 class HelpRequestCreate(BaseModel):
     context: HelpContext
     category: str = Field(..., max_length=64)
     message: str = Field(..., max_length=2000)
-    email: Optional[str] = Field(None, max_length=256)
+    reply_email: str = Field(..., max_length=256)
     request_id: str = Field(..., max_length=64, min_length=8)
     page_path: Optional[str] = Field(None, max_length=256)
+    sub_category: Optional[str] = Field(None, max_length=64)
 
 
 class HelpRequestUpdate(BaseModel):
     status: str = Field(
         ...,
-        pattern=r"^(submitted|open|needs_info|resolved|closed|n8n_delivered|n8n_failed)$",
+        pattern=r"^(submitted|open|needs_info|resolved|closed)$",
     )
     note: Optional[str] = Field(None, max_length=512)
 
@@ -75,10 +92,13 @@ class HelpRequestResponse(BaseModel):
     request_id: str
     context: str
     category: str
-    email: Optional[str]
+    sub_category: Optional[str]
+    severity: Optional[str]
+    reply_email: str
     message: str
     page_path: Optional[str]
     status: str
+    n8n_status: str
     created_at: str
 
 
@@ -88,10 +108,13 @@ def _serialize(req: SupportRequest) -> HelpRequestResponse:
         request_id=req.request_id,
         context=req.context,
         category=req.category,
-        email=req.email,
+        sub_category=req.sub_category,
+        severity=req.severity,
+        reply_email=req.reply_email,
         message=req.message,
         page_path=req.page_path,
         status=req.status,
+        n8n_status=req.n8n_status,
         created_at=req.created_at.isoformat() if req.created_at else "",
     )
 
@@ -102,6 +125,12 @@ def create_help_request(
     request: Request,
     db: DbSession = Depends(get_db),
 ) -> HelpRequestResponse:
+    if not getattr(settings, "FEATURE_HELP_REQUESTS", True):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"envelope_id": "help.feature_disabled"},
+        )
+
     enforce(
         db,
         LIMIT_HELP_REQUESTS_PER_IP,
@@ -116,6 +145,12 @@ def create_help_request(
             detail={"envelope_id": "help.invalid_category"},
         )
 
+    if "@" not in body.reply_email or "." not in body.reply_email.split("@")[-1]:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"envelope_id": "help.invalid_email"},
+        )
+
     existing = (
         db.query(SupportRequest)
         .filter(SupportRequest.request_id == body.request_id)
@@ -128,10 +163,12 @@ def create_help_request(
         request_id=body.request_id,
         context=body.context.value,
         category=body.category,
-        email=body.email,
+        sub_category=body.sub_category,
+        severity=CATEGORY_SEVERITY.get(body.category),
+        reply_email=body.reply_email,
         message=body.message,
         page_path=body.page_path,
-        ip_address=client_ip(request),
+        client_ip=client_ip(request),
     )
     db.add(support)
     db.commit()
@@ -140,8 +177,9 @@ def create_help_request(
     db.add(
         SupportRequestAudit(
             support_request_id=support.id,
-            action="submitted",
-            detail=f"context={support.context} category={support.category}",
+            actor="system",
+            new_status="submitted",
+            note=f"context={support.context} category={support.category}",
         )
     )
     db.commit()
@@ -157,6 +195,7 @@ def list_help_requests(
     _: Account = Depends(require_staff),
     context: Optional[str] = None,
     status: Optional[str] = None,
+    n8n_status: Optional[str] = None,
     limit: int = 50,
     offset: int = 0,
 ) -> List[HelpRequestResponse]:
@@ -165,6 +204,8 @@ def list_help_requests(
         q = q.filter(SupportRequest.context == context)
     if status:
         q = q.filter(SupportRequest.status == status)
+    if n8n_status:
+        q = q.filter(SupportRequest.n8n_status == n8n_status)
     q = q.order_by(SupportRequest.created_at.desc()).limit(limit).offset(offset)
     return [_serialize(r) for r in q.all()]
 
@@ -192,9 +233,10 @@ def update_help_request_status(
     db.add(
         SupportRequestAudit(
             support_request_id=req.id,
-            action="status_change",
-            actor_id=actor.id,
-            detail=f"{old_status} -> {body.status}; note={body.note or ''}",
+            actor=str(actor.id),
+            old_status=old_status,
+            new_status=body.status,
+            note=body.note or "",
         )
     )
     db.commit()

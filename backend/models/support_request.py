@@ -35,8 +35,12 @@ class SupportRequest(Base):
             name="ck_support_requests_context",
         ),
         CheckConstraint(
-            "status IN ('submitted', 'n8n_delivered', 'n8n_failed', 'resolved')",
+            "status IN ('submitted', 'open', 'needs_info', 'resolved', 'closed')",
             name="ck_support_requests_status",
+        ),
+        CheckConstraint(
+            "n8n_status IN ('pending', 'delivered', 'failed')",
+            name="ck_support_requests_n8n_status",
         ),
     )
 
@@ -44,14 +48,21 @@ class SupportRequest(Base):
     request_id = Column(
         String(64), nullable=False, unique=True, index=True
     )  # idempotency key from caller
+    account_id = Column(UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True, index=True)
     context = Column(String(32), nullable=False)  # caregiver | facility
     category = Column(String(64), nullable=False)
-    email = Column(String(256), nullable=True)
+    sub_category = Column(String(64), nullable=True)
+    severity = Column(String(8), nullable=True)
+    reply_email = Column(String(256), nullable=False)
     message = Column(Text, nullable=False)
     page_path = Column(String(256), nullable=True)
-    ip_address = Column(String(64), nullable=True)
+    client_ip = Column(String(64), nullable=True)
 
+    # Support workflow state (managed by staff admin endpoint)
     status = Column(String(32), nullable=False, default="submitted")
+    # n8n delivery state (managed by the Celery worker)
+    n8n_status = Column(String(32), nullable=False, default="pending")
+    n8n_retry_count = Column(Integer, nullable=False, default=0)
     n8n_response_code = Column(Integer, nullable=True)
     n8n_response_text = Column(Text, nullable=True)
 
@@ -70,7 +81,8 @@ class SupportRequestAudit(Base):
     support_request_id = Column(
         UUID(as_uuid=True), ForeignKey("support_requests.id"), nullable=False, index=True
     )
-    action = Column(String(32), nullable=False)
-    actor_id = Column(UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=True)
-    detail = Column(Text, nullable=False, default="")
+    actor = Column(String(64), nullable=True)
+    old_status = Column(String(32), nullable=True)
+    new_status = Column(String(32), nullable=True)
+    note = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)

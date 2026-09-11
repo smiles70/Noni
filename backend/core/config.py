@@ -67,6 +67,7 @@ class Settings(BaseSettings):
     LOG_SAMPLING_RATE: float = 1.0
 
     # N8N help-flow integration (N8N-HELP-001)
+    FEATURE_HELP_REQUESTS: bool = True
     N8N_WEBHOOK_URL: str = ""
     N8N_WEBHOOK_TOKEN: str = ""
 
