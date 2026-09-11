@@ -3,13 +3,14 @@
  *
  * - Never used on the main consumer learner path.
  * - Geragogy-safe: calm copy, no urgency, large touch targets, calm colors.
- * - Context-specific categories are enforced by the component props and
- *   double-checked by the backend.
+ * - Context-specific categories and SLAs are enforced by the component props
+ *   and double-checked by the backend.
  */
 import { useMemo, useState } from "react";
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
 import {
   CATEGORIES_BY_CONTEXT,
+  categoryById,
   type HelpContext,
   submitHelpRequest,
 } from "../api/help";
@@ -131,7 +132,7 @@ export default function HelpRequestWidget({
     [context],
   );
   const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState(categories[0] || "");
+  const [categoryId, setCategoryId] = useState(categories[0]?.id || "");
   const [email, setEmail] = useState(prefilledEmail);
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -152,7 +153,7 @@ export default function HelpRequestWidget({
       setError("Please tell us how we can help.");
       return;
     }
-    if (!category) {
+    if (!categoryId) {
       setError("Please choose a topic.");
       return;
     }
@@ -165,7 +166,7 @@ export default function HelpRequestWidget({
     try {
       await submitHelpRequest(
         context,
-        category,
+        categoryId,
         message.trim(),
         pagePath,
         email || undefined,
@@ -187,10 +188,15 @@ export default function HelpRequestWidget({
   };
 
   if (submitted) {
+    const category = categoryById(context, categoryId);
+    const responseTime = category?.initialResponseTime || "one week";
     return (
       <aside style={PANEL} data-context={context} data-help-widget="submitted">
         <p style={{ ...BODY, margin: 0 }}>
-          Thank you. We have received your message.
+          Thank you. We received your message.
+          {email
+            ? ` We will reply to ${email} within ${responseTime}.`
+            : ` We will reply within ${responseTime}.`}
         </p>
         <button
           type="button"
@@ -215,7 +221,9 @@ export default function HelpRequestWidget({
         data-context={context}
         data-help-widget="trigger"
       >
-        {context === "caregiver" ? "Need help with your gift?" : "Talk to us"}
+        {context === "caregiver"
+          ? "Questions about gifting?"
+          : "Community support"}
       </button>
     );
   }
@@ -237,13 +245,15 @@ export default function HelpRequestWidget({
           </label>
           <select
             id="help-category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={categoryId}
+            onChange={(e) =>
+              setCategoryId(e.target.value as import("../api/help").CategoryId)
+            }
             style={SELECT}
           >
             {categories.map((c) => (
-              <option value={c} key={c}>
-                {c}
+              <option value={c.id} key={c.id}>
+                {c.label}
               </option>
             ))}
           </select>

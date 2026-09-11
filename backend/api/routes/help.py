@@ -29,18 +29,22 @@ class HelpContext(str, Enum):
 
 
 CAREGIVER_CATEGORIES = {
-    "Buying as a gift",
-    "Gift delivery question",
-    "Payment issue",
-    "Other",
+    "buying_gift",
+    "payment_issue",
+    "gift_not_received",
+    "redeeming_gift",
+    "managing_recipient_access",
+    "something_else",
 }
 
 FACILITY_CATEGORIES = {
-    "Partnership question",
-    "Pricing",
-    "Implementation support",
-    "Technical issue",
-    "Other",
+    "partnership_inquiry",
+    "licensing_and_seats",
+    "onboarding_staff",
+    "technical_setup",
+    "billing_and_invoice",
+    "existing_account_issue",
+    "something_else",
 }
 
 CATEGORY_BY_CONTEXT = {
@@ -59,11 +63,11 @@ class HelpRequestCreate(BaseModel):
 
 
 class HelpRequestUpdate(BaseModel):
-    status: str = Field(..., pattern=r"^(submitted|n8n_delivered|n8n_failed|resolved)$")
+    status: str = Field(
+        ...,
+        pattern=r"^(submitted|open|needs_info|resolved|closed|n8n_delivered|n8n_failed)$",
+    )
     note: Optional[str] = Field(None, max_length=512)
-
-    class Config:
-        use_enum_values = True
 
 
 class HelpRequestResponse(BaseModel):
