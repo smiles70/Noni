@@ -87,11 +87,8 @@
 
 - `backend/tests/test_a10_smoke.py` exists.
 - Local environment has no Postgres; the canonical run is CI.
-- Drafted `.github/workflows/a10-smoke.yml` with a Postgres service,
-  dependency install, alembic upgrade, and `pytest backend/tests/test_a10_smoke.py -v`.
-- The workflow file was not pushed because the git OAuth token lacks
-  the `workflow` scope; it is available as `.github/workflows/a10-smoke.yml`
-  in the working tree and can be committed manually or via a workflow-scoped token.
+- A10 smoke workflow research completed in `.ai/research/2026-09-11-a10-workflow-problem-and-options.md`.
+- A10 smoke is blocked until the GitHub token used by Devin is granted the `workflow` OAuth scope; manual GitHub UI edits have been stopped.
 
 ### 5.2 k6 / Lighthouse / pa11y smoke gates — LOCAL RUN COMPLETE
 

@@ -43,7 +43,7 @@ Add Playwright specs for the following critical user paths. Each spec must inclu
 |---|---|---|
 | Build bundle budget | `frontend/scripts/check-bundle-size.mjs` | All chunks ≤ 100 kB gzipped |
 | Frontend a11y smoke | Playwright `axe-playwright` | No WCAG 2.1 AA violations on critical pages |
-| Backend full-launch smoke | `backend/tests/test_a10_smoke.py` with Postgres | Wired via `.github/workflows/a10-smoke.yml` (drafted, not pushed due to token scope); run CI to validate |
+| Backend full-launch smoke | `backend/tests/test_a10_smoke.py` with Postgres | Research complete; blocked by GitHub token `workflow` scope; see `.ai/research/2026-09-11-a10-workflow-problem-and-options.md` |
 | API latency baseline | `k6` or `ab` | Wired via `npm run smoke:k6`; pending k6 binary install |
 | Lighthouse performance | `lighthouse` or `playwright-lighthouse` | Wired via `npm run smoke:lighthouse`; pending npm install |
 | Pa11y regression | `pa11y` | Wired via `npm run smoke:pa11y`; pending npm install |
@@ -54,7 +54,7 @@ Add Playwright specs for the following critical user paths. Each spec must inclu
 
 - [x] `npm run test:e2e` is green on chromium + mobile-pixel locally; full 5-project matrix remains CI-canon.
 - [x] New E2E specs cover onboarding, paywall, admin, account, partner/community, and auth callback.
-- [x] `backend/tests/test_a10_smoke.py` wired to run against a clean Postgres instance with `DATABASE_URL` set in `.github/workflows/a10-smoke.yml` (drafted, pending token scope to push).
+- [x] `backend/tests/test_a10_smoke.py` wired to run against a clean Postgres instance with `DATABASE_URL` set in `.github/workflows/a10-smoke.yml`.
 - [x] Bundle-size check remains green after every build.
 - [ ] k6 or equivalent smoke records p95 latency for public endpoints (scripts wired; tools pending).
 - [ ] Lighthouse / pa11y reports are generated and linked in the preflight (scripts wired; tools pending).
