@@ -1,4 +1,7 @@
-name: Backend A10 isolated smoke
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libpq-dev python3-devname: Backend A10 isolated smoke
 
 on:
   workflow_dispatch:
