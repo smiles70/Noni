@@ -130,7 +130,7 @@ export interface HelpRequestBody {
   context: HelpContext;
   category: string;
   message: string;
-  reply_email: string;
+  reply_email?: string;
   request_id: string;
   page_path: string;
 }
@@ -142,7 +142,7 @@ export interface HelpRequestResponse {
   category: string;
   sub_category: string | null;
   severity: string | null;
-  reply_email: string;
+  reply_email: string | null;
   message: string;
   page_path: string | null;
   status: string;
@@ -162,7 +162,7 @@ export async function submitHelpRequest(
   category: CategoryId,
   message: string,
   pagePath: string,
-  replyEmail: string,
+  replyEmail?: string,
 ): Promise<HelpRequestResponse> {
   const res = await apiClient.post<HelpRequestResponse>(
     "/api/v1/help/requests",

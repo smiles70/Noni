@@ -73,7 +73,7 @@ class HelpRequestCreate(BaseModel):
     context: HelpContext
     category: str = Field(..., max_length=64)
     message: str = Field(..., max_length=2000)
-    reply_email: str = Field(..., max_length=256)
+    reply_email: Optional[str] = Field(None, max_length=256)
     request_id: str = Field(..., max_length=64, min_length=8)
     page_path: Optional[str] = Field(None, max_length=256)
     sub_category: Optional[str] = Field(None, max_length=64)
@@ -94,7 +94,7 @@ class HelpRequestResponse(BaseModel):
     category: str
     sub_category: Optional[str]
     severity: Optional[str]
-    reply_email: str
+    reply_email: Optional[str]
     message: str
     page_path: Optional[str]
     status: str
@@ -145,7 +145,9 @@ def create_help_request(
             detail={"envelope_id": "help.invalid_category"},
         )
 
-    if "@" not in body.reply_email or "." not in body.reply_email.split("@")[-1]:
+    if body.reply_email and (
+        "@" not in body.reply_email or "." not in body.reply_email.split("@")[-1]
+    ):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail={"envelope_id": "help.invalid_email"},

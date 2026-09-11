@@ -53,7 +53,7 @@ class SupportRequest(Base):
     category = Column(String(64), nullable=False)
     sub_category = Column(String(64), nullable=True)
     severity = Column(String(8), nullable=True)
-    reply_email = Column(String(256), nullable=False)
+    reply_email = Column(String(256), nullable=True)
     message = Column(Text, nullable=False)
     page_path = Column(String(256), nullable=True)
     client_ip = Column(String(64), nullable=True)
