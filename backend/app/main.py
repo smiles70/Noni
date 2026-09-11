@@ -40,6 +40,7 @@ from backend.app.telemetry import (
 )
 from backend.core.config import settings, validate_settings
 from backend.core.database import engine
+from backend.core.feature_flags import FeatureFlags, get_flags
 
 
 def _verify_crypto_dependency() -> None:
@@ -283,6 +284,19 @@ app.add_middleware(
 )
 
 
+class FeatureFlagMiddleware(BaseHTTPMiddleware):
+    """Attach the current feature-flags object to every request."""
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> StarletteResponse:
+        request.state.feature_flags = get_flags()
+        return await call_next(request)
+
+
+app.add_middleware(FeatureFlagMiddleware)
+
+
 @app.exception_handler(HTTPException)
 async def _http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
     """F11: enforce the documented auth wire envelope `{error:{code,message}}`.
@@ -416,6 +430,13 @@ async def readiness():
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"not ready: {exc}") from exc
     return {"status": "ready"}
+
+
+@app.get("/api/v1/features")
+async def features(request: Request):
+    """Return the list of currently enabled feature flags."""
+    flags = request.state.feature_flags.all_enabled()
+    return {"enabled": flags}
 
 
 @app.get("/metrics")
