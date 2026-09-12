@@ -26,6 +26,7 @@ import {
 } from "./AccountStyles";
 import { COLORS, SPACING } from "../design/tokens";
 import ChatWidget from "./ChatWidget";
+import SupportContact from "./SupportContact";
 
 interface License {
   license_id: string;
@@ -230,7 +231,10 @@ export default function OrgDashboardPage({ onBack }: { onBack: () => void }) {
           )}
         </>
       )}
-      <ChatWidget journey="facility" />
+      <div style={{ marginTop: SPACING.lg }}>
+        <SupportContact />
+        <ChatWidget journey="facility" />
+      </div>
     </main>
   );
 }

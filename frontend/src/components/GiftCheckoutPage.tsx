@@ -20,6 +20,7 @@ import {
   SECONDARY_BTN,
   STACK,
 } from "./AccountStyles";
+import SupportContact from "./SupportContact";
 
 interface Props {
   productCode: string;
@@ -115,6 +116,7 @@ export default function GiftCheckoutPage({ productCode, onBack }: Props) {
         >
           Go back
         </button>
+        <SupportContact />
       </div>
       <ChatWidget journey="gift" />
     </main>
