@@ -230,7 +230,8 @@ jobs:
           VITE_AUTH_PROVIDER: 'mock'
           VITE_MAGIC_PUBLISHABLE_KEY: ''
           VITE_RETELL_PUBLIC_KEY: 'public_key_c2dfb899128b3a172cc17'
-          VITE_RETELL_CHAT_AGENT_ID: 'agent_646dba13a4321b698970c15c68'
+          VITE_RETELL_CHAT_AGENT_ID_GIFT: 'agent_646dba13a4321b698970c15c68'
+          VITE_RETELL_CHAT_AGENT_ID_FACILITY: 'agent_719be4f2578150bb27ac06f357'
           CI: true
           NODE_ENV: production
         run: npm run prebuild
@@ -242,7 +243,8 @@ jobs:
           VITE_AUTH_PROVIDER: 'mock'
           VITE_MAGIC_PUBLISHABLE_KEY: ''
           VITE_RETELL_PUBLIC_KEY: 'public_key_c2dfb899128b3a172cc17'
-          VITE_RETELL_CHAT_AGENT_ID: 'agent_646dba13a4321b698970c15c68'
+          VITE_RETELL_CHAT_AGENT_ID_GIFT: 'agent_646dba13a4321b698970c15c68'
+          VITE_RETELL_CHAT_AGENT_ID_FACILITY: 'agent_719be4f2578150bb27ac06f357'
           CI: true
           NODE_ENV: production
         run: npm run build
