@@ -28,8 +28,8 @@
 
 || Edition | Price | Description |
 ||:---|:---|:---|
-|| **Single Learner** | **Price shown at checkout** | Lifetime access to Modules 2-5 for one account |
-|| **Caregiver Gift** | **Price shown at checkout** | Purchase lifetime access on behalf of a loved one |
+|| **Single Learner** | **$39 USD** | Lifetime access to Modules 2-5 for one account |
+|| **Caregiver Gift** | **$39 USD** | Purchase lifetime access on behalf of a loved one |
 
 ---
 
@@ -52,7 +52,7 @@
 A: No. This is a one-time purchase for lifetime access.
 
 **Q: Can I buy this for my parent?**
-A: Yes. The Caregiver Gift edition lets you purchase access on behalf of someone else. They receive the access; you receive the receipt.
+A: Yes. The Caregiver Gift edition ($39 USD) lets you purchase access on behalf of someone else. They receive the access; you receive the receipt.
 
 **Q: What happens if the service shuts down?**
 A: We will provide an exportable archive of your units and any Skills you have built.
