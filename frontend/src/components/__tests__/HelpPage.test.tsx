@@ -54,4 +54,12 @@ describe("HelpPage — contact facts", () => {
     expect(host.textContent).toContain("within 30 days");
     expect(host.textContent).not.toContain("within 14 days");
   });
+
+  it("states the completion condition and gift rule", async () => {
+    const host = await render();
+    expect(host.textContent).toContain("less than half of the paid modules");
+    expect(host.textContent).toContain(
+      "refund goes to the person who bought the gift",
+    );
+  });
 });
