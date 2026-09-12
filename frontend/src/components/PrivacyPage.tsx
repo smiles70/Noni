@@ -113,6 +113,12 @@ export default function PrivacyPage({ onBack }: Props) {
             <li>Magic.link — sends your sign-in link and verifies it.</li>
             <li>Railway — hosts the service and its database.</li>
             <li>Cloudflare — delivers pages quickly and safely.</li>
+            <li>
+              Retell AI — runs our phone receptionist and the chat
+              assistant on the gift and community pages; call and chat
+              transcripts are processed with personal details removed and
+              kept for 30 days.
+            </li>
           </ul>
           <p>
             We do not use advertising networks or data brokers. A data
@@ -126,8 +132,8 @@ export default function PrivacyPage({ onBack }: Props) {
           <p>
             If you believe you have found a security problem, or something about
             your information worries you, write to us at{" "}
-            <a href="mailto:hello@mynaani.com" style={LINK}>
-              hello@mynaani.com
+            <a href="mailto:help@mynaani.com" style={LINK}>
+              help@mynaani.com
             </a>
             . We reply within two business days.
           </p>
@@ -148,8 +154,8 @@ export default function PrivacyPage({ onBack }: Props) {
           </p>
           <p>
             Questions are always welcome at{" "}
-            <a href="mailto:hello@mynaani.com" style={LINK}>
-              hello@mynaani.com
+            <a href="mailto:help@mynaani.com" style={LINK}>
+              help@mynaani.com
             </a>
             . We reply within two business days.
           </p>

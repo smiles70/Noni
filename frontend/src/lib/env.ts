@@ -18,6 +18,20 @@ export const MAGIC_PUBLISHABLE_KEY: string = (
 
 export const LOG_LEVEL: string = import.meta.env.VITE_LOG_LEVEL ?? "info";
 
+// Retell website widget (ADR 0032). Public key is safe for frontend use —
+// it is domain-locked in the Retell dashboard. Unset => ChatWidget no-ops.
+export const RETELL_PUBLIC_KEY: string = (
+  import.meta.env.VITE_RETELL_PUBLIC_KEY ?? ""
+).trim();
+
+export const RETELL_CHAT_AGENT_ID_GIFT: string = (
+  import.meta.env.VITE_RETELL_CHAT_AGENT_ID_GIFT ?? ""
+).trim();
+
+export const RETELL_CHAT_AGENT_ID_FACILITY: string = (
+  import.meta.env.VITE_RETELL_CHAT_AGENT_ID_FACILITY ?? ""
+).trim();
+
 export const IS_DEV: boolean = import.meta.env.DEV === true;
 
 export const IS_PROD: boolean = import.meta.env.PROD === true;

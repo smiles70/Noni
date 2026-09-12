@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { apiClient } from "../api/client";
 import { COLORS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import ChatWidget from "./ChatWidget";
 
 const PAGE: React.CSSProperties = {
   maxWidth: 560,
@@ -65,6 +66,7 @@ export default function PartnerPage() {
       <button style={BTN} onClick={() => navigate("/signin")}>
         I have my access code — sign me in
       </button>
+      <ChatWidget journey="facility" />
     </main>
   );
 }

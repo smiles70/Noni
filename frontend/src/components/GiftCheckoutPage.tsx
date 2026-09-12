@@ -8,6 +8,7 @@ import { useState } from "react";
 import { startGuestCheckout } from "../api/billing";
 import { COLORS, SPACING } from "../design/tokens";
 import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
+import ChatWidget from "./ChatWidget";
 import {
   BODY,
   CARD,
@@ -115,6 +116,7 @@ export default function GiftCheckoutPage({ productCode, onBack }: Props) {
           Go back
         </button>
       </div>
+      <ChatWidget journey="gift" />
     </main>
   );
 }

@@ -15,6 +15,7 @@
 import { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
+import ChatWidget from "./ChatWidget";
 
 const CONTACT = "hello@mynaani.com";
 const MAILTO = `mailto:${CONTACT}?subject=Community%20partnership%20inquiry`;
@@ -678,6 +679,7 @@ export default function ForCommunitiesPage() {
             ))}
           </ul>
         </section>
+        <ChatWidget journey="facility" />
       </main>
 
       <footer style={FOOTER}>

@@ -25,6 +25,7 @@ import {
   STACK,
 } from "./AccountStyles";
 import { COLORS, SPACING } from "../design/tokens";
+import ChatWidget from "./ChatWidget";
 
 interface License {
   license_id: string;
@@ -229,6 +230,7 @@ export default function OrgDashboardPage({ onBack }: { onBack: () => void }) {
           )}
         </>
       )}
+      <ChatWidget journey="facility" />
     </main>
   );
 }
