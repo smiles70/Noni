@@ -310,8 +310,8 @@ jobs:
 
       - name: Verify backend endpoints support the frontend build
         run: |
-          if ! curl -sf "$STAGING_API_URL/openapi.json" | python3 -c "import json,sys; d=json.load(sys.stdin); paths=d.get('paths',{}); exit(0 if '/api/v1/help/requests' in paths else 1)"; then
-            echo "::error::Staging backend /openapi.json is missing /api/v1/help/requests"
+          if ! curl -sf "$STAGING_API_URL/openapi.json" | python3 -c "import json,sys; d=json.load(sys.stdin); paths=d.get('paths',{}); exit(0 if '/api/v1/gifts/preview' in paths else 1)"; then
+            echo "::error::Staging backend /openapi.json is missing /api/v1/gifts/preview"
             exit 1
           fi
-          echo "VERIFIED: frontend help flow has matching backend endpoints"
+          echo "VERIFIED: frontend gift flow has matching backend endpoints"
