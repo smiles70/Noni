@@ -20,6 +20,7 @@ import {
   STACK,
 } from "./AccountStyles";
 import ChatWidget from "./ChatWidget";
+import SupportContact from "./SupportContact";
 
 interface Props {
   productCode: string;
@@ -115,6 +116,7 @@ export default function GiftCheckoutPage({ productCode, onBack }: Props) {
         >
           Go back
         </button>
+        <SupportContact />
         <ChatWidget journey="gift" />
       </div>
     </main>

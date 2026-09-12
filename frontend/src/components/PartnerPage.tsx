@@ -7,6 +7,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { apiClient } from "../api/client";
 import { COLORS, SPACING, TYPOGRAPHY } from "../design/tokens";
 import ChatWidget from "./ChatWidget";
+import SupportContact from "./SupportContact";
 
 const PAGE: React.CSSProperties = {
   maxWidth: 560,
@@ -67,6 +68,7 @@ export default function PartnerPage() {
         I have my access code — sign me in
       </button>
       <div style={{ marginTop: SPACING.lg }}>
+        <SupportContact />
         <ChatWidget journey="facility" />
       </div>
     </main>

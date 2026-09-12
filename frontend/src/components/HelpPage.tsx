@@ -121,8 +121,8 @@ function GettingStartedSection() {
         </p>
         <p>
           If you still cannot sign in, write to
-          <a href="mailto:hello@mynaani.com" style={LINK}>
-            hello@mynaani.com
+          <a href="mailto:help@mynaani.com" style={LINK}>
+            help@mynaani.com
           </a>
           and we will help you directly.
         </p>
@@ -238,10 +238,10 @@ function PaymentsGiftsSection() {
         <h3 style={H3}>Refunds</h3>
         <p>
           If you change your mind after buying access, write to
-          <a href="mailto:hello@mynaani.com" style={LINK}>
-            hello@mynaani.com
+          <a href="mailto:help@mynaani.com" style={LINK}>
+            help@mynaani.com
           </a>
-          within 14 days. We will refund your payment in full.
+          within 30 days. We will refund your payment in full.
         </p>
 
         <h3 style={H3}>Payment security</h3>
@@ -325,10 +325,22 @@ function YourAccountSection() {
         <h3 style={H3}>Contacting support</h3>
         <p>
           If your question is not answered here, write to us at
-          <a href="mailto:hello@mynaani.com" style={LINK}>
-            hello@mynaani.com
+          <a href="mailto:help@mynaani.com" style={LINK}>
+            help@mynaani.com
           </a>
           . We read every message and reply within two business days.
+        </p>
+        <p>
+          Prefer to talk? Call us at{" "}
+          <a
+            href="tel:+18774094144"
+            style={LINK}
+            aria-label="Call MyNaani support, toll free, 1 8 7 7, 4 0 9, 4 1 4 4"
+          >
+            1 (877) 409-4144
+          </a>
+          , toll-free. The line is answered by our AI receptionist, who can
+          connect you to a person if needed. This call may be stored.
         </p>
         <p>
           For the fastest response, include the email address associated with
