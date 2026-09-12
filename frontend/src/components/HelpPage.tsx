@@ -237,12 +237,15 @@ function PaymentsGiftsSection() {
 
         <h3 style={H3}>Refunds</h3>
         <p>
-          If you change your mind after buying access, write to
+          If you change your mind, write to
           <a href="mailto:help@mynaani.com" style={LINK}>
             help@mynaani.com
-          </a>
-          within 30 days. We will refund your payment in full.
+          </a>{" "}
+          within 30 days of purchase for a full refund. Because access is
+          immediate and complete, we ask that you have finished less than half
+          of the paid modules — that keeps the promise fair for everyone.
         </p>
+        <p>For gifts, the refund goes to the person who bought the gift.</p>
 
         <h3 style={H3}>Payment security</h3>
         <p>
