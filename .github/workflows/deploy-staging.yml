@@ -304,7 +304,7 @@ jobs:
 
       - name: Verify backend endpoints support the frontend build
         run: |
-          if ! curl -sf "$STAGING_API_URL/openapi.json" | python3 -c "import json,sys; d=json.load(sys.stdin); paths=d.get('paths',{}); exit('/api/v1/help/requests' in paths)"; then
+          if ! curl -sf "$STAGING_API_URL/openapi.json" | python3 -c "import json,sys; d=json.load(sys.stdin); paths=d.get('paths',{}); exit(0 if '/api/v1/help/requests' in paths else 1)"; then
             echo "::error::Staging backend /openapi.json is missing /api/v1/help/requests"
             exit 1
           fi
