@@ -1,20 +1,20 @@
 # Pricing Page Content
 
-**Version:** 1.0.0
-**Owner:** Product
+**Version:** 1.0.0  
+**Owner:** Product  
 **Source:** ADR 0021
 
 ---
 
 ## Tier Structure
 
-### Free Tier: Modules 0, 1, and 2
-- ~10 curriculum units
+### Free Tier: Modules 0 and 1
+- ~6 curriculum units
 - All page types: context, principle, example, retrieval
 - Progress saved (with free account)
 - No credit card required
 
-### Paid Tier: Modules 3, 4, and 5
+### Paid Tier: Modules 2, 3, 4, and 5
 - ~16 curriculum units
 - Learn long-term judgment with Claude
 - Learn to build Claude Skills
@@ -26,10 +26,10 @@
 
 ## Prices
 
-| Edition | Price | Description |
-|:---|:---|:---|
-| **Single Learner** | **$39 USD** | Lifetime access to Modules 4-5 for one account |
-| **Caregiver Gift** | **$59 USD** | Purchase lifetime access on behalf of a loved one |
+|| Edition | Price | Description |
+||:---|:---|:---|
+|| **Single Learner** | **Price shown at checkout** | Lifetime access to Modules 2-5 for one account |
+|| **Caregiver Gift** | **Price shown at checkout** | Purchase lifetime access on behalf of a loved one |
 
 ---
 
@@ -39,7 +39,7 @@
 "Continue your journey. Build Skills. Create Agents."
 
 ### Body
-"Modules 0-2 give you the foundation -- understanding Claude and using it with judgment. Modules 3-5 teach you to keep good judgment over time, build your own Claude Skills, and compose them into Agents that work for you."
+"Modules 0-1 give you the foundation -- understanding Claude and using it with judgment. Modules 2-5 teach you to keep good judgment over time, build your own Claude Skills, and compose them into Agents that work for you."
 
 "This is a one-time purchase. No subscription. No auto-renewal. No surprises. You pay once and the content is yours, permanently."
 
@@ -52,7 +52,7 @@
 A: No. This is a one-time purchase for lifetime access.
 
 **Q: Can I buy this for my parent?**
-A: Yes. The Caregiver Gift edition ($59) lets you purchase access on behalf of someone else. They receive the access; you receive the receipt.
+A: Yes. The Caregiver Gift edition lets you purchase access on behalf of someone else. They receive the access; you receive the receipt.
 
 **Q: What happens if the service shuts down?**
 A: We will provide an exportable archive of your units and any Skills you have built.

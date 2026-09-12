@@ -172,11 +172,11 @@ function HowItWorksSection() {
 
         <h3 style={H3}>Free and paid modules</h3>
         <p>
-          Modules 0, 1, and 2 are free. Anyone with an account can read them.
-          Modules 3, 4, and 5 require a one-time purchase.
+          Modules 0 and 1 are free. Anyone with an account can read them.
+          Modules 2, 3, 4, and 5 are available after a one-time purchase.
         </p>
         <p>
-          When you finish Module 2, you will see a page that explains how to
+          When you finish Module 1, you will see a page that explains how to
           continue. You can buy access for yourself or receive access as a gift.
         </p>
 
@@ -215,9 +215,9 @@ function PaymentsGiftsSection() {
 
         <h3 style={H3}>Buying access for yourself</h3>
         <p>
-          When you reach the end of Module 2, select "Buy access to Modules 3,
-          4, and 5." You will be taken to a secure checkout page. After payment,
-          you can continue reading immediately.
+          When you reach the end of Module 1, select "Buy access to Modules 2,
+          3, 4, and 5." You will be taken to a secure checkout page. After
+          payment, you can continue reading immediately.
         </p>
 
         <h3 style={H3}>Buying access as a gift</h3>
