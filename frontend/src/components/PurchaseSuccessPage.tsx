@@ -8,6 +8,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { mockCheckoutComplete } from "../api/billing";
+import ChatWidget from "./ChatWidget";
 import {
   ALERT_TEXT,
   BODY,
@@ -136,6 +137,7 @@ export default function PurchaseSuccessPage() {
           </div>
         </>
       )}
+      {isGift && <ChatWidget />}
     </main>
   );
 }

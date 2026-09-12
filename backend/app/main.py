@@ -33,7 +33,6 @@ from backend.api.routes.signals import router as signals_router
 from backend.api.routes.telemetry_export import router as telemetry_export_router
 from backend.api.routes.telemetry_summary import router as telemetry_summary_router
 from backend.api.routes.ui_envelope import router as ui_envelope_router
-from backend.api.routes.help import router as help_router
 from backend.app.telemetry import (
     RequestIdMiddleware,
     TelemetryMiddleware,
@@ -370,7 +369,6 @@ app.include_router(billing_router, prefix="/api/v1/billing", tags=["billing"])
 app.include_router(gifts_router, prefix="/api/v1/gifts", tags=["gifts"])
 app.include_router(organizations_router, prefix="/api/v1/billing", tags=["billing"])
 app.include_router(admin_router, prefix="/api/v1/admin", tags=["admin"])
-app.include_router(help_router, prefix="/api/v1/help", tags=["help"])
 
 _LEGACY_REDIRECTS = {
     "/api/curriculum": "/api/v1/curriculum",

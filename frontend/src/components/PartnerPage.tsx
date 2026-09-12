@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { apiClient } from "../api/client";
 import { COLORS, SPACING, TYPOGRAPHY } from "../design/tokens";
-import HelpRequestWidget from "./HelpRequestWidget";
+import ChatWidget from "./ChatWidget";
 
 const PAGE: React.CSSProperties = {
   maxWidth: 560,
@@ -67,10 +67,7 @@ export default function PartnerPage() {
         I have my access code — sign me in
       </button>
       <div style={{ marginTop: SPACING.lg }}>
-        <HelpRequestWidget
-          context="facility"
-          pagePath={window.location.pathname}
-        />
+        <ChatWidget />
       </div>
     </main>
   );

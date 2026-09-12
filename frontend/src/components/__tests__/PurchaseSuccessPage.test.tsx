@@ -91,6 +91,24 @@ describe("PurchaseSuccessPage — post-purchase routing", () => {
   });
 });
 
+describe("PurchaseSuccessPage — chat widget placement (ADR 0032)", () => {
+  it("mounts the chat widget in gift mode only", async () => {
+    const gift = await render(
+      "/purchase/success?purchase=test&product=modules_4_5&provider=stripe&is_gift=true",
+    );
+    expect(
+      gift.querySelector('[data-contract-exemption="chat-widget"]'),
+    ).not.toBeNull();
+
+    const self = await render(
+      "/purchase/success?purchase=test&product=modules_4_5&provider=stripe&is_gift=false",
+    );
+    expect(
+      self.querySelector('[data-contract-exemption="chat-widget"]'),
+    ).toBeNull();
+  });
+});
+
 describe("PurchaseSuccessPage — mock checkout completion", () => {
   beforeEach(() => {
     (mockCheckoutComplete as ReturnType<typeof vi.fn>).mockReset();
