@@ -231,7 +231,7 @@ export default function OrgDashboardPage({ onBack }: { onBack: () => void }) {
         </>
       )}
       <div style={{ marginTop: SPACING.lg }}>
-        <ChatWidget />
+        <ChatWidget journey="facility" />
       </div>
     </main>
   );

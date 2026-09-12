@@ -67,7 +67,7 @@ export default function PartnerPage() {
         I have my access code — sign me in
       </button>
       <div style={{ marginTop: SPACING.lg }}>
-        <ChatWidget />
+        <ChatWidget journey="facility" />
       </div>
     </main>
   );

@@ -115,7 +115,7 @@ export default function GiftCheckoutPage({ productCode, onBack }: Props) {
         >
           Go back
         </button>
-        <ChatWidget />
+        <ChatWidget journey="gift" />
       </div>
     </main>
   );

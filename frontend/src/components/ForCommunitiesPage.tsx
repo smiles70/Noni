@@ -320,7 +320,7 @@ export default function ForCommunitiesPage() {
             confidence. Your residents learn AI — your staff doesn't have to run
             the program.
           </p>
-          <ChatWidget />
+          <ChatWidget journey="facility" />
           <Link to="/" style={TEXT_LINK}>
             See the learner experience
           </Link>

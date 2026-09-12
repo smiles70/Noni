@@ -73,3 +73,31 @@ Owner decisions (2026-09-12):
 - `frontend/e2e/purchase.spec.ts`: same assertion end-to-end.
 - Staging manual check: FAB absent on all learner routes; present on the
   four allowed journeys; navigation off a widget route removes the FAB.
+
+## Amendment 2026-09-12 — persona isolation
+
+Owner requirement: the gift-giver and the senior-care-facility visitor
+are **two distinct personas on two distinct journeys**. A gift-giver must
+never see community/org pricing, and a facility visitor must never see
+gift/individual pricing.
+
+Enforced at the **knowledge layer**, not prompt rules alone:
+
+- **Gift agent** (`agent_646dba13a4321b698970c15c68`, LLM `llm_13c7...`):
+  KB `knowledge_base_a4c3856e68f0e31f` — 9 docs, `organizations.md`
+  excluded. Community pricing is physically absent.
+- **Facility agent** (`agent_719be4f2578150bb27ac06f357`, LLM
+  `llm_e9ed...`): KB `knowledge_base_d52a7c13a5b4b702` — 8 docs,
+  `gifting.md` + `pricing-purchasing.md` excluded.
+- Voice KB keeps all 10 docs — phone callers legitimately ask either.
+- `ChatWidget` takes `journey="gift" | "facility"` →
+  `VITE_RETELL_CHAT_AGENT_ID_{GIFT,FACILITY}`.
+- Prompts also carry scope rules + redirect-to-email behavior as
+  defense in depth. Persona subsets are recorded in
+  `retell-mynaani/retell/config/chat-personas.json`.
+
+## Known gap — vendor branding
+
+The widget shows "Powered by Retell" branding. Removal requires Retell's
+white-label token (`data-white-label` attribute; obtained from Retell
+dashboard/support — gated by plan). Open item, not a launch blocker.

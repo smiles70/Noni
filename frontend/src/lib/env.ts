@@ -24,8 +24,12 @@ export const RETELL_PUBLIC_KEY: string = (
   import.meta.env.VITE_RETELL_PUBLIC_KEY ?? ""
 ).trim();
 
-export const RETELL_CHAT_AGENT_ID: string = (
-  import.meta.env.VITE_RETELL_CHAT_AGENT_ID ?? ""
+export const RETELL_CHAT_AGENT_ID_GIFT: string = (
+  import.meta.env.VITE_RETELL_CHAT_AGENT_ID_GIFT ?? ""
+).trim();
+
+export const RETELL_CHAT_AGENT_ID_FACILITY: string = (
+  import.meta.env.VITE_RETELL_CHAT_AGENT_ID_FACILITY ?? ""
 ).trim();
 
 export const IS_DEV: boolean = import.meta.env.DEV === true;

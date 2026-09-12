@@ -137,7 +137,7 @@ export default function PurchaseSuccessPage() {
           </div>
         </>
       )}
-      {isGift && <ChatWidget />}
+      {isGift && <ChatWidget journey="gift" />}
     </main>
   );
 }
