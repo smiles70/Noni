@@ -417,11 +417,11 @@ export default function LandingPage({ onBegin, signedIn }: Props) {
             data-b2b-stack="hero"
           >
             <Link
-              to="/gift"
+              to="/caregiver"
               style={B2B_BUTTON}
               data-contract-exemption="landing.hero"
               data-caregiver-entry="hero"
-              aria-label="Caregiver — purchase mynaani as a gift"
+              aria-label="Caregiver — learn about giving mynaani as a gift"
             >
               Caregiver
             </Link>

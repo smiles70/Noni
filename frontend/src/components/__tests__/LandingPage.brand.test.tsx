@@ -139,6 +139,32 @@ describe("LandingPage — B2B pathway entry (B2B-LANDING-001)", () => {
   });
 });
 
+describe("LandingPage — B2B/caregiver pathway entry (B2B-LANDING-001)", () => {
+  it("offers a primary-style top-right B2B stack with Caregiver and Senior facilities", async () => {
+    const { host } = await render();
+    const caregiver = host.querySelector<HTMLAnchorElement>(
+      'a[href="/caregiver"]',
+    );
+    expect(caregiver).not.toBeNull();
+    expect(caregiver!.textContent).toBe("Caregiver");
+    const facility = host.querySelector<HTMLAnchorElement>(
+      'a[href="/for-communities"]',
+    );
+    expect(facility).not.toBeNull();
+    expect(facility!.textContent).toBe("Senior facilities");
+    const stack = caregiver!.closest<HTMLElement>('[data-b2b-stack="hero"]');
+    expect(stack).not.toBeNull();
+    expect(stack!.style.position).toBe("absolute");
+    expect(stack!.style.top).toBe("32px");
+    expect(stack!.style.right).toBe("32px");
+    expect(stack!.dataset.contractExemption).toBe("landing.hero");
+    expect(caregiver!.style.border).toContain("2px solid");
+    expect(caregiver!.style.minHeight).toBe("44px");
+    expect(caregiver!.getAttribute("aria-label")).toContain("gift");
+    expect(caregiver!.dataset.caregiverEntry).toBe("hero");
+  });
+});
+
 describe("LandingPage — signed-in and help states", () => {
   it("shows Continue learning when signed in and calls onBegin", async () => {
     const { host, onBegin } = await render({ signedIn: true });

@@ -301,6 +301,9 @@ export default function ForCommunitiesPage() {
           <Link to="/" style={HEADER_LINK}>
             For learners
           </Link>
+          <Link to="/caregiver" style={HEADER_LINK}>
+            For caregivers
+          </Link>
           <a href={MAILTO} style={HEADER_CTA}>
             Talk to us
           </a>

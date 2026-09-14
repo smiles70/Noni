@@ -11,6 +11,7 @@ test.describe("Landing page", () => {
     await expect(
       page.getByRole("link", { name: /Senior facilities/i }),
     ).toBeVisible();
+    await expect(page.getByRole("link", { name: /Caregiver/i })).toBeVisible();
   });
 
   test("primary CTA advances to curriculum view", async ({ page }) => {
