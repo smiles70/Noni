@@ -1,6 +1,6 @@
 # Caregiver / for-communities References — Research Protocol & Triple-Check
 
-**Date:** 2026-09-14  
+**Date:** 2026-09-14 (revised)  
 **Scope:** All external references and whitepapers linked from `CaregiverPage.tsx`, `ForCommunitiesPage.tsx`, and the related research/ADR/intake artifacts.  
 **Method:** URL reachability (`curl -sL --max-time 15`), PDF text extraction (`pdftotext`), cross-check between page claims and PDF bibliographies, and web-search verification for blocked sources.
 
@@ -8,36 +8,52 @@
 
 ## 1. Research question
 
-Do the research claims and downloadable whitepapers on the caregiver and senior-facility marketing surfaces rest on real, reachable, and accurately cited sources? Are the page-cited sources also present in the PDF bibliographies?
+Do the research claims on the caregiver marketing page rest on real, reachable, and caregiver/geragogy-specific sources? Are the senior-facility page and the two downloadable whitepapers still grounded in the same geragogy/aging sources as before?
 
 ---
 
-## 2. Source table — page-cited references (7)
+## 2. Caregiver page source table — page-cited references (7)
 
-All seven sources appear in `CaregiverPage.tsx` (`SOURCES` array, lines 187–223) and in `ForCommunitiesPage.tsx`.
+`CaregiverPage.tsx` (`SOURCES` array, lines 174–210) now uses a distinct set focused on family caregiving, technology support, and geragogy.
 
 | # | Source | URL | HTTP | Verdict |
 |---|--------|-----|------|---------|
-| 1 | Pew Research Center — How Americans' opinions and use of AI differ by age (2026) | `https://www.pewresearch.org/internet/2026/06/17/how-opinions-and-use-of-ai-differ-by-age/` | 200 | Reachable; article present |
+| 1 | Tang X. et al. — "I Never Imagined Grandma Could Do So Well with Technology" (CSCW 2022) | `https://xinrutang.github.io/file/FamilyCSCW22/FamilyCSCW22.pdf` | 200 | Reachable; describes family caregivers' evolving roles in older adults' technology learning |
+| 2 | Caregiver Action Network — CIC Caregiver Tech Insights Survey (2026) | `https://www.caregiveraction.org/wp-content/uploads/2026/05/CIC-Survey-2026.pdf` | 200 | Reachable; 272 family caregivers, 90% use digital tools, 38% spend 11+ hours/week on coordination |
+| 3 | AARP / Age in Place Tech — 2025 Technology Trends: Older Adults and Caregiving | `https://www.ageinplacetech.com/files/aip/2025-technology-trends-older-adults-caregiving.doi_.10.26419-2fres.00891.007.pdf` | 200 | Reachable; caregivers 50+ adopt convenience/safety technology more than non-caregivers |
+| 4 | JMIR Aging — Application-based interventions for family caregivers of older adults: scoping review (2026) | `https://aging.jmir.org/2026/1/e76115` | 202 | 202 status (likely pre-print/accepted); 49 studies on apps and caregiver outcomes |
+| 5 | SSPH+ / Frontiers in Public Health Reviews — Digital Informal Care: The Use of Technology in Family Care (2025) | `https://www.ssph-journal.org/journals/public-health-reviews/articles/10.3389/phrs.2025.1608872/full` | 200 | Reachable; 110-study scoping review on digital tools for family care |
+| 6 | Heliyon — The impact of family members on aging persons' technology use intentions (2025) | `https://doi.org/10.1016/j.heliyon.2025.e42252` | 200 | Reachable via DOI; family caregiver belief alignment predicts older adult technology use |
+| 7 | Laganà L. et al. — Enhancing computer self-efficacy in older adults: a randomised controlled study | `https://pmc.ncbi.nlm.nih.gov/articles/PMC4265211/` | 200 | Reachable; age-appropriate, self-paced training improves attitudes and self-efficacy |
+
+**Cross-check:** Only Laganà et al. also appears in the existing `Geragogy — the key to learning` whitepaper bibliography. The other six are caregiver-specific and are not currently in the two whitepapers, because the whitepapers are senior-facility / general geragogy deep-dives. The `CaregiverPage` now carries its own inline references rather than duplicating the community-page list.
+
+---
+
+## 3. Senior-facility page and whitepaper source table (unchanged)
+
+`ForCommunitiesPage.tsx` retains the original seven geragogy/aging sources. These are also present in the whitepaper bibliographies.
+
+| # | Source | URL | HTTP | Verdict |
+|---|--------|-----|------|---------|
+| 1 | Pew Research Center — How Americans' opinions and use of AI differ by age (2026) | `https://www.pewresearch.org/internet/2026/06/17/how-opinions-and-use-of-ai-differ-by-age/` | 200 | Reachable |
 | 2 | Nielsen Norman Group — Usability for Senior Citizens | `https://www.nngroup.com/articles/usability-seniors-improvements/` | 200 | Reachable |
 | 3 | W3C WAI — Web Accessibility for Older Users: A Literature Review | `https://www.w3.org/WAI/older-users/literature/` | 200 | Reachable |
-| 4 | Owsley C. — Vision and Aging, *Annual Review of Vision Science* | `https://www.annualreviews.org/content/journals/10.1146/annurev-vision-111815-114550` | 403 | Paywall / bot-guarded; article verified via web search (DOI 10.1146/annurev-vision-111815-114550, Vol. 2, 2016) |
+| 4 | Owsley C. — Vision and Aging, *Annual Review of Vision Science* | `https://www.annualreviews.org/content/journals/10.1146/annurev-vision-111815-114550` | 403 | Paywall / bot-guarded; verified via web search (DOI 10.1146/annurev-vision-111815-114550, Vol. 2, 2016) |
 | 5 | Hasher L. & Zacks R.T. — Working memory, comprehension, and aging | `https://hasherlab.psych.utoronto.ca/abstracts/hasher_zacks_88.htm` | 200 | Reachable |
 | 6 | JMIR (2025) — Cognitive load and learning performance in digital health education for older patients | `https://www.jmir.org/2025/1/e79430` | 202 | Unusual 202 status; article verified via web search (J Med Internet Res 2025;27:e79430, DOI 10.2196/79430) |
 | 7 | Laganà L. et al. — Enhancing computer self-efficacy in older adults | `https://pmc.ncbi.nlm.nih.gov/articles/PMC4265211/` | 200 | Reachable |
 
-**Cross-check:** The same seven sources are also extracted from the whitepaper bibliographies (see Section 4).
-
 ---
 
-## 3. PDF inventory
+## 4. PDF inventory
 
 | Whitepaper | Local path | Pages | File size | Staging URL | Live URL | HTTP |
 |---|---|---|---|---|---|---|
 | The AI Gap | `frontend/public/whitepapers/the-ai-gap.pdf` | 10 | 121,787 B | `https://staging.noni-web.pages.dev/whitepapers/the-ai-gap.pdf` | `https://www.mynaani.com/whitepapers/the-ai-gap.pdf` | 200 |
 | Geragogy — the key to learning | `frontend/public/whitepapers/geragogy-the-key-to-learning.pdf` | 8 | 106,736 B | `https://staging.noni-web.pages.dev/whitepapers/geragogy-the-key-to-learning.pdf` | `https://www.mynaani.com/whitepapers/geragogy-the-key-to-learning.pdf` | 200 |
 
-### 3.1 Metadata
+### 4.1 Metadata
 
 - **Creator:** Chromium / Skia PDF
 - **Creation date:** 2026-09-05
@@ -49,82 +65,60 @@ Note: PDFs are not PDF/UA-tagged. They are marketing downloads, not the product 
 
 ---
 
-## 4. Bibliography cross-check
+## 5. Bibliography cross-check
 
-### 4.1 The AI Gap PDF
+### 5.1 The AI Gap PDF
 
-The references section (page 8–9 of 10) contains 17 named sources, including all 7 page-cited references above plus:
+The references section (page 8–9 of 10) contains 17 named sources, including the senior-facility page-cited references above plus additional Pew, AARP, npj Digital Medicine, Campbell/Hasher/Thomas, Kalyuga, and NIA/NLM sources.
 
-- Additional Pew Research Center studies (2017, 2025)
-- AARP Research (2025, 2026)
-- npj Digital Medicine (2026)
-- Campbell, Hasher & Thomas (2014)
-- Kalyuga (2012)
-- National Institute on Aging / U.S. National Library of Medicine
+**Verdict:** The claim of "17 sources" is consistent with the extracted bibliography.
 
-**Verdict:** The page claim of "17 sources" is consistent with the extracted bibliography. The 7 inline page sources are all present.
+### 5.2 Geragogy PDF
 
-### 4.2 Geragogy PDF
+The references section (page 7–8 of 8) contains 16 named sources, including the senior-facility page-cited references above plus additional AARP, Boulton-Lewis, Campbell/Hasher/Thomas, Kalyuga, Knowles/Holton/Swanson, and NIA/NLM sources.
 
-The references section (page 7–8 of 8) contains 16 named sources, including the 7 page-cited references above plus:
+**Verdict:** The claim of "16 sources" is consistent with the extracted bibliography.
 
-- AARP Research (2025, 2026)
-- Boulton-Lewis (2010)
-- Campbell, Hasher & Thomas (2014)
-- Kalyuga (2012)
-- Knowles, Holton & Swanson (andragogy lineage)
-- National Institute on Aging / U.S. National Library of Medicine
-- npj Digital Medicine (2026)
+### 5.3 URL wrapping issue in PDF text
 
-**Verdict:** The page claim of "16 sources" is consistent with the extracted bibliography. The 7 inline page sources are all present.
-
-### 4.3 URL wrapping issue in PDF text
-
-When `pdftotext` extracts the PDF, some long URLs are wrapped mid-URL (e.g., `https://www.pewresearch.org/internet/2026/06/17/how-opinions-and-useof-ai-differ-by-age/` missing the hyphen). This is only a text-extraction artifact. The actual link target in the PDF is correct, because the links are served from the page copy as typed.
+`pdftotext` wraps some long URLs mid-string. This is only a text-extraction artifact; the actual link targets in the page code and PDFs are correct.
 
 ---
 
-## 5. Claim verification
+## 6. Claim verification
 
-| Claim on page / PDF | Source(s) | Support |
+| Claim on caregiver page | Source(s) | Support |
 |---|---|---|
-| 57% of under-50 U.S. adults use AI chatbots vs. 28% of 50+ | Pew Research Center 2026 | Directly supported in PDF and on page |
-| Adults 65+ are the most uncertain group about AI | Pew Research Center 2026 | Supported |
-| Older adults (65+) succeed at website tasks ~55% vs. 75% for 21–55, ~43% slower | Nielsen Norman Group | Supported |
-| ~80% contrast-sensitivity loss by age 80 | W3C WAI / Owsley | Supported (cited in both page and PDF) |
-| Cognitive load is a key mediator of learning in older adults | JMIR 2025 | Supported |
-| Age-appropriate training improves self-efficacy | Laganà et al. | Supported |
+| Family members play evolving roles in older adults' technology learning | Tang et al. 2022 | Directly supported |
+| Caregivers already use digital tools but face coordination burden | Caregiver Action Network 2026 | Supported |
+| Caregivers 50+ adopt convenience and safety technology more than non-caregivers | AARP / Age in Place Tech 2025 | Supported |
+| Apps can support caregiver well-being and burden if well-designed | JMIR Aging 2026; SSPH+ 2025 | Supported |
+| Family caregiver capability beliefs influence older adult technology use | Heliyon 2025 | Supported |
+| Age-appropriate, self-paced training improves older-adult self-efficacy | Laganà et al. | Supported |
 
 ---
 
-## 6. Decision / confidence
+## 7. Decision / confidence
 
-**Decision:** The seven page-cited references are real, the linked PDFs are reachable on both staging and production, and the whitepaper bibliographies contain the expected 16–17 sources that include all page-cited references. The content is therefore evidence-grounded.
+**Decision:** The `CaregiverPage` now has its own set of caregiver-specific, reachable, and verifiable references. The geragogy/learning foundation is preserved through Laganà et al., and the caregiving context is supported by six new sources. The senior-facility page and whitepapers remain unchanged and evidence-grounded.
 
-**Confidence:** High for the five 200 URLs and the two verified-but-blocked URLs (Annual Reviews, JMIR). Medium for the claim counts of 16/17 because they rely on manual enumeration from `pdftotext` output; a PDF-parsing library would give a more precise count.
-
----
-
-## 7. Edge cases and remaining gaps
-
-1. **Annual Reviews 403** — the paywall means the original source cannot be programmatically read. A purchase or library access is needed to audit the exact text, but the DOI and web-search confirm the article exists.
-2. **JMIR 202** — the 202 status is unusual for a web page; it may be an acceptance or pre-print state. The DOI `10.2196/79430` resolves and the article title matches.
-3. **PDF/UA tagging** — marketing PDFs are not tagged. Not a functional blocker, but a future accessibility P2.
-4. **PDF text extraction** — `pdftotext` wraps some URLs. The actual `href` in the page code is correct.
-5. **McKinsey and Demand Gen B2B references** — from `.ai/intake/2026-09-05-b2b-landing-research-001.md`. McKinsey URL is reachable via search but blocks `curl` (000); Demand Gen Report is 200. These are in the B2B intake, not on the public page, so they do not affect the caregiver/facility surfaces.
+**Confidence:** High for the 200 URLs; Medium for the two `202` responses (`aging.jmir.org` and `jmir.org`), which are unusual but resolve to the expected articles. Medium for source counts in PDFs because they rely on manual enumeration from `pdftotext` output.
 
 ---
 
-## 8. Code / artifact references
+## 8. Edge cases and remaining gaps
 
-- `frontend/src/components/CaregiverPage.tsx` — lines 187–223 (SOURCES)
-- `frontend/src/components/ForCommunitiesPage.tsx` — SOURCES block
+1. **JMIR Aging 202** — the 202 status may indicate an accepted-but-not-yet-final article. The DOI and title match the expected article.
+2. **PDF/UA tagging** — marketing PDFs are not tagged. Not a functional blocker, but a future accessibility P2.
+3. **Caregiver-specific whitepaper** — if the marketing team wants a caregiver-specific downloadable PDF, a new whitepaper should be generated that includes the seven caregiver page sources plus the existing geragogy literature.
+4. **McKinsey / Demand Gen B2B references** — from a separate B2B intake; not on the public caregiver/facility surfaces.
+
+---
+
+## 9. Code / artifact references
+
+- `frontend/src/components/CaregiverPage.tsx` — `SOURCES` array (lines 174–210)
+- `frontend/src/components/ForCommunitiesPage.tsx` — `SOURCES` array
 - `frontend/public/whitepapers/the-ai-gap.pdf`
 - `frontend/public/whitepapers/geragogy-the-key-to-learning.pdf`
 - `docs/decisions/0030-marketing-surfaces-annex.md` — marketing-surface exemption
-
----
-
-## 9. Gaps requiring user input
-
-None for the current scope. If a separate caregiver-specific whitepaper is desired (rather than reusing the two existing PDFs), a new PDF generation and reference list will be needed.

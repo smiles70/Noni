@@ -173,39 +173,39 @@ const FOOTER: CSSProperties = {
 
 const SOURCES = [
   {
-    name: "Pew Research Center — How Americans' opinions and use of AI differ by age (2026)",
-    url: "https://www.pewresearch.org/internet/2026/06/17/how-opinions-and-use-of-ai-differ-by-age/",
-    why: "AI chatbot adoption: 57% under-50 vs. 28% ages 50+; 65+ the most uncertain group.",
+    name: 'Tang X. et al. — "I Never Imagined Grandma Could Do So Well with Technology" (CSCW 2022)',
+    url: "https://xinrutang.github.io/file/FamilyCSCW22/FamilyCSCW22.pdf",
+    why: "Younger family members support older adults' technology learning over time as influencers, supporters, protectors, and monitors.",
   },
   {
-    name: "Nielsen Norman Group — Usability for Senior Citizens",
-    url: "https://www.nngroup.com/articles/usability-seniors-improvements/",
-    why: "Adults 65+ succeed at website tasks 55% vs. 75% for ages 21–55, ~43% slower.",
+    name: "Caregiver Action Network — CIC Caregiver Tech Insights Survey (2026)",
+    url: "https://www.caregiveraction.org/wp-content/uploads/2026/05/CIC-Survey-2026.pdf",
+    why: "90% of family caregivers already use digital tools; nearly four in ten spend 11 or more hours per week on care coordination.",
   },
   {
-    name: "W3C Web Accessibility Initiative — Web Accessibility for Older Users: A Literature Review",
-    url: "https://www.w3.org/WAI/older-users/literature/",
-    why: "Ageing vision: ~80% contrast-sensitivity loss by age 80; presbyopia; colour-shift.",
+    name: "AARP / Age in Place Tech — 2025 Technology Trends: Older Adults and Caregiving",
+    url: "https://www.ageinplacetech.com/files/aip/2025-technology-trends-older-adults-caregiving.doi_.10.26419-2fres.00891.007.pdf",
+    why: "Adults 50+ who are caregivers adopt convenience and safety technology more often than non-caregivers.",
   },
   {
-    name: "Owsley C. — Vision and Aging, Annual Review of Vision Science (UAB School of Medicine)",
-    url: "https://www.annualreviews.org/content/journals/10.1146/annurev-vision-111815-114550",
-    why: "Contrast sensitivity and visual-processing-speed decline in later life.",
+    name: "JMIR Aging — Application-based interventions for family caregivers of older adults: scoping review (2026)",
+    url: "https://aging.jmir.org/2026/1/e76115",
+    why: "Apps can improve caregiver well-being and burden, but the biggest gap is usable, well-evaluated design.",
   },
   {
-    name: "Hasher L. & Zacks R.T. — Working memory, comprehension, and aging (University of Toronto)",
-    url: "https://hasherlab.psych.utoronto.ca/abstracts/hasher_zacks_88.htm",
-    why: "Aging reduces inhibition of irrelevant information — visual distraction harms learning.",
+    name: "SSPH+ / Frontiers in Public Health Reviews — Digital Informal Care: The Use of Technology in Family Care (2025)",
+    url: "https://www.ssph-journal.org/journals/public-health-reviews/articles/10.3389/phrs.2025.1608872/full",
+    why: "Digital tools can reduce caregiver burden and improve competence, but only when they are usable and accessible.",
   },
   {
-    name: "JMIR (2025) — Cognitive load and learning performance in digital health education for older patients",
-    url: "https://www.jmir.org/2025/1/e79430",
-    why: "Cognitive load is the key mediator of digital-learning outcomes (large effect).",
+    name: "Heliyon — The impact of family members on aging persons' technology use intentions (2025)",
+    url: "https://doi.org/10.1016/j.heliyon.2025.e42252",
+    why: "When family caregivers and older adults share the same belief about capability, technology use intention is highest.",
   },
   {
     name: "Laganà L. et al. — Enhancing computer self-efficacy in older adults: a randomised controlled study",
     url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4265211/",
-    why: "Age-appropriate training significantly improves attitudes and self-efficacy.",
+    why: "Age-appropriate, self-paced training significantly improves attitudes and self-efficacy in older learners.",
   },
 ];
 
