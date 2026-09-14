@@ -55,12 +55,10 @@ describe("CaregiverPage — marketing surface", () => {
     expect(giftLinks[0]!.textContent).toMatch(/Gift mynaani/i);
     // Whitepapers are reachable.
     expect(
-      host.querySelector('a[href="/whitepapers/the-ai-gap.pdf"]'),
+      host.querySelector('a[href="/whitepapers/gifting-ai-learning.pdf"]'),
     ).not.toBeNull();
     expect(
-      host.querySelector(
-        'a[href="/whitepapers/geragogy-the-key-to-learning.pdf"]',
-      ),
+      host.querySelector('a[href="/whitepapers/geragogy-for-caregivers.pdf"]'),
     ).not.toBeNull();
     // Sources are linked.
     const sourceLinks = host.querySelectorAll(

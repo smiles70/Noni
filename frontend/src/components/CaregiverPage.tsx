@@ -385,14 +385,14 @@ export default function CaregiverPage() {
           </p>
           <div style={CARD_ROW}>
             <div style={CARD}>
-              <h3 style={H3}>The AI Gap</h3>
+              <h3 style={H3}>Gifting AI Learning</h3>
               <p style={{ margin: `0 0 ${SPACING.md}px` }}>
-                Who AI is leaving behind, what it costs in health access and
-                fraud exposure — and why the gap is a design failure, not an
-                ability one. 17 sources.
+                Why most technology gifts fall short, what family caregivers
+                already know about support, and why a calm, self-paced gift
+                works. 7 sources.
               </p>
               <a
-                href="/whitepapers/the-ai-gap.pdf"
+                href="/whitepapers/gifting-ai-learning.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={SECONDARY_BTN}
@@ -401,15 +401,14 @@ export default function CaregiverPage() {
               </a>
             </div>
             <div style={CARD}>
-              <h3 style={H3}>
-                Geragogy — the key to learning for the aging population
-              </h3>
+              <h3 style={H3}>Geragogy for Caregivers</h3>
               <p style={{ margin: `0 0 ${SPACING.md}px` }}>
-                The science of how older adults learn, what standard design gets
-                wrong, and the method mynaani is built on. 16 sources.
+                The science of helping an older adult learn, the four changes
+                aging makes, and how to support without becoming the help desk.
+                12 sources.
               </p>
               <a
-                href="/whitepapers/geragogy-the-key-to-learning.pdf"
+                href="/whitepapers/geragogy-for-caregivers.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={SECONDARY_BTN}

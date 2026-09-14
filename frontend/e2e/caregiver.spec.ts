@@ -21,10 +21,10 @@ test.describe("Caregiver marketing page", () => {
   }) => {
     await page.goto("/caregiver");
     await expect(
-      page.locator('a[href="/whitepapers/the-ai-gap.pdf"]'),
+      page.locator('a[href="/whitepapers/gifting-ai-learning.pdf"]'),
     ).toBeVisible();
     await expect(
-      page.locator('a[href="/whitepapers/geragogy-the-key-to-learning.pdf"]'),
+      page.locator('a[href="/whitepapers/geragogy-for-caregivers.pdf"]'),
     ).toBeVisible();
     await expect(page.locator('a[href="/for-communities"]')).toBeVisible();
     await expect(page.locator('a[href="/"]')).toBeVisible();
