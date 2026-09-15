@@ -21,7 +21,7 @@ test.describe("Caregiver marketing page", () => {
   }) => {
     await page.goto("/caregiver");
     await expect(
-      page.locator('a[href="/whitepapers/gifting-ai-learning.pdf"]'),
+      page.locator('a[href="/whitepapers/cognitive-engagement.pdf"]'),
     ).toBeVisible();
     await expect(
       page.locator('a[href="/whitepapers/geragogy-for-caregivers.pdf"]'),

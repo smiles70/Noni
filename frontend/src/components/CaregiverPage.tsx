@@ -385,14 +385,14 @@ export default function CaregiverPage() {
           </p>
           <div style={CARD_ROW}>
             <div style={CARD}>
-              <h3 style={H3}>Gifting AI Learning</h3>
+              <h3 style={H3}>Cognitive Engagement</h3>
               <p style={{ margin: `0 0 ${SPACING.md}px` }}>
-                Why most technology gifts fall short, what family caregivers
-                already know about support, and why a calm, self-paced gift
-                works. 7 sources.
+                Why mentally stimulating activities matter in later life, what
+                the research shows, and how caregivers can support them. 10
+                sources.
               </p>
               <a
-                href="/whitepapers/gifting-ai-learning.pdf"
+                href="/whitepapers/cognitive-engagement.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={SECONDARY_BTN}

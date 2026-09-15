@@ -55,7 +55,7 @@ describe("CaregiverPage — marketing surface", () => {
     expect(giftLinks[0]!.textContent).toMatch(/Gift mynaani/i);
     // Whitepapers are reachable.
     expect(
-      host.querySelector('a[href="/whitepapers/gifting-ai-learning.pdf"]'),
+      host.querySelector('a[href="/whitepapers/cognitive-engagement.pdf"]'),
     ).not.toBeNull();
     expect(
       host.querySelector('a[href="/whitepapers/geragogy-for-caregivers.pdf"]'),

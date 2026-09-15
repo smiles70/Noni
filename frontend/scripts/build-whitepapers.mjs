@@ -35,8 +35,8 @@ const PAPERS = [
     tag: "Research Brief — Method",
   },
   {
-    file: "gifting-ai-learning-whitepaper.md",
-    slug: "gifting-ai-learning",
+    file: "cognitive-engagement-whitepaper.md",
+    slug: "cognitive-engagement",
     tag: "Research Brief — For Caregivers",
   },
   {
