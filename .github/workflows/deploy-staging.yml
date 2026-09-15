@@ -315,3 +315,32 @@ jobs:
             exit 1
           fi
           echo "VERIFIED: frontend gift flow has matching backend endpoints"
+
+  deployed-e2e-smoke:
+    name: Post-deploy Playwright smoke (@smoke, read-only)
+    needs: [verify-staging-sync]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PLAYWRIGHT_TEST_BASE_URL: https://staging.noni-web.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps
+      - name: Run deployed smoke suite
+        working-directory: frontend
+        run: npm run test:e2e:smoke
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-smoke-report-staging
+          path: frontend/playwright-report/
+          retention-days: 14
