@@ -20,7 +20,6 @@ import {
   SECONDARY_BTN,
   STACK,
 } from "./AccountStyles";
-import ChatWidget from "./ChatWidget";
 import SupportContact from "./SupportContact";
 
 interface Props {
