@@ -40,7 +40,7 @@ from backend.app.telemetry import (
 )
 from backend.core.config import settings, validate_settings
 from backend.core.database import engine
-from backend.core.feature_flags import FeatureFlags, get_flags
+from backend.core.feature_flags import get_flags
 
 
 def _verify_crypto_dependency() -> None:
