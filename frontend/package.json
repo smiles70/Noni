@@ -12,6 +12,7 @@
     "type-check": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test --config playwright.deployed.config.ts",
     "test:e2e:install": "playwright install --with-deps",
     "bundle-size": "node scripts/check-bundle-size.mjs",
     "smoke:lighthouse": "node scripts/smoke-lighthouse.mjs",
