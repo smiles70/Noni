@@ -4,16 +4,17 @@ import { injectAxe, checkA11y } from "axe-playwright";
 test.describe("Caregiver marketing page", () => {
   test("renders the caregiver gift journey and CTA", async ({ page }) => {
     await page.goto("/caregiver");
+    // Hero heading is the primary h1 on the page.
     await expect(
-      page.getByRole("heading", { name: /Give calm, self-paced AI learning/i }),
+      page.getByText(
+        "Give calm, self-paced AI learning to someone you care about",
+      ),
     ).toBeVisible();
     const gift = page.getByRole("link", { name: /Gift mynaani/i }).first();
     await expect(gift).toBeVisible();
     await gift.click();
     await expect(page).toHaveURL(/\/(gift|.*\/gift)$/);
-    await expect(
-      page.getByRole("heading", { name: /Buy mynaani as a gift/i }),
-    ).toBeVisible();
+    await expect(page.getByText("Buy mynaani as a gift")).toBeVisible();
   });
 
   test("links to whitepapers, sources, and the learner/facility surfaces", async ({
@@ -26,8 +27,15 @@ test.describe("Caregiver marketing page", () => {
     await expect(
       page.locator('a[href="/whitepapers/geragogy-for-caregivers.pdf"]'),
     ).toBeVisible();
-    await expect(page.locator('a[href="/for-communities"]')).toBeVisible();
-    await expect(page.locator('a[href="/"]')).toBeVisible();
+    // Use the unique body link text rather than the shared href, which
+    // appears in the header, body, and footer.
+    await expect(
+      page.getByRole("link", { name: /our community program/i }),
+    ).toBeVisible();
+    // Home is linked from the logo (aria-label) and the footer.
+    await expect(
+      page.getByRole("link", { name: /mynaani home/i }),
+    ).toBeVisible();
   });
 
   test("passes WCAG 2.1 AA automated checks (axe-core)", async ({ page }) => {
