@@ -33,6 +33,7 @@ import {
   PRIMARY_BTN,
   STACK,
 } from "./AccountStyles";
+import ChatWidget from "./ChatWidget";
 
 const INQUIRY_EMAIL = "partnerships@mynaani.com";
 
@@ -157,6 +158,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
         <button onClick={onBack} style={PRIMARY_BTN}>
           Back to mynaani
         </button>
+        <ChatWidget journey="facility" />
       </main>
     );
   }
@@ -188,9 +190,12 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
             <a
               href={`tel:${contactPhone.replace(/[^0-9+]/g, "")}`}
               style={HERO_LINK}
+              aria-label="Call MyNaani, toll-free"
             >
               {contactPhone}
-            </a>
+            </a>{" "}
+            (toll-free). The line is answered by our AI receptionist, who can
+            connect you to a person when needed.
           </p>
         )}
       </div>
@@ -344,6 +349,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           </p>
         </div>
       </form>
+      <ChatWidget journey="facility" />
     </main>
   );
 }

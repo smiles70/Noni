@@ -49,7 +49,9 @@ class Settings(BaseSettings):
     # Destination inbox for /api/site/partner-inquiry submissions.
     PARTNER_INBOX: str = "partnerships@mynaani.com"
     # Public "call us" line shown on /partners when set. Empty = hidden.
-    PARTNER_PHONE: str = ""
+    # Defaults to the toll-free Retell-answered support line already
+    # published on /help (intake 013); overridden per-env if needed.
+    PARTNER_PHONE: str = "+1 (877) 409-4144"
 
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 30

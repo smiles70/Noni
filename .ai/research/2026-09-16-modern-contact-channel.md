@@ -136,3 +136,36 @@ mailto:
 **High** that form→backend is the enterprise-correct primary; **High**
 that voice is the differentiated channel for this audience; **Medium**
 on Retell vs. Pipecat pending pricing/ops review.
+
+---
+
+## Addendum — triple-scan finding (2026-09-16)
+
+Retell was already configured in this codebase — confirmed via code,
+env, and ADR:
+
+- `frontend/src/components/ChatWidget.tsx` injects
+  `retell-widget-v2.js` with persona-scoped agents (gift/facility, KBs
+  isolated per ADR-0032 amendment). Mounted on `/gift`,
+  `/for-communities`, `/c/:slug`, `/org`, `/caregiver`,
+  gift `/purchase/success`.
+- `VITE_RETELL_PUBLIC_KEY` + both agent IDs present in
+  `frontend/.env.production`, `deploy-staging.yml`, `deploy.yml`
+  (domain-locked public key).
+- Toll-free AI receptionist **1 (877) 409-4144** live; published on
+  `/help` (`tel:+18774094144`, intake 013); staffed transfer number
+  never published.
+- Widget supports voice-call + callback modes we haven't enabled.
+
+**Gap closed:** `/partners` now mounts the facility agent and shows the
+call line via `PARTNER_PHONE` default `+1 (877) 409-4144` (env-gated).
+
+**Retell pathway for conversational intake → structured JSON:** two
+native options replace the need for a separate Claude intake agent —
+(a) a `submit_partner_inquiry` function/tool on the facility agent
+pointing at `POST /api/v1/site/partner-inquiry`, configured in the
+Retell dashboard; (b) post-call/post-chat analysis with a defined schema
++ webhook to our backend. **Claude in concert** is possible via Retell's
+Custom LLM endpoint (Retell owns transport/turn-taking; a thin FastAPI
+bridge calls Claude) — only worth it if we need Claude-specific
+reasoning in the call loop.
