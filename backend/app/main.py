@@ -28,6 +28,7 @@ from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.gifts import router as gifts_router
 from backend.api.routes.landing import router as landing_router
 from backend.api.routes.organizations import router as organizations_router
+from backend.api.routes.site import router as site_router
 from backend.api.routes.admin import router as admin_router
 from backend.api.routes.signals import router as signals_router
 from backend.api.routes.telemetry_export import router as telemetry_export_router
@@ -345,6 +346,7 @@ app.include_router(
     dependencies=[Depends(org_fair_share)],
 )
 app.include_router(landing_router, prefix="/api/v1/landing", tags=["landing"])
+app.include_router(site_router, prefix="/api/v1/site", tags=["site"])
 app.include_router(
     telemetry_export_router, prefix="/api/v1/telemetry", tags=["telemetry"]
 )
@@ -374,6 +376,7 @@ _LEGACY_REDIRECTS = {
     "/api/curriculum": "/api/v1/curriculum",
     "/api/signals": "/api/v1/signals",
     "/api/landing": "/api/v1/landing",
+    "/api/site": "/api/v1/site",
     "/api/telemetry": "/api/v1/telemetry",
     "/api/ui-envelope": "/api/v1/ui-envelope",
     "/auth": "/api/v1/auth",
