@@ -29,6 +29,7 @@ class TestContentIntegrity:
             "nav_links",
             "legal_links",
             "mini_links",
+            "social_links",
             "brand_label",
         }
         assert set(SITE_FOOTER_CONTENT.keys()) == expected
@@ -39,16 +40,16 @@ class TestContentIntegrity:
                 assert link["href"].startswith("/")
                 assert link["label"].strip()
 
+    def test_social_links_are_external_and_labeled(self):
+        for link in SITE_FOOTER_CONTENT["social_links"]:
+            assert link["href"].startswith(("https://", "http://"))
+            assert link["label"].strip()
+
     def test_privacy_link_present(self):
         # CCPA §7011(d): conspicuous link using the word "privacy".
-        hrefs = {
-            link["href"] for link in SITE_FOOTER_CONTENT["legal_links"]
-        }
+        hrefs = {link["href"] for link in SITE_FOOTER_CONTENT["legal_links"]}
         assert "/privacy" in hrefs
-        labels = {
-            link["label"].lower()
-            for link in SITE_FOOTER_CONTENT["legal_links"]
-        }
+        labels = {link["label"].lower() for link in SITE_FOOTER_CONTENT["legal_links"]}
         assert any("privacy" in label for label in labels)
 
 

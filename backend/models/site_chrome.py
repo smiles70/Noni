@@ -21,3 +21,4 @@ class SiteFooterContent(BaseModel):
     mini_links: List[FooterLink]
     brand_label: str
     copyright: str
+    social_links: List[FooterLink]

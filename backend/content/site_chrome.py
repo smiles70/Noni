@@ -13,7 +13,7 @@ SITE_FOOTER_CONTENT: Dict[str, Any] = {
     "nav_links": [
         {"label": "For learners", "href": "/"},
         {"label": "For caregivers", "href": "/caregiver"},
-        {"label": "Be our partner", "href": "/for-communities"},
+        {"label": "Be our partner", "href": "/partners"},
         {"label": "Gift", "href": "/gift"},
         {"label": "About us", "href": "/about"},
         {"label": "Help", "href": "/help"},
@@ -21,6 +21,11 @@ SITE_FOOTER_CONTENT: Dict[str, Any] = {
     "legal_links": [
         {"label": "Privacy", "href": "/privacy"},
         {"label": "Terms", "href": "/terms"},
+    ],
+    "social_links": [
+        {"label": "Instagram", "href": "https://www.instagram.com/mynaani"},
+        {"label": "TikTok", "href": "https://www.tiktok.com/@mynaani"},
+        {"label": "YouTube", "href": "https://www.youtube.com/@mynaani"},
     ],
     # Minimal set for the fixed-viewport landing strip.
     "mini_links": [

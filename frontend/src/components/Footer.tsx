@@ -3,10 +3,14 @@
  *
  * Structure follows the GetSetUp reference and NN/g doormat-nav
  * pattern: centered brand mark, one nav row covering every public
- * surface, hairline divider, then a legal row (privacy/terms +
+ * surface, social row, hairline divider, then a legal row (privacy/terms +
  * copyright). Copy is backend-served via /api/site/footer; on load
  * failure the footer still renders its legal row from a static
  * fallback so the CCPA "conspicuous privacy link" is never absent.
+ *
+ * Background uses the Mynaani sage/desaturated green token. Text and
+ * links render in surface/background tones so the contrast remains
+ * comfortable for older-adult learners.
  *
  * Geragogy: ≤6 nav links, ≥24px targets, calm sentence-case labels.
  * Semantic <footer> at body level → contentinfo landmark.
@@ -27,7 +31,7 @@ const FALLBACK: SiteFooterContent = {
   nav_links: [
     { label: "For learners", href: "/" },
     { label: "For caregivers", href: "/caregiver" },
-    { label: "Be our partner", href: "/for-communities" },
+    { label: "Be our partner", href: "/partners" },
     { label: "Gift", href: "/gift" },
     { label: "About us", href: "/about" },
     { label: "Help", href: "/help" },
@@ -37,6 +41,11 @@ const FALLBACK: SiteFooterContent = {
     { label: "Terms", href: "/terms" },
   ],
   mini_links: [],
+  social_links: [
+    { label: "Instagram", href: "https://www.instagram.com/mynaani" },
+    { label: "TikTok", href: "https://www.tiktok.com/@mynaani" },
+    { label: "YouTube", href: "https://www.youtube.com/@mynaani" },
+  ],
   brand_label: "mynaani",
   copyright: `© ${new Date().getFullYear()} mynaani. All rights reserved.`,
 };
@@ -84,6 +93,20 @@ export default function Footer({ currentPath }: Props) {
           </Link>
         ))}
       </nav>
+      <nav aria-label="Social" style={SOCIAL_NAV}>
+        <span style={SOCIAL_LABEL}>Follow us on</span>
+        {content.social_links.map((link) => (
+          <a
+            key={link.href}
+            href={link.href}
+            style={SOCIAL_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {link.label}
+          </a>
+        ))}
+      </nav>
       <div style={HAIRLINE} />
       <div style={LEGAL_ROW}>
         <span style={LEGAL_LINKS}>
@@ -100,16 +123,16 @@ export default function Footer({ currentPath }: Props) {
 }
 
 const FOOTER: CSSProperties = {
-  borderTop: `1px solid ${COLORS.disabled}`,
+  borderTop: `1px solid ${COLORS.surface}`,
   padding: `${SPACING.xl}px`,
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   gap: SPACING.md,
-  backgroundColor: COLORS.surface,
+  backgroundColor: COLORS.accentDesatGreen,
   fontSize: TYPOGRAPHY.bodySizePx,
   fontFamily: TYPOGRAPHY.fontFamily,
-  color: COLORS.textPrimary,
+  color: COLORS.surface,
 };
 
 const BRAND: CSSProperties = {
@@ -124,7 +147,7 @@ const NAV: CSSProperties = {
 };
 
 const NAV_LINK: CSSProperties = {
-  color: COLORS.accentMutedBlue,
+  color: COLORS.surface,
   textDecoration: "none",
   padding: `${SPACING.xs}px ${SPACING.xs}px`,
   minHeight: MIN_TOUCH_TARGET.mobile,
@@ -134,14 +157,35 @@ const NAV_LINK: CSSProperties = {
 
 const NAV_LINK_CURRENT: CSSProperties = {
   ...NAV_LINK,
-  color: COLORS.textPrimary,
+  color: COLORS.background,
   fontWeight: 600,
+};
+
+const SOCIAL_NAV: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: `${SPACING.sm}px ${SPACING.lg}px`,
+};
+
+const SOCIAL_LABEL: CSSProperties = {
+  color: COLORS.background,
+};
+
+const SOCIAL_LINK: CSSProperties = {
+  color: COLORS.surface,
+  textDecoration: "none",
+  padding: `${SPACING.xs}px ${SPACING.xs}px`,
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  display: "inline-flex",
+  alignItems: "center",
 };
 
 const HAIRLINE: CSSProperties = {
   width: "100%",
   maxWidth: 720,
-  borderTop: `1px solid ${COLORS.disabled}`,
+  borderTop: `1px solid ${COLORS.surface}`,
 };
 
 const LEGAL_ROW: CSSProperties = {
@@ -160,7 +204,7 @@ const LEGAL_LINKS: CSSProperties = {
 };
 
 const LEGAL_LINK: CSSProperties = {
-  color: COLORS.accentMutedBlue,
+  color: COLORS.surface,
   textDecoration: "none",
   padding: `${SPACING.xs}px 0`,
   minHeight: MIN_TOUCH_TARGET.mobile,
@@ -169,5 +213,5 @@ const LEGAL_LINK: CSSProperties = {
 };
 
 const COPYRIGHT: CSSProperties = {
-  color: COLORS.textPrimary,
+  color: COLORS.background,
 };

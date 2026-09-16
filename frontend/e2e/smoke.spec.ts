@@ -58,8 +58,23 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
       await expect(
         footer.getByRole("link", { name: "Be our partner" }),
       ).toBeVisible();
+      await expect(
+        footer.getByRole("link", { name: "Instagram" }),
+      ).toBeVisible();
+      await expect(footer.getByRole("link", { name: "TikTok" })).toBeVisible();
+      await expect(footer.getByRole("link", { name: "YouTube" })).toBeVisible();
       await expect(footer.getByText(/© \d{4} mynaani/)).toBeVisible();
     }
+  });
+
+  test("/partners renders the partner inquiry form", async ({ page }) => {
+    await page.goto("/partners");
+    await expect(
+      page.getByRole("heading", { name: "Partner with mynaani" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Send inquiry" }),
+    ).toBeVisible();
   });
 
   test("caregiver page renders and links to gift checkout", async ({

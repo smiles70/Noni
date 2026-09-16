@@ -14,6 +14,7 @@ export interface SiteFooterContent {
   nav_links: FooterLink[];
   legal_links: FooterLink[];
   mini_links: FooterLink[];
+  social_links: FooterLink[];
   brand_label: string;
   copyright: string;
 }
