@@ -319,6 +319,9 @@ jobs:
   deployed-e2e-smoke:
     name: Post-deploy Playwright smoke (@smoke, read-only)
     needs: [verify-staging-sync]
+    # Explicit status check: a bare need would inherit the implicit
+    # success() rewrite, which skips on any transitively-skipped job.
+    if: ${{ !cancelled() && needs.verify-staging-sync.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:

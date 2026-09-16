@@ -196,7 +196,14 @@ jobs:
 
   smoke:
     needs: [preflight, railway-deploy-backend, cloudflare-pages-deploy]
-    if: needs.preflight.outputs.railway_ready == 'true' && needs.preflight.outputs.cloudflare_ready == 'true'
+    # Gate on actual deploy results, not preflight secret detection.
+    # A bare `if` is rewritten to `success() && (...)`, and success()
+    # counts transitively-skipped jobs (supabase-db-push) as failure —
+    # the `!cancelled()` status check disables that implicit prepend.
+    if: >-
+      !cancelled()
+      && needs.railway-deploy-backend.result == 'success'
+      && needs.cloudflare-pages-deploy.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -208,6 +215,9 @@ jobs:
   deployed-e2e-smoke:
     name: Post-deploy Playwright smoke (@smoke, read-only)
     needs: [smoke]
+    # Same transitive-skip footgun: an implicit success() sees the
+    # skipped supabase-db-push two levels up and would skip this job.
+    if: ${{ !cancelled() && needs.smoke.result == 'success' }}
     environment: production
     runs-on: ubuntu-latest
     timeout-minutes: 20
