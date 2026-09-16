@@ -33,6 +33,28 @@
 - Unrelated untracked/modified files in the working tree belong to the
   human — leave them alone, don't stage, don't delete.
 
+## Dual audience — personas and journeys (owner rule, 2026-09-16)
+
+Mynaani is both **B2C** and **B2B**. Every surface and every solution
+must state which persona it serves and must never leak across journeys:
+
+- **Learner (B2C):** `/`, `/curriculum`, `/paid-curriculum`, account,
+  paywall — contract-bound, no chat widget, no partner CTAs, text-first.
+- **Caregiver / gift-giver (B2C-side):** `/caregiver`, `/gift`,
+  `/gift-redeem`, gift-mode `/purchase/success` — Retell **gift** agent;
+  never show facility/org pricing.
+- **Facility / B2B (senior care, insurance-adjacent):**
+  `/for-communities`, `/c/:slug`, `/org`, `/partners` — Retell
+  **facility** agent, partner form, call line; never show gift pricing.
+- **Shared surfaces:** `/help`, `/about`, `/privacy`, `/terms`, the fat
+  footer — copy must serve both audiences without persona-specific
+  pricing.
+
+Persona isolation is enforced at the knowledge layer (Retell KB
+partitioning, ADR-0032 amendment), not prompts alone. When adding a
+surface, declare its persona in the intake and pick the matching
+agent/contact path.
+
 ## Journey loop and paywall guard
 
 - Load `.devin/skills/journey-loop-guard/SKILL.md` when modifying any
