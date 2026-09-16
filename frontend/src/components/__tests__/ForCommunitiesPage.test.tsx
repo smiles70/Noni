@@ -38,11 +38,12 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
     expect(page!.textContent).toContain("Geragogy");
     expect(page!.textContent).toContain("Why communities partner with mynaani");
     expect(page!.textContent).toContain("founding partnership");
-    // Three outcome cards, each icon + text label.
+    // Three outcome cards, each icon + text label. Scope to the outcomes
+    // section — the shared footer adds its own aria-hidden social icons.
     const outcomes = page!.querySelector("#b2b-outcomes")!
       .parentElement as HTMLElement;
     expect(outcomes.querySelectorAll("h3").length).toBe(3);
-    expect(page!.querySelectorAll("svg[aria-hidden]").length).toBe(3);
+    expect(outcomes.querySelectorAll("svg[aria-hidden]").length).toBe(3);
   });
 
   it("leads with the geragogy + patent-pending differentiator", async () => {
