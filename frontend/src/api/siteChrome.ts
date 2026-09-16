@@ -17,6 +17,8 @@ export interface SiteFooterContent {
   social_links: FooterLink[];
   brand_label: string;
   copyright: string;
+  /** Public "call us" line for /partners; empty = hidden. */
+  contact_phone: string;
 }
 
 export async function loadFooterContent(): Promise<SiteFooterContent> {

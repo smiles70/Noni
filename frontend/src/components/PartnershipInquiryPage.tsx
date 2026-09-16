@@ -17,9 +17,10 @@
  * thank-you state. Radio + icon usage documented in ADR.
  */
 
-import { useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { API_BASE_URL } from "../api/client";
+import { loadFooterContent } from "../api/siteChrome";
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
 import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import {
@@ -54,6 +55,7 @@ interface FormState {
   organization: string;
   organizationType: string;
   role: string;
+  preferredContact: "email" | "phone";
   message: string;
   /** Honeypot — hidden from humans, bots fill it. */
   website: string;
@@ -67,6 +69,7 @@ const INITIAL: FormState = {
   organization: "",
   organizationType: "",
   role: "",
+  preferredContact: "email",
   message: "",
   website: "",
 };
@@ -76,8 +79,15 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [fellBack, setFellBack] = useState(false);
+  const [contactPhone, setContactPhone] = useState("");
 
-  function update<K extends keyof FormState>(key: K, value: string) {
+  useEffect(() => {
+    loadFooterContent()
+      .then((c) => setContactPhone(c.contact_phone || ""))
+      .catch(() => setContactPhone(""));
+  }, []);
+
+  function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -90,6 +100,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
       `Organization: ${form.organization}`,
       `Organization type: ${form.organizationType || "Not specified"}`,
       `Role: ${form.role || "Not specified"}`,
+      `Preferred contact: ${form.preferredContact}`,
       "",
       form.message,
     ].join("\n");
@@ -113,6 +124,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           organization: form.organization,
           organization_type: form.organizationType,
           role: form.role,
+          preferred_contact: form.preferredContact,
           message: form.message,
           website: form.website,
         }),
@@ -170,6 +182,17 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           the people you serve, tell us about your organization. A member of our
           team will be in touch.
         </p>
+        {contactPhone && (
+          <p style={HERO_BODY}>
+            Prefer to talk? Call us at{" "}
+            <a
+              href={`tel:${contactPhone.replace(/[^0-9+]/g, "")}`}
+              style={HERO_LINK}
+            >
+              {contactPhone}
+            </a>
+          </p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} style={FORM_CARD}>
@@ -245,13 +268,49 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
               autoComplete="organization-title"
             />
           </Field>
-          <Field label="Phone (optional)">
+          <fieldset style={FIELDSET}>
+            <legend style={LEGEND}>How should we get back to you?</legend>
+            <label style={RADIO_ROW}>
+              <input
+                type="radio"
+                name="preferredContact"
+                value="email"
+                checked={form.preferredContact === "email"}
+                onChange={(e) =>
+                  update("preferredContact", e.target.value as "email")
+                }
+                style={RADIO}
+              />
+              <span>Email me</span>
+            </label>
+            <label style={RADIO_ROW}>
+              <input
+                type="radio"
+                name="preferredContact"
+                value="phone"
+                checked={form.preferredContact === "phone"}
+                onChange={(e) =>
+                  update("preferredContact", e.target.value as "phone")
+                }
+                style={RADIO}
+              />
+              <span>Call me</span>
+            </label>
+          </fieldset>
+
+          <Field
+            label={
+              form.preferredContact === "phone" ? "Phone" : "Phone (optional)"
+            }
+            required={form.preferredContact === "phone"}
+          >
             <input
               type="tel"
               value={form.phone}
               onChange={(e) => update("phone", e.target.value)}
               style={INPUT}
               autoComplete="tel"
+              required={form.preferredContact === "phone"}
             />
           </Field>
           <Field label="How can we help?">
@@ -390,6 +449,10 @@ const REQUIRED: CSSProperties = {
 
 const LINK: CSSProperties = {
   color: COLORS.accentMutedBlue,
+};
+
+const HERO_LINK: CSSProperties = {
+  color: COLORS.surface,
 };
 
 const BACK: CSSProperties = {

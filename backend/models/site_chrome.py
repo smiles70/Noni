@@ -22,3 +22,5 @@ class SiteFooterContent(BaseModel):
     brand_label: str
     copyright: str
     social_links: List[FooterLink]
+    # Public "call us" line for /partners — empty string hides it.
+    contact_phone: str = ""

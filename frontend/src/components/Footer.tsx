@@ -79,6 +79,7 @@ const FALLBACK: SiteFooterContent = {
   ],
   brand_label: "mynaani",
   copyright: `© ${new Date().getFullYear()} mynaani. All rights reserved.`,
+  contact_phone: "",
 };
 
 interface Props {

@@ -57,14 +57,18 @@ describe("PartnershipInquiryPage — partner contact form", () => {
     }
   });
 
-  it("asks organization type with visible radio choices", async () => {
+  it("asks organization type and contact preference as radios", async () => {
     const host = await render();
-    const radios = host.querySelectorAll('input[type="radio"]');
-    expect(radios.length).toBe(4);
+    const orgRadios = host.querySelectorAll('input[name="organizationType"]');
+    const prefRadios = host.querySelectorAll('input[name="preferredContact"]');
+    expect(orgRadios.length).toBe(4);
+    expect(prefRadios.length).toBe(2);
     const text = host.textContent ?? "";
     expect(text).toContain("What best describes your organization?");
     expect(text).toContain("Senior living community");
     expect(text).toContain("Health plan or insurer");
+    expect(text).toContain("How should we get back to you?");
+    expect(text).toContain("Call me");
   });
 
   it("is geragogy-calm: no exclamation marks in copy", async () => {

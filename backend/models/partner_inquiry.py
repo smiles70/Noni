@@ -18,6 +18,8 @@ class PartnerInquiry(BaseModel):
     organization: str = Field(min_length=1, max_length=160)
     organization_type: str = Field(default="", max_length=80)
     role: str = Field(default="", max_length=80)
+    # "email" or "phone" — how they'd like us to reply.
+    preferred_contact: str = Field(default="email", max_length=10)
     message: str = Field(default="", max_length=4000)
     # Honeypot: bots fill it, humans never see it. Any non-empty
     # value is rejected before any email is sent.
@@ -46,6 +48,7 @@ def render_inquiry(inq: PartnerInquiry) -> str:
         f"Organization: {inq.organization}",
         f"Organization type: {org_type}",
         f"Role: {inq.role or 'Not specified'}",
+        f"Preferred contact: {inq.preferred_contact}",
         "",
         "Message:",
         inq.message or "(none)",

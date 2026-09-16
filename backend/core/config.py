@@ -48,6 +48,8 @@ class Settings(BaseSettings):
     EMAIL_OVERRIDE_TO: str = ""
     # Destination inbox for /api/site/partner-inquiry submissions.
     PARTNER_INBOX: str = "partnerships@mynaani.com"
+    # Public "call us" line shown on /partners when set. Empty = hidden.
+    PARTNER_PHONE: str = ""
 
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 30

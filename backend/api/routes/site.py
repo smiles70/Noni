@@ -30,6 +30,7 @@ def get_footer() -> JSONResponse:
     payload["copyright"] = (
         f"© {datetime.now(timezone.utc).year} mynaani. All rights reserved."
     )
+    payload["contact_phone"] = settings.PARTNER_PHONE
     content = SiteFooterContent.model_validate(payload)
     resp = JSONResponse(content=content.model_dump())
     resp.headers["Cache-Control"] = "public, max-age=300"
