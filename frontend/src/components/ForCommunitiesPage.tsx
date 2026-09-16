@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
 import ChatWidget from "./ChatWidget";
 import SupportContact from "./SupportContact";
+import Footer from "./Footer";
 
 const CONTACT = "hello@mynaani.com";
 const MAILTO = `mailto:${CONTACT}?subject=Community%20partnership%20inquiry`;
@@ -171,17 +172,6 @@ const DIVIDER: CSSProperties = {
 const LIST: CSSProperties = {
   margin: 0,
   paddingLeft: SPACING.lg,
-};
-
-const FOOTER: CSSProperties = {
-  borderTop: `1px solid ${COLORS.disabled}`,
-  padding: `${SPACING.xl}px`,
-  display: "flex",
-  justifyContent: "space-between",
-  flexWrap: "wrap",
-  gap: SPACING.md,
-  backgroundColor: COLORS.surface,
-  fontSize: TYPOGRAPHY.bodySizePx,
 };
 
 // ---- Sources (best practice: inline attribution AND a linked list) ----------
@@ -684,14 +674,9 @@ export default function ForCommunitiesPage() {
         </section>
       </main>
 
-      <footer style={FOOTER}>
-        <span>mynaani — AI learning for adults 55+</span>
-        <span>
-          <Link to="/" style={{ ...HEADER_LINK, marginLeft: 0 }}>
-            For learners
-          </Link>
-        </span>
-      </footer>
+      {/* MKT-FOOTER-001: shared fat footer — brand, doormat nav row,
+          legal row (privacy/terms/copyright). Backend-served labels. */}
+      <Footer currentPath="/for-communities" />
     </div>
   );
 }

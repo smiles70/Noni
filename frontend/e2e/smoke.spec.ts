@@ -27,6 +27,39 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
       page.getByRole("link", { name: /Senior facilities/i }),
     ).toBeVisible();
     await expect(page.getByRole("link", { name: /Caregiver/i })).toBeVisible();
+    // LEGAL-NAV-001: the mini-footer strip pins the legal links inside
+    // the fixed viewport — the conspicuous privacy link CCPA requires.
+    const footer = page.getByRole("contentinfo");
+    await expect(footer).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Privacy" })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Terms" })).toBeVisible();
+  });
+
+  test("legal pages render: terms and about", async ({ page }) => {
+    await page.goto("/terms");
+    await expect(
+      page.getByRole("heading", { name: "Terms of Service" }),
+    ).toBeVisible();
+    await expect(page.getByText(/within 30 days of purchase/)).toBeVisible();
+
+    await page.goto("/about");
+    await expect(
+      page.getByRole("heading", { name: "About mynaani" }),
+    ).toBeVisible();
+  });
+
+  test("marketing pages carry the shared fat footer", async ({ page }) => {
+    for (const path of ["/caregiver", "/for-communities"]) {
+      await page.goto(path);
+      const footer = page.getByRole("contentinfo");
+      await expect(footer).toBeVisible();
+      await expect(footer.getByRole("link", { name: "Privacy" })).toBeVisible();
+      await expect(footer.getByRole("link", { name: "Terms" })).toBeVisible();
+      await expect(
+        footer.getByRole("link", { name: "Be our partner" }),
+      ).toBeVisible();
+      await expect(footer.getByText(/© \d{4} mynaani/)).toBeVisible();
+    }
   });
 
   test("caregiver page renders and links to gift checkout", async ({

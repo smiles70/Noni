@@ -26,6 +26,7 @@ import { useViewport } from "../hooks/useViewport";
 import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import HowItWorksDialog from "./HowItWorksDialog";
+import LandingFooter from "./LandingFooter";
 
 interface Props {
   onBegin: () => void;
@@ -436,6 +437,10 @@ export default function LandingPage({ onBegin, signedIn }: Props) {
             </Link>
           </div>
         </section>
+        {/* LEGAL-NAV-001: mini-footer strip — legal links pinned inside
+            the fixed viewport. Sibling of the hero <section> so it keeps
+            its contentinfo landmark role. */}
+        <LandingFooter />
       </RenderGuard>
       {showHowItWorks && (
         <HowItWorksDialog
