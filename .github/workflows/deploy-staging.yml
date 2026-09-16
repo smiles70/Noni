@@ -167,7 +167,7 @@ jobs:
 
       - name: Playwright E2E tests
         working-directory: frontend
-        run: npm run e2e --if-present
+        run: npm run test:e2e
 
   railway-deploy-backend:
     needs: [preflight, virtual-uat-agent]
