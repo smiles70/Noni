@@ -5,9 +5,11 @@ legal row, landing mini-strip) so every surface renders identical
 labels. Pure read; no auth. See `.ai/intake/2026-09-16-p2-*`.
 """
 
+import hashlib
+import hmac
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Request
 from fastapi.responses import JSONResponse
 
 from backend.content.site_chrome import SITE_FOOTER_CONTENT
@@ -54,3 +56,75 @@ def submit_partner_inquiry(
     body = render_inquiry(inquiry)
     background.add_task(email.send, settings.PARTNER_INBOX, subject, body)
     return PartnerInquiryReceipt(status="received", delivered=True)
+
+
+def _verify_retell_signature(raw: bytes, signature: str) -> bool:
+    """HMAC-SHA256 of the raw request body, keyed by the account API key.
+
+    When RETELL_API_KEY is unset we can't verify — accept and rely on the
+    same honeypot/validation the public form path uses (the payload shape
+    is the only difference). Log so ops knows the check is inactive.
+    """
+    if not settings.RETELL_API_KEY:
+        return True
+    expected = hmac.new(
+        settings.RETELL_API_KEY.encode(), raw, hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
+
+
+@router.post("/retell/partner-inquiry")
+async def retell_partner_inquiry(
+    request: Request, background: BackgroundTasks
+) -> JSONResponse:
+    """Adapter for the Retell facility agent's `submit_partner_inquiry`
+    custom tool (see retell/tools/submit-partner-inquiry.json).
+
+    Retell POSTs {name, args, chat} (chat agents) or {name, args, call}
+    (voice). We unwrap args into the same PartnerInquiry validation as
+    the public form and answer with a short line the agent can say back.
+    """
+    raw = await request.body()
+    signature = request.headers.get("x-retell-signature", "")
+    if not _verify_retell_signature(raw, signature):
+        return JSONResponse(
+            status_code=401,
+            content={"result": "I could not verify that request."},
+        )
+    payload = await request.json()
+    if payload.get("name") != "submit_partner_inquiry":
+        return JSONResponse(
+            status_code=400,
+            content={"result": "Unknown tool call."},
+        )
+    try:
+        inquiry = PartnerInquiry.model_validate(payload.get("args") or {})
+    except Exception:
+        return JSONResponse(
+            status_code=422,
+            content={
+                "result": (
+                    "I am missing some details. Let me collect the "
+                    "required fields and try again."
+                )
+            },
+        )
+    if inquiry.website:
+        return JSONResponse(
+            content={"result": "Thank you, your inquiry has been noted."}
+        )
+    subject = f"Partner inquiry — {inquiry.organization}"
+    background.add_task(
+        email.send,
+        settings.PARTNER_INBOX,
+        subject,
+        render_inquiry(inquiry),
+    )
+    return JSONResponse(
+        content={
+            "result": (
+                "Thank you — I have sent your details to our partnership "
+                "team and someone will follow up with you."
+            )
+        }
+    )

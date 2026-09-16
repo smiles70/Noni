@@ -52,6 +52,11 @@ class Settings(BaseSettings):
     # Defaults to the toll-free Retell-answered support line already
     # published on /help (intake 013); overridden per-env if needed.
     PARTNER_PHONE: str = "+1 (877) 409-4144"
+    # Retell account API key — used server-side ONLY to verify the
+    # X-Retell-Signature header on tool-call requests to
+    # /api/v1/site/retell/partner-inquiry. Never shipped to the browser
+    # (the widget uses the domain-locked public key instead).
+    RETELL_API_KEY: str = ""
 
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 30
