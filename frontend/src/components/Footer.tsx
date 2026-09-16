@@ -74,7 +74,10 @@ const FALLBACK: SiteFooterContent = {
   social_links: [
     { label: "Instagram", href: "https://www.instagram.com/mynaani_learning" },
     { label: "TikTok", href: "https://www.tiktok.com/@mynaani_learning" },
-    { label: "YouTube", href: "https://www.youtube.com/@mynaani" },
+    {
+      label: "YouTube",
+      href: "https://www.youtube.com/@MyNanni_Learning",
+    },
     { label: "Facebook", href: "https://www.facebook.com/mynaani" },
   ],
   brand_label: "mynaani",
