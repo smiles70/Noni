@@ -295,7 +295,9 @@ export default function LandingPage({ onBegin, signedIn }: Props) {
     ? {
         ...CARD,
         padding: SPACING.md,
-        maxHeight: "calc(45% - 96px)",
+        // Leave room for the B2B stack above (96px) and the mini-footer
+        // strip below (~64px, including safe-area padding).
+        maxHeight: "calc(45% - 160px)",
         overflowY: "auto",
       }
     : CARD;

@@ -83,6 +83,10 @@ const STRIP: CSSProperties = {
   WebkitBackdropFilter: "blur(8px)",
   padding: `${SPACING.xs}px ${SPACING.lg}px`,
   paddingBottom: `calc(${SPACING.xs}px + env(safe-area-inset-bottom, 0px))`,
+  // The strip is a visual surface, not a click target. Keeping the
+  // hero CTA interactive on small viewports is more important than
+  // letting the strip background capture pointer events.
+  pointerEvents: "none",
   fontFamily: TYPOGRAPHY.fontFamily,
   fontSize: TYPOGRAPHY.bodySizePx,
   color: COLORS.textPrimary,
@@ -90,6 +94,7 @@ const STRIP: CSSProperties = {
 
 const COPYRIGHT: CSSProperties = {
   padding: `${SPACING.xs}px 0`,
+  pointerEvents: "auto",
 };
 
 const LINKS: CSSProperties = {
@@ -104,4 +109,5 @@ const LINK: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   padding: `0 ${SPACING.xs}px`,
+  pointerEvents: "auto",
 };
