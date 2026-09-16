@@ -165,6 +165,23 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      # Browsers for the full project matrix (mobile projects emulate on
+      # chromium). Same install set as ci.yml's e2e job.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+      - name: Install Playwright browsers + OS deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: frontend
+      - name: Install only OS deps when browser is cached
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium firefox webkit
+        working-directory: frontend
+
       - name: Playwright E2E tests
         working-directory: frontend
         run: npm run test:e2e
