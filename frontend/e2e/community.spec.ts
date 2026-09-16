@@ -14,7 +14,7 @@ test.describe("Partner / community journey (B2B-LANDING-001)", () => {
         name: "Why communities partner with mynaani",
       }),
     ).toBeVisible();
-    await expect(page.getByText("Talk to us about a pilot")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Talk to us" })).toBeVisible();
     await expect(
       page.getByText("Pricing — founding partner rates"),
     ).toBeVisible();
