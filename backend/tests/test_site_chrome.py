@@ -46,15 +46,15 @@ class TestContentIntegrity:
             assert link["label"].strip()
 
     def test_social_links_point_to_real_handles(self):
-        # Intake 2026-09-16-p3-social-real-handles: TikTok and Instagram
-        # are the live @mynaani_learning accounts; Facebook/YouTube stay
-        # placeholders until the owner supplies them.
+        # All four links point at owner-confirmed live accounts
+        # (intakes 2026-09-16-p3-social-real-handles, -youtube-handle,
+        # -facebook-handle).
         hrefs = {
             link["label"]: link["href"] for link in SITE_FOOTER_CONTENT["social_links"]
         }
         assert hrefs["TikTok"] == "https://www.tiktok.com/@mynaani_learning"
         assert hrefs["Instagram"] == ("https://www.instagram.com/mynaani_learning")
-        assert "facebook.com" in hrefs["Facebook"]
+        assert hrefs["Facebook"] == "https://www.facebook.com/MyNaani"
         assert hrefs["YouTube"] == ("https://www.youtube.com/@MyNanni_Learning")
 
     def test_privacy_link_present(self):

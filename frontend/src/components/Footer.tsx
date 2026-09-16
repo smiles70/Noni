@@ -78,7 +78,7 @@ const FALLBACK: SiteFooterContent = {
       label: "YouTube",
       href: "https://www.youtube.com/@MyNanni_Learning",
     },
-    { label: "Facebook", href: "https://www.facebook.com/mynaani" },
+    { label: "Facebook", href: "https://www.facebook.com/MyNaani" },
   ],
   brand_label: "mynaani",
   copyright: `© ${new Date().getFullYear()} mynaani. All rights reserved.`,

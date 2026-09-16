@@ -32,7 +32,7 @@ SITE_FOOTER_CONTENT: Dict[str, Any] = {
             "label": "YouTube",
             "href": "https://www.youtube.com/@MyNanni_Learning",
         },
-        {"label": "Facebook", "href": "https://www.facebook.com/mynaani"},
+        {"label": "Facebook", "href": "https://www.facebook.com/MyNaani"},
     ],
     # Minimal set for the fixed-viewport landing strip.
     "mini_links": [
