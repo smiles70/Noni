@@ -63,6 +63,9 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
       ).toBeVisible();
       await expect(footer.getByRole("link", { name: "TikTok" })).toBeVisible();
       await expect(footer.getByRole("link", { name: "YouTube" })).toBeVisible();
+      await expect(
+        footer.getByRole("link", { name: "Facebook" }),
+      ).toBeVisible();
       await expect(footer.getByText(/© \d{4} mynaani/)).toBeVisible();
     }
   });

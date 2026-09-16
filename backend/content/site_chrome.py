@@ -23,9 +23,13 @@ SITE_FOOTER_CONTENT: Dict[str, Any] = {
         {"label": "Terms", "href": "/terms"},
     ],
     "social_links": [
-        {"label": "Instagram", "href": "https://www.instagram.com/mynaani"},
-        {"label": "TikTok", "href": "https://www.tiktok.com/@mynaani"},
+        {
+            "label": "Instagram",
+            "href": "https://www.instagram.com/mynaani_learning",
+        },
+        {"label": "TikTok", "href": "https://www.tiktok.com/@mynaani_learning"},
         {"label": "YouTube", "href": "https://www.youtube.com/@mynaani"},
+        {"label": "Facebook", "href": "https://www.facebook.com/mynaani"},
     ],
     # Minimal set for the fixed-viewport landing strip.
     "mini_links": [
