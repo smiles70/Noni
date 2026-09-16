@@ -160,6 +160,35 @@ export default function PrivacyPage({ onBack }: Props) {
           </p>
         </div>
       </section>
+
+      <div style={DIVIDER} />
+
+      <section>
+        <h2 style={H2}>Your rights under privacy law</h2>
+        <div style={BODY}>
+          <p>
+            This page was last updated in September 2026. Wherever you live, you
+            have the right to:
+          </p>
+          <ul style={UL}>
+            <li>know what information we have about you,</li>
+            <li>correct it if it is wrong,</li>
+            <li>delete it, and</li>
+            <li>never be treated worse for asking.</li>
+          </ul>
+          <p>
+            You can see and delete your information from the "Your account"
+            page, or ask us at help@mynaani.com. If someone is helping you
+            manage your affairs, they can write to us on your behalf — we will
+            check with you before acting.
+          </p>
+          <p>
+            We do not sell or share your information, so there is nothing to opt
+            out of. If your browser sends a "Global Privacy Control" signal, we
+            honor it.
+          </p>
+        </div>
+      </section>
     </main>
   );
 }
