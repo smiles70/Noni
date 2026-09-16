@@ -3,33 +3,44 @@
  *
  * Public form for senior communities, health plans, caregiver networks,
  * and other organizations that want to offer mynaani to the adults they
- * serve. Modeled on the GetSetUp contact/demo pattern: a short,
- * plain-language form that asks for the details a partnership team needs.
+ * serve. Modeled on the GetSetUp contact/demo pattern: a branded band of
+ * plain-language copy, then a card form that asks for the details a
+ * partnership team needs.
  *
- * Submission: the form builds a mailto: message as a pragmatic interim
- * until a backend email/CRM integration is added. A true enterprise
- * pattern is a server-side form; see the research memo.
+ * Submission: POST /api/v1/site/partner-inquiry (backend owns delivery
+ * via the transactional email service). If the endpoint is unreachable
+ * the form falls back to a mailto: with the same content so an inquiry
+ * is never lost. See .ai/research/2026-09-16-footer-form-follow-ups.md.
  *
- * Geragogy: large labels, 16px+ fields, calm copy, no dropdowns, no
- * urgency, explicit confirmation.
+ * Geragogy: 16px+ fields, labels above inputs, radio buttons (all
+ * choices visible — no dropdowns), 44px targets, calm copy, explicit
+ * thank-you state. Radio + icon usage documented in ADR.
  */
 
 import { useState, type CSSProperties, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { COLORS, SPACING } from "../design/tokens";
+import { API_BASE_URL } from "../api/client";
+import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
 import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import {
   BODY,
+  CARD,
+  FIELD_LABEL,
   H1,
   H2,
   PAGE,
   PRIMARY_BTN,
-  FIELD,
-  FIELD_LABEL,
   STACK,
 } from "./AccountStyles";
 
 const INQUIRY_EMAIL = "partnerships@mynaani.com";
+
+const ORG_TYPES = [
+  "Senior living community",
+  "Health plan or insurer",
+  "Caregiver network",
+  "Other",
+] as const;
 
 interface Props {
   onBack: () => void;
@@ -41,8 +52,11 @@ interface FormState {
   email: string;
   phone: string;
   organization: string;
+  organizationType: string;
   role: string;
   message: string;
+  /** Honeypot — hidden from humans, bots fill it. */
+  website: string;
 }
 
 const INITIAL: FormState = {
@@ -51,35 +65,68 @@ const INITIAL: FormState = {
   email: "",
   phone: "",
   organization: "",
+  organizationType: "",
   role: "",
   message: "",
+  website: "",
 };
 
 export default function PartnershipInquiryPage({ onBack }: Props) {
   const [form, setForm] = useState<FormState>(INITIAL);
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [fellBack, setFellBack] = useState(false);
 
   function update<K extends keyof FormState>(key: K, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  function mailtoHref(): string {
     const subject = `Partner inquiry from ${form.firstName} ${form.lastName}`;
     const body = [
       `Name: ${form.firstName} ${form.lastName}`,
       `Email: ${form.email}`,
       `Phone: ${form.phone || "Not provided"}`,
       `Organization: ${form.organization}`,
-      `Role: ${form.role}`,
+      `Organization type: ${form.organizationType || "Not specified"}`,
+      `Role: ${form.role || "Not specified"}`,
       "",
       form.message,
     ].join("\n");
-    const mailto = `mailto:${INQUIRY_EMAIL}?subject=${encodeURIComponent(
+    return `mailto:${INQUIRY_EMAIL}?subject=${encodeURIComponent(
       subject,
     )}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
-    setSubmitted(true);
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/site/partner-inquiry`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          first_name: form.firstName,
+          last_name: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          organization: form.organization,
+          organization_type: form.organizationType,
+          role: form.role,
+          message: form.message,
+          website: form.website,
+        }),
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      setSubmitted(true);
+    } catch {
+      // Inquiry must never be lost — fall back to the visitor's mail app.
+      window.location.href = mailtoHref();
+      setFellBack(true);
+      setSubmitted(true);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -87,7 +134,9 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
       <main style={PAGE}>
         <h1 style={H1}>Thank you</h1>
         <p style={BODY}>
-          If your email app did not open, copy your message and send it to{" "}
+          {fellBack
+            ? "Your message opened in your email app. If it did not, copy your message and send it to "
+            : "We received your note and a member of our team will reply. If you need us sooner, write to "}
           <a href={`mailto:${INQUIRY_EMAIL}`} style={LINK}>
             {INQUIRY_EMAIL}
           </a>
@@ -112,88 +161,135 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
       >
         ← Back to mynaani
       </Link>
-      <h1 style={H1}>Partner with mynaani</h1>
-      <p style={BODY}>
-        If you lead a senior community, health plan, caregiver network, or
-        aging-services organization and want to bring confident AI learning to
-        the people you serve, tell us about your organization. A member of our
-        team will be in touch.
-      </p>
 
-      <h2 style={H2}>Request information</h2>
-      <form onSubmit={handleSubmit} style={FORM}>
+      <div style={HERO}>
+        <h1 style={HERO_TITLE}>Partner with mynaani</h1>
+        <p style={HERO_BODY}>
+          If you lead a senior community, health plan, caregiver network, or
+          aging-services organization and want to bring confident AI learning to
+          the people you serve, tell us about your organization. A member of our
+          team will be in touch.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} style={FORM_CARD}>
+        <h2 style={{ ...H2, marginTop: 0 }}>Request information</h2>
+
         <div style={STACK}>
-          <FormField label="First name" required>
+          <fieldset style={FIELDSET}>
+            <legend style={LEGEND}>
+              What best describes your organization?
+            </legend>
+            {ORG_TYPES.map((opt) => (
+              <label key={opt} style={RADIO_ROW}>
+                <input
+                  type="radio"
+                  name="organizationType"
+                  value={opt}
+                  checked={form.organizationType === opt}
+                  onChange={(e) => update("organizationType", e.target.value)}
+                  style={RADIO}
+                  required
+                />
+                <span>{opt}</span>
+              </label>
+            ))}
+          </fieldset>
+
+          <Field label="First name" required>
             <input
               type="text"
               value={form.firstName}
               onChange={(e) => update("firstName", e.target.value)}
               style={INPUT}
               required
+              autoComplete="given-name"
             />
-          </FormField>
-          <FormField label="Last name" required>
+          </Field>
+          <Field label="Last name" required>
             <input
               type="text"
               value={form.lastName}
               onChange={(e) => update("lastName", e.target.value)}
               style={INPUT}
               required
+              autoComplete="family-name"
             />
-          </FormField>
-          <FormField label="Work email" required>
+          </Field>
+          <Field label="Work email" required>
             <input
               type="email"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
               style={INPUT}
               required
+              autoComplete="email"
             />
-          </FormField>
-          <FormField label="Phone (optional)">
-            <input
-              type="tel"
-              value={form.phone}
-              onChange={(e) => update("phone", e.target.value)}
-              style={INPUT}
-            />
-          </FormField>
-          <FormField label="Organization" required>
+          </Field>
+          <Field label="Organization" required>
             <input
               type="text"
               value={form.organization}
               onChange={(e) => update("organization", e.target.value)}
               style={INPUT}
               required
+              autoComplete="organization"
             />
-          </FormField>
-          <FormField label="Your role" required>
+          </Field>
+          <Field label="Your role">
             <input
               type="text"
               value={form.role}
               onChange={(e) => update("role", e.target.value)}
               style={INPUT}
-              required
+              autoComplete="organization-title"
             />
-          </FormField>
-          <FormField label="How can we help?">
+          </Field>
+          <Field label="Phone (optional)">
+            <input
+              type="tel"
+              value={form.phone}
+              onChange={(e) => update("phone", e.target.value)}
+              style={INPUT}
+              autoComplete="tel"
+            />
+          </Field>
+          <Field label="How can we help?">
             <textarea
               value={form.message}
               onChange={(e) => update("message", e.target.value)}
               style={{ ...INPUT, minHeight: 120 }}
               rows={4}
             />
-          </FormField>
-          <button type="submit" style={PRIMARY_BTN}>
-            Send inquiry
+          </Field>
+
+          {/* Honeypot — visually hidden; bots fill it, humans never do. */}
+          <label style={HONEYPOT} aria-hidden="true" tabIndex={-1}>
+            Website
+            <input
+              type="text"
+              name="website"
+              value={form.website}
+              onChange={(e) => update("website", e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </label>
+
+          <button type="submit" style={PRIMARY_BTN} disabled={submitting}>
+            {submitting ? "Sending…" : "Send inquiry"}
           </button>
+          <p style={PRIVACY_NOTE}>
+            We only use these details to reply about a partnership — no
+            marketing list, no sharing.
+          </p>
         </div>
       </form>
     </main>
   );
 }
 
-function FormField({
+function Field({
   label,
   children,
   required,
@@ -214,12 +310,73 @@ function FormField({
 }
 
 const INPUT: CSSProperties = {
-  ...FIELD,
+  fontSize: TYPOGRAPHY.bodySizePx,
+  padding: `${SPACING.sm}px ${SPACING.md}px`,
+  border: `1px solid ${COLORS.disabled}`,
+  borderRadius: RADIUS.sm,
+  width: "100%",
+  boxSizing: "border-box",
+  fontFamily: TYPOGRAPHY.fontFamily,
   minHeight: MIN_TOUCH_TARGET.mobile,
+  backgroundColor: COLORS.surface,
+  color: COLORS.textPrimary,
 };
 
-const FORM: CSSProperties = {
-  marginTop: SPACING.xl,
+const HERO: CSSProperties = {
+  backgroundColor: COLORS.accentDesatGreen,
+  borderRadius: RADIUS.lg,
+  padding: `${SPACING.xl}px ${SPACING.lg}px`,
+  marginBottom: SPACING.xl,
+};
+
+const HERO_TITLE: CSSProperties = {
+  ...H1,
+  color: COLORS.surface,
+  marginTop: 0,
+  marginBottom: SPACING.sm,
+};
+
+const HERO_BODY: CSSProperties = {
+  ...BODY,
+  color: COLORS.surface,
+  margin: 0,
+};
+
+const FORM_CARD: CSSProperties = {
+  ...CARD,
+  marginBottom: 0,
+};
+
+const FIELDSET: CSSProperties = {
+  border: "none",
+  padding: 0,
+  margin: 0,
+  display: "flex",
+  flexDirection: "column",
+  gap: SPACING.sm,
+};
+
+const LEGEND: CSSProperties = {
+  ...FIELD_LABEL,
+  padding: 0,
+  marginBottom: SPACING.xs,
+};
+
+const RADIO_ROW: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: SPACING.sm,
+  minHeight: MIN_TOUCH_TARGET.mobile,
+  fontSize: TYPOGRAPHY.bodySizePx,
+  cursor: "pointer",
+};
+
+const RADIO: CSSProperties = {
+  width: 22,
+  height: 22,
+  accentColor: COLORS.accentMutedBlue,
+  cursor: "pointer",
+  flexShrink: 0,
 };
 
 const FIELD_WRAP: CSSProperties = {
@@ -240,4 +397,19 @@ const BACK: CSSProperties = {
   textDecoration: "none",
   display: "inline-block",
   marginBottom: SPACING.md,
+};
+
+const PRIVACY_NOTE: CSSProperties = {
+  ...BODY,
+  fontSize: TYPOGRAPHY.bodySizePx - 1,
+  color: COLORS.textPrimary,
+  margin: 0,
+};
+
+const HONEYPOT: CSSProperties = {
+  position: "absolute",
+  left: "-9999px",
+  top: "-9999px",
+  opacity: 0,
+  pointerEvents: "none",
 };

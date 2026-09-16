@@ -46,6 +46,8 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = "Mynaani <hello@mynaani.com>"
     # When set, ALL outbound email is redirected here (test/rollout catch-all).
     EMAIL_OVERRIDE_TO: str = ""
+    # Destination inbox for /api/site/partner-inquiry submissions.
+    PARTNER_INBOX: str = "partnerships@mynaani.com"
 
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 30

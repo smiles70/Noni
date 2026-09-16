@@ -1,8 +1,9 @@
 /**
  * PartnershipInquiryPage — public partner contact form.
  *
- * Verifies the GetSetUp-aligned field set, labels, and calm copy; the
- * mailto: interim submit path is documented in the intake.
+ * Verifies the GetSetUp-aligned field set: branded hero, radio group for
+ * organization type, labels, calm copy, and the backend POST submit path
+ * (mailto fallback preserved for unreachable-endpoint cases).
  */
 
 import { describe, it, expect } from "vitest";
@@ -29,6 +30,16 @@ async function render(onBack = () => {}) {
   return host;
 }
 
+function setInput(input: HTMLInputElement | HTMLTextAreaElement, v: string) {
+  const proto =
+    input instanceof HTMLTextAreaElement
+      ? window.HTMLTextAreaElement.prototype
+      : window.HTMLInputElement.prototype;
+  const setter = Object.getOwnPropertyDescriptor(proto, "value")!.set!;
+  setter.call(input, v);
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
 describe("PartnershipInquiryPage — partner contact form", () => {
   it("renders the heading and required labels", async () => {
     const host = await render();
@@ -46,38 +57,59 @@ describe("PartnershipInquiryPage — partner contact form", () => {
     }
   });
 
+  it("asks organization type with visible radio choices", async () => {
+    const host = await render();
+    const radios = host.querySelectorAll('input[type="radio"]');
+    expect(radios.length).toBe(4);
+    const text = host.textContent ?? "";
+    expect(text).toContain("What best describes your organization?");
+    expect(text).toContain("Senior living community");
+    expect(text).toContain("Health plan or insurer");
+  });
+
   it("is geragogy-calm: no exclamation marks in copy", async () => {
     const host = await render();
     expect(host.textContent ?? "").not.toContain("!");
   });
 
-  it("shows a thank-you state after submit (mailto interim)", async () => {
+  it("posts the inquiry to the backend and shows thank-you", async () => {
     const host = await render();
-    // jsdom enforces required-field validation; fill via the native
-    // value setter so React's controlled inputs pick the change up.
-    const inputs = host.querySelectorAll("input");
+    const calls: string[] = [];
+    const origFetch = window.fetch;
+    window.fetch = (async (_input: RequestInfo | URL) => {
+      calls.push(String(_input));
+      return {
+        ok: true,
+        json: async () => ({ status: "received" }),
+      } as Response;
+    }) as typeof fetch;
+
+    const radios = host.querySelectorAll('input[type="radio"]');
+    const textInputs = [...host.querySelectorAll("input")].filter(
+      (i) => i.type !== "radio" && i.name !== "website",
+    );
     const values = [
       "Maya",
       "Rivera",
       "maya@example.com",
-      "",
       "Sunrise Senior Living",
       "Director",
+      "",
     ];
     await act(async () => {
-      inputs.forEach((input, i) => {
-        const setter = Object.getOwnPropertyDescriptor(
-          window.HTMLInputElement.prototype,
-          "value",
-        )!.set!;
-        setter.call(input, values[i] ?? "");
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-      });
+      textInputs.forEach((input, i) =>
+        setInput(input as HTMLInputElement, values[i] ?? ""),
+      );
+      (radios[0] as HTMLInputElement).click();
       (
         host.querySelector('button[type="submit"]') as HTMLButtonElement
       ).click();
     });
+
+    window.fetch = origFetch;
+    expect(calls.some((u) => u.includes("/api/v1/site/partner-inquiry"))).toBe(
+      true,
+    );
     expect(host.textContent ?? "").toContain("Thank you");
-    expect(host.textContent ?? "").toContain("partnerships@mynaani.com");
   });
 });
