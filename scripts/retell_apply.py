@@ -4,7 +4,9 @@ Idempotent-by-inspection script (no Retell SDK dependency; httpx only):
 
 1. Adds retell/kb/partner-inquiry.md as a text source on the facility
    knowledge base (skipped when a source with the same title exists).
-2. Merges retell/tools/submit-partner-inquiry.json into the facility
+2. Uploads the 4 mynaani.com whitepaper PDFs as file sources on the
+   facility KB (skipped per-filename when already present).
+3. Merges retell/tools/submit-partner-inquiry.json into the facility
    agent's LLM `general_tools` (replaces an existing tool of the same
    name; tools live on the Retell LLM response engine, not the agent).
 
@@ -27,6 +29,13 @@ FACILITY_CHAT_AGENT_ID = "agent_719be4f2578150bb27ac06f357"
 FACILITY_KB_ID = "knowledge_base_d52a7c13a5b4b702"
 KB_TITLE = "partner-inquiry"
 ROOT = Path(__file__).resolve().parent.parent
+PDF_DIR = ROOT / "frontend/public/whitepapers"
+PDFS = [
+    "cognitive-engagement.pdf",
+    "geragogy-for-caregivers.pdf",
+    "geragogy-the-key-to-learning.pdf",
+    "the-ai-gap.pdf",
+]
 
 
 def main() -> int:
@@ -66,6 +75,27 @@ def main() -> int:
             )
             r.raise_for_status()
             print(f"added KB text source '{KB_TITLE}'")
+
+        # --- whitepaper PDFs (file sources, facility KB) ---------------
+        filenames = {
+            s.get("filename") for s in kb.json().get("knowledge_base_sources", [])
+        }
+        pending = [p for p in PDFS if p not in filenames]
+        if not pending:
+            print("all 4 whitepaper PDFs already in facility KB — skipping")
+        elif dry_run:
+            print(f"DRY-RUN: would upload PDFs -> {pending}")
+        else:
+            files = [
+                ("knowledge_base_files", (name, (PDF_DIR / name).open("rb")))
+                for name in pending
+            ]
+            r = c.post(
+                f"/add-knowledge-base-sources/{FACILITY_KB_ID}",
+                files=files,
+            )
+            r.raise_for_status()
+            print(f"uploaded PDFs -> {pending}")
 
         # --- tool on the LLM response engine --------------------------
         llm = c.get(f"/get-retell-llm/{llm_id}")
