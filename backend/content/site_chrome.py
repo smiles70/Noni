@@ -39,6 +39,10 @@ SITE_FOOTER_CONTENT: Dict[str, Any] = {
         {"label": "Privacy", "href": "/privacy"},
         {"label": "Terms", "href": "/terms"},
         {"label": "Help", "href": "/help"},
+        {"label": "Contact", "href": "/help"},
     ],
+    # Calm invitation above the legal row on the fat footer; the phone
+    # and email are injected at request time from settings.
+    "contact_line": "We'd love to connect with you.",
     "brand_label": "mynaani",
 }

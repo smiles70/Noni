@@ -31,6 +31,7 @@ class TestContentIntegrity:
             "mini_links",
             "social_links",
             "brand_label",
+            "contact_line",
         }
         assert set(SITE_FOOTER_CONTENT.keys()) == expected
 
@@ -74,6 +75,20 @@ class TestFooterRoute:
         assert body["tagline"]
         assert len(body["nav_links"]) >= 4
         assert len(body["mini_links"]) >= 2
+
+    def test_contact_details_served(self, client):
+        # The footer shows a calm invitation + toll-free phone + email.
+        res = client.get("/api/v1/site/footer")
+        body = res.json()
+        assert "connect" in body["contact_line"].lower()
+        assert body["contact_phone"] == "+1 (877) 409-4144"
+        assert body["contact_email"] == "help@mynaani.com"
+
+    def test_mini_links_include_contact(self):
+        hrefs = {
+            link["label"]: link["href"] for link in SITE_FOOTER_CONTENT["mini_links"]
+        }
+        assert hrefs.get("Contact") == "/help"
 
     def test_copyright_has_current_year(self, client):
         res = client.get("/api/v1/site/footer")

@@ -26,6 +26,7 @@ const FALLBACK: Pick<SiteFooterContent, "mini_links" | "copyright"> = {
     { label: "Privacy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
     { label: "Help", href: "/help" },
+    { label: "Contact", href: "/help" },
   ],
   copyright: `© ${new Date().getFullYear()} mynaani.`,
 };
@@ -56,7 +57,7 @@ export default function LandingFooter() {
       <span style={COPYRIGHT}>{content.copyright}</span>
       <nav aria-label="Legal" style={LINKS}>
         {content.mini_links.map((link) => (
-          <Link key={link.href} to={link.href} style={LINK}>
+          <Link key={link.label} to={link.href} style={LINK}>
             {link.label}
           </Link>
         ))}

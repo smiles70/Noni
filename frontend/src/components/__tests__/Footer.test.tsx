@@ -74,6 +74,18 @@ describe("Footer — shared site footer", () => {
     expect(text).toContain(`© ${new Date().getFullYear()} mynaani`);
   });
 
+  it("shows a calm contact line with phone and email links", async () => {
+    const host = await render();
+    const footer = host.querySelector("footer");
+    const text = footer?.textContent ?? "";
+    expect(text).toContain("connect with you");
+    const hrefs = [...(footer?.querySelectorAll("a") ?? [])].map((a) =>
+      a.getAttribute("href"),
+    );
+    expect(hrefs).toContain("tel:+18774094144");
+    expect(hrefs).toContain("mailto:help@mynaani.com");
+  });
+
   it("marks the current page link with aria-current", async () => {
     const host = await render("/caregiver");
     const current = host.querySelector('footer a[aria-current="page"]');

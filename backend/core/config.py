@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     # Defaults to the toll-free Retell-answered support line already
     # published on /help (intake 013); overridden per-env if needed.
     PARTNER_PHONE: str = "+1 (877) 409-4144"
+    # Public "write to us" address shown in the site footer when set.
+    # Defaults to the help mailbox already published on /help.
+    CONTACT_EMAIL: str = "help@mynaani.com"
     # Retell account API key — used server-side ONLY to verify the
     # X-Retell-Signature header on tool-call requests to
     # /api/v1/site/retell/partner-inquiry. Never shipped to the browser

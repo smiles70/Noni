@@ -1,11 +1,15 @@
 """Tests for POST /api/site/partner-inquiry."""
 
+import hashlib
+import hmac
+import json
 from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.main import app
+from backend.core.config import settings
 
 
 @pytest.fixture(scope="module")
@@ -85,6 +89,28 @@ def _tool_call(**arg_overrides):
     }
 
 
+def _post_tool_call(client, payload, signature=None):
+    """POST a tool call, signing the body the way Retell does.
+
+    When RETELL_API_KEY is configured the adapter verifies
+    X-Retell-Signature; tests must therefore sign with the same key.
+    Pass signature="" to exercise the rejection path.
+    """
+    raw = json.dumps(payload).encode()
+    if signature is None:
+        signature = hmac.new(
+            settings.RETELL_API_KEY.encode(), raw, hashlib.sha256
+        ).hexdigest()
+    return client.post(
+        "/api/v1/site/retell/partner-inquiry",
+        content=raw,
+        headers={
+            "Content-Type": "application/json",
+            "X-Retell-Signature": signature,
+        },
+    )
+
+
 class TestRetellPartnerInquiryAdapter:
     """The facility agent's custom tool unwraps `args` into the same
     PartnerInquiry validation as the public form."""
@@ -92,30 +118,32 @@ class TestRetellPartnerInquiryAdapter:
     def test_valid_tool_call_delivers(self, client):
         with patch("backend.api.routes.site.email.send") as send:
             send.return_value = True
-            res = client.post("/api/v1/site/retell/partner-inquiry", json=_tool_call())
+            res = _post_tool_call(client, _tool_call())
         assert res.status_code == 200
         assert "partnership" in res.json()["result"].lower()
         send.assert_called_once()
 
+    def test_bad_signature_rejected(self, client):
+        res = _post_tool_call(client, _tool_call(), signature="bad")
+        if settings.RETELL_API_KEY:
+            assert res.status_code == 401
+        else:
+            # Key unconfigured → verification is off; request proceeds.
+            assert res.status_code == 200
+
     def test_wrong_tool_name_rejected(self, client):
         payload = _tool_call()
         payload["name"] = "other_tool"
-        res = client.post("/api/v1/site/retell/partner-inquiry", json=payload)
+        res = _post_tool_call(client, payload)
         assert res.status_code == 400
 
     def test_invalid_args_give_spoken_error(self, client):
-        res = client.post(
-            "/api/v1/site/retell/partner-inquiry",
-            json=_tool_call(email="bad"),
-        )
+        res = _post_tool_call(client, _tool_call(email="bad"))
         assert res.status_code == 422
         assert "missing" in res.json()["result"].lower()
 
     def test_honeypot_tool_call_silently_accepted(self, client):
         with patch("backend.api.routes.site.email.send") as send:
-            res = client.post(
-                "/api/v1/site/retell/partner-inquiry",
-                json=_tool_call(website="spam.example"),
-            )
+            res = _post_tool_call(client, _tool_call(website="spam.example"))
         assert res.status_code == 200
         send.assert_not_called()
