@@ -76,7 +76,7 @@ const FALLBACK: SiteFooterContent = {
     { label: "TikTok", href: "https://www.tiktok.com/@mynaani_learning" },
     {
       label: "YouTube",
-      href: "https://www.youtube.com/@MyNanni_Learning",
+      href: "https://www.youtube.com/@MyNaani_learning",
     },
     { label: "Facebook", href: "https://www.facebook.com/MyNaani" },
   ],

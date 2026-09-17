@@ -55,7 +55,7 @@ class TestContentIntegrity:
         assert hrefs["TikTok"] == "https://www.tiktok.com/@mynaani_learning"
         assert hrefs["Instagram"] == ("https://www.instagram.com/mynaani_learning")
         assert hrefs["Facebook"] == "https://www.facebook.com/MyNaani"
-        assert hrefs["YouTube"] == ("https://www.youtube.com/@MyNanni_Learning")
+        assert hrefs["YouTube"] == ("https://www.youtube.com/@MyNaani_learning")
 
     def test_privacy_link_present(self):
         # CCPA §7011(d): conspicuous link using the word "privacy".
