@@ -19,10 +19,6 @@ import ChatWidget from "./ChatWidget";
 import SupportContact from "./SupportContact";
 import Footer from "./Footer";
 
-const CONTACT = "hello@mynaani.com";
-const MAILTO = `mailto:${CONTACT}?subject=Gift%20question`;
-const UPDATES_MAILTO = `mailto:${CONTACT}?subject=Research%20updates`;
-
 // ---- Tokenized styles (marketing annex) ------------------------------------
 
 const PAGE: CSSProperties = {
@@ -424,9 +420,9 @@ export default function CaregiverPage() {
               <strong>Get research updates.</strong> New briefs as they are
               published — occasional, evidence-first, no noise.
             </p>
-            <a href={UPDATES_MAILTO} style={SECONDARY_BTN}>
-              Email us to join the list
-            </a>
+            <Link to="/contact" style={SECONDARY_BTN}>
+              Request research updates
+            </Link>
           </div>
         </section>
 
@@ -447,9 +443,9 @@ export default function CaregiverPage() {
             <Link to="/gift" style={PRIMARY_BTN} data-gift-entry="section">
               Gift mynaani
             </Link>
-            <a href={MAILTO} style={SECONDARY_BTN}>
+            <Link to="/contact" style={SECONDARY_BTN}>
               Ask a question first
-            </a>
+            </Link>
           </div>
           <p style={{ marginTop: SPACING.lg, marginBottom: 0, maxWidth: 640 }}>
             <strong>Working with a senior living community?</strong> If you are
@@ -473,9 +469,9 @@ export default function CaregiverPage() {
             help with a gift code, email us. A real person answers — usually
             within one business day.
           </p>
-          <a href={MAILTO} style={PRIMARY_BTN}>
-            Email {CONTACT}
-          </a>
+          <Link to="/contact" style={PRIMARY_BTN}>
+            Let&apos;s talk
+          </Link>
         </section>
 
         <hr style={DIVIDER} />

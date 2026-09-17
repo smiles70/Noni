@@ -19,10 +19,6 @@ import ChatWidget from "./ChatWidget";
 import SupportContact from "./SupportContact";
 import Footer from "./Footer";
 
-const CONTACT = "hello@mynaani.com";
-const MAILTO = `mailto:${CONTACT}?subject=Community%20partnership%20inquiry`;
-const UPDATES_MAILTO = `mailto:${CONTACT}?subject=Research%20updates`;
-
 // ---- Tokenized styles (marketing annex) ------------------------------------
 
 const PAGE: CSSProperties = {
@@ -513,9 +509,9 @@ export default function ForCommunitiesPage() {
               <strong>Get research updates.</strong> New briefs as they're
               published — occasional, evidence-first, no noise.
             </p>
-            <a href={UPDATES_MAILTO} style={SECONDARY_BTN}>
-              Email us to join the list
-            </a>
+            <Link to="/partners" style={SECONDARY_BTN}>
+              Request research updates
+            </Link>
           </div>
         </section>
 
@@ -627,10 +623,10 @@ export default function ForCommunitiesPage() {
               <li>
                 <strong>Questions:</strong> multi-site pricing, security
                 practices, vendor setup —{" "}
-                <a href={MAILTO} style={TEXT_LINK}>
-                  {CONTACT}
-                </a>{" "}
-                gets a real answer.
+                <Link to="/partners" style={TEXT_LINK}>
+                  send us a note
+                </Link>{" "}
+                and a person will answer.
               </li>
             </ul>
           </div>
@@ -646,9 +642,9 @@ export default function ForCommunitiesPage() {
             Tell us about your community and what your residents need — we'll
             arrange a conversation at a time that suits you.
           </p>
-          <a href={MAILTO} style={PRIMARY_BTN}>
-            Email {CONTACT}
-          </a>
+          <Link to="/partners" style={PRIMARY_BTN}>
+            Let&apos;s talk
+          </Link>
         </section>
         <hr style={DIVIDER} />
 

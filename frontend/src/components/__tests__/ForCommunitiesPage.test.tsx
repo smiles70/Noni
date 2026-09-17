@@ -80,23 +80,31 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
     expect(host.textContent).toContain("Working with procurement");
     // Hybrid nav routing (B2B-PRICING-004): pricing reachable from header.
     expect(host.querySelector('a[href="#b2b-pricing"]')).not.toBeNull();
-    // Owned-audience capture (B2B-CHANNEL-001) — honest mailto interim.
-    const updates = host.querySelector('a[href*="subject=Research%20updates"]');
-    expect(updates).not.toBeNull();
+    // Owned-audience capture (B2B-CHANNEL-001) — routes to the form.
+    const updates = [...host.querySelectorAll("a")].find(
+      (a) => a.textContent?.trim() === "Request research updates",
+    );
+    expect(updates?.getAttribute("href")).toBe("/partners");
     expect(host.textContent).toContain("Get research updates");
   });
 
-  it("routes contact to the real address — no invented proof", async () => {
+  it("routes contact to real forms — no mailto pickers, no invented proof", async () => {
     const host = await render();
-    const ctas = host.querySelectorAll<HTMLAnchorElement>(
+    // No button CTA launches an email-app picker; forms own capture.
+    const mailtoCtas = host.querySelectorAll<HTMLAnchorElement>(
       'a[href^="mailto:hello@mynaani.com"]',
     );
-    expect(ctas.length).toBeGreaterThanOrEqual(2);
-    // "Talk to us" opens the /contact page — never an email-app picker.
+    expect(mailtoCtas.length).toBe(0);
+    // "Talk to us" opens the /contact page.
     const talk = [...host.querySelectorAll("a")].find(
       (a) => a.textContent?.trim() === "Talk to us",
     );
     expect(talk?.getAttribute("href")).toBe("/contact");
+    // "Let's talk" opens the senior-care facility form.
+    const letsTalk = [...host.querySelectorAll("a")].find(
+      (a) => a.textContent?.trim() === "Let's talk",
+    );
+    expect(letsTalk?.getAttribute("href")).toBe("/partners");
     // Honesty guard: stats present are attributed; no fabricated social
     // proof or urgency copy.
     expect(host.textContent).toMatch(/Pew Research Center/);

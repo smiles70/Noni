@@ -23,11 +23,10 @@ test.describe("Partner / community journey (B2B-LANDING-001)", () => {
   test("/for-communities exposes contact CTAs", async ({ page }) => {
     await page.goto("/for-communities");
 
-    const primary = page.getByRole("link", {
-      name: /Email hello@mynaani\.com/,
-    });
+    // "Let's talk" routes to the senior-care form — not a mailto picker.
+    const primary = page.getByRole("link", { name: "Let's talk" });
     await expect(primary).toBeVisible();
-    await expect(primary).toHaveAttribute("href", /^mailto:hello@mynaani\.com/);
+    await expect(primary).toHaveAttribute("href", "/partners");
 
     // "Talk to us" routes to the /contact page — never a mailto picker.
     const headerCta = page.getByRole("link", { name: "Talk to us" }).first();

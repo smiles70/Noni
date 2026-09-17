@@ -65,11 +65,13 @@ describe("CaregiverPage — marketing surface", () => {
       '#caregiver-sources ~ ul a[href^="https://"]',
     );
     expect(sourceLinks.length).toBeGreaterThanOrEqual(5);
-    // Contact is the real address, no invented proof.
-    const ctas = host.querySelectorAll<HTMLAnchorElement>(
+    // Contact routes to the /contact form — no mailto picker buttons.
+    const mailtoCtas = host.querySelectorAll<HTMLAnchorElement>(
       'a[href^="mailto:hello@mynaani.com"]',
     );
-    expect(ctas.length).toBeGreaterThanOrEqual(2);
+    expect(mailtoCtas.length).toBe(0);
+    const contactLinks = host.querySelectorAll('a[href="/contact"]');
+    expect(contactLinks.length).toBeGreaterThanOrEqual(2);
     expect(text).not.toMatch(/trusted by|limited time|act now/i);
     // Way back to learner + facility surfaces.
     const learnerLinks = host.querySelectorAll('a[href="/"]');
