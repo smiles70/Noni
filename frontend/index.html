@@ -4,6 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mynaani</title>
+    <script>
+      (function () {
+        var sites = {
+          "mynaani.com": ["https://mynaani-crm.up.railway.app", "cmp_ef8f277f"],
+          "www.mynaani.com": ["https://mynaani-crm.up.railway.app", "cmp_ef8f277f"],
+          "staging.noni-web.pages.dev": ["https://mynaani-crm-staging.up.railway.app", "cmp_4e2759d6"],
+        };
+        var target = sites[location.hostname];
+        if (!target) return;
+        var s = document.createElement("script");
+        s.src = target[0] + "/t/crm.js?site=" + target[1];
+        s.async = true;
+        s.defer = true;
+        document.head.appendChild(s);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
