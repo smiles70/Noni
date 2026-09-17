@@ -20,7 +20,7 @@ test.describe("Partner / community journey (B2B-LANDING-001)", () => {
     ).toBeVisible();
   });
 
-  test("/for-communities exposes mailto contact CTAs", async ({ page }) => {
+  test("/for-communities exposes contact CTAs", async ({ page }) => {
     await page.goto("/for-communities");
 
     const primary = page.getByRole("link", {
@@ -29,12 +29,10 @@ test.describe("Partner / community journey (B2B-LANDING-001)", () => {
     await expect(primary).toBeVisible();
     await expect(primary).toHaveAttribute("href", /^mailto:hello@mynaani\.com/);
 
+    // "Talk to us" routes to the /contact page — never a mailto picker.
     const headerCta = page.getByRole("link", { name: "Talk to us" }).first();
     await expect(headerCta).toBeVisible();
-    await expect(headerCta).toHaveAttribute(
-      "href",
-      /^mailto:hello@mynaani\.com/,
-    );
+    await expect(headerCta).toHaveAttribute("href", "/contact");
   });
 
   test("/for-communities is a public, no-paywall surface", async ({ page }) => {
