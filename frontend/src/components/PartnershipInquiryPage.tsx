@@ -227,6 +227,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           <Field label="First name" required>
             <input
               type="text"
+              name="first_name"
               value={form.firstName}
               onChange={(e) => update("firstName", e.target.value)}
               style={INPUT}
@@ -237,6 +238,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           <Field label="Last name" required>
             <input
               type="text"
+              name="last_name"
               value={form.lastName}
               onChange={(e) => update("lastName", e.target.value)}
               style={INPUT}
@@ -247,6 +249,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           <Field label="Work email" required>
             <input
               type="email"
+              name="email"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
               style={INPUT}
@@ -257,6 +260,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           <Field label="Organization" required>
             <input
               type="text"
+              name="organization"
               value={form.organization}
               onChange={(e) => update("organization", e.target.value)}
               style={INPUT}
@@ -267,6 +271,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           <Field label="Your role">
             <input
               type="text"
+              name="role"
               value={form.role}
               onChange={(e) => update("role", e.target.value)}
               style={INPUT}
@@ -311,6 +316,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           >
             <input
               type="tel"
+              name="phone"
               value={form.phone}
               onChange={(e) => update("phone", e.target.value)}
               style={INPUT}
@@ -320,6 +326,7 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
           </Field>
           <Field label="How can we help?">
             <textarea
+              name="message"
               value={form.message}
               onChange={(e) => update("message", e.target.value)}
               style={{ ...INPUT, minHeight: 120 }}

@@ -170,6 +170,7 @@ export default function ContactPage({ onBack }: Props) {
           <Field label="First name" required>
             <input
               type="text"
+              name="first_name"
               value={form.firstName}
               onChange={(e) => update("firstName", e.target.value)}
               style={INPUT}
@@ -180,6 +181,7 @@ export default function ContactPage({ onBack }: Props) {
           <Field label="Last name" required>
             <input
               type="text"
+              name="last_name"
               value={form.lastName}
               onChange={(e) => update("lastName", e.target.value)}
               style={INPUT}
@@ -190,6 +192,7 @@ export default function ContactPage({ onBack }: Props) {
           <Field label="Email" required>
             <input
               type="email"
+              name="email"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
               style={INPUT}
@@ -200,6 +203,7 @@ export default function ContactPage({ onBack }: Props) {
           <Field label="Phone number">
             <input
               type="tel"
+              name="phone"
               value={form.phone}
               onChange={(e) => update("phone", e.target.value)}
               style={INPUT}
