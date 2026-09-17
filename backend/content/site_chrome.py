@@ -39,7 +39,6 @@ SITE_FOOTER_CONTENT: Dict[str, Any] = {
         {"label": "Privacy", "href": "/privacy"},
         {"label": "Terms", "href": "/terms"},
         {"label": "Help", "href": "/help"},
-        {"label": "Contact", "href": "/help"},
     ],
     # Calm invitation above the legal row on the fat footer; the phone
     # and email are injected at request time from settings.

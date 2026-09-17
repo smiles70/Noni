@@ -35,15 +35,14 @@ describe("LandingFooter — landing mini strip", () => {
     expect(host.querySelector("footer")).toBeTruthy();
   });
 
-  it("exposes Privacy, Terms, Help, and Contact links", async () => {
+  it("exposes Privacy, Terms, and Help links", async () => {
     const host = await render();
-    const links = [...host.querySelectorAll("footer a")];
-    const hrefs = links.map((a) => a.getAttribute("href"));
+    const hrefs = [...host.querySelectorAll("footer a")].map((a) =>
+      a.getAttribute("href"),
+    );
     expect(hrefs).toContain("/privacy");
     expect(hrefs).toContain("/terms");
     expect(hrefs).toContain("/help");
-    const labels = links.map((a) => a.textContent);
-    expect(labels).toContain("Contact");
   });
 
   it("shows copyright", async () => {

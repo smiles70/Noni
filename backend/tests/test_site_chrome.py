@@ -84,11 +84,11 @@ class TestFooterRoute:
         assert body["contact_phone"] == "+1 (877) 409-4144"
         assert body["contact_email"] == "help@mynaani.com"
 
-    def test_mini_links_include_contact(self):
-        hrefs = {
-            link["label"]: link["href"] for link in SITE_FOOTER_CONTENT["mini_links"]
-        }
-        assert hrefs.get("Contact") == "/help"
+    def test_mini_links_stay_minimal(self):
+        # Landing strip carries only the legal minimum — wider strips
+        # crowd the hero CTA on iPhone viewports (e2e flake intake).
+        labels = {link["label"] for link in SITE_FOOTER_CONTENT["mini_links"]}
+        assert labels == {"Privacy", "Terms", "Help"}
 
     def test_copyright_has_current_year(self, client):
         res = client.get("/api/v1/site/footer")

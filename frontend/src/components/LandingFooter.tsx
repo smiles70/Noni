@@ -26,7 +26,6 @@ const FALLBACK: Pick<SiteFooterContent, "mini_links" | "copyright"> = {
     { label: "Privacy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
     { label: "Help", href: "/help" },
-    { label: "Contact", href: "/help" },
   ],
   copyright: `© ${new Date().getFullYear()} mynaani.`,
 };
