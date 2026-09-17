@@ -17,12 +17,10 @@ export interface SiteFooterContent {
   social_links: FooterLink[];
   brand_label: string;
   copyright: string;
-  /** Public "call us" line for /partners; empty = hidden. */
+  /** Public "call us" line for /partners and /contact; empty = hidden. */
   contact_phone: string;
   /** Public "write to us" address; empty = hidden. */
   contact_email: string;
-  /** Invitation sentence above the footer's contact details. */
-  contact_line: string;
 }
 
 export async function loadFooterContent(): Promise<SiteFooterContent> {

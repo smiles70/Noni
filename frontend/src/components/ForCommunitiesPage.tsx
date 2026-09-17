@@ -294,9 +294,9 @@ export default function ForCommunitiesPage() {
           <Link to="/caregiver" style={HEADER_LINK}>
             For caregivers
           </Link>
-          <a href={MAILTO} style={HEADER_CTA}>
+          <Link to="/contact" style={HEADER_CTA}>
             Talk to us
-          </a>
+          </Link>
         </nav>
       </header>
 

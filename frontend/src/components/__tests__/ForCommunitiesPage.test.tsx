@@ -92,6 +92,11 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
       'a[href^="mailto:hello@mynaani.com"]',
     );
     expect(ctas.length).toBeGreaterThanOrEqual(2);
+    // "Talk to us" opens the /contact page — never an email-app picker.
+    const talk = [...host.querySelectorAll("a")].find(
+      (a) => a.textContent?.trim() === "Talk to us",
+    );
+    expect(talk?.getAttribute("href")).toBe("/contact");
     // Honesty guard: stats present are attributed; no fabricated social
     // proof or urgency copy.
     expect(host.textContent).toMatch(/Pew Research Center/);

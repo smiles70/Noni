@@ -84,7 +84,6 @@ const FALLBACK: SiteFooterContent = {
   copyright: `© ${new Date().getFullYear()} mynaani. All rights reserved.`,
   contact_phone: "+1 (877) 409-4144",
   contact_email: "help@mynaani.com",
-  contact_line: "We'd love to connect with you.",
 };
 
 interface Props {
@@ -149,30 +148,6 @@ export default function Footer({ currentPath }: Props) {
             </a>
           ))}
         </nav>
-        {(content.contact_phone || content.contact_email) && (
-          <p style={CONTACT}>
-            {content.contact_line}{" "}
-            {content.contact_phone && (
-              <>
-                Call{" "}
-                <a
-                  href={`tel:${content.contact_phone.replace(/[^0-9+]/g, "")}`}
-                  style={CONTACT_LINK}
-                  aria-label={`Call mynaani, toll free, ${content.contact_phone}`}
-                >
-                  {content.contact_phone}
-                </a>
-              </>
-            )}
-            {content.contact_phone && content.contact_email ? " or email " : ""}
-            {content.contact_email && (
-              <a href={`mailto:${content.contact_email}`} style={CONTACT_LINK}>
-                {content.contact_email}
-              </a>
-            )}
-            .
-          </p>
-        )}
         <div style={HAIRLINE} />
         <div style={LEGAL_ROW}>
           <span style={LEGAL_LINKS}>
@@ -266,17 +241,6 @@ const SOCIAL_LINK: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   gap: SPACING.sm,
-};
-
-const CONTACT: CSSProperties = {
-  color: COLORS.surface,
-  margin: 0,
-  textAlign: "center",
-};
-
-const CONTACT_LINK: CSSProperties = {
-  color: COLORS.surface,
-  textDecoration: "underline",
 };
 
 const HAIRLINE: CSSProperties = {

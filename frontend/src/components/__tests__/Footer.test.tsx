@@ -74,16 +74,18 @@ describe("Footer — shared site footer", () => {
     expect(text).toContain(`© ${new Date().getFullYear()} mynaani`);
   });
 
-  it("shows a calm contact line with phone and email links", async () => {
+  it("carries no contact line — contact lives on /contact", async () => {
+    // Owner request: the fat footer shows brand, nav, social, legal —
+    // no "We'd love to connect with you" text line.
     const host = await render();
     const footer = host.querySelector("footer");
     const text = footer?.textContent ?? "";
-    expect(text).toContain("connect with you");
+    expect(text).not.toContain("connect with you");
     const hrefs = [...(footer?.querySelectorAll("a") ?? [])].map((a) =>
       a.getAttribute("href"),
     );
-    expect(hrefs).toContain("tel:+18774094144");
-    expect(hrefs).toContain("mailto:help@mynaani.com");
+    expect(hrefs.some((h) => h?.startsWith("tel:"))).toBe(false);
+    expect(hrefs.some((h) => h?.startsWith("mailto:"))).toBe(false);
   });
 
   it("marks the current page link with aria-current", async () => {

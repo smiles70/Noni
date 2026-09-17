@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 
 from backend.content.site_chrome import SITE_FOOTER_CONTENT
 from backend.core.config import settings
+from backend.models.contact_inquiry import ContactInquiry, render_contact
 from backend.models.partner_inquiry import (
     PartnerInquiry,
     PartnerInquiryReceipt,
@@ -56,6 +57,25 @@ def submit_partner_inquiry(
     subject = f"Partner inquiry — {inquiry.organization}"
     body = render_inquiry(inquiry)
     background.add_task(email.send, settings.PARTNER_INBOX, subject, body)
+    return PartnerInquiryReceipt(status="received", delivered=True)
+
+
+@router.post("/contact-inquiry", response_model=PartnerInquiryReceipt)
+def submit_contact_inquiry(
+    inquiry: ContactInquiry, background: BackgroundTasks
+) -> PartnerInquiryReceipt:
+    """Accept a /contact ("Talk to us") submission.
+
+    Same no-lost-message contract as /partners: honeypot bots get a
+    synthetic receipt; real submissions go to the help inbox off the
+    request path. Shared surface — both personas land here.
+    """
+    if inquiry.website:
+        return PartnerInquiryReceipt(status="received", delivered=False)
+    subject = f"Contact request — {inquiry.first_name} {inquiry.last_name}"
+    background.add_task(
+        email.send, settings.CONTACT_EMAIL, subject, render_contact(inquiry)
+    )
     return PartnerInquiryReceipt(status="received", delivered=True)
 
 
