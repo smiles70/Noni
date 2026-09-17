@@ -49,8 +49,20 @@ main CI twice today.
 - Do not mask a real mobile usability defect with `force: true` without
   verifying the element is genuinely clickable on a real device.
 
-## Acceptance criteria
+## Root cause (found 2026-09-17)
 
-- Two consecutive green CI e2e runs on main, OR the 6 tests quarantined
-  with a documented tracking issue.
-- Root cause identified and recorded in `.ai/recovery/`.
+Reproduced locally with `npx playwright test --project=mobile-iphone`.
+Playwright's actionability log reported:
+
+```
+<span>© 2026 mynaani…</span> from <footer data-landing-footer="mini">
+subtree intercepts pointer events
+```
+
+On iPhone-width viewports the strip wraps; the **copyright span's
+`pointer-events: auto`** (set by the earlier mitigation so its links
+remained clickable) sat physically over the hero CTA. Real iPhone taps
+would have hit dead text — a genuine defect, not only an emulator
+artifact. Fixed in `4dceeca`: copyright is static text and carries no
+pointer events; only the links do. All 10 previously-flaking
+mobile-iphone specs pass locally in ~3s each.
