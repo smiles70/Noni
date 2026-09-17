@@ -94,7 +94,9 @@ const STRIP: CSSProperties = {
 
 const COPYRIGHT: CSSProperties = {
   padding: `${SPACING.xs}px 0`,
-  pointerEvents: "auto",
+  // Static text — no interaction needed. Leaving pointer-events off
+  // keeps the hero CTA clickable where the wrapped strip overlaps it on
+  // iPhone-width viewports (landing CTA timeout flake).
 };
 
 const LINKS: CSSProperties = {
