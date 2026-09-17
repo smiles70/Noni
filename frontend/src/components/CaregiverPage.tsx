@@ -12,12 +12,13 @@
  * this page explains the journey before sending the caregiver there.
  * Content is static (no envelope, no RenderGuard) per ADR-0030.
  */
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
 import ChatWidget from "./ChatWidget";
 import SupportContact from "./SupportContact";
 import Footer from "./Footer";
+import { trackScrollDepth } from "../lib/scrollDepthTelemetry";
 
 // ---- Tokenized styles (marketing annex) ------------------------------------
 
@@ -226,6 +227,8 @@ const INCLUDES = [
 // ---- Page -------------------------------------------------------------------
 
 export default function CaregiverPage() {
+  // WS-D: scroll-depth baseline (milestones only, silent failure).
+  useEffect(() => trackScrollDepth("caregiver"), []);
   return (
     <div style={PAGE} data-contract-exemption="marketing.caregiver">
       {/* Marketing header — text links only, no dropdowns */}

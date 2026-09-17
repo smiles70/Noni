@@ -12,12 +12,13 @@
  * proof strip, program list, "why partner" blocks, single contact CTA.
  * Content is static (no envelope, no RenderGuard) per ADR-0030.
  */
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
 import ChatWidget from "./ChatWidget";
 import SupportContact from "./SupportContact";
 import Footer from "./Footer";
+import { trackScrollDepth } from "../lib/scrollDepthTelemetry";
 
 // ---- Tokenized styles (marketing annex) ------------------------------------
 
@@ -259,6 +260,8 @@ const PROGRAM_INCLUDES = [
 // ---- Page -------------------------------------------------------------------
 
 export default function ForCommunitiesPage() {
+  // WS-D: scroll-depth baseline (milestones only, silent failure).
+  useEffect(() => trackScrollDepth("for-communities"), []);
   return (
     <div style={PAGE} data-contract-exemption="marketing.b2b">
       <header style={HEADER}>
