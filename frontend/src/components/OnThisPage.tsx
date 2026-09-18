@@ -9,7 +9,7 @@
  * events over CTAs — the mobile-iphone overlap lesson applies.
  */
 import { CSSProperties, MouseEvent } from "react";
-import { COLORS, SPACING, RADIUS } from "../design/tokens";
+import { COLORS, SPACING, TYPOGRAPHY } from "../design/tokens";
 
 export interface PageSection {
   id: string;
@@ -23,36 +23,29 @@ const NAV: CSSProperties = {
 };
 
 const LABEL: CSSProperties = {
-  margin: `0 0 ${SPACING.sm}px`,
-  fontSize: 15,
+  margin: `0 0 ${SPACING.xs}px`,
+  fontSize: TYPOGRAPHY.bodySizePx,
   fontWeight: 600,
   color: COLORS.textPrimary,
-  letterSpacing: 0.4,
 };
 
+// Text-first wayfinding: plain links inline with the prose, no pill
+// chrome — pills read as a competing CTA row. Wraps naturally on
+// narrow viewports; no collapsed menu hiding choices from older users.
 const LIST: CSSProperties = {
   listStyle: "none",
   display: "flex",
   flexWrap: "wrap",
-  gap: SPACING.sm,
+  columnGap: SPACING.md,
+  rowGap: SPACING.xs,
   margin: 0,
   padding: 0,
-  // Horizontal scroll fallback on narrow viewports instead of a
-  // collapsed dropdown — keeps all choices visible for older users.
-  overflowX: "auto",
 };
 
 const LINK: CSSProperties = {
-  display: "inline-block",
-  padding: `${SPACING.sm}px ${SPACING.md}px`,
-  borderRadius: RADIUS.md,
-  border: `1px solid ${COLORS.disabled}`,
-  backgroundColor: COLORS.surface,
   color: COLORS.accentMutedBlue,
-  fontSize: 15,
-  lineHeight: 1.4,
-  textDecoration: "none",
-  whiteSpace: "nowrap",
+  fontSize: TYPOGRAPHY.bodySizePx,
+  lineHeight: TYPOGRAPHY.bodyLineHeight,
 };
 
 export default function OnThisPage({ sections }: { sections: PageSection[] }) {
