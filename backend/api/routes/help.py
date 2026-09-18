@@ -15,7 +15,6 @@ from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from sqlalchemy.orm import Session as DbSession
 
 from backend.api.deps import get_db, get_optional_account
-from backend.core.config import settings
 from backend.models.help_request import CallbackRequest, CallbackResponse
 from backend.services import retell_calls
 from backend.services.rate_limit import RateLimit, check_and_increment
