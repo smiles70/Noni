@@ -59,9 +59,7 @@ class TestRetellCallback:
             "backend.services.retell_calls.settings.RETELL_CALLBACK_AGENT_ID",
             "agent_x",
         )
-        monkeypatch.setattr(
-            "backend.services.retell_calls.httpx.post", fake_post
-        )
+        monkeypatch.setattr("backend.services.retell_calls.httpx.post", fake_post)
         assert retell_calls.create_callback("+14155551234") == "call_abc"
         body = calls[0]["json"]
         assert body["to_number"] == "+14155551234"

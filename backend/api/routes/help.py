@@ -23,7 +23,9 @@ log = logging.getLogger(__name__)
 
 router = APIRouter()
 
-_CALLBACK_LIMIT = RateLimit(action="help.callback", max_per_window=3, window_seconds=86400)
+_CALLBACK_LIMIT = RateLimit(
+    action="help.callback", max_per_window=3, window_seconds=86400
+)
 
 
 @router.post("/callback", response_model=CallbackResponse)
@@ -52,9 +54,7 @@ def request_callback(
 
     call_id = retell_calls.create_callback(body.phone)
     email = getattr(account, "email", None)
-    background.add_task(
-        retell_calls.file_help_contact, body.phone, body.context, email
-    )
+    background.add_task(retell_calls.file_help_contact, body.phone, body.context, email)
     if call_id is None:
         log.warning("help_callback_not_dialed", extra={"phone_tail": body.phone[-4:]})
         return CallbackResponse(status="queued", calling=False)
