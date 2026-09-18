@@ -35,13 +35,18 @@ def create_callback(phone_e164: str) -> str | None:
         log.warning("retell_callback_unconfigured")
         return None
     try:
+        payload: dict[str, str] = {
+            "from_number": settings.RETELL_FROM_NUMBER,
+            "to_number": phone_e164,
+            "override_agent_id": settings.RETELL_CALLBACK_AGENT_ID,
+        }
+        if settings.CRM_API_URL:
+            payload["webhook_url"] = (
+                f"{settings.CRM_API_URL.rstrip('/')}/api/retell/webhook"
+            )
         resp = httpx.post(
             f"{RETELL_BASE}/v2/create-phone-call",
-            json={
-                "from_number": settings.RETELL_FROM_NUMBER,
-                "to_number": phone_e164,
-                "override_agent_id": settings.RETELL_CALLBACK_AGENT_ID,
-            },
+            json=payload,
             headers={"Authorization": f"Bearer {settings.RETELL_API_KEY}"},
             timeout=_TIMEOUT,
         )
