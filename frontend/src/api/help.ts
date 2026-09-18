@@ -2,8 +2,12 @@
  * Learner help API — the "Call me" callback (learner-help-channel
  * intake). POST /api/v1/help/callback asks the backend to ring the
  * learner back via the Retell outbound agent.
+ *
+ * Auth (ADR 0024): uses the centralized `apiClient` so the Bearer
+ * interceptor attaches the signed-in learner's token — the backend
+ * files the callback against their account email.
  */
-import { API_BASE_URL } from "../lib/env";
+import { apiClient } from "./client";
 
 export interface CallbackResponse {
   status: string;
@@ -14,14 +18,9 @@ export async function requestCallback(
   phone: string,
   context?: string,
 ): Promise<CallbackResponse> {
-  const res = await fetch(`${API_BASE_URL}/api/v1/help/callback`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ phone, context: context ?? null }),
+  const res = await apiClient.post<CallbackResponse>("/api/v1/help/callback", {
+    phone,
+    context: context ?? null,
   });
-  if (!res.ok) {
-    throw new Error(`Callback request failed: ${res.status}`);
-  }
-  return res.json() as Promise<CallbackResponse>;
+  return res.data;
 }
