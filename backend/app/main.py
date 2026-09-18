@@ -26,6 +26,7 @@ from backend.api.routes.auth import router as auth_router
 from backend.api.routes.billing import router as billing_router
 from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.gifts import router as gifts_router
+from backend.api.routes.help import router as help_router
 from backend.api.routes.landing import router as landing_router
 from backend.api.routes.organizations import router as organizations_router
 from backend.api.routes.site import router as site_router
@@ -347,6 +348,7 @@ app.include_router(
 )
 app.include_router(landing_router, prefix="/api/v1/landing", tags=["landing"])
 app.include_router(site_router, prefix="/api/v1/site", tags=["site"])
+app.include_router(help_router, prefix="/api/v1/help", tags=["help"])
 app.include_router(
     telemetry_export_router, prefix="/api/v1/telemetry", tags=["telemetry"]
 )

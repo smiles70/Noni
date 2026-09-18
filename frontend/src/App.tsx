@@ -383,7 +383,6 @@ const App: React.FC = () => {
                         onContinueGated={goPaywall}
                         onAccount={goAccount}
                         onOpenMenu={goMenu}
-                        onHelp={goHelp}
                       />
                     </Suspense>
                   </RequireAuth>
@@ -400,7 +399,6 @@ const App: React.FC = () => {
                         onAccount={goAccount}
                         onOpenMenu={goMenu}
                         onSequenceComplete={goLanding}
-                        onHelp={goHelp}
                       />
                     </Suspense>
                   </RequireAuth>

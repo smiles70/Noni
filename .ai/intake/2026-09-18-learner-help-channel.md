@@ -10,50 +10,63 @@ quota per owner request)
 
 A learner (B2C, 55+) who gets stuck in the curriculum currently has
 no way to signal "I need help" from inside the journey. We need a
-help-request path that:
+help-request path that complies with the geragogy contract and
+reaches a human.
 
-- complies with the geragogy contract (`docs/library/CONTRACT.md` —
-  closed-world, low-arousal, no chatbot surfaces in the curriculum),
-- does not assume we hold a phone number (Stripe checkout may only
-  collect email — to be verified),
-- and lands somewhere Steven/Kim actually see and can respond —
-  the RocketChat internal ops channel (p19) is the candidate
-  destination.
+## Agreed design (owner-approved 2026-09-18, mock reviewed)
 
-## Explicit scope tension to resolve
+- **Single option, one card.** Tapping "Help" in the NavBar swaps
+  the lesson body for a help card in the same slot — a state
+  change, not a reflow. No widget, no overlay.
+- **Copy:** "Get help with this lesson" — "Tap the button and
+  someone will call you right away." — button **"Call me"**.
+- **Flow:** Call me → one-time phone-number Field (saved to the
+  learner's contact; one tap on subsequent visits) → "Call me now"
+  → Retell **outbound agent (p18) dials within seconds, 24/7**
+  → confirmation: "We're calling you now — keep your phone nearby.
+  It will ring from 1-877-409-4144."
+- **Quiet footnote:** "Prefer writing? help@mynaani.com" — not a
+  competing option.
+- **RocketChat stays internal-only** — the learner never touches
+  it; `#crm-alerts` receives the callback request so a human can
+  follow up.
 
-p19 scoped RocketChat to **internal-only** ("Explicitly out of
-scope: Omnichannel/livechat, site visitors, any customer-facing
-surface"). A learner help channel makes RocketChat (or whatever we
-choose) customer-facing for the first time. This intake must either
-amend that boundary deliberately or propose a non-RC path.
+## Required state
 
-## Questions the research must answer
+1. `LessonRenderer` (shared by free + paid tracks): Help in NavBar
+   swaps the lesson body to the help card; "Back to lesson" restores
+   the exact position (indicator line persists). RenderGuard proposal
+   accounts for the added Button/Field/Card components.
+2. `POST /api/help/callback` (backend): `{phone, unitId?, pageIdx?}`
+   → stores the request, files the contact in the CRM (existing
+   intake path), triggers the Retell outbound call, returns a
+   confirmation state.
+3. Retell outbound capability (p18): `create-phone-call` from
+   +18774094144 with the voice agent → calls the learner.
+4. `#crm-alerts` ping (p19 notifier) on each callback request.
+5. Learner surfaces only — never on facility/gift journeys.
+6. Unit + Playwright coverage per journey-guard rules; the help
+   card is a curriculum-adjacent surface.
 
-1. What does the geragogy contract actually permit/prohibit for a
-   help affordance inside the curriculum? (Internal.)
-2. What identity do we hold on a paying learner — email only, or
-   phone too? Does Stripe checkout collect phone? (Internal.)
-3. What do older-adult UX studies say about help-seeking channels —
-   phone vs form vs chat vs email — for this persona? (External.)
-4. Candidate mechanisms, ranked against the contract + stack:
-   - a) "Request a call back" → Retell outbound call (p18) or
-     human callback
-   - b) Simple "email us / help request" form → CRM + RocketChat
-     alert
-   - c) RocketChat Omnichannel/Livechat embedded on learner pages
-     (likely contract-violating — verify)
-   - d) SMS or other channel
-5. How does a help request reach Steven/Kim — RC alert, CRM contact
-   + task, email?
-6. Stuck detection: should the UI *offer* help proactively (N failed
-   attempts / idle / rage-clicks) or only respond when asked?
-   Geragogy implications of proactive interruption.
+## Resolved decisions (from research)
+
+- RC Omnichannel/Livechat rejected — floating widget violates the
+  closed component inventory; typing-based chat is the weakest
+  channel for this persona.
+- Proactive stuck-detection rejected — React may not infer state
+  (CONTRACT §IV); interruption harms this persona (COGA).
+- One option, not three — choice-overload evidence (Medicare Part
+  D study; "Older Adults Prefer Less Choice") favors a single path.
+- Phone beats callback-form-first — voice is the preferred channel;
+  the number is collected once at request time (checkout collects
+  email only, verified `payment_provider.py:241`).
 
 ## Open items
 
-- Persona guard: learner surfaces only — this must never leak to
-  facility/gift journeys (dual-audience rule).
-- Whether "stuck" state exists anywhere (progress data is
-  localStorage-only per AGENTS — server-side stuck detection may be
-  impossible today).
+- Envelope/RenderGuard: does the help card need a backend-approved
+  `ui-envelope` state, or is it a client-side state swap within the
+  existing curriculum envelope? Decided at plan stage.
+- Whether the callback POST also stamps `source=HELP` on the CRM
+  contact so `#crm-alerts` reads `[help]` not `[form]`.
+- Sequencing vs p18 (outbound agent must exist for "calls in
+  seconds" — interim fallback: alert humans to call manually).
