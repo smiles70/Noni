@@ -19,21 +19,6 @@ import ChatWidget from "./ChatWidget";
 import SupportContact from "./SupportContact";
 import Footer from "./Footer";
 import { trackScrollDepth } from "../lib/scrollDepthTelemetry";
-import OnThisPage, { PageSection } from "./OnThisPage";
-
-// Single source for the "On this page" menu — labels carry the real
-// section scent (NN/g: link labels must name the destination).
-const SECTIONS: PageSection[] = [
-  { id: "b2b-difference", label: "What geragogy is" },
-  { id: "b2b-how", label: "How it works" },
-  { id: "b2b-outcomes", label: "Why partner" },
-  { id: "b2b-program", label: "What's included" },
-  { id: "b2b-who", label: "Who it's for" },
-  { id: "b2b-papers", label: "Research briefs" },
-  { id: "b2b-pricing", label: "Pricing" },
-  { id: "b2b-contact", label: "Start a conversation" },
-  { id: "b2b-sources", label: "Sources" },
-];
 
 // ---- Tokenized styles (marketing annex) ------------------------------------
 
@@ -104,7 +89,6 @@ const H2: CSSProperties = {
   marginBottom: SPACING.lg,
   color: COLORS.textPrimary,
   fontWeight: 600,
-  scrollMarginTop: SPACING.xl,
 };
 
 const H3: CSSProperties = {
@@ -176,14 +160,10 @@ const ICON: CSSProperties = {
   marginBottom: SPACING.sm,
 };
 
-// WS-C: constrained to the content column — a full-bleed hairline reads
-// as "page end" (Contentsquare false-bottom); an inset rule reads as a
-// section pause.
 const DIVIDER: CSSProperties = {
   border: "none",
   borderTop: `1px solid ${COLORS.disabled}`,
-  margin: "0 auto",
-  maxWidth: 880,
+  margin: 0,
 };
 
 const LIST: CSSProperties = {
@@ -340,8 +320,6 @@ export default function ForCommunitiesPage() {
           </Link>
         </section>
 
-        <OnThisPage sections={SECTIONS} />
-
         <hr style={DIVIDER} />
 
         <section style={SECTION} aria-labelledby="b2b-difference">
@@ -452,13 +430,6 @@ export default function ForCommunitiesPage() {
             We are onboarding a small number of founding communities. Working
             with us now means the program is shaped around your residents' needs
             — and your community helps set the standard.
-          </p>
-          {/* WS-B: same-goal CTA repeated at ~50% depth — most visitors
-              never reach the bottom section (scroll-depth data). */}
-          <p style={{ marginTop: SPACING.xl, marginBottom: 0 }}>
-            <Link to="/partners" style={PRIMARY_BTN}>
-              Let&apos;s talk
-            </Link>
           </p>
         </section>
 

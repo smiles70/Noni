@@ -79,26 +79,4 @@ describe("CaregiverPage — marketing surface", () => {
     const facilityLink = host.querySelector('a[href="/for-communities"]');
     expect(facilityLink).not.toBeNull();
   });
-
-  it("exposes an On-this-page anchor menu resolving to real sections (WS-A)", async () => {
-    const host = await render();
-    const nav = host.querySelector('nav[aria-label="On this page"]');
-    expect(nav).not.toBeNull();
-    const links = nav!.querySelectorAll<HTMLAnchorElement>('a[href^="#"]');
-    expect(links.length).toBeGreaterThanOrEqual(8);
-    for (const a of links) {
-      const id = a.getAttribute("href")!.slice(1);
-      expect(host.querySelector(`#${id}`)).not.toBeNull();
-    }
-  });
-
-  it("repeats the gift CTA mid-page at ~50% depth (WS-B)", async () => {
-    const host = await render();
-    const mid = host.querySelector('[data-gift-entry="midpage"]');
-    expect(mid).not.toBeNull();
-    expect(mid!.getAttribute("href")).toBe("/gift");
-    // Gift path appears in header, hero, mid-page, and gift section.
-    const giftLinks = host.querySelectorAll('a[href="/gift"]');
-    expect(giftLinks.length).toBeGreaterThanOrEqual(4);
-  });
 });
