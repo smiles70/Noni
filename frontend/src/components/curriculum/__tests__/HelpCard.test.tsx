@@ -5,7 +5,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
+import { requestCallback } from "../../../api/help";
 import HelpCard from "../HelpCard";
+
+vi.mock("../../../api/help", () => ({
+  requestCallback: vi.fn(),
+}));
 
 describe("HelpCard", () => {
   let container: HTMLDivElement;
@@ -74,13 +79,10 @@ describe("HelpCard", () => {
   });
 
   it("confirms the call after submit and saves the number", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () => ({
-        ok: true,
-        json: async () => ({ status: "calling", calling: true }),
-      })),
-    );
+    vi.mocked(requestCallback).mockResolvedValue({
+      status: "calling",
+      calling: true,
+    });
     renderCard();
     await act(async () => {
       button("Call me")!.click();
@@ -94,13 +96,10 @@ describe("HelpCard", () => {
   });
 
   it("shows the queued state when the call cannot be placed", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () => ({
-        ok: true,
-        json: async () => ({ status: "queued", calling: false }),
-      })),
-    );
+    vi.mocked(requestCallback).mockResolvedValue({
+      status: "queued",
+      calling: false,
+    });
     renderCard();
     await act(async () => {
       button("Call me")!.click();
