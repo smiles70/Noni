@@ -113,4 +113,29 @@ describe("ForCommunitiesPage — B2B marketing surface", () => {
     const learnerLinks = host.querySelectorAll('a[href="/"]');
     expect(learnerLinks.length).toBeGreaterThanOrEqual(2);
   });
+
+  it("exposes an On-this-page anchor menu resolving to real sections (WS-A)", async () => {
+    const host = await render();
+    const nav = host.querySelector('nav[aria-label="On this page"]');
+    expect(nav).not.toBeNull();
+    const links = nav!.querySelectorAll<HTMLAnchorElement>('a[href^="#"]');
+    expect(links.length).toBeGreaterThanOrEqual(8);
+    // Every menu id resolves to a rendered heading — no drift.
+    for (const a of links) {
+      const id = a.getAttribute("href")!.slice(1);
+      expect(host.querySelector(`#${id}`)).not.toBeNull();
+    }
+  });
+
+  it("repeats the partner CTA mid-page at ~50% depth (WS-B)", async () => {
+    const host = await render();
+    // Mid-page "Let's talk" inside the program section, plus the
+    // bottom contact-section CTA — same goal, both → /partners.
+    const program = host.querySelector("#b2b-program")!.parentElement!;
+    const mid = program.querySelector('a[href="/partners"]');
+    expect(mid).not.toBeNull();
+    expect(mid!.textContent).toMatch(/Let's talk/);
+    const all = host.querySelectorAll('a[href="/partners"]');
+    expect(all.length).toBeGreaterThanOrEqual(3);
+  });
 });

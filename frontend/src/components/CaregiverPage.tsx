@@ -19,6 +19,20 @@ import ChatWidget from "./ChatWidget";
 import SupportContact from "./SupportContact";
 import Footer from "./Footer";
 import { trackScrollDepth } from "../lib/scrollDepthTelemetry";
+import OnThisPage, { PageSection } from "./OnThisPage";
+
+// Single source for the "On this page" menu — labels carry the real
+// section scent (NN/g: link labels must name the destination).
+const SECTIONS: PageSection[] = [
+  { id: "caregiver-difference", label: "Why this gift" },
+  { id: "caregiver-how", label: "How gifting works" },
+  { id: "caregiver-includes", label: "What's included" },
+  { id: "caregiver-who", label: "Who it's for" },
+  { id: "caregiver-papers", label: "Research briefs" },
+  { id: "caregiver-gift", label: "Gift options" },
+  { id: "caregiver-contact", label: "Questions" },
+  { id: "caregiver-sources", label: "Sources" },
+];
 
 // ---- Tokenized styles (marketing annex) ------------------------------------
 
@@ -93,6 +107,7 @@ const H2: CSSProperties = {
   marginBottom: SPACING.lg,
   color: COLORS.textPrimary,
   fontWeight: 600,
+  scrollMarginTop: SPACING.xl,
 };
 
 const H3: CSSProperties = {
@@ -145,10 +160,14 @@ const CARD: CSSProperties = {
   boxSizing: "border-box",
 };
 
+// WS-C: constrained to the content column — a full-bleed hairline reads
+// as "page end" (Contentsquare false-bottom); an inset rule reads as a
+// section pause.
 const DIVIDER: CSSProperties = {
   border: "none",
   borderTop: `1px solid ${COLORS.disabled}`,
-  margin: 0,
+  margin: "0 auto",
+  maxWidth: 880,
 };
 
 const LIST: CSSProperties = {
@@ -284,6 +303,8 @@ export default function CaregiverPage() {
           <ChatWidget journey="gift" />
         </section>
 
+        <OnThisPage sections={SECTIONS} />
+
         <hr style={DIVIDER} />
 
         {/* Difference */}
@@ -358,6 +379,13 @@ export default function CaregiverPage() {
             interface were designed for older learners from the start: readable
             type, predictable behaviour, and an approach that respects
             experience rather than talking down to it.
+          </p>
+          {/* WS-B: same-goal gift CTA repeated at ~50% depth — most
+              visitors never reach the bottom section. */}
+          <p style={{ marginTop: SPACING.xl, marginBottom: 0 }}>
+            <Link to="/gift" style={PRIMARY_BTN} data-gift-entry="midpage">
+              Gift mynaani
+            </Link>
           </p>
         </section>
 

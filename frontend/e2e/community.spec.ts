@@ -24,14 +24,28 @@ test.describe("Partner / community journey (B2B-LANDING-001)", () => {
     await page.goto("/for-communities");
 
     // "Let's talk" routes to the senior-care form — not a mailto picker.
+    // Two instances: mid-page (WS-B) + bottom contact section.
     const primary = page.getByRole("link", { name: "Let's talk" });
-    await expect(primary).toBeVisible();
-    await expect(primary).toHaveAttribute("href", "/partners");
+    await expect(primary).toHaveCount(2);
+    await expect(primary.first()).toBeVisible();
+    await expect(primary.first()).toHaveAttribute("href", "/partners");
+    await expect(primary.last()).toHaveAttribute("href", "/partners");
 
     // "Talk to us" routes to the /contact page — never a mailto picker.
     const headerCta = page.getByRole("link", { name: "Talk to us" }).first();
     await expect(headerCta).toBeVisible();
     await expect(headerCta).toHaveAttribute("href", "/contact");
+  });
+
+  test("On this page menu jumps to real sections (WS-A)", async ({ page }) => {
+    await page.goto("/for-communities");
+    const nav = page.getByRole("navigation", { name: "On this page" });
+    await expect(nav).toBeVisible();
+    // Jump to Pricing — heading should land in view.
+    await nav.getByRole("link", { name: "Pricing" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Pricing — founding partner rates" }),
+    ).toBeInViewport();
   });
 
   test("/for-communities is a public, no-paywall surface", async ({ page }) => {
