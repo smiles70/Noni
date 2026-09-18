@@ -83,9 +83,17 @@ export default function PartnershipInquiryPage({ onBack }: Props) {
   const [contactPhone, setContactPhone] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     loadFooterContent()
-      .then((c) => setContactPhone(c.contact_phone || ""))
-      .catch(() => setContactPhone(""));
+      .then((c) => {
+        if (!cancelled) setContactPhone(c.contact_phone || "");
+      })
+      .catch(() => {
+        if (!cancelled) setContactPhone("");
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
