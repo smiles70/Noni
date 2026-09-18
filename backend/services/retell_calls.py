@@ -81,6 +81,7 @@ def file_help_contact(phone_e164: str, context: str | None, email: str | None) -
     try:
         httpx.post(
             f"{settings.CRM_API_URL.rstrip('/')}/api/t/e",
+            headers={"Origin": "https://www.mynaani.com"},
             json={
                 "siteId": settings.CRM_SITE_ID,
                 "visitorId": f"help-{phone_e164[-4:]}",
