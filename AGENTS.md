@@ -183,3 +183,47 @@ research directory). The memo must contain:
 - If fewer than 20 high-quality sources can be found, or if no enterprise-grade
   option exists for the constraints, stop and ask the user how to proceed before
   writing the recommendation.
+
+## Process v9.x — strict adherence (owner rule, 2026-09-19)
+
+- **Process v9.x is followed strictly — no skipped steps.** Research protocol →
+  intake → implementation → verification gates → sign-off, in order.
+- **FAANG architecture practices** — as researched, codified, and defined in
+  the ontology and knowledge graph / graph memory — are followed strictly.
+- **Modular-monolith practices** — as researched, codified, and defined in the
+  ontology and knowledge graph / graph memory — are followed strictly.
+- **All coding and development activities must be audited against this
+  AGENTS.md** — unit, regression, QA, UAT, smoke, e2e, and the full test suite,
+  then promotion to staging.
+- **Agents and skills must be checked and invoked for the nature of the
+  problem or intake.** Examples: logo/brand-asset work invokes
+  `logo-design-audit`; screenshot/visual review invokes `ocular`; journey and
+  paywall changes invoke `journey-loop-guard`; B2B surfaces invoke
+  `senior-living-agency`; research artifacts feed `knowledge-graph-extraction`.
+
+## Defect / problem-statement tickets — fast path, no skipped gates
+
+Owner-reported defects are still tickets, not informal fixes. Even P0s:
+
+1. **Intake file first** — `.ai/intake/YYYY-MM-DD-p0-<slug>.md` with
+   problem statement, root cause (confirmed in code, not assumed),
+   options, edge cases, acceptance. Before implementation, not after.
+2. **Skill invocation is mandatory even on small diffs** — check the
+   skill list every time: any frontend page/component/style/copy change
+   invokes `geragogy`; B2B surfaces invoke `senior-living-agency`;
+   anything touching a component mounted on purchase/paywall/redemption
+   surfaces (including shared chrome like `Footer`) invokes
+   `journey-loop-guard` — verify mount points with grep, don't assume.
+3. **Research artifact** — proportionate scope is allowed for defect
+   tickets (a verification memo citing codebase checks is sufficient;
+   the ≥20-source gather applies to *decisions*, not defect triage) but
+   the `.ai/research/` artifact must exist and any deviation from the
+   full protocol must be written down in it, not left implicit.
+4. **Same-commit test pins** — unit + e2e updates land in the same
+   commit as the change.
+5. **Graph + RESUME update after every push** — episode recorded, graph
+   re-validated when entities changed, before reporting done.
+6. Staging only; production still requires explicit owner sign-off.
+
+*Added 2026-09-20 after PS-BID17-001–004 shipped without retro skill
+invocation or a research memo — both gaps caught in self-audit.*
