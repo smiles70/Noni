@@ -59,10 +59,9 @@ export const MARKETING = {
 } as const;
 
 /** The complete, closed set of permitted color hex values. */
-export const ALLOWED_COLOR_VALUES: readonly string[] = Object.freeze([
-  ...Object.values(COLORS),
-  ...Object.values(MARKETING),
-]);
+export const ALLOWED_COLOR_VALUES: readonly string[] = Object.freeze(
+  Array.from(new Set([...Object.values(COLORS), ...Object.values(MARKETING)])),
+);
 
 // ---- Spacing (CONTRACT Section I.B) -----------------------------------------
 

@@ -9,6 +9,7 @@
 import { describe, it, expect } from "vitest";
 import {
   COLORS,
+  MARKETING,
   SPACING,
   TYPOGRAPHY,
   RADIUS,
@@ -32,9 +33,13 @@ describe("COLORS", () => {
 
   it("exposes a frozen list of allowed values", () => {
     expect(ALLOWED_COLOR_VALUES.length).toBeGreaterThan(0);
-    expect(Object.values(COLORS).sort()).toEqual(
-      [...ALLOWED_COLOR_VALUES].sort(),
-    );
+    // The allowed set is the closed COLORS palette plus the ADR-0034
+    // marketing annex — both must be subsets; nothing else may enter.
+    const allowed = [...ALLOWED_COLOR_VALUES].sort();
+    const expected = [
+      ...new Set([...Object.values(COLORS), ...Object.values(MARKETING)]),
+    ].sort();
+    expect(allowed).toEqual(expected);
   });
 
   it("has no duplicate values", () => {
