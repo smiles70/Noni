@@ -85,9 +85,7 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
   }) => {
     await page.goto("/caregiver");
     await expect(
-      page.getByText(
-        "Give calm, self-paced AI learning to someone you care about",
-      ),
+      page.getByText("They learn AI.", { exact: false }),
     ).toBeVisible();
     const gift = page.getByRole("link", { name: /Gift mynaani/i }).first();
     await expect(gift).toBeVisible();

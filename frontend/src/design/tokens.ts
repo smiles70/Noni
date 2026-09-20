@@ -54,8 +54,16 @@ export const MARKETING = {
   tealBright: "#6FC2B4",
   gold: "#C9A24D",
   paper: "#F5F3EE",
+  paperCard: "#FFFFFF",
+  paperEdge: "#E2E0D8",
   mutedOnDark: "#B9BEC4",
+  bodyOnDark: "#D4D8DC",
+  quoteOnDark: "#EEF0F2",
   inkSoft: "#4A4D52",
+  mutedOnPaper: "#6B6759",
+  faintOnPaper: "#55524A",
+  tealInk: "#1F6357",
+  darkCardBorder: "#3A3E43",
 } as const;
 
 /** The complete, closed set of permitted color hex values. */

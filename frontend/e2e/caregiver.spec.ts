@@ -34,7 +34,9 @@ test.describe("Caregiver marketing page (bid-17)", () => {
       page.getByRole("link", { name: /mynaani home/i }),
     ).toBeVisible();
     // Toll-free line present.
-    await expect(page.locator('a[href="tel:+18774094144"]')).toBeVisible();
+    await expect(
+      page.locator('a[href="tel:+18774094144"]').first(),
+    ).toBeVisible();
   });
 
   test("passes WCAG 2.1 AA automated checks (axe-core)", async ({ page }) => {

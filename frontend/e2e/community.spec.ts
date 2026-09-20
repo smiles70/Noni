@@ -12,7 +12,7 @@ test.describe("Partner / community journey (bid-17, B2B-LANDING-001)", () => {
       }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: /The business case/i }),
+      page.getByRole("heading", { name: /Budget you can defend/i }),
     ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "Start a conversation" }).first(),
@@ -30,7 +30,9 @@ test.describe("Partner / community journey (bid-17, B2B-LANDING-001)", () => {
     await expect(bandCta).toHaveAttribute("href", "/partners");
 
     // Toll-free line present.
-    await expect(page.locator('a[href="tel:+18774094144"]')).toBeVisible();
+    await expect(
+      page.locator('a[href="tel:+18774094144"]').first(),
+    ).toBeVisible();
   });
 
   test("/for-communities is a public, no-paywall surface", async ({ page }) => {
@@ -43,7 +45,7 @@ test.describe("Partner / community journey (bid-17, B2B-LANDING-001)", () => {
   test("/for-communities passes axe WCAG 2.1 AA", async ({ page }) => {
     await page.goto("/for-communities");
     await expect(
-      page.getByRole("heading", { name: /The business case/i }),
+      page.getByRole("heading", { name: /Budget you can defend/i }),
     ).toBeVisible();
     await injectAxe(page);
     await checkA11y(page, undefined, {

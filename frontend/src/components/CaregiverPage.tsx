@@ -66,7 +66,7 @@ const NAV_CTA: CSSProperties = {
 
 const HERO: CSSProperties = {
   background: `linear-gradient(150deg, ${MARKETING.charcoal} 0%, ${MARKETING.charcoalDeep} 100%)`,
-  color: "#FFFFFF",
+  color: MARKETING.paperCard,
   padding: `76px ${SPACING.xl}px`,
 };
 
@@ -92,13 +92,13 @@ const H1_DARK: CSSProperties = {
   fontWeight: 700,
   lineHeight: 1.15,
   margin: `${SPACING.md}px 0 0`,
-  color: "#FFFFFF",
+  color: MARKETING.paperCard,
 };
 
 const SUB_DARK: CSSProperties = {
   fontSize: 18,
   lineHeight: 1.7,
-  color: "#D4D8DC",
+  color: MARKETING.bodyOnDark,
   margin: `22px 0 34px`,
   maxWidth: 520,
 };
@@ -136,7 +136,7 @@ const SECTION: CSSProperties = {
 
 const KICKER_LIGHT: CSSProperties = {
   ...KICKER,
-  color: "#1F6357",
+  color: MARKETING.tealInk,
 };
 
 const H2_LIGHT: CSSProperties = {
@@ -155,7 +155,7 @@ const PROOF_GRID: CSSProperties = {
 };
 
 const PROOF_CARD: CSSProperties = {
-  background: "#FFFFFF",
+  background: MARKETING.paperCard,
   border: "1px solid #E2E0D8",
   borderRadius: 12,
   padding: SPACING.lg,
@@ -176,13 +176,13 @@ const PROOF_LABEL: CSSProperties = {
 
 const PROOF_BODY: CSSProperties = {
   fontSize: 13,
-  color: "#7A7568",
+  color: MARKETING.mutedOnPaper,
   marginTop: 8,
   lineHeight: 1.55,
 };
 
 const OBJECTION: CSSProperties = {
-  background: "#FFFFFF",
+  background: MARKETING.paperCard,
   border: "1px solid #E2E0D8",
   borderRadius: 14,
   padding: 36,
@@ -208,18 +208,18 @@ const BIZ_CARD: CSSProperties = {
   border: "1px solid #3A3E43",
   borderRadius: 12,
   padding: 26,
-  color: "#FFFFFF",
+  color: MARKETING.paperCard,
 };
 
 const CTA_BAND: CSSProperties = {
   background: MARKETING.charcoal,
-  color: "#FFFFFF",
+  color: MARKETING.paperCard,
   textAlign: "center",
   padding: `80px ${SPACING.xl}px`,
 };
 
 const LINK_TEAL: CSSProperties = {
-  color: "#1F6357",
+  color: MARKETING.tealInk,
   fontWeight: 600,
 };
 
@@ -397,7 +397,7 @@ export default function CaregiverPage() {
                   fontSize: 17,
                   fontStyle: "italic",
                   lineHeight: 1.7,
-                  color: "#EEF0F2",
+                  color: MARKETING.quoteOnDark,
                   marginTop: 14,
                 }}
               >
@@ -453,7 +453,7 @@ export default function CaregiverPage() {
                   fontSize: 13,
                   letterSpacing: 2,
                   textTransform: "uppercase",
-                  color: "#1F6357",
+                  color: MARKETING.tealInk,
                   marginTop: 0,
                   marginBottom: 10,
                 }}
@@ -482,7 +482,7 @@ export default function CaregiverPage() {
         <section style={DARK_SECTION} id="gift">
           <div style={SECTION}>
             <span style={KICKER}>Give mynaani</span>
-            <h2 style={{ ...H2_LIGHT, color: "#FFFFFF" }}>
+            <h2 style={{ ...H2_LIGHT, color: MARKETING.paperCard }}>
               The gift of staying capable.
             </h2>
             <div style={BIZ_GRID}>
@@ -503,7 +503,7 @@ export default function CaregiverPage() {
                   <p
                     style={{
                       fontSize: 14,
-                      color: "#D4D8DC",
+                      color: MARKETING.bodyOnDark,
                       lineHeight: 1.6,
                       margin: 0,
                     }}
@@ -530,7 +530,7 @@ export default function CaregiverPage() {
                 <p
                   style={{
                     fontSize: 14,
-                    color: "#D4D8DC",
+                    color: MARKETING.bodyOnDark,
                     lineHeight: 1.6,
                     margin: 0,
                   }}
@@ -632,12 +632,12 @@ export default function CaregiverPage() {
         </section>
 
         <div style={CTA_BAND} id="contact">
-          <h2 style={{ ...H2_LIGHT, color: "#FFFFFF", marginTop: 0 }}>
+          <h2 style={{ ...H2_LIGHT, color: MARKETING.paperCard, marginTop: 0 }}>
             Start a conversation
           </h2>
           <p
             style={{
-              color: "#D4D8DC",
+              color: MARKETING.bodyOnDark,
               maxWidth: 560,
               margin: "0 auto 32px",
               fontSize: 17,
@@ -694,7 +694,7 @@ export default function CaregiverPage() {
               fontSize: 13,
               letterSpacing: 1.5,
               textTransform: "uppercase",
-              color: "#8A8577",
+              color: MARKETING.faintOnPaper,
               fontWeight: 700,
             }}
           >
@@ -706,7 +706,7 @@ export default function CaregiverPage() {
               padding: 0,
               margin: "14px 0 0",
               fontSize: 13,
-              color: "#6B6759",
+              color: MARKETING.faintOnPaper,
               lineHeight: 1.7,
             }}
           >

@@ -34,9 +34,13 @@ with exactly these values — the approved bid-17 palette, no more:
 
 - `charcoal` `#26292E`, `charcoalDeep` `#1D1F22`, `charcoalFoot` `#141619`
 - `teal` `#2E8C7F`, `tealBright` `#6FC2B4` (kickers/links on dark only)
+- `tealInk` `#1F6357` (kickers/links on light only)
 - `gold` `#C9A24D` (CTA fill on dark; on light surfaces the existing
   `accentDesatGreen` remains the CTA token)
-- `paper` `#F5F3EE`, `mutedOnDark` `#B9BEC4`, `inkSoft` `#4A4D52`
+- `paper` `#F5F3EE`, `paperCard` `#FFFFFF`, `paperEdge` `#E2E0D8`
+- `bodyOnDark` `#D4D8DC`, `quoteOnDark` `#EEF0F2`, `mutedOnDark` `#B9BEC4`
+- `inkSoft` `#4A4D52`, `mutedOnPaper` `#6B6759`, `faintOnPaper` `#55524A`
+- `darkCardBorder` `#3A3E43` (hairlines on charcoal — decorative only)
 
 Constraints:
 
