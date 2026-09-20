@@ -1,6 +1,6 @@
 # PS-BID17-008 — Retell agent live-answer path unverified (budget-gated)
 
-**Status:** narrowed by deep dive — two findings split to PS-013/014 | **Severity:** P1 verification gap
+**Status:** RESOLVED — owner confirmed widget answers on staging | **Severity:** P1 verification gap
 **Source:** staging integration check 2026-09-20
 
 ## Problem statement
@@ -48,3 +48,7 @@ invisible until someone clicks.
   domain-lock acceptance + agent answer; still owner/manual.
 - Domain-lock config lives on the publishable key in Retell console —
   not API-visible; manual check required.
+
+
+Owner confirmed 2026-09-20: chat widget works on staging (agents
+answer, domain-lock accepts staging.noni-web.pages.dev). Closed.

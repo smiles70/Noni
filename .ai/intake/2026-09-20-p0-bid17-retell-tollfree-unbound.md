@@ -1,6 +1,6 @@
 # PS-BID17-014 — Toll-free +18774094144 has no inbound agent bound
 
-**Status:** needs owner decision | **Severity:** P0 potential live defect
+**Status:** RESOLVED — owner confirmed number answers 2026-09-20 | **Severity:** P0 potential live defect
 **Source:** Retell API deep dive 2026-09-20 (`list-phone-numbers`)
 
 ## Problem statement
@@ -32,3 +32,8 @@ number rings unanswered.
 
 - A call to `+1 (877) 409-4144` reaches the intended agent/service —
   verified by an actual call or confirmed console binding.
+
+
+Owner confirmed via test call: the number answers. Retell
+`list-phone-numbers` shows no inbound binding — termination is
+upstream (CRM/telephony layer), not Retell. Closed.

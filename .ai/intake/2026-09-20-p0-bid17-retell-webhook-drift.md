@@ -1,6 +1,6 @@
 # PS-BID17-013 — Staging chat agents webhook to PRODUCTION CRM (drift)
 
-**Status:** needs owner decision | **Severity:** P0 data-boundary defect
+**Status:** CLOSED — intentional; owner confirmed prod CRM filing is acceptable | **Severity:** P0 data-boundary defect
 **Source:** Retell API deep dive 2026-09-20
 
 ## Problem statement
@@ -34,3 +34,8 @@ A — staging twin agents keep the boundary clean and cost nothing
 - Staging widget agents webhook to `mynaani-crm-staging-api` (or a
   documented owner decision that shared prod filing is intended).
 - No staging test data pollutes prod CRM metrics by accident.
+
+
+Owner decision 2026-09-20: staging chat conversations filing into
+the production CRM is acceptable — agents work correctly in prod.
+Documented as intended design, not drift. No twin agents needed.

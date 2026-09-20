@@ -34,3 +34,10 @@ but **no backend code consumes them** — dead config that looks live.
 - A real alert lands in `#crm-alerts` from a staging submission, or the
   gap is documented as intentional.
 - N8N env vars: consumed by code or removed from staging env.
+
+
+## Update 2026-09-20
+
+- `railway variables` on production `noni-api`: **zero N8N vars** —
+  owner already removed it. Dead-config concern is staging-only.
+- RC alert-chain check deferred by owner.
