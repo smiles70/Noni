@@ -5,9 +5,9 @@
 
 ## Problem statement
 
-The internal alert path — inquiry/Retell call → CompAI CRM contact +
-task → n8n (`mynaani-help` webhook) → RocketChat `#crm-alerts` — lives
-outside this repo (CRM + n8n services). No test has proven the chain
+RocketChat is a STANDALONE integration — the CRM service posts alerts
+directly to it (inquiry/Retell call → CRM contact+task → RC
+`#crm-alerts`). n8n is NOT in that chain (owner correction 2026-09-20). No test has proven the chain
 fires end-to-end. Separately: `N8N_WEBHOOK_URL` + `N8N_WEBHOOK_TOKEN`
 are set on the staging API and declared in `config.py` as N8N-HELP-001,
 but **no backend code consumes them** — dead config that looks live.
@@ -16,7 +16,8 @@ but **no backend code consumes them** — dead config that looks live.
 
 - ✅ Design intent documented (research memo: RC is internal-only, p19
   boundary holds — never visitor-facing).
-- ❓ CRM → n8n → RocketChat alert actually fires on a real filing.
+- ❓ CRM → RocketChat alert actually fires on a real filing
+  (standalone integration — CRM posts directly).
 - ❓ Why `N8N_WEBHOOK_URL` exists in this repo's env with no consumer —
   removed consumer, or unfinished wiring?
 
