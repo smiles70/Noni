@@ -271,44 +271,6 @@ const BIZ = [
   },
 ];
 
-const SOURCES = [
-  {
-    name: 'Tang X. et al. — "I Never Imagined Grandma Could Do So Well with Technology" (CSCW 2022)',
-    url: "https://xinrutang.github.io/file/FamilyCSCW22/FamilyCSCW22.pdf",
-    why: "Younger family members support older adults' technology learning over time as influencers, supporters, protectors, and monitors.",
-  },
-  {
-    name: "Caregiver Action Network — CIC Caregiver Tech Insights Survey (2026)",
-    url: "https://www.caregiveraction.org/wp-content/uploads/2026/05/CIC-Survey-2026.pdf",
-    why: "90% of family caregivers already use digital tools; nearly four in ten spend 11 or more hours per week on care coordination.",
-  },
-  {
-    name: "AARP / Age in Place Tech — 2025 Technology Trends: Older Adults and Caregiving",
-    url: "https://www.ageinplacetech.com/files/aip/2025-technology-trends-older-adults-caregiving.doi_.10.26419-2fres.00891.007.pdf",
-    why: "Adults 50+ who are caregivers adopt convenience and safety technology more often than non-caregivers.",
-  },
-  {
-    name: "JMIR Aging — Application-based interventions for family caregivers of older adults: scoping review (2026)",
-    url: "https://aging.jmir.org/2026/1/e76115",
-    why: "Apps can improve caregiver well-being and burden, but the biggest gap is usable, well-evaluated design.",
-  },
-  {
-    name: "SSPH+ / Frontiers in Public Health Reviews — Digital Informal Care: The Use of Technology in Family Care (2025)",
-    url: "https://www.ssph-journal.org/journals/public-health-reviews/articles/10.3389/phrs.2025.1608872/full",
-    why: "Digital tools can reduce caregiver burden and improve competence, but only when they are usable and accessible.",
-  },
-  {
-    name: "Heliyon — The impact of family members on aging persons' technology use intentions (2025)",
-    url: "https://doi.org/10.1016/j.heliyon.2025.e42252",
-    why: "When family caregivers and older adults share the same belief about capability, technology use intention is highest.",
-  },
-  {
-    name: "Laganà L. et al. — Enhancing computer self-efficacy in older adults: a randomised controlled study",
-    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4265211/",
-    why: "Age-appropriate, self-paced training significantly improves attitudes and self-efficacy in older learners.",
-  },
-];
-
 // ---- Page -------------------------------------------------------------------
 
 export default function CaregiverPage() {
@@ -384,7 +346,6 @@ export default function CaregiverPage() {
                 </Link>
               </div>
               <div style={{ marginTop: SPACING.lg }}>
-                <SupportContact />
                 <ChatWidget journey="gift" />
               </div>
             </div>
@@ -650,19 +611,7 @@ export default function CaregiverPage() {
           <Link to="/contact" style={CTA_GOLD}>
             Start a conversation
           </Link>
-          <a
-            href="tel:+18774094144"
-            style={{
-              display: "block",
-              color: MARKETING.tealBright,
-              fontSize: 20,
-              fontWeight: 700,
-              marginTop: 18,
-              textDecoration: "none",
-            }}
-          >
-            1 (877) 409-4144
-          </a>
+          <SupportContact tone="dark" />
           <p
             style={{
               marginTop: 20,
@@ -684,48 +633,6 @@ export default function CaregiverPage() {
             </Link>
           </p>
         </div>
-        <section
-          style={{ ...SECTION, paddingTop: 32, paddingBottom: 40 }}
-          aria-labelledby="cg-sources"
-        >
-          <h2
-            id="cg-sources"
-            style={{
-              fontSize: 13,
-              letterSpacing: 1.5,
-              textTransform: "uppercase",
-              color: MARKETING.faintOnPaper,
-              fontWeight: 700,
-            }}
-          >
-            Sources
-          </h2>
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: "14px 0 0",
-              fontSize: 13,
-              color: MARKETING.faintOnPaper,
-              lineHeight: 1.7,
-            }}
-          >
-            {SOURCES.map((s) => (
-              <li key={s.url} style={{ marginBottom: SPACING.md }}>
-                <a
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={LINK_TEAL}
-                >
-                  {s.name}
-                </a>
-                <br />
-                {s.why}
-              </li>
-            ))}
-          </ul>
-        </section>
       </main>
 
       {/* MKT-FOOTER-001: shared fat footer — brand, doormat nav row,

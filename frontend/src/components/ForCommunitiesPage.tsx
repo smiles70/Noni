@@ -280,44 +280,6 @@ const BIZ = [
   },
 ];
 
-const SOURCES = [
-  {
-    name: "Pew Research Center — How Americans' opinions and use of AI differ by age (2026)",
-    url: "https://www.pewresearch.org/internet/2026/06/17/how-opinions-and-use-of-ai-differ-by-age/",
-    why: "AI chatbot adoption: 57% under-50 vs. 28% ages 50+; 65+ the most uncertain group.",
-  },
-  {
-    name: "Nielsen Norman Group — Usability for Senior Citizens",
-    url: "https://www.nngroup.com/articles/usability-seniors-improvements/",
-    why: "Adults 65+ succeed at website tasks 55% vs. 75% for ages 21–55, ~43% slower.",
-  },
-  {
-    name: "W3C Web Accessibility Initiative — Web Accessibility for Older Users: A Literature Review",
-    url: "https://www.w3.org/WAI/older-users/literature/",
-    why: "Ageing vision: ~80% contrast-sensitivity loss by age 80; presbyopia; colour-shift.",
-  },
-  {
-    name: "Owsley C. — Vision and Aging, Annual Review of Vision Science (UAB School of Medicine)",
-    url: "https://www.annualreviews.org/content/journals/10.1146/annurev-vision-111815-114550",
-    why: "Contrast sensitivity and visual-processing-speed decline in later life.",
-  },
-  {
-    name: "Hasher L. & Zacks R.T. — Working memory, comprehension, and aging (University of Toronto)",
-    url: "https://hasherlab.psych.utoronto.ca/abstracts/hasher_zacks_88.htm",
-    why: "Aging reduces inhibition of irrelevant information — visual distraction harms learning.",
-  },
-  {
-    name: "JMIR (2025) — Cognitive load and learning performance in digital health education for older patients",
-    url: "https://www.jmir.org/2025/1/e79430",
-    why: "Cognitive load is the key mediator of digital-learning outcomes (large effect).",
-  },
-  {
-    name: "Laganà L. et al. — Enhancing computer self-efficacy in older adults: a randomised controlled study",
-    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4265211/",
-    why: "Age-appropriate training significantly improves attitudes and self-efficacy.",
-  },
-];
-
 // ---- Page -------------------------------------------------------------------
 
 export default function ForCommunitiesPage() {
@@ -377,7 +339,6 @@ export default function ForCommunitiesPage() {
                 See the learner experience →
               </Link>
               <div style={{ marginTop: SPACING.lg }}>
-                <SupportContact />
                 <ChatWidget journey="facility" />
               </div>
             </div>
@@ -718,63 +679,8 @@ export default function ForCommunitiesPage() {
           <Link to="/partners" style={CTA_GOLD}>
             Start a conversation
           </Link>
-          <a
-            href="tel:+18774094144"
-            style={{
-              display: "block",
-              color: MARKETING.tealBright,
-              fontSize: 20,
-              fontWeight: 700,
-              marginTop: 18,
-              textDecoration: "none",
-            }}
-          >
-            1 (877) 409-4144
-          </a>
+          <SupportContact tone="dark" />
         </div>
-
-        <section
-          style={{ ...SECTION, paddingTop: 32, paddingBottom: 40 }}
-          aria-labelledby="b2b-sources"
-        >
-          <h2
-            id="b2b-sources"
-            style={{
-              fontSize: 13,
-              letterSpacing: 1.5,
-              textTransform: "uppercase",
-              color: MARKETING.faintOnPaper,
-              fontWeight: 700,
-            }}
-          >
-            Sources
-          </h2>
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: "14px 0 0",
-              fontSize: 13,
-              color: MARKETING.faintOnPaper,
-              lineHeight: 1.7,
-            }}
-          >
-            {SOURCES.map((s) => (
-              <li key={s.url} style={{ marginBottom: SPACING.md }}>
-                <a
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={LINK_TEAL}
-                >
-                  {s.name}
-                </a>
-                <br />
-                {s.why}
-              </li>
-            ))}
-          </ul>
-        </section>
       </main>
 
       {/* MKT-FOOTER-001: shared fat footer — brand, doormat nav row,

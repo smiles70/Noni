@@ -57,13 +57,11 @@ describe("ForCommunitiesPage — bid-17 B2B marketing surface", () => {
     const text = host.textContent!;
     expect(text).toContain("geragogy");
     expect(text).toContain("patent-pending");
-    // Cited evidence — linked Sources section.
-    expect(text).toContain("Pew Research Center");
-    expect(text).toContain("Hasher");
-    const sourceLinks = host.querySelectorAll(
-      '#b2b-sources ~ ul a[href^="https://"]',
-    );
-    expect(sourceLinks.length).toBeGreaterThanOrEqual(5);
+    // Cited evidence — inline attribution stays on the page; the
+    // linked list lives on /sources (PS-BID17-004).
+    expect(text).toContain("Pew Research");
+    // Sources moved to /sources (PS-BID17-004) — none inline.
+    expect(host.querySelector("#b2b-sources")).toBeNull();
     // Downloadable research briefs.
     expect(
       host.querySelector('a[href="/whitepapers/the-ai-gap.pdf"]'),
@@ -99,7 +97,7 @@ describe("ForCommunitiesPage — bid-17 B2B marketing surface", () => {
     // Toll-free line.
     expect(host.querySelector('a[href="tel:+18774094144"]')).not.toBeNull();
     // Honesty guard: no fabricated social proof or urgency copy.
-    expect(host.textContent).toMatch(/Pew Research Center/);
+    expect(host.textContent).toMatch(/Pew Research/);
     expect(host.textContent).not.toMatch(/trusted by|limited time|act now/i);
     // Way back to the learner surface.
     const learnerLinks = host.querySelectorAll('a[href="/"]');

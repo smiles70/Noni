@@ -58,6 +58,7 @@ const ForCommunitiesPage = lazy(
 );
 // Caregiver marketing surface (ADR-0030) — public, static, no auth.
 const CaregiverPage = lazy(() => import("./components/CaregiverPage"));
+const SourcesPage = lazy(() => import("./components/SourcesPage"));
 const ContactPage = lazy(() => import("./components/ContactPage"));
 // EPIC-002 Phase 2-3: Add WelcomePage, AccountSetupPage, and GettingStartedPage
 const WelcomePage = lazy(() => import("./components/WelcomePage"));
@@ -243,6 +244,14 @@ const App: React.FC = () => {
                 element={
                   <Suspense fallback={loadFallback}>
                     <CaregiverPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sources"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <SourcesPage />
                   </Suspense>
                 }
               />

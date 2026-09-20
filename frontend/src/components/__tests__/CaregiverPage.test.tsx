@@ -40,7 +40,6 @@ describe("CaregiverPage — bid-17 marketing surface", () => {
     expect(page!.textContent).toContain("You stop being tech support");
     expect(page!.textContent).toContain("Warm on the surface");
     expect(page!.textContent).toContain("The gift of staying capable");
-    expect(page!.textContent).toContain("Sources");
     // Five proof cards.
     const proofCards = page!.querySelectorAll("#why .proof-card, #why div");
     expect(page!.querySelectorAll("#why")).not.toBeNull();
@@ -71,11 +70,6 @@ describe("CaregiverPage — bid-17 marketing surface", () => {
     expect(
       host.querySelector('a[href="/whitepapers/geragogy-for-caregivers.pdf"]'),
     ).not.toBeNull();
-    // Sources are linked.
-    const sourceLinks = host.querySelectorAll(
-      '#cg-sources ~ ul a[href^="https://"]',
-    );
-    expect(sourceLinks.length).toBeGreaterThanOrEqual(5);
     // Toll-free line present.
     expect(host.querySelector('a[href="tel:+18774094144"]')).not.toBeNull();
     // Contact routes to the /contact form — no mailto picker buttons.

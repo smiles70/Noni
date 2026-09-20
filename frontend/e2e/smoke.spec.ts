@@ -70,6 +70,19 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
     }
   });
 
+  test("/sources renders the shared evidence page via footer", async ({
+    page,
+  }) => {
+    await page.goto("/caregiver");
+    const sourcesLink = page.getByRole("link", { name: "Sources" }).last();
+    await expect(sourcesLink).toBeVisible();
+    await sourcesLink.click();
+    await expect(page).toHaveURL(/\/sources$/);
+    await expect(page.getByRole("heading", { name: "Sources" })).toBeVisible();
+    await expect(page.getByText("Pew Research Center")).toBeVisible();
+    await expect(page.getByText("Caregiver Action Network")).toBeVisible();
+  });
+
   test("/partners renders the partner inquiry form", async ({ page }) => {
     await page.goto("/partners");
     await expect(
