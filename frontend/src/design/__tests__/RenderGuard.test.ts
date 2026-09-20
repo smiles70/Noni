@@ -59,7 +59,9 @@ describe("RenderGuard — compliant proposal", () => {
 
 describe("RenderGuard — each check fails closed", () => {
   it("check 1: disallowed color fails", () => {
-    const p = { ...compliantProposal, colorsUsed: ["#FFFFFF"] };
+    // #FFFFFF is legal on marketing surfaces per ADR-0034 (paperCard) —
+    // use a hex that is in neither palette.
+    const p = { ...compliantProposal, colorsUsed: ["#FF00FF"] };
     const v = evaluateProposal(p, envelope);
     expect(v.some((x) => x.check === "colors")).toBe(true);
   });
