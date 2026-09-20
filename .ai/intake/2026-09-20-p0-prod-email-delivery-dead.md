@@ -1,6 +1,13 @@
-# PS-BID17-016 — PRODUCTION inquiry email path is dead (no RESEND_API_KEY)
+# PS-BID17-016 — PRODUCTION inquiry EMAIL path dead; leads still captured via CRM tracker
 
-**Status:** NEEDS OWNER ACTION — prod env config | **Severity:** P0 live defect
+**Status:** NEEDS OWNER ACTION — prod env config | **Severity:** P1 (downgraded 2026-09-20)
+
+**Correction:** initial filing called this total lead loss. Owner correction:
+the crm.js tracker auto-captures every form submit (`form_submit` events
+with field values → `/api/t/e`). Both ContactPage and
+PartnershipInquiryPage inputs carry `name` attributes, so lead capture
+works — leads land in CompAI CRM → n8n → `#crm-alerts`. What's dead on
+prod is only the **email notification leg**.
 **Source:** production cross-check 2026-09-20
 
 ## Problem statement
