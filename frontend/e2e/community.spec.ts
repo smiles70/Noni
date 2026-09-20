@@ -17,7 +17,9 @@ test.describe("Partner / community journey (bid-17, B2B-LANDING-001)", () => {
     await expect(
       page.getByRole("link", { name: "Start a conversation" }).first(),
     ).toBeVisible();
-    await expect(page.getByText("Founding Partner rates")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Founding Partner rates" }),
+    ).toBeVisible();
   });
 
   test("/for-communities exposes contact CTAs", async ({ page }) => {

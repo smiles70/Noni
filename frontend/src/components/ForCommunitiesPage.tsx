@@ -600,7 +600,12 @@ export default function ForCommunitiesPage() {
             residents. <strong>Founding Partner rates</strong> for our pilot
             cohort, sized by community:
           </p>
-          <div style={{ overflowX: "auto" }}>
+          <div
+            style={{ overflowX: "auto" }}
+            role="region"
+            aria-label="Founding Partner pricing table"
+            tabIndex={0}
+          >
             <table
               style={{
                 width: "100%",
