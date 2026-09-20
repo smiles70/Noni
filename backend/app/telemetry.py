@@ -184,6 +184,64 @@ def record_onboarding_event(
         pass
 
 
+# WS-D: Marketing surface telemetry metrics (scroll-depth baseline)
+_marketing_events = Counter(
+    "noni_marketing_events_total",
+    "Marketing surface event counts",
+    ["event"],
+)
+
+
+def record_marketing_event(
+    event: str,
+    timestamp: int | None = None,
+    user_id: str | None = None,
+    metadata: dict | None = None,
+) -> None:
+    """Record a marketing-surface event for monitoring.
+
+    WS-D: records milestone events (e.g., marketing.scroll_depth) from
+    public marketing pages for analytics integration with BetterStack.
+
+    Args:
+        event: The event name (e.g., "marketing.scroll_depth")
+        timestamp: Event timestamp (optional)
+        user_id: User ID (optional — public pages are anonymous)
+        metadata: Additional event metadata (optional)
+    """
+    _marketing_events.labels(event=event).inc()
+
+    try:
+        logger.info(
+            "marketing.event",
+            extra={
+                "event": event,
+                "timestamp": timestamp,
+                "user_id": user_id,
+                "metadata": metadata,
+            },
+        )
+    except Exception:
+        # nosec B110 - telemetry must not break requests
+        pass
+
+    try:
+        from backend.api.routes.betterstack_onboarding import get_betterstack_client
+
+        client = get_betterstack_client()
+        event_data = {
+            "event": event,
+            "timestamp": timestamp,
+            "user_id": user_id,
+            "metadata": metadata,
+        }
+        client.send_event(event_data)
+    except Exception:
+        # nosec B110 - silent UX protection intentional
+        # Silently fail to avoid disrupting user experience
+        pass
+
+
 def snapshot() -> dict[str, dict[str, int] | list[int]]:
     """Return a point-in-time snapshot of all counters (for /metrics + tests)."""
 

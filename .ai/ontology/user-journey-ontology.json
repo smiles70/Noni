@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "charter_ref": ".ai/ontology/app-charter.md",
+  "entities": {
+    "frontend_routes": ["/", "/signin", "/curriculum", "/paywall", "/gift", "/gift-redeem", "/caregiver", "/for-communities", "/c/:slug", "/account", "/help"],
+    "backend_routes": ["/api/curriculum/*", "/api/billing/*", "/api/gifts/*", "/api/signals/*", "/api/landing/*", "/api/auth/*"],
+    "key_components": ["LandingPage", "CaregiverPage", "CurriculumRenderer", "PaywallPage", "GiftCheckoutPage", "GiftRedeemPage", "ForCommunitiesPage", "PartnerPage"]
+  },
+  "entry_points": ["landing hero", "direct curriculum link", "partner code link", "gift token link", "ad / social share", "help docs"],
+  "success_states": ["first curriculum win", "gift redeemed", "purchase completed", "community inquiry sent"],
+  "exit_states": ["bounce from landing", "abandon at paywall", "churn after lesson", "unredeemed gift"],
+  "gating_points": [
+    {"name": "sign-in", "type": "auth", "routes": ["/signin"], "code_ref": "frontend/src/components/RequireAuth.tsx"},
+    {"name": "paid modules", "type": "payment", "routes": ["/paywall"], "code_ref": "frontend/src/components/PaywallPage.tsx"},
+    {"name": "gift token", "type": "auth", "routes": ["/gift-redeem"], "code_ref": "frontend/src/components/GiftRedeemPage.tsx"},
+    {"name": "org code", "type": "auth", "routes": ["/c/:slug"], "code_ref": "frontend/src/components/PartnerPage.tsx"}
+  ],
+  "personas": [
+    "b2c-learner",
+    "caregiver-gift",
+    "corporate-care"
+  ],
+  "journeys": [
+    "default"
+  ],
+  "edges": [
+    {"from": "b2c-learner", "to": "landing hero", "relation": "enters"},
+    {"from": "landing hero", "to": "HowItWorksDialog", "relation": "performs"},
+    {"from": "HowItWorksDialog", "to": "/signin", "relation": "uses"},
+    {"from": "/signin", "to": "/curriculum", "relation": "uses"},
+    {"from": "/curriculum", "to": "first curriculum win", "relation": "produces"},
+    {"from": "first curriculum win", "to": "share / refer", "relation": "produces"},
+    {"from": "caregiver-gift", "to": "landing hero", "relation": "enters"},
+    {"from": "landing hero", "to": "/caregiver", "relation": "uses"},
+    {"from": "/caregiver", "to": "CaregiverPage", "relation": "performs"},
+    {"from": "CaregiverPage", "to": "/gift", "relation": "uses"},
+    {"from": "/gift", "to": "purchase completed", "relation": "produces"}
+  ]
+}

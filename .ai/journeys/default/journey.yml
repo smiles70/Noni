@@ -1,0 +1,627 @@
+stages:
+  - name: Discover
+    actions:
+      - open landing page
+      - read hero copy
+      - view hero image
+    touchpoints:
+      - /
+      - LandingPage
+    thoughts:
+      - "This looks calm. I can read the words."
+      - "What does mynaani actually do?"
+    emotion_score: 4
+    gating: false
+    gating_type: null
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Logo may still be hard to read if the overlay is too faint."
+    opportunities:
+      - "Hero copy should reassure without pressure."
+      - "B2B and caregiver links should be secondary, not competing."
+    source_tags:
+      - frontend/src/components/LandingPage.tsx
+    next:
+      - Evaluate
+      - For Communities
+      - Caregiver
+      - Help
+      - Admin
+    previous: []
+
+  - name: Evaluate
+    actions:
+      - open How it works
+      - read landing depth
+      - check trust and safety
+    touchpoints:
+      - HowItWorksDialog
+      - /api/landing/page
+    thoughts:
+      - "Is this for someone like me?"
+      - "Do I have to pay first?"
+    emotion_score: 4
+    gating: false
+    gating_type: null
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Depth is hidden behind a click."
+      - "No pricing in the B2C hero could create ambiguity."
+    opportunities:
+      - "Trust and safety content should be visible earlier."
+    source_tags:
+      - frontend/src/components/HowItWorksDialog.tsx
+    next:
+      - Sign In
+      - Discover
+    previous:
+      - Discover
+
+  - name: For Communities
+    actions:
+      - visit senior-living / B2B page
+      - review founding partner pricing
+    touchpoints:
+      - /for-communities
+      - ForCommunitiesPage
+    thoughts:
+      - "Is this for my community?"
+      - "What does procurement need?"
+    emotion_score: 4
+    gating: false
+    gating_type: null
+    terminal: false
+    is_success: false
+    pain_points:
+      - "No founding partner logos yet."
+    opportunities:
+      - "Mailto interim CTA is honest; needs form endpoint later."
+    source_tags:
+      - frontend/src/components/ForCommunitiesPage.tsx
+    next:
+      - Partner
+      - Org Dashboard
+      - Discover
+    previous:
+      - Discover
+
+  - name: Caregiver
+    actions:
+      - visit caregiver page
+      - review how gifting works
+      - click Gift mynaani
+    touchpoints:
+      - /caregiver
+      - CaregiverPage
+    thoughts:
+      - "This is for someone I care about."
+      - "Do I need an account to give?"
+    emotion_score: 4
+    gating: false
+    gating_type: null
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Mailto interim CTA is honest; needs form endpoint later."
+    opportunities:
+      - "Keep the caregiver explanation calm and avoid urgency."
+    source_tags:
+      - frontend/src/components/CaregiverPage.tsx
+    next:
+      - Gift Checkout
+      - Discover
+    previous:
+      - Discover
+
+  - name: Gift Checkout
+    actions:
+      - enter buyer email
+      - start guest checkout
+      - complete payment on Stripe
+    touchpoints:
+      - /gift
+      - GiftCheckoutPage
+    thoughts:
+      - "I just need an email address."
+      - "Is this secure?"
+    emotion_score: 4
+    gating: false
+    gating_type: null
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Caregiver must provide email to receive the gift code."
+    opportunities:
+      - "Stripe checkout keeps card details off our servers."
+    source_tags:
+      - frontend/src/components/GiftCheckoutPage.tsx
+    next:
+      - Purchase Success
+      - Purchase Cancel
+      - Discover
+    previous:
+      - Caregiver
+      - Discover
+      - Paywall
+
+  - name: Partner
+    actions:
+      - view community partner landing
+      - click sign in with access code
+    touchpoints:
+      - /c/:slug
+      - PartnerPage
+    thoughts:
+      - "I have my access code. Where do I enter it?"
+    emotion_score: 4
+    gating: false
+    gating_type: null
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Public partner page must route to sign-in before access."
+    opportunities:
+      - "Keep the partner page free of auth confusion."
+    source_tags:
+      - frontend/src/components/PartnerPage.tsx
+    next:
+      - Sign In
+      - Discover
+    previous:
+      - For Communities
+
+  - name: Org Dashboard
+    actions:
+      - staff view community usage
+    touchpoints:
+      - /org
+      - OrgDashboardPage
+    thoughts:
+      - "How is my community using mynaani?"
+    emotion_score: 3
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Staff must be authorized to view aggregates."
+    source_tags:
+      - frontend/src/components/OrgDashboardPage.tsx
+    next:
+      - Discover
+    previous:
+      - For Communities
+
+  - name: Admin
+    actions:
+      - staff login to admin console
+    touchpoints:
+      - /admin
+    thoughts:
+      - "I need to manage organizations and accounts."
+    emotion_score: 3
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Admin is a separate surface; not meant for learners."
+    source_tags:
+      - frontend/src/App.tsx
+    next:
+      - Discover
+    previous:
+      - Discover
+
+  - name: Sign In
+    actions:
+      - enter email / magic link
+      - cancel and go home
+    touchpoints:
+      - /signin
+      - SignInPage
+    thoughts:
+      - "Do I need another password?"
+      - "What if I click the wrong thing?"
+    emotion_score: 3
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Auth required before any lesson."
+    opportunities:
+      - "No-sign-in preview of the first unit."
+    source_tags:
+      - frontend/src/components/SignInPage.tsx
+      - frontend/src/components/RequireAuth.tsx
+    next:
+      - Account Setup
+      - First Use
+      - Help
+      - Discover
+    previous:
+      - Evaluate
+      - Partner
+
+  - name: Account Setup
+    actions:
+      - enter account details
+      - continue to getting started
+      - go back home
+    touchpoints:
+      - /setup
+      - AccountSetupPage
+    thoughts:
+      - "What does mynaani need to know about me?"
+    emotion_score: 4
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points:
+      - "New users may not understand why setup is required."
+    source_tags:
+      - frontend/src/components/AccountSetupPage.tsx
+    next:
+      - Getting Started
+      - Discover
+    previous:
+      - Sign In
+
+  - name: Getting Started
+    actions:
+      - read orientation
+      - continue to curriculum
+      - go back to setup
+    touchpoints:
+      - /getting-started
+      - GettingStartedPage
+    thoughts:
+      - "What happens next?"
+    emotion_score: 4
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points: []
+    source_tags:
+      - frontend/src/components/GettingStartedPage.tsx
+    next:
+      - Curriculum
+      - Account Setup
+      - Discover
+    previous:
+      - Account Setup
+
+  - name: First Use
+    actions:
+      - start the first module 'What is AI'
+    touchpoints:
+      - /api/curriculum/what-is-ai
+      - CurriculumRenderer
+    thoughts:
+      - "This is slow and plain. I can follow it."
+    emotion_score: 4
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points: []
+    opportunities:
+      - "Show clear, reversible navigation."
+    source_tags:
+      - frontend/src/components/curriculum/CurriculumRenderer.tsx
+    next:
+      - Revisit
+      - Help
+    previous:
+      - Sign In
+      - Getting Started
+
+  - name: Curriculum
+    actions:
+      - continue free or paid modules
+      - open menu
+      - get help
+    touchpoints:
+      - /curriculum
+      - /paid-curriculum
+    thoughts:
+      - "I want to keep learning."
+    emotion_score: 4
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Paid modules throw a paywall while learning."
+    opportunities:
+      - "Graceful preview of paid content before paywall."
+    source_tags:
+      - frontend/src/components/curriculum/CurriculumRenderer.tsx
+    next:
+      - Revisit
+      - Paywall
+      - Menu
+      - Help
+    previous:
+      - Getting Started
+      - First Use
+
+  - name: Revisit
+    actions:
+      - continue through units
+      - encounter paid content
+    touchpoints:
+      - /curriculum
+      - /paywall
+    thoughts:
+      - "I like the pacing. Is it worth paying for more?"
+    emotion_score: 4
+    gating: true
+    gating_type: payment
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Paywall is the only caregiver gift path."
+    opportunities:
+      - "Create a dedicated /gift path."
+      - "Explain one-time pricing clearly."
+    source_tags:
+      - frontend/src/components/PaywallPage.tsx
+      - backend/api/routes/billing.py
+    next:
+      - Share / Refer
+      - Paywall
+      - Help
+      - Account
+    previous:
+      - First Use
+      - Curriculum
+
+  - name: Paywall
+    actions:
+      - choose self-purchase, gift, or org code
+      - go back to landing
+      - get help
+    touchpoints:
+      - /paywall
+      - PaywallPage
+    thoughts:
+      - "Is this a subscription?"
+      - "Can I buy this for someone else?"
+    emotion_score: 3
+    gating: true
+    gating_type: payment
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Auth required to buy a gift."
+    opportunities:
+      - "Public /gift path for caregivers."
+    source_tags:
+      - frontend/src/components/PaywallPage.tsx
+    next:
+      - Gift Redeem
+      - Purchase Success
+      - Purchase Cancel
+      - Curriculum
+      - Help
+      - Discover
+    previous:
+      - Revisit
+      - Curriculum
+      - Purchase Success
+      - Purchase Cancel
+      - Gift Redeem
+
+  - name: Gift Redeem
+    actions:
+      - paste gift token
+      - claim token
+      - go back to paywall
+    touchpoints:
+      - /gift-redeem
+      - GiftRedeemPage
+    thoughts:
+      - "Is this token real?"
+    emotion_score: 4
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Recipient must create an account before redeeming."
+    source_tags:
+      - frontend/src/components/GiftRedeemPage.tsx
+      - backend/api/routes/gifts.py
+    next:
+      - Paywall
+      - Curriculum
+      - Help
+    previous:
+      - Paywall
+
+  - name: Purchase Success
+    actions:
+      - view gift token or confirmation
+      - continue to curriculum
+      - return to paywall
+    touchpoints:
+      - /purchase/success
+      - PurchaseSuccessPage
+    thoughts:
+      - "Did my payment work? Where is the gift code?"
+    emotion_score: 5
+    gating: true
+    gating_type: payment
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Real Stripe flow completes in webhook; success page can feel silent."
+    source_tags:
+      - frontend/src/components/PurchaseSuccessPage.tsx
+    next:
+      - Paywall
+      - Curriculum
+    previous:
+      - Paywall
+
+  - name: Purchase Cancel
+    actions:
+      - see cancel message
+      - return to paywall
+      - continue to curriculum if already paid
+    touchpoints:
+      - /purchase/cancel
+      - PurchaseCancelPage
+    thoughts:
+      - "What went wrong?"
+    emotion_score: 3
+    gating: true
+    gating_type: payment
+    terminal: false
+    is_success: false
+    pain_points: []
+    source_tags:
+      - frontend/src/components/PurchaseCancelPage.tsx
+    next:
+      - Paywall
+      - Curriculum
+    previous:
+      - Paywall
+
+  - name: Account
+    actions:
+      - review settings
+      - delete request
+      - go back
+    touchpoints:
+      - /account
+      - AccountSettingsPage
+    thoughts:
+      - "What does mynaani know about me?"
+    emotion_score: 4
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points: []
+    source_tags:
+      - frontend/src/components/AccountSettingsPage.tsx
+    next:
+      - Discover
+      - Privacy
+      - Help
+    previous:
+      - Revisit
+
+  - name: Privacy
+    actions:
+      - read privacy policy
+      - go back
+    touchpoints:
+      - /privacy
+      - PrivacyPage
+    thoughts:
+      - "What do they keep?"
+    emotion_score: 4
+    gating: false
+    gating_type: null
+    terminal: false
+    is_success: false
+    pain_points: []
+    source_tags:
+      - frontend/src/components/PrivacyPage.tsx
+    next:
+      - Discover
+      - Account
+    previous:
+      - Account
+
+  - name: Menu
+    actions:
+      - navigate to curriculum, account, help, or landing
+    touchpoints:
+      - /menu
+    thoughts:
+      - "Where do I want to go?"
+    emotion_score: 4
+    gating: true
+    gating_type: auth
+    terminal: false
+    is_success: false
+    pain_points: []
+    source_tags:
+      - frontend/src/App.tsx
+    next:
+      - Curriculum
+      - Account
+      - Help
+      - Discover
+    previous:
+      - Curriculum
+
+  - name: Help
+    actions:
+      - read help content
+      - go back to caller
+    touchpoints:
+      - /help
+      - HelpPage
+    thoughts:
+      - "I need an answer without pressure."
+    emotion_score: 4
+    gating: false
+    gating_type: null
+    terminal: false
+    is_success: false
+    pain_points:
+      - "Help only goes back to landing, not the calling screen."
+    opportunities:
+      - "Return user to the screen they came from."
+    source_tags:
+      - frontend/src/components/HelpPage.tsx
+    next:
+      - Discover
+      - Paywall
+      - Gift Redeem
+      - Curriculum
+      - Account
+    previous:
+      - Discover
+      - Paywall
+      - Gift Redeem
+      - Curriculum
+      - Account
+
+  - name: Share / Refer
+    actions:
+      - complete a lesson and share the output
+      - tell a friend or family member
+    touchpoints:
+      - curriculum completion view
+    thoughts:
+      - "I made something. I want to show my daughter."
+    emotion_score: 5
+    gating: false
+    gating_type: null
+    terminal: true
+    is_success: true
+    pain_points: []
+    opportunities:
+      - "Make the share action calm and private."
+    source_tags:
+      - backend/api/routes/curriculum.py
+    next: []
+    previous:
+      - Revisit
+
+assumptions:
+  - "The learner journey is the primary journey; caregiver and B2B journeys share the same code paths in this model."
+  - "Loops are intentional and have off-ramps (e.g., Paywall -> Gift Redeem can exit to Curriculum)."
+  - "Emotion scores are estimates based on geragogy design principles, not user research."
+  - "The paywall acts as the conversion gate for paid modules and also for gifts; this is a known P1 tension."

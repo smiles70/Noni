@@ -9,6 +9,7 @@ import signal
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
+from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -25,8 +26,10 @@ from backend.api.routes.auth import router as auth_router
 from backend.api.routes.billing import router as billing_router
 from backend.api.routes.curriculum import router as curriculum_router
 from backend.api.routes.gifts import router as gifts_router
+from backend.api.routes.help import router as help_router
 from backend.api.routes.landing import router as landing_router
 from backend.api.routes.organizations import router as organizations_router
+from backend.api.routes.site import router as site_router
 from backend.api.routes.admin import router as admin_router
 from backend.api.routes.signals import router as signals_router
 from backend.api.routes.telemetry_export import router as telemetry_export_router
@@ -38,6 +41,8 @@ from backend.app.telemetry import (
     metrics_handler,
 )
 from backend.core.config import settings, validate_settings
+from backend.core.database import engine
+from backend.core.feature_flags import get_flags
 
 
 def _verify_crypto_dependency() -> None:
@@ -281,6 +286,19 @@ app.add_middleware(
 )
 
 
+class FeatureFlagMiddleware(BaseHTTPMiddleware):
+    """Attach the current feature-flags object to every request."""
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> StarletteResponse:
+        request.state.feature_flags = get_flags()
+        return await call_next(request)
+
+
+app.add_middleware(FeatureFlagMiddleware)
+
+
 @app.exception_handler(HTTPException)
 async def _http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
     """F11: enforce the documented auth wire envelope `{error:{code,message}}`.
@@ -329,6 +347,8 @@ app.include_router(
     dependencies=[Depends(org_fair_share)],
 )
 app.include_router(landing_router, prefix="/api/v1/landing", tags=["landing"])
+app.include_router(site_router, prefix="/api/v1/site", tags=["site"])
+app.include_router(help_router, prefix="/api/v1/help", tags=["help"])
 app.include_router(
     telemetry_export_router, prefix="/api/v1/telemetry", tags=["telemetry"]
 )
@@ -358,6 +378,7 @@ _LEGACY_REDIRECTS = {
     "/api/curriculum": "/api/v1/curriculum",
     "/api/signals": "/api/v1/signals",
     "/api/landing": "/api/v1/landing",
+    "/api/site": "/api/v1/site",
     "/api/telemetry": "/api/v1/telemetry",
     "/api/ui-envelope": "/api/v1/ui-envelope",
     "/auth": "/api/v1/auth",
@@ -397,6 +418,30 @@ async def health_check():
         "version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
     }
+
+
+@app.get("/health/live")
+async def liveness():
+    """Kubernetes-style liveness probe. Always returns 200 if process is up."""
+    return {"status": "alive"}
+
+
+@app.get("/health/ready")
+async def readiness():
+    """Kubernetes-style readiness probe. Verifies Postgres connectivity."""
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"not ready: {exc}") from exc
+    return {"status": "ready"}
+
+
+@app.get("/api/v1/features")
+async def features(request: Request):
+    """Return the list of currently enabled feature flags."""
+    flags = request.state.feature_flags.all_enabled()
+    return {"enabled": flags}
 
 
 @app.get("/metrics")

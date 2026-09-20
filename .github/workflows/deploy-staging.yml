@@ -165,9 +165,26 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      # Browsers for the full project matrix (mobile projects emulate on
+      # chromium). Same install set as ci.yml's e2e job.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+      - name: Install Playwright browsers + OS deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: frontend
+      - name: Install only OS deps when browser is cached
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium firefox webkit
+        working-directory: frontend
+
       - name: Playwright E2E tests
         working-directory: frontend
-        run: npm run e2e --if-present
+        run: npm run test:e2e
 
   railway-deploy-backend:
     needs: [preflight, virtual-uat-agent]
@@ -226,9 +243,12 @@ jobs:
       - name: Verify build environment
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL || 'https://noni-api-staging.up.railway.app' }}
           VITE_AUTH_PROVIDER: 'mock'
           VITE_MAGIC_PUBLISHABLE_KEY: ''
+          VITE_RETELL_PUBLIC_KEY: 'public_key_c2dfb899128b3a172cc17'
+          VITE_RETELL_CHAT_AGENT_ID_GIFT: 'agent_646dba13a4321b698970c15c68'
+          VITE_RETELL_CHAT_AGENT_ID_FACILITY: 'agent_719be4f2578150bb27ac06f357'
           CI: true
           NODE_ENV: production
         run: npm run prebuild
@@ -236,9 +256,12 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL || 'https://noni-api-staging.up.railway.app' }}
           VITE_AUTH_PROVIDER: 'mock'
           VITE_MAGIC_PUBLISHABLE_KEY: ''
+          VITE_RETELL_PUBLIC_KEY: 'public_key_c2dfb899128b3a172cc17'
+          VITE_RETELL_CHAT_AGENT_ID_GIFT: 'agent_646dba13a4321b698970c15c68'
+          VITE_RETELL_CHAT_AGENT_ID_FACILITY: 'agent_719be4f2578150bb27ac06f357'
           CI: true
           NODE_ENV: production
         run: npm run build
@@ -246,14 +269,96 @@ jobs:
       - name: Verify bundle (G3 guard)
         working-directory: frontend
         env:
-          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL || 'https://noni-api-staging.up.railway.app' }}
         run: npm run postbuild
 
       - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ env.CLOUDFLARE_PAGES_PROJECT }}
-          directory: frontend/dist
-          branch: staging
+          command: pages deploy frontend/dist --project-name=${{ env.CLOUDFLARE_PAGES_PROJECT }} --branch=staging
+
+  verify-staging-sync:
+    name: Verify frontend and backend are in sync
+    needs: [railway-deploy-backend, cloudflare-pages-deploy]
+    runs-on: ubuntu-latest
+    env:
+      STAGING_URL: https://staging.noni-web.pages.dev
+      STAGING_API_URL: https://noni-api-staging.up.railway.app
+    steps:
+      - name: Wait for frontend edge propagation
+        run: sleep 60
+
+      - name: Verify backend is reporting staging
+        run: |
+          env_name=$(curl -sf "$STAGING_API_URL/health" | python3 -c "import json,sys; print(json.load(sys.stdin).get('environment',''))" 2>/dev/null || echo "")
+          if [ "$env_name" != "staging" ]; then
+            echo "::error::Staging backend /health did not report environment=staging (got '$env_name')"
+            exit 1
+          fi
+          echo "VERIFIED: staging backend is healthy"
+
+      - name: Verify frontend bundle points to staging backend
+        run: |
+          for i in $(seq 1 40); do
+            bundle_path=$(curl -sf "$STAGING_URL/" | grep -oP 'src="/assets/[^"]+\.js"' | head -1 | sed 's/src="//;s/"$//')
+            if [ -z "$bundle_path" ]; then
+              echo "attempt $i: no bundle found"
+              sleep 10
+              continue
+            fi
+            bundle_url="$STAGING_URL$bundle_path"
+            if curl -sf "$bundle_url" | grep -q "$STAGING_API_URL"; then
+              echo "VERIFIED: frontend bundle references staging API ($STAGING_API_URL)"
+              exit 0
+            fi
+            if curl -sf "$bundle_url" | grep -qoP 'https://[^"\s]*-api-production[^"\s]*\.up\.railway\.app'; then
+              echo "::error::frontend bundle still contains a production API URL"
+              exit 1
+            fi
+            echo "attempt $i: bundle does not contain staging API URL yet"
+            sleep 15
+          done
+          echo "::error::frontend bundle did not converge to staging API URL within 10 minutes"
+          exit 1
+
+      - name: Verify backend endpoints support the frontend build
+        run: |
+          if ! curl -sf "$STAGING_API_URL/openapi.json" | python3 -c "import json,sys; d=json.load(sys.stdin); paths=d.get('paths',{}); exit(0 if '/api/v1/gifts/preview' in paths else 1)"; then
+            echo "::error::Staging backend /openapi.json is missing /api/v1/gifts/preview"
+            exit 1
+          fi
+          echo "VERIFIED: frontend gift flow has matching backend endpoints"
+
+  deployed-e2e-smoke:
+    name: Post-deploy Playwright smoke (@smoke, read-only)
+    needs: [verify-staging-sync]
+    # Explicit status check: a bare need would inherit the implicit
+    # success() rewrite, which skips on any transitively-skipped job.
+    if: ${{ !cancelled() && needs.verify-staging-sync.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PLAYWRIGHT_TEST_BASE_URL: https://staging.noni-web.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps
+      - name: Run deployed smoke suite
+        working-directory: frontend
+        run: npm run test:e2e:smoke
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-smoke-report-staging
+          path: frontend/playwright-report/
+          retention-days: 14

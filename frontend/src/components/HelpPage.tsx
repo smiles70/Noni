@@ -121,8 +121,8 @@ function GettingStartedSection() {
         </p>
         <p>
           If you still cannot sign in, write to
-          <a href="mailto:hello@mynaani.com" style={LINK}>
-            hello@mynaani.com
+          <a href="mailto:help@mynaani.com" style={LINK}>
+            help@mynaani.com
           </a>
           and we will help you directly.
         </p>
@@ -172,11 +172,11 @@ function HowItWorksSection() {
 
         <h3 style={H3}>Free and paid modules</h3>
         <p>
-          Modules 0, 1, and 2 are free. Anyone with an account can read them.
-          Modules 3, 4, and 5 require a one-time purchase.
+          Modules 0 and 1 are free. Anyone with an account can read them.
+          Modules 2, 3, 4, and 5 are available after a one-time purchase.
         </p>
         <p>
-          When you finish Module 2, you will see a page that explains how to
+          When you finish Module 1, you will see a page that explains how to
           continue. You can buy access for yourself or receive access as a gift.
         </p>
 
@@ -215,9 +215,9 @@ function PaymentsGiftsSection() {
 
         <h3 style={H3}>Buying access for yourself</h3>
         <p>
-          When you reach the end of Module 2, select "Buy access to Modules 3,
-          4, and 5." You will be taken to a secure checkout page. After payment,
-          you can continue reading immediately.
+          When you reach the end of Module 1, select "Buy access to Modules 2,
+          3, 4, and 5." You will be taken to a secure checkout page. After
+          payment, you can continue reading immediately.
         </p>
 
         <h3 style={H3}>Buying access as a gift</h3>
@@ -237,12 +237,15 @@ function PaymentsGiftsSection() {
 
         <h3 style={H3}>Refunds</h3>
         <p>
-          If you change your mind after buying access, write to
-          <a href="mailto:hello@mynaani.com" style={LINK}>
-            hello@mynaani.com
-          </a>
-          within 14 days. We will refund your payment in full.
+          If you change your mind, write to
+          <a href="mailto:help@mynaani.com" style={LINK}>
+            help@mynaani.com
+          </a>{" "}
+          within 30 days of purchase for a full refund. Because access is
+          immediate and complete, we ask that you have finished less than half
+          of the paid modules — that keeps the promise fair for everyone.
         </p>
+        <p>For gifts, the refund goes to the person who bought the gift.</p>
 
         <h3 style={H3}>Payment security</h3>
         <p>
@@ -325,10 +328,22 @@ function YourAccountSection() {
         <h3 style={H3}>Contacting support</h3>
         <p>
           If your question is not answered here, write to us at
-          <a href="mailto:hello@mynaani.com" style={LINK}>
-            hello@mynaani.com
+          <a href="mailto:help@mynaani.com" style={LINK}>
+            help@mynaani.com
           </a>
           . We read every message and reply within two business days.
+        </p>
+        <p>
+          Prefer to talk? Call us at{" "}
+          <a
+            href="tel:+18774094144"
+            style={LINK}
+            aria-label="Call MyNaani support, toll free, 1 8 7 7, 4 0 9, 4 1 4 4"
+          >
+            1 (877) 409-4144
+          </a>
+          , toll-free. The line is answered by our AI receptionist, who can
+          connect you to a person if needed. This call may be stored.
         </p>
         <p>
           For the fastest response, include the email address associated with

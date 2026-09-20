@@ -1,0 +1,69 @@
+{
+  "type": "custom",
+  "name": "submit_partner_inquiry",
+  "description": "Submit a partnership inquiry for a senior living community, health plan, caregiver network, or aging-services organization. Collect first name, last name, work email, organization name, organization type, and a short description of what they need before calling. Ask preferred contact method; a phone number is required when the caller prefers a call back.",
+  "url": "https://api.mynaani.com/api/v1/site/retell/partner-inquiry",
+  "speak_during_execution": true,
+  "speak_after_execution": true,
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "first_name": {
+        "type": "string",
+        "description": "Contact's first name"
+      },
+      "last_name": {
+        "type": "string",
+        "description": "Contact's last name"
+      },
+      "email": {
+        "type": "string",
+        "description": "Work email address for follow-up"
+      },
+      "phone": {
+        "type": "string",
+        "description": "Phone number; required when preferred_contact is phone"
+      },
+      "organization": {
+        "type": "string",
+        "description": "Organization name, e.g. Sunrise Senior Living"
+      },
+      "organization_type": {
+        "type": "string",
+        "enum": [
+          "Senior living community",
+          "Health plan or insurer",
+          "Caregiver network",
+          "Other"
+        ],
+        "description": "Which best describes the organization"
+      },
+      "role": {
+        "type": "string",
+        "description": "Contact's role or title, if offered"
+      },
+      "preferred_contact": {
+        "type": "string",
+        "enum": ["email", "phone"],
+        "description": "How the partnership team should reply"
+      },
+      "message": {
+        "type": "string",
+        "description": "What the organization needs help with"
+      },
+      "website": {
+        "type": "string",
+        "const": "",
+        "description": "Leave empty"
+      }
+    },
+    "required": [
+      "first_name",
+      "last_name",
+      "email",
+      "organization",
+      "organization_type",
+      "message"
+    ]
+  }
+}

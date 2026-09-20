@@ -117,7 +117,7 @@ jobs:
           echo $! > /tmp/backend.pid
       - name: Wait for backend health
         run: |
-          for i in $(seq 1 30); do
+          for _ in $(seq 1 30); do
             if curl -sf http://127.0.0.1:8000/health > /dev/null; then
               echo "backend up"
               exit 0

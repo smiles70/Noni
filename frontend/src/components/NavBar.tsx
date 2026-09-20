@@ -21,6 +21,7 @@ interface Props {
   onSignIn?: () => void;
   onAccount?: () => void;
   onHelp?: () => void;
+  helpLabel?: string;
 }
 
 const NAV: React.CSSProperties = {
@@ -51,7 +52,12 @@ const EMAIL: React.CSSProperties = {
   marginRight: SPACING.sm,
 };
 
-export default function NavBar({ onSignIn, onAccount, onHelp }: Props) {
+export default function NavBar({
+  onSignIn,
+  onAccount,
+  onHelp,
+  helpLabel = "Help",
+}: Props) {
   // B1: NavBar reads auth state from AuthProvider, never via its own
   // whoami() call (T-H2). It also never mounts an interceptor or fetches
   // /auth/session itself.
@@ -94,7 +100,7 @@ export default function NavBar({ onSignIn, onAccount, onHelp }: Props) {
       {onHelp && (
         <GeragogySafeTap>
           <button type="button" style={LINK_BTN} onClick={onHelp}>
-            Help
+            {helpLabel}
           </button>
         </GeragogySafeTap>
       )}

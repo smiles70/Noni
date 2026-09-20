@@ -54,7 +54,7 @@ describe("PrivacyPage — trust surface", () => {
     const text = host.textContent ?? "";
     expect(text).toContain("cannot see your lessons");
     expect(text).toContain("delete your account");
-    expect(text).toContain("hello@mynaani.com");
+    expect(text).toContain("help@mynaani.com");
   });
 
   it("is geragogy-calm: no exclamation marks, no urgency language", async () => {

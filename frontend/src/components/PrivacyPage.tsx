@@ -113,6 +113,11 @@ export default function PrivacyPage({ onBack }: Props) {
             <li>Magic.link — sends your sign-in link and verifies it.</li>
             <li>Railway — hosts the service and its database.</li>
             <li>Cloudflare — delivers pages quickly and safely.</li>
+            <li>
+              Retell AI — runs our phone receptionist and the chat assistant on
+              the gift and community pages; call and chat transcripts are
+              processed with personal details removed and kept for 30 days.
+            </li>
           </ul>
           <p>
             We do not use advertising networks or data brokers. A data
@@ -126,8 +131,8 @@ export default function PrivacyPage({ onBack }: Props) {
           <p>
             If you believe you have found a security problem, or something about
             your information worries you, write to us at{" "}
-            <a href="mailto:hello@mynaani.com" style={LINK}>
-              hello@mynaani.com
+            <a href="mailto:help@mynaani.com" style={LINK}>
+              help@mynaani.com
             </a>
             . We reply within two business days.
           </p>
@@ -148,10 +153,39 @@ export default function PrivacyPage({ onBack }: Props) {
           </p>
           <p>
             Questions are always welcome at{" "}
-            <a href="mailto:hello@mynaani.com" style={LINK}>
-              hello@mynaani.com
+            <a href="mailto:help@mynaani.com" style={LINK}>
+              help@mynaani.com
             </a>
             . We reply within two business days.
+          </p>
+        </div>
+      </section>
+
+      <div style={DIVIDER} />
+
+      <section>
+        <h2 style={H2}>Your rights under privacy law</h2>
+        <div style={BODY}>
+          <p>
+            This page was last updated in September 2026. Wherever you live, you
+            have the right to:
+          </p>
+          <ul style={UL}>
+            <li>know what information we have about you,</li>
+            <li>correct it if it is wrong,</li>
+            <li>delete it, and</li>
+            <li>never be treated worse for asking.</li>
+          </ul>
+          <p>
+            You can see and delete your information from the "Your account"
+            page, or ask us at help@mynaani.com. If someone is helping you
+            manage your affairs, they can write to us on your behalf — we will
+            check with you before acting.
+          </p>
+          <p>
+            We do not sell or share your information, so there is nothing to opt
+            out of. If your browser sends a "Global Privacy Control" signal, we
+            honor it.
           </p>
         </div>
       </section>

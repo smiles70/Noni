@@ -44,6 +44,8 @@ export const ALLOWED_EVENTS = new Set([
   // retrieval + auth probes already in use
   "retrieval_choice.recorded",
   "auth.render_disagreement",
+  // marketing surface milestones (WS-D scroll-depth baseline)
+  "marketing.scroll_depth",
 ]);
 
 const DEDUP_WINDOW_MS = 30_000;

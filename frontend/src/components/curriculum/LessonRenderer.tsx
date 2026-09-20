@@ -44,6 +44,7 @@ import { MIN_TOUCH_TARGET } from "../../styles/responsiveTokens";
 import type { UIStateEnvelope } from "../../design/envelope";
 import { RenderGuard, type RenderProposal } from "../../design/RenderGuard";
 import NavBar from "../NavBar";
+import HelpCard from "./HelpCard";
 import {
   RecapPage,
   ContextPage,
@@ -84,7 +85,6 @@ export interface LessonRendererProps {
   /** Optional Continue-button label override. Default matches the
    *  pre-extraction free-track behaviour. */
   getContinueLabel?: (isLastUnit: boolean, isLastPage: boolean) => string;
-  onHelp?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -260,7 +260,6 @@ export default function LessonRenderer({
   onSignIn,
   onAccount,
   onPaywall,
-  onHelp,
   getContinueLabel = (isLastUnit, isLastPage) =>
     isLastUnit && isLastPage ? "Continue to paid modules →" : "Continue →",
 }: LessonRendererProps) {
@@ -287,6 +286,11 @@ export default function LessonRenderer({
   const [retrievalAnswered, setRetrievalAnswered] = useState<string | null>(
     null,
   );
+  const [helpMode, setHelpMode] = useState(false);
+  const [helpEnvelope, setHelpEnvelope] = useState<UIStateEnvelope | null>(
+    null,
+  );
+  const [helpEnvelopeFailed, setHelpEnvelopeFailed] = useState(false);
   const pendingBackNavRef = useRef(false);
 
   // Envelope: load once.
@@ -402,9 +406,68 @@ export default function LessonRenderer({
     });
   };
 
+  const toggleHelp = () => {
+    if (helpMode) {
+      setHelpMode(false);
+      return;
+    }
+    setHelpMode(true);
+    if (!helpEnvelope && !helpEnvelopeFailed) {
+      loadEnvelope("curriculum.help")
+        .then(setHelpEnvelope)
+        .catch(() => setHelpEnvelopeFailed(true));
+    }
+  };
+
   const nav = (
-    <NavBar onSignIn={onSignIn} onAccount={onAccount} onHelp={onHelp} />
+    <NavBar
+      onSignIn={onSignIn}
+      onAccount={onAccount}
+      onHelp={toggleHelp}
+      helpLabel={helpMode ? "Back to lesson" : "Help"}
+    />
   );
+
+  if (helpMode) {
+    if (!helpEnvelope) {
+      return helpEnvelopeFailed ? (
+        <BlockedLoad
+          message="We are having trouble opening help. You can call us at 1-877-409-4144 or write to help@mynaani.com."
+          nav={nav}
+        />
+      ) : (
+        <PendingBanner nav={nav} />
+      );
+    }
+    const proposal: RenderProposal = {
+      components: ["Heading", "Body", "Button", "Card", "Field", "Indicator"],
+      primaryActionCount: 3,
+      irreversibleActionCount: 0,
+      highlightedRecommendationCount: 1,
+      visibleTextLevels: 3,
+      colorsUsed: [...PAGE_COLORS_USED],
+      spacingPxUsed: [...PAGE_SPACING_USED],
+      radiusPxUsed: [...PAGE_RADIUS_USED],
+      motionDurationsMs: [...PAGE_MOTION_DURATIONS_MS],
+      positionShiftPxUsed: [],
+      hasUnconfirmedIrreversibleAction: false,
+      usesOptimisticProgression: false,
+    };
+    return (
+      <RenderGuard envelope={helpEnvelope} proposal={proposal}>
+        <main style={PAGE}>
+          {nav}
+          {lesson ? (
+            <p style={INDICATOR} data-component="Indicator">
+              Module {sequence[idx].module} · Lesson {idx + 1} of{" "}
+              {sequence.length} · Page {pageIdx + 1} of {lesson.pages.length}
+            </p>
+          ) : null}
+          <HelpCard />
+        </main>
+      </RenderGuard>
+    );
+  }
 
   if (error) {
     return (

@@ -11,6 +11,7 @@ env/
 .mypy_cache/
 .ruff_cache/
 .coverage
+coverage.json
 htmlcov/
 
 # Environment
@@ -58,6 +59,10 @@ alembic/__pycache__/
 
 # Playwright
 frontend/playwright-report/
+
+# Smoke / perf tooling (downloaded at runtime)
+frontend/.bin/
+frontend/coverage/
 frontend/test-results/
 frontend/.playwright-cache/
 Enterprise Grade USer Atuh_Login assessment.txt

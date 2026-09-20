@@ -235,15 +235,33 @@ export default function HowItWorksDialog({ content, onClose, onBegin }: Props) {
               Got it
             </button>
           )}
-          {/* B2B-ENTRY-001 gap 2: second, calm B2B entry — inside the
-              learner-adjacent dialog so the fixed hero stays single-entry. */}
-          <p
+          {/* B2B-ENTRY-001 gap 2: second, calm B2B/caregiver entries —
+              inside the learner-adjacent dialog so the fixed hero stays
+              single-entry. */}
+          <div
             style={{
               margin: `${SPACING.sm}px 0 0`,
               fontSize: TYPOGRAPHY.bodySizePx,
               textAlign: "center",
+              display: "flex",
+              justifyContent: "center",
+              gap: SPACING.lg,
+              flexWrap: "wrap",
             }}
           >
+            <Link
+              to="/caregiver"
+              onClick={onClose}
+              data-caregiver-entry="how-it-works"
+              style={{
+                color: COLORS.accentMutedBlue,
+                display: "inline-flex",
+                alignItems: "center",
+                minHeight: 44,
+              }}
+            >
+              For caregivers
+            </Link>
             <Link
               to="/for-communities"
               onClick={onClose}
@@ -257,7 +275,7 @@ export default function HowItWorksDialog({ content, onClose, onBegin }: Props) {
             >
               For senior living communities
             </Link>
-          </p>
+          </div>
         </footer>
       </div>
     </div>

@@ -34,6 +34,16 @@ const PAPERS = [
     slug: "geragogy-the-key-to-learning",
     tag: "Research Brief — Method",
   },
+  {
+    file: "cognitive-engagement-whitepaper.md",
+    slug: "cognitive-engagement",
+    tag: "Research Brief — For Caregivers",
+  },
+  {
+    file: "geragogy-for-caregivers-whitepaper.md",
+    slug: "geragogy-for-caregivers",
+    tag: "Research Brief — For Caregivers",
+  },
 ];
 
 const esc = (s) =>

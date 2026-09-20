@@ -4,7 +4,6 @@
  * Per ADR 0029, this page is granted a limited contract exemption:
  *   - Larger hero headings than the 1.4× body cap.
  *   - A floating action card that overlaps the hero image.
- *   - A fixed-position help bubble.
  *
  * All other application screens remain under `docs/library/CONTRACT.md`.
  * Exempt elements are marked with `data-contract-exemption="landing.hero"`
@@ -27,11 +26,11 @@ import { useViewport } from "../hooks/useViewport";
 import type { UIStateEnvelope } from "../design/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
 import HowItWorksDialog from "./HowItWorksDialog";
+import LandingFooter from "./LandingFooter";
 
 interface Props {
   onBegin: () => void;
   signedIn?: boolean;
-  onHelp?: () => void;
 }
 
 // ---- Tokenized style objects (exempt landing page only) ---------------------
@@ -185,22 +184,6 @@ const B2B_STACK_MOBILE: CSSProperties = {
   gap: SPACING.sm,
 };
 
-const HELP_BUBBLE: CSSProperties = {
-  position: "fixed",
-  right: SPACING.xl,
-  bottom: SPACING.xl,
-  zIndex: 100,
-  backgroundColor: COLORS.accentDesatGreen,
-  color: COLORS.surface,
-  padding: `${SPACING.md}px ${SPACING.lg}px`,
-  borderRadius: RADIUS.lg,
-  border: "none",
-  fontSize: TYPOGRAPHY.bodySizePx,
-  fontWeight: 600,
-  cursor: "pointer",
-  boxShadow: `0 ${SPACING.sm}px ${SPACING.md}px rgba(0, 0, 0, 0.15)`,
-};
-
 // ---- Loading / blocked states ----------------------------------------------
 
 function PendingBanner() {
@@ -249,7 +232,7 @@ function BlockedLoad({ message }: { message: string }) {
 
 // ---- Component -------------------------------------------------------------
 
-export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
+export default function LandingPage({ onBegin, signedIn }: Props) {
   const [content, setContent] = useState<LandingPageContent | null>(null);
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -312,7 +295,9 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
     ? {
         ...CARD,
         padding: SPACING.md,
-        maxHeight: "calc(45% - 96px)",
+        // Leave room for the B2B stack above (96px) and the mini-footer
+        // strip below (~64px, including safe-area padding).
+        maxHeight: "calc(45% - 160px)",
         overflowY: "auto",
       }
     : CARD;
@@ -435,11 +420,11 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
             data-b2b-stack="hero"
           >
             <Link
-              to="/gift"
+              to="/caregiver"
               style={B2B_BUTTON}
               data-contract-exemption="landing.hero"
               data-caregiver-entry="hero"
-              aria-label="Caregiver — purchase mynaani as a gift"
+              aria-label="Caregiver — learn about giving mynaani as a gift"
             >
               Caregiver
             </Link>
@@ -453,19 +438,11 @@ export default function LandingPage({ onBegin, signedIn, onHelp }: Props) {
               Senior facilities
             </Link>
           </div>
-
-          {/* Fixed help bubble */}
-          {onHelp && signedIn && (
-            <button
-              type="button"
-              onClick={onHelp}
-              data-contract-exemption="landing.hero"
-              style={HELP_BUBBLE}
-            >
-              Need help?
-            </button>
-          )}
         </section>
+        {/* LEGAL-NAV-001: mini-footer strip — legal links pinned inside
+            the fixed viewport. Sibling of the hero <section> so it keeps
+            its contentinfo landmark role. */}
+        <LandingFooter />
       </RenderGuard>
       {showHowItWorks && (
         <HowItWorksDialog

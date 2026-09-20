@@ -1,0 +1,7 @@
+{
+  "chromeLaunchConfig": {
+    "args": ["--no-sandbox"]
+  },
+  "timeout": 120000,
+  "wait": 1000
+}

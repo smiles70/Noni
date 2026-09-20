@@ -159,6 +159,9 @@ jobs:
           # ADR 0027: mock is the safe default for CI builds.
           VITE_AUTH_PROVIDER: 'mock'
           VITE_MAGIC_PUBLISHABLE_KEY: ''
+          VITE_RETELL_PUBLIC_KEY: 'public_key_c2dfb899128b3a172cc17'
+          VITE_RETELL_CHAT_AGENT_ID_GIFT: 'agent_646dba13a4321b698970c15c68'
+          VITE_RETELL_CHAT_AGENT_ID_FACILITY: 'agent_719be4f2578150bb27ac06f357'
           CI: true
           NODE_ENV: production
         run: npm run prebuild
@@ -170,6 +173,9 @@ jobs:
           # ADR 0027: mock is the safe default for CI builds.
           VITE_AUTH_PROVIDER: 'mock'
           VITE_MAGIC_PUBLISHABLE_KEY: ''
+          VITE_RETELL_PUBLIC_KEY: 'public_key_c2dfb899128b3a172cc17'
+          VITE_RETELL_CHAT_AGENT_ID_GIFT: 'agent_646dba13a4321b698970c15c68'
+          VITE_RETELL_CHAT_AGENT_ID_FACILITY: 'agent_719be4f2578150bb27ac06f357'
           CI: true
           NODE_ENV: production
         run: npm run build
@@ -180,17 +186,22 @@ jobs:
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://noni-api-production.up.railway.app' }}
         run: npm run postbuild
       - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: noni-web
-          directory: frontend/dist
-          branch: main
+          command: pages deploy frontend/dist --project-name=noni-web --branch=main
 
   smoke:
     needs: [preflight, railway-deploy-backend, cloudflare-pages-deploy]
-    if: needs.preflight.outputs.railway_ready == 'true' && needs.preflight.outputs.cloudflare_ready == 'true'
+    # Gate on actual deploy results, not preflight secret detection.
+    # A bare `if` is rewritten to `success() && (...)`, and success()
+    # counts transitively-skipped jobs (supabase-db-push) as failure —
+    # the `!cancelled()` status check disables that implicit prepend.
+    if: >-
+      !cancelled()
+      && needs.railway-deploy-backend.result == 'success'
+      && needs.cloudflare-pages-deploy.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -198,3 +209,36 @@ jobs:
         env:
           PROD_API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://noni-api-production.up.railway.app' }}
         run: bash infra/scripts/smoke-prod.sh
+
+  deployed-e2e-smoke:
+    name: Post-deploy Playwright smoke (@smoke, read-only)
+    needs: [smoke]
+    # Same transitive-skip footgun: an implicit success() sees the
+    # skipped supabase-db-push two levels up and would skip this job.
+    if: ${{ !cancelled() && needs.smoke.result == 'success' }}
+    environment: production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PLAYWRIGHT_TEST_BASE_URL: ${{ vars.PROD_URL || 'https://www.mynaani.com' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps
+      - name: Run deployed smoke suite
+        working-directory: frontend
+        run: npm run test:e2e:smoke
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-smoke-report-prod
+          path: frontend/playwright-report/
+          retention-days: 14

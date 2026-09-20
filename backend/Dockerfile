@@ -12,7 +12,8 @@ ENV PIP_NO_CACHE_DIR=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     VIRTUAL_ENV=/opt/venv
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
         build-essential libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -31,7 +32,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH="/opt/venv/bin:$PATH"
 
 # Runtime needs libpq for psycopg2.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Upgrade first: the slim base image ships stale OS packages with
+# published Debian security fixes (Trivy CRITICAL,HIGH gate).
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
         libpq5 curl \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --system --create-home --uid 10001 mynaani

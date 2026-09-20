@@ -33,6 +33,28 @@
 - Unrelated untracked/modified files in the working tree belong to the
   human — leave them alone, don't stage, don't delete.
 
+## Dual audience — personas and journeys (owner rule, 2026-09-16)
+
+Mynaani is both **B2C** and **B2B**. Every surface and every solution
+must state which persona it serves and must never leak across journeys:
+
+- **Learner (B2C):** `/`, `/curriculum`, `/paid-curriculum`, account,
+  paywall — contract-bound, no chat widget, no partner CTAs, text-first.
+- **Caregiver / gift-giver (B2C-side):** `/caregiver`, `/gift`,
+  `/gift-redeem`, gift-mode `/purchase/success` — Retell **gift** agent;
+  never show facility/org pricing.
+- **Facility / B2B (senior care, insurance-adjacent):**
+  `/for-communities`, `/c/:slug`, `/org`, `/partners` — Retell
+  **facility** agent, partner form, call line; never show gift pricing.
+- **Shared surfaces:** `/help`, `/about`, `/privacy`, `/terms`, the fat
+  footer — copy must serve both audiences without persona-specific
+  pricing.
+
+Persona isolation is enforced at the knowledge layer (Retell KB
+partitioning, ADR-0032 amendment), not prompts alone. When adding a
+surface, declare its persona in the intake and pick the matching
+agent/contact path.
+
 ## Journey loop and paywall guard
 
 - Load `.devin/skills/journey-loop-guard/SKILL.md` when modifying any
@@ -56,3 +78,155 @@
 - Any change to `PurchaseSuccessPage`, `GiftRedeemPage`,
   `PurchaseCancelPage`, `PaywallPage`, or the resume/route helpers must be
   accompanied by both a unit/journey-contract test and a Playwright E2E test.
+
+## Research protocol for intakes and technical decisions
+
+Run this protocol at the start of **any** intake, architecture decision, or
+technical-direction question. Do not commit an intake, ADR, or dependency
+choice until the research artifact exists and the edge-case / remediation
+matrix is checked against the current codebase.
+
+### 1. When to invoke
+
+- Every new `.ai/intake/` or `docs/adr/` before the options section is written.
+- Before selecting a library, tool, vendor, protocol, auth method, database
+  pattern, deployment pattern, or observability strategy.
+- When the user asks "should we use X?", "what is best practice for Y?", or
+  "how do FAANG companies do Z?".
+- Before changing a UI contract, API contract, or security/permissions boundary.
+
+### 2. Source quota and quality bar
+
+Collect **at least 20 external, verifiable, published sources** per research
+question. Aim for this balance:
+
+- **FAANG / top-tier tech engineering sources (≥5):** official engineering
+  blogs, published conference talks with transcripts, open-source project docs,
+  or papers authored by engineers at Meta, Google, Amazon, Netflix, Apple,
+  Microsoft, Uber, Stripe, Shopify, Spotify, Airbnb, etc. GitHub repositories
+  from verified corporate accounts count if they are the canonical implementation.
+- **Peer-reviewed / academic / hard science (≥5):** arXiv papers with source
+  links, ACM/IEEE papers, university course notes from `.edu` domains, DOI-linked
+  journal articles, or references from known research labs.
+- **Industry / operations / security (≥5):** NIST, OWASP, CNCF, OpenSSF, SRE
+  book excerpts (official publisher pages), RFCs, ISO/ SOC2 guidance, or
+  vendor-agnostic observability/security references.
+- **Discussion / critique / war stories (≤5):** high-signal aggregators such as
+  Hacker News front-page threads, lobste.rs, or cited Reddit r/netsec threads
+  that link to primary sources. These count only if they add a verified
+  counter-argument or failure story.
+
+**Not acceptable:** unverified Medium posts, SEO listicles, anonymous Quora
+answers, generated content farms, or citations without a reachable URL/DOI.
+
+### 3. Source verification (triple-check)
+
+1. **Reachability:** Use `webfetch` on every URL/DOI. If it 404s, redirects to a
+   parked domain, or requires a login without an open abstract, discard it.
+2. **Attribution:** Confirm the author, publication date, and employer/affiliation
+   are visible and match the claimed expertise. For corporate blogs, confirm the
+   post is under the official domain (e.g., `engineering.linkedin.com`).
+3. **Cross-check:** Find at least two independent sources that corroborate the
+   key claim. If only one source makes a claim, flag it as low-confidence and
+   either find corroboration or downgrade the recommendation.
+
+Every source must be cited with URL, author/organization, title, and date. The
+final research memo must include a source table.
+
+### 4. Synthesis and best-in-class selection
+
+1. Group sources by approach/technology.
+2. Identify trade-offs: latency, cost, operational burden, security surface,
+   correctness, team expertise, lock-in, and migration path.
+3. Choose the **best-in-class enterprise solution** for this codebase and
+   team — not the newest, the shiniest, or the one the agent is most familiar
+   with. Document why it is the best fit relative to the current stack
+   (React/TypeScript, FastAPI, PostgreSQL, Railway, Cloudflare Pages, Stripe,
+   Magic, etc.).
+4. Include a short decision matrix with at least three realistic alternatives
+   and a confidence level (High / Medium / Low).
+
+### 5. Edge-case and remediation analysis
+
+After selecting the best-in-class solution, derive the **top 30 cases and edge
+cases** where the solution can cause problems. For each edge case:
+
+- Describe the trigger condition (input, state, scale, failure mode).
+- Classify the impact: functional, performance, security, cost, operational,
+  user-experience, or compliance.
+- Search for a remediation or mitigation from the same quality of sources.
+- **Triple-check the remediation against the current codebase:** grep for
+  existing handlers, tests, environment limits, deployment constraints, and
+  prior intakes/ADRs. If the remediation conflicts with an existing rule in
+  `AGENTS.md`, an open intake, or a pinned dependency, flag it explicitly.
+
+Write the edge-case / remediation matrix in the research memo.
+
+### 6. Research artifact
+
+Save the output as `.ai/research/YYYY-MM-DD-<topic>.md` (or the repo's
+research directory). The memo must contain:
+
+- Research question / decision to be made
+- Source table (URL, author/org, title, date, relevance)
+- Decision matrix and selected approach with confidence
+- Edge-case / remediation matrix (top 30)
+- Codebase conflict check and any blockers
+- Gaps requiring user input or further investigation
+- Link to the related intake or ADR
+
+### 7. Non-goals and escalation
+
+- Do **not** skip research because a solution "feels standard".
+- Do **not** cite sources that cannot be verified.
+- Do **not** treat Stack Overflow or generated AI summaries as primary evidence.
+- If fewer than 20 high-quality sources can be found, or if no enterprise-grade
+  option exists for the constraints, stop and ask the user how to proceed before
+  writing the recommendation.
+
+## Process v9.x — strict adherence (owner rule, 2026-09-19)
+
+- **Process v9.x is followed strictly — no skipped steps.** Research protocol →
+  intake → implementation → verification gates → sign-off, in order.
+- **FAANG architecture practices** — as researched, codified, and defined in
+  the ontology and knowledge graph / graph memory — are followed strictly.
+- **Modular-monolith practices** — as researched, codified, and defined in the
+  ontology and knowledge graph / graph memory — are followed strictly.
+- **All coding and development activities must be audited against this
+  AGENTS.md** — unit, regression, QA, UAT, smoke, e2e, and the full test suite,
+  then promotion to staging.
+- **Agents and skills must be checked and invoked for the nature of the
+  problem or intake.** Examples: logo/brand-asset work invokes
+  `logo-design-audit`; screenshot/visual review invokes `ocular`; journey and
+  paywall changes invoke `journey-loop-guard`; B2B surfaces invoke
+  `senior-living-agency`; research artifacts feed `knowledge-graph-extraction`.
+
+## Defect / problem-statement tickets — fast path, no skipped gates
+
+Owner-reported defects are still tickets, not informal fixes. Even P0s:
+
+1. **Intake file first** — `.ai/intake/YYYY-MM-DD-p0-<slug>.md` with
+   problem statement, root cause (confirmed in code, not assumed),
+   options, edge cases, acceptance. Before implementation, not after.
+2. **Skill invocation is mandatory even on small diffs** — check the
+   skill list every time: frontend changes invoke `geragogy` for
+   learner/product surfaces; marketing-annex surfaces (ADR-0030:
+   `/caregiver`, `/for-communities`, `/sources`, landing) are checked
+   against the annex + ADR-0034 palette instead — the learner contract
+   does NOT apply there; B2B surfaces invoke `senior-living-agency`;
+   anything touching a component mounted on purchase/paywall/redemption
+   surfaces (including shared chrome like `Footer`) invokes
+   `journey-loop-guard` — verify mount points with grep, don't assume.
+3. **Research artifact** — proportionate scope is allowed for defect
+   tickets (a verification memo citing codebase checks is sufficient;
+   the ≥20-source gather applies to *decisions*, not defect triage) but
+   the `.ai/research/` artifact must exist and any deviation from the
+   full protocol must be written down in it, not left implicit.
+4. **Same-commit test pins** — unit + e2e updates land in the same
+   commit as the change.
+5. **Graph + RESUME update after every push** — episode recorded, graph
+   re-validated when entities changed, before reporting done.
+6. Staging only; production still requires explicit owner sign-off.
+
+*Added 2026-09-20 after PS-BID17-001–004 shipped without retro skill
+invocation or a research memo — both gaps caught in self-audit.*

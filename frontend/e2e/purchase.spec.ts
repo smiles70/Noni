@@ -16,4 +16,16 @@ test.describe("Post-purchase success routing", () => {
     await page.getByRole("button", { name: "Return to home" }).click();
     await expect(page).toHaveURL(/\/$/);
   });
+
+  test("chat widget marker is present in gift mode only", async ({ page }) => {
+    await page.goto(SUCCESS_BASE.replace("{is_gift}", "true"));
+    await expect(
+      page.locator('[data-contract-exemption="chat-widget"]'),
+    ).toHaveCount(1);
+
+    await page.goto(SUCCESS_BASE.replace("{is_gift}", "false"));
+    await expect(
+      page.locator('[data-contract-exemption="chat-widget"]'),
+    ).toHaveCount(0);
+  });
 });

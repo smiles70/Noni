@@ -9,8 +9,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Build deps for psycopg2 + cryptography wheels.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Build deps for psycopg2 + cryptography wheels. Upgrade first so
+# Debian security point releases on baked-in packages are applied.
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
         build-essential libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -28,7 +30,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PORT=8000
 
 # Runtime libs only (libpq for psycopg2). Add curl for HEALTHCHECK.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Upgrade first: the slim base image ships stale OS packages with
+# published Debian security fixes (Trivy CRITICAL,HIGH gate).
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
         libpq5 curl \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 1000 mynaani

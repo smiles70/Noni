@@ -46,11 +46,20 @@ const AccountSettingsPage = lazy(
 );
 const HelpPage = lazy(() => import("./components/HelpPage"));
 const PrivacyPage = lazy(() => import("./components/PrivacyPage"));
+const TermsPage = lazy(() => import("./components/TermsPage"));
+const AboutPage = lazy(() => import("./components/AboutPage"));
+const PartnershipInquiryPage = lazy(
+  () => import("./components/PartnershipInquiryPage"),
+);
 const OrgDashboardPage = lazy(() => import("./components/OrgDashboardPage"));
 // B2B marketing surface (ADR-0030) — public, static, no auth.
 const ForCommunitiesPage = lazy(
   () => import("./components/ForCommunitiesPage"),
 );
+// Caregiver marketing surface (ADR-0030) — public, static, no auth.
+const CaregiverPage = lazy(() => import("./components/CaregiverPage"));
+const SourcesPage = lazy(() => import("./components/SourcesPage"));
+const ContactPage = lazy(() => import("./components/ContactPage"));
 // EPIC-002 Phase 2-3: Add WelcomePage, AccountSetupPage, and GettingStartedPage
 const WelcomePage = lazy(() => import("./components/WelcomePage"));
 const AccountSetupPage = lazy(() => import("./components/AccountSetupPage"));
@@ -203,17 +212,13 @@ const App: React.FC = () => {
             Skip to main content
           </a>
           {transientBanner}
-          <div id="main-content">
+          <div id="main-content" tabIndex={-1}>
             <Routes>
               <Route
                 path="/"
                 element={
                   <Suspense fallback={<LoadingSkeleton />}>
-                    <LandingPage
-                      onBegin={goCurriculum}
-                      signedIn={isReady}
-                      onHelp={goHelp}
-                    />
+                    <LandingPage onBegin={goCurriculum} signedIn={isReady} />
                   </Suspense>
                 }
               />
@@ -231,6 +236,22 @@ const App: React.FC = () => {
                 element={
                   <Suspense fallback={loadFallback}>
                     <ForCommunitiesPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/caregiver"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <CaregiverPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sources"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <SourcesPage />
                   </Suspense>
                 }
               />
@@ -330,6 +351,38 @@ const App: React.FC = () => {
                 }
               />
               <Route
+                path="/terms"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <TermsPage onBack={goLanding} />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <AboutPage onBack={goLanding} />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/partners"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <PartnershipInquiryPage onBack={goLanding} />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <ContactPage onBack={goLanding} />
+                  </Suspense>
+                }
+              />
+              <Route
                 path="/curriculum"
                 element={
                   <RequireAuth>
@@ -339,7 +392,6 @@ const App: React.FC = () => {
                         onContinueGated={goPaywall}
                         onAccount={goAccount}
                         onOpenMenu={goMenu}
-                        onHelp={goHelp}
                       />
                     </Suspense>
                   </RequireAuth>
@@ -356,7 +408,6 @@ const App: React.FC = () => {
                         onAccount={goAccount}
                         onOpenMenu={goMenu}
                         onSequenceComplete={goLanding}
-                        onHelp={goHelp}
                       />
                     </Suspense>
                   </RequireAuth>

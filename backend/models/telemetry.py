@@ -9,7 +9,8 @@ See ADR 0009.
 
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, Column, DateTime, Float, Integer, String
+from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
 
 from backend.core.database import Base
 
@@ -32,3 +33,15 @@ class TelemetryEvent(Base):
     selected_state_id = Column(String(128), nullable=True)
     decision_reason = Column(String(64), nullable=True)
     max_complexity = Column(Integer, nullable=True)
+
+    # Launch-readiness additive columns (ADR 0024, migration 0003_launch_schema).
+    account_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("accounts.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+    session_id = Column(String(128), nullable=True)
+    unit_id = Column(String(128), nullable=True)
+    occurred_at = Column(DateTime(timezone=True), nullable=True)
+    expires_at = Column(DateTime(timezone=True), nullable=True, index=True)

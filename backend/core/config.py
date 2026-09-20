@@ -46,6 +46,29 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = "Mynaani <hello@mynaani.com>"
     # When set, ALL outbound email is redirected here (test/rollout catch-all).
     EMAIL_OVERRIDE_TO: str = ""
+    # Destination inbox for /api/site/partner-inquiry submissions.
+    PARTNER_INBOX: str = "partnerships@mynaani.com"
+    # Public "call us" line shown on /partners when set. Empty = hidden.
+    # Defaults to the toll-free Retell-answered support line already
+    # published on /help (intake 013); overridden per-env if needed.
+    PARTNER_PHONE: str = "+1 (877) 409-4144"
+    # Public "write to us" address shown in the site footer when set.
+    # Defaults to the help mailbox already published on /help.
+    CONTACT_EMAIL: str = "help@mynaani.com"
+    # Retell account API key — used server-side ONLY to verify the
+    # X-Retell-Signature header on tool-call requests to
+    # /api/v1/site/retell/partner-inquiry. Never shipped to the browser
+    # (the widget uses the domain-locked public key instead).
+    RETELL_API_KEY: str = ""
+    # Learner "Call me" callback (learner-help-channel intake): the
+    # outbound Retell agent dialed via /v2/create-phone-call, and the
+    # toll-free line it rings from. Empty agent id = capability off.
+    RETELL_CALLBACK_AGENT_ID: str = ""
+    RETELL_FROM_NUMBER: str = "+18774094144"
+    # CRM contact filing for help requests — the CRM tracking intake
+    # accepts a form_submit batch at {CRM_API_URL}/api/t/e. Empty = off.
+    CRM_API_URL: str = ""
+    CRM_SITE_ID: str = ""
 
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 30
@@ -65,6 +88,11 @@ class Settings(BaseSettings):
     # Sprint 27 #92: log sampling rate (0.0–1.0) for info-level request logs.
     # Errors and warnings are always logged at 100%.
     LOG_SAMPLING_RATE: float = 1.0
+
+    # N8N help-flow integration (N8N-HELP-001)
+    FEATURE_HELP_REQUESTS: bool = True
+    N8N_WEBHOOK_URL: str = ""
+    N8N_WEBHOOK_TOKEN: str = ""
 
     # CORS allowlist (comma-separated origins). Empty -> dev fallback in main.py.
     CORS_ORIGINS: str = ""

@@ -18,7 +18,6 @@ interface Props {
   onOpenMenu?: () => void;
   onContinueGated: () => void;
   onAccount?: () => void;
-  onHelp?: () => void;
 }
 
 const FREE_SEQUENCE = [
@@ -47,7 +46,6 @@ export default function CurriculumRenderer({
   onOpenMenu,
   onContinueGated,
   onAccount,
-  onHelp,
 }: Props) {
   return (
     <ErrorBoundary>
@@ -61,7 +59,6 @@ export default function CurriculumRenderer({
         onSignIn={onSignIn}
         onOpenMenu={onOpenMenu}
         onAccount={onAccount}
-        onHelp={onHelp}
       />
     </ErrorBoundary>
   );

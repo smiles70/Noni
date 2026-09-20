@@ -16,10 +16,12 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "lcov"],
       thresholds: {
-        lines: 1,
-        functions: 1,
-        branches: 1,
-        statements: 1,
+        // Grade-A frontend coverage floor (statements 85%, branches 75%,
+        // functions 80%, lines 85%) now met and locked.
+        lines: 88,
+        functions: 84,
+        branches: 75,
+        statements: 87,
       },
     },
   },
