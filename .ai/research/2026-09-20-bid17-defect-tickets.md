@@ -57,6 +57,20 @@ intake file, the skill-invocation checklist, and this memo stub.
 - **journey-loop-guard:** no end-state/paywall/purchase/redemption/
   resume surface touched; footer mounts verified marketing-only.
 
+## PS-010/011/012 (second defect batch, 2026-09-20)
+
+- **PS-010 footer gutters:** FOOTER_DARK card treatment (960px + radius)
+  on charcoalDeep wrap produced two near-black flank blocks. Fix: wrap
+  and card share `MARKETING.charcoal`, radius dropped on dark variant —
+  one continuous edge-to-edge band.
+- **PS-011 hero gift link:** not in mock. `data-gift-entry="hero"` moved
+  to nav "Give a gift" anchor — marker value + funnel position preserved;
+  test pin now selects `a[data-gift-entry]` (marker is the contract).
+- **PS-012 RCT card:** 5th proof card wrapped to a second row — removed
+  per owner direction; Laganà source preserved on /sources.
+- Governance check: all three surfaces are ADR-0030 annex — verified
+  BEFORE audit this time (marker present on all three pages).
+
 ## Remaining risk
 
 - Footer nav is now 7 links — slightly above the doormat budget noted

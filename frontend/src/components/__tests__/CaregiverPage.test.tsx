@@ -40,12 +40,13 @@ describe("CaregiverPage — bid-17 marketing surface", () => {
     expect(page!.textContent).toContain("You stop being tech support");
     expect(page!.textContent).toContain("Warm on the surface");
     expect(page!.textContent).toContain("The gift of staying capable");
-    // Five proof cards.
+    // Four proof cards — one row, RCT card removed (PS-BID17-012).
     const proofCards = page!.querySelectorAll("#why .proof-card, #why div");
     expect(page!.querySelectorAll("#why")).not.toBeNull();
     expect(page!.textContent).toContain("11+");
     expect(page!.textContent).toContain("57→28");
-    expect(page!.textContent).toContain("RCT");
+    // RCT card removed (PS-BID17-012) — Laganà evidence stays on /sources.
+    expect(page!.textContent).not.toContain("RCT");
     void proofCards;
   });
 
@@ -53,9 +54,12 @@ describe("CaregiverPage — bid-17 marketing surface", () => {
     const host = await render();
     const text = host.textContent!;
     expect(text).toContain("geragogy");
-    // Gift entry points carry attribution markers (hero + section + CTA band).
+    // Gift entry points carry attribution markers (hero + section + CTA
+    // band). PS-BID17-011: the "hero" marker lives on the nav "Give a
+    // gift" link — the visible hero link was removed per the bid-17
+    // mock; pin the marker attribute, not the href.
     const giftLinks =
-      host.querySelectorAll<HTMLAnchorElement>('a[href="/gift"]');
+      host.querySelectorAll<HTMLAnchorElement>("a[data-gift-entry]");
     expect(giftLinks.length).toBeGreaterThanOrEqual(3);
     const markers = [...giftLinks].map((a) =>
       a.getAttribute("data-gift-entry"),

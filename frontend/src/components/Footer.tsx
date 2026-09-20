@@ -321,14 +321,18 @@ const COPYRIGHT: CSSProperties = {
 // Same backend-served content on the charcoal palette. All text meets
 // AA on charcoal: bodyOnDark ≈11:1, mutedOnDark ≈7.5:1, tealBright ≈6.4:1.
 
+// PS-BID17-010: wrap and card share one charcoal tone and drop the
+// card radius — the footer reads as one continuous edge-to-edge band,
+// not a floating card with gutters.
 const FOOTER_WRAP_DARK: CSSProperties = {
   ...FOOTER_WRAP,
-  backgroundColor: MARKETING.charcoalDeep,
+  backgroundColor: MARKETING.charcoal,
 };
 
 const FOOTER_DARK: CSSProperties = {
   ...FOOTER,
   backgroundColor: MARKETING.charcoal,
+  borderRadius: 0,
   color: MARKETING.bodyOnDark,
 };
 

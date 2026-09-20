@@ -251,11 +251,6 @@ const PROOFS = [
     u: "tech-support calls required",
     p: "Self-guided lessons plus a named human contact — you're off the hook.",
   },
-  {
-    n: "RCT",
-    u: "evidence training works",
-    p: "Age-appropriate training improves self-efficacy — the strongest predictor of persistence (Laganà et al.).",
-  },
 ];
 
 const BIZ = [
@@ -298,7 +293,7 @@ export default function CaregiverPage() {
           <a href="#worry" style={NAV_LINK}>
             The worry
           </a>
-          <a href="#gift" style={NAV_LINK}>
+          <a href="#gift" style={NAV_LINK} data-gift-entry="hero">
             Give a gift
           </a>
           <a href="#contact" style={NAV_CTA}>
@@ -331,23 +326,13 @@ export default function CaregiverPage() {
               <Link to="/" style={SUB_LINK_DARK}>
                 See the learner experience →
               </Link>
-              <div style={{ marginTop: SPACING.lg }}>
-                <Link
-                  to="/gift"
-                  style={{
-                    ...SUB_LINK_DARK,
-                    fontWeight: 700,
-                    marginLeft: 0,
-                    display: "block",
-                  }}
-                  data-gift-entry="hero"
-                >
-                  Gift mynaani →
-                </Link>
-              </div>
+              <div style={{ marginTop: SPACING.lg }}></div>
               <div style={{ marginTop: SPACING.lg }}>
                 <ChatWidget journey="gift" />
               </div>
+              {/* PS-BID17-011: no visible gift link in hero — the mock
+                  has none; the "hero" attribution marker moved to the
+                  nav "Give a gift" link (same funnel position). */}
             </div>
             <div style={STORY_CARD}>
               <span style={{ ...KICKER, fontSize: 12 }}>

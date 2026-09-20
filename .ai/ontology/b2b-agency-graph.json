@@ -1,0 +1,2378 @@
+{
+ "version": "1.0",
+ "name": "b2b-agency-graph",
+ "charter_ref": ".ai/ontology/app-charter.md",
+ "research_ref": ".ai/research/2026-09-18-b2b-senior-living-redesign.md",
+ "skill_ref": ".devin/skills/senior-living-agency/SKILL.md",
+ "scope": "corporate-care persona: /for-communities, /partners, /c/:slug, /org",
+ "extraction_method": "human_confirmed",
+ "last_verified": "2026-09-19",
+ "memory_protocol": {
+  "model": "temporal knowledge graph (adapted from Zep/Graphiti bi-temporal facts + GraphRAG community summaries — file-based, no external service)",
+  "rules": [
+   "Episodes produce facts; every fact/convention/claim traces to an episode via derived_from or audit_evidence",
+   "Rejected or superseded directions are NEVER deleted — marked status:'invalidated' with valid_until + invalidated_by so the agency never re-pitches them",
+   "Owner feedback is the highest-authority episode type; one owner rejection outranks any benchmark evidence",
+   "New benchmarks/audits append episodes + facts; they do not rewrite history",
+   "Subgraph pull = query by edges (benchmarks_design, sets_proof_standard, invalidated_by) before generating"
+  ]
+ },
+ "episodes": [
+  {
+   "id": "ep-001",
+   "date": "2026-09-18",
+   "type": "research",
+   "source": ".ai/research/2026-09-18-b2b-senior-living-redesign.md",
+   "produced": "110-node source landscape + two-register model"
+  },
+  {
+   "id": "ep-002",
+   "date": "2026-09-18",
+   "type": "audit",
+   "source": ".ai/research/2026-09-18-vendor-page-audit.md",
+   "produced": "7-section canonical skeleton + audit_evidence on proof patterns + 3 new ProofPatterns (named-testimonial, research-magnet, insider-line)"
+  },
+  {
+   "id": "ep-003",
+   "date": "2026-09-18",
+   "type": "owner-rejection",
+   "source": "owner staging review",
+   "produced": "wayfinding-nav direction invalidated entirely (pills AND text links)",
+   "authority": "highest"
+  },
+  {
+   "id": "ep-004",
+   "date": "2026-09-18",
+   "type": "owner-directive",
+   "source": "owner brief",
+   "produced": "/for-communities redesign brief: maximum impact to industry buyers, geragogy-exempt confirmed, CEO/MD/ED audience"
+  },
+  {
+   "id": "ep-005",
+   "date": "2026-09-18",
+   "type": "synthesis",
+   "source": ".ai/research/2026-09-18-agency-bakeoff.md",
+   "produced": "5-agency simulated pitch + synthesized house direction: Varsity reframe + SageAge staff-burden line + C&C founding-partner proof + Big Buzz economics layer + audit skeleton"
+  },
+  {
+   "id": "ep-006",
+   "date": "2026-09-18",
+   "type": "work-capture",
+   "source": "live fetch of agency portfolios",
+   "produced": "11 AgencyWork nodes + 4 AgencySignature nodes from real published work: SageAge roster+format+amavida, Varsity 14 case titles+voice, C&C positioning+metrics+testimonials, Big Buzz 5 named cases+testimonials+magnet"
+  },
+  {
+   "id": "ep-007",
+   "date": "2026-09-18",
+   "type": "instrumentation",
+   "source": ".devin/skills/senior-living-agency/RUBRIC.md",
+   "produced": "scored evaluation rubric: 10 auto-fails + 39 weighted criteria (94 raw points, ship ≥85%), every criterion traced to graph evidence"
+  },
+  {
+   "id": "ep-008",
+   "date": "2026-09-18",
+   "type": "visual-capture",
+   "source": ".ai/research/agency-screenshots/*.png (Playwright 1440x900 captures)",
+   "produced": "10 VisualLanguage nodes (per-site palette/type/imagery/shapes/effects) + 9 new VisualConventions: dark-saturated-hero, product-or-people-hero, cta-highest-chroma, word-color-coding, type-pairing, announcement-pill, rounded-containers, nav-grammar + rubric baseline score 66/94=70%"
+  },
+  {
+   "id": "ep-009",
+   "date": "2026-09-18",
+   "type": "baseline-score",
+   "source": "rubric scoring of prod /for-communities",
+   "produced": "66/94 (70%): hero 6/12, proof 5/10, evidence 6/12 weakest; copy 10/12, CTA 9/10, magnet 8/8 strongest"
+  },
+  {
+   "id": "ep-010",
+   "date": "2026-09-18",
+   "type": "artifact-generation",
+   "source": ".ai/research/agency-bids/*.html",
+   "produced": "5 self-contained agency-signature bid pages for /for-communities redesign: SageAge(dark+serif), Varsity(navy+outline-type), C&C(green+metrics), Big Buzz(aqua+process-hero), House(navy+product-UI synthesis) — all ≥85% rubric targets"
+  },
+  {
+   "id": "ep-011",
+   "date": "2026-09-18",
+   "type": "audit-correction",
+   "source": "rubric re-audit of bids",
+   "produced": "honest re-scoring: bid4 failed at 82% (unnamed category, 3 competing CTAs, borderline stat) — fixed to ~85%; added missing 'See the learner experience' honesty link to all 5"
+  },
+  {
+   "id": "ep-012",
+   "date": "2026-09-18",
+   "type": "work-capture-expansion",
+   "source": "deeper portfolio harvest",
+   "produced": "7 new AgencyWork nodes + 6 new ProofPatterns: SageAge RGV case anatomy (objection-in-buyer's-voice + real denominators), C&C trust-stack + downloadable cases, Markentum move-in metrics, Attane ops granularity, industry cost-per-move-in unit"
+  },
+  {
+   "id": "ep-013",
+   "date": "2026-09-18",
+   "type": "grammar-correction",
+   "source": "full-page captures: cc-full.png, harborchase.png, sageage-cases.png",
+   "produced": "corrected round: 5 real page grammars x 2 pages (communities+caregiver) = bid-11..15; each reproduces captured section architecture not generic skeleton; drift documented: prior bids shared one invented structure, real work differs structurally per agency"
+  },
+  {
+   "id": "ep-014",
+   "date": "2026-09-18",
+   "type": "honesty-audit",
+   "source": "owner challenge: no invention/hallucination",
+   "produced": "removed 3 residual invention layers: objection quotes relabeled from fake ethnography (we hear) to honest design framing (the objection this page must answer); fake video thumb removed; SageAge trademark line removed"
+  },
+  {
+   "id": "ep-015",
+   "date": "2026-09-18",
+   "type": "continuity-correction",
+   "source": "bid feedback: foreign visual languages break site continuity",
+   "produced": "bid-16 Mynaani-native pair: agency methods (Big Buzz process-hero, SageAge anatomy, C&C metric-rows+footer-trust, Varsity outcome labels) rendered in real ADR-0019 tokens only — #F4F4F2/#FAFAF8 surfaces, #4A6FA5/#4A6D5C accents, Inter 36/26/16, radius 10; agency skin never ships to clients"
+  },
+  {
+   "id": "ep-016",
+   "date": "2026-09-18",
+   "type": "owner-selection",
+   "authority": "highest",
+   "source": "CEO feedback on bids",
+   "produced": "SELECTED: bid-9 Love&Co content/layout + bid-11 SageAge charcoal/teal/gold colors + real logo + Inter; mockup = current landing → caregiver → communities. NOTE: overrides contract-pure token direction for marketing surfaces; owner authority outranks benchmark evidence"
+  },
+  {
+   "id": "ep-017",
+   "date": "2026-09-18",
+   "type": "rubric-audit",
+   "source": "full rubric scoring of bid-17 pair",
+   "produced": "communities 95/104=91%, caregiver 91/104=87% pre-fix; AF-6 fail found (teal 3.3-3.7:1 at 13px + logo on dark); fixed: compliant teals #1f6357/#6fc2b4, logo light-well (landing pattern), magnet sections, persona destinations (/partners,/gift), real product image; supply gaps documented: E-2 testimonials, J-2 tagline"
+  },
+  {
+   "id": "ep-018",
+   "date": "2026-09-18",
+   "type": "persona-leak-correction",
+   "source": "owner catch: caregiver page carried communities whitepapers",
+   "produced": "bid-17-caregiver corrected to real caregiver assets (cognitive-engagement 10src, geragogy-for-caregivers 12src) + caregiver burden stat (11+ hrs/wk CAN 2026); PersonaAsset nodes added so each persona has its own proof set — leak was AF-4-adjacent"
+  },
+  {
+   "id": "ep-019",
+   "date": "2026-09-18",
+   "type": "logo-bid",
+   "source": "board concern: light underlay reads cut-and-paste on dark",
+   "produced": "3 enhanced variants generated from actual artwork: A intensified (tonal-preserving, recommended — keeps 2-tone color, mark floats on field), B reverse/knockout (max legibility, flattens color), C medallion (designed container); decision matrix + honest constraint noted: PNG proofs, production needs vector source for ship files"
+  },
+  {
+   "id": "ep-020",
+   "date": "2026-09-19",
+   "type": "intake-filed",
+   "source": "LOGO-DARK-VARIANT-001",
+   "produced": "research memo (21 verified sources: Pulumi naming convention, Stripe/Shopify mode rules, W3C logo-as-control nuance, web.dev adaptive SVG) + intake ticket: vector redraw 1:1, named variant set stacked-color-light/dark + monotone-dark + icon-circle, favicon adaptive SVG, USAGE.md, PNG/PDF fallbacks; open decisions: redraw in-house vs service, hex sign-off, trademark posture"
+  },
+  {
+   "id": "ep-021",
+   "date": "2026-09-19",
+   "type": "execution",
+   "source": "owner: tickets for 3 open decisions; agents+skills for redraw; hexes approved; trademark posture",
+   "produced": "LOGO-REDRAW-001 resolved via vtracer (palette-locked SVGs produced); LOGO-HEX-001 approved canonical dark palette; LOGO-TRADEMARK-001 consistency rules set (same mark, alt color presentations, USPTO color-claim caveat flagged)"
+  },
+  {
+   "id": "ep-022",
+   "date": "2026-09-19",
+   "type": "asset-application",
+   "source": "LOGO-REDRAW-001 output applied",
+   "produced": "bid-17 winning pair now uses traced SVG master (mynaani-logo-stacked-color-dark.svg) in nav+footer — PNG proof retired from mockups; home page keeps original logo+well on photo hero per usage rules"
+  },
+  {
+   "id": "ep-023",
+   "date": "2026-09-19",
+   "type": "second-pass-audit",
+   "source": ".ai/audit/2026-09-19-bid17-second-pass-audit.md",
+   "produced": "all gaps closed: axe-core run (0 violations, dark-section .sk fix), 2nd persona-leak instance found+fixed, dead-end brief links wired to real PDFs, icon variant for min-size rule, SVG match-check IoU 0.73 documented; scores re-verified 96/95 earned"
+  },
+  {
+   "id": "ep-024",
+   "date": "2026-09-19",
+   "type": "capability-add",
+   "source": "agent-vision research → permanent tooling",
+   "produced": "ocular-mcp@0.1.0 wired in .devin/mcp_config.json (needs OCULAR_* env: OpenAI-compatible vision endpoint); logo-design-audit skill assembled: capture(ocular/mcp-screenshot)→audit(axe+pixel)→produce(vtracer)→match-check(YIQ/IoU)→verify→record; Nano Banana reserved for non-mark art; StarVector fallback"
+  },
+  {
+   "id": "ep-025",
+   "date": "2026-09-19",
+   "type": "defect-fix",
+   "source": "LOGO-ICON-001",
+   "produced": "owner screenshot review caught: traced icon read as light disc at 56px (solid face fill reintroduced plate effect). Resolution: alpha-mask binary trace → cream silhouette knockout icon (medallion read, no container). Verified in-context on both bid-17 pages. Note: vtracer palette/binary kwargs segfault — defaults + post-remap is the stable path."
+  },
+  {
+   "id": "ep-026",
+   "date": "2026-09-19",
+   "type": "defect-fix",
+   "source": "LOGO-ICON-002 (owner: going backwards)",
+   "produced": "root cause finally correct: mark is painted portrait — pale face wash + dark strokes. Silhouette medallion still read as blob. Fix: luminance/saturation mask keeps only strokes (11% coverage) → cream line-art icon. Verified at owner width 1024px both pages. Ocular keyed via mcp_config.local.json (Gemini OpenAI-compat, gitignored)"
+  },
+  {
+   "id": "ep-027",
+   "date": "2026-09-19",
+   "type": "process-audit",
+   "source": "self-audit LOGO-ICON-002 vs v9.x",
+   "produced": "honest score ~7/10: verified outcome (IoU 0.773, axe 0) but research-protocol skipped, match-check ran post-resolution, owner sign-off never obtained — status corrected to RESOLVED-PENDING-SIGNOFF; key-rotation recommended"
+  },
+  {
+   "id": "ep-028",
+   "date": "2026-09-19",
+   "type": "redo-strict-process",
+   "source": "owner directive: no v9.x steps skipped",
+   "produced": "LOGO-ICON-002 redone per full protocol: dedicated research memo (21 verified sources incl. Huang 2007 luminance>chromaticity, Apple mask-icon spec, WHATWG monochrome intent, Harrison responsive-logo principle, IJCTE <=48px error band) + compliant intake (scope/files/persona/risks/UC-EC/30-edge matrix) + all verification gates pre-resolution (IoU 0.773, axe 0, palette-locked, 37KB) + status VERIFIED-PENDING-SIGNOFF"
+  },
+  {
+   "id": "ep-029",
+   "date": "2026-09-19",
+   "type": "defect-fix",
+   "source": "LOGO-ICON-003 + owner rule added to AGENTS.md",
+   "produced": "strict-process rule committed to AGENTS.md (v9.x, FAANG/modular-monolith via graph, audit-against-AGENTS, skills-invoked-by-nature); diagnosis: owner saw STALE render (medallion+wordmark) — synced copy/firefox cache predated linework fix; fix: versioned filename mynaani-icon-linework-dark.svg per favicon-cheat-sheet cache-busting; md5-verified sync; axe 0 both; VERIFIED-PENDING-SIGNOFF"
+  },
+  {
+   "id": "ep-030",
+   "date": "2026-09-19",
+   "type": "capability-add",
+   "source": "ad-agency skill codified + ocular-equivalent audit",
+   "produced": ".devin/skills/ad-agency/SKILL.md — full bake-off pipeline codified (problem→evidence capture→rubric-first→bids→scored assessment w/ mandatory second pass→delivery→audit); ocular-equivalent vision audit via direct Gemini call on nav render: independent verdict confirms linework, no badge, legible; session registry gap recorded (skills+MCP load at session start — logo-design-audit + ad-agency + ocular activate on restart)"
+  },
+  {
+   "id": "ep-031",
+   "date": "2026-09-19",
+   "type": "session-handoff",
+   "source": "owner: persist + restart for skill/ocular registration",
+   "produced": ".ai/RESUME.md written — standing rules, restart checklist (skills+MCP activation), verified state, pending items; graph is canonical memory across sessions"
+  },
+  {
+   "id": "ep-032",
+   "date": "2026-09-19",
+   "type": "verification",
+   "source": "LOGO-ICON-003 re-run post-restart — logo-design-audit pipeline",
+   "produced": ".ai/audit/2026-09-19-logo-icon-003-verification.md + captures/ + ocular/ — all gates PASS except owner sign-off: versioned linework icon confirmed rendered on both bid-17 pages (vision audit: not medallion, identical cross-page, cream #EBEBEB on #26292E; icon crops byte-identical; axe 0 violations, 1 incomplete gradient item each). ocular stdio image transport limitation documented; vision audit ran via direct provider call w/ identical prompts+model. Vision 'banding' flag refuted by pixel scan — logged as model false positive."
+  },
+  {
+   "id": "ep-033",
+   "date": "2026-09-19",
+   "type": "skill-invocation-audit",
+   "source": "owner challenge — no skill-invocation evidence; full workflow re-audit per AGENTS.md + process v9.x",
+   "produced": "audit doc addendum (.ai/audit/2026-09-19-logo-icon-003-verification.md) — all pertinent skills invoked in-session: logo-design-audit (Stage-4 match-check executed: capture-vs-master IoU 1.000 @1px offset, medallion discriminant IoU 0.237), ad-agency, senior-living-agency (as governing doc — registry gap; register audit AF-4/7/8 pass), geragogy (marketing-exempt scope verified), site-checker (0 console/page/network errors; app-rooted 404s are static-serve artifact), knowledge-graph-validation (nelson: 2 orphans logged, drift=metadata churn; b2b: ep hygiene pass). Open: formal senior-living-agency invocation + owner Firefox render — next session."
+  },
+  {
+   "id": "ep-034",
+   "date": "2026-09-19",
+   "type": "pre-intake-research",
+   "source": "owner: new intake BID-17-PROD-001 — deep pre-intake investigation, sync vs live app, preserve all 3rd-party integrations",
+   "produced": ".ai/research/2026-09-19-bid17-production-integration-inventory.md — full integration map of /caregiver (C-1..C-10: Retell gift widget, voice line, scroll telemetry, backend footer, Stripe /gift, contact-inquiry, caregiver whitepapers, data-gift-entry, ADR-0030 marker, 7 sources) + /for-communities (F-1..F-12: Retell facility widget, callback+CRM filing, webhook /retell/partner-inquiry, /partners, /c/:slug, founding pricing, facility whitepapers, sources, logo inconsistency). Conflicts K-1..K-7 flagged (dark-theme-vs-geragogy fork = P0 owner decision; palette ADR AF-10; Retell domain-lock; budget). Intake stub 2026-09-19-p1-bid17-production-implementation.md = PRE-INTAKE-RESEARCH; external ≥20-source gather pending."
+  },
+  {
+   "id": "ep-035",
+   "date": "2026-09-19",
+   "type": "verification",
+   "source": "owner: triple-check the integration inventory — missed item = immediate customer impact",
+   "produced": "memo §1 pass-2/3 rows G-1..G-12 — NEW material finds: CompAI CRM global tracker (index.html hostname→campaign map, silent no-op on unmapped hosts), CRM /api/t/e ingest w/ required Origin, Retell webhook HMAC, _redirects 301, Magic Bearer interceptor, ChatWidget 7-mount blast radius, unit+e2e test pins on copy/markers/hrefs, applyLargeTextOnBoot a11y pref, full env matrix, no-CSP caveat, data-gift-entry zero-consumer marker. Intake updated."
+  },
+  {
+   "id": "ep-036",
+   "date": "2026-09-19",
+   "type": "verification",
+   "source": "owner: 4th pass with independent agents — missed integration = immediate customer impact",
+   "produced": "memo pass-4 rows B-1..B-25 — PROBABLE LIVE BUGS: /c/:slug 404s (PartnerPage→/api/v1/org/by-slug, router under /api/v1/billing — P0, verified in code); staging scroll-telemetry dead (relative fetch needs Cloudflare /api/* edge proxy — P1); Resend sole inquiry delivery + EMAIL_OVERRIDE_TO catch-all (P0); Celery worker required or checkout grants nothing (P0); footer on legacy 302 shim sunset 2026-12-01; AuthProvider parity probe can block all marketing routes; honeypot website-field contract; CORS hardcoded allowlist; prod AUTH_PROVIDER=mock; skip-link #main-content missing id (existing a11y bug); StrictMode dedup assumptions; Magic iframe; security-headers middleware; webhook sig off when key unset; SEO/meta/favicon/robots absent; terms.html stale dup w/ support@. Intake updated w/ fix-dont-preserve list + open manual confirms (prod curl, Railway envs, Cloudflare proxy)."
+  },
+  {
+   "id": "ep-037",
+   "date": "2026-09-19",
+   "type": "graph-refresh",
+   "source": "owner: update ontology knowledge graphs + graph memory for BID-17-PROD-001 pre-intake",
+   "produced": "nelson graph 77→109 nodes / 80→118 edges (SRC-BID17-INV+INTAKE; REQ-BID17-001..006; DEC-BID17-{DARK,PALETTE,SCOPE} pending-owner; GAP-BID17-001..006 live bugs incl /c/:slug-404; CAP-INT-* 8 integration capabilities; DEP-RETELL/RESEND/CRM/CLOUDFLARE/REDIS/MAGIC; PER-FACILITY; hash 10b1d5ac). b2b graph: 5 Vendor nodes (retell/compai-crm/stripe/resend/cloudflare) + structured integrations arrays on all 6 surfaces + known_defect on /c/:slug."
+  },
+  {
+   "id": "ep-038",
+   "date": "2026-09-19",
+   "type": "decision-support",
+   "source": "owner: deploy strategy must be blue/green or twin prod — current site too critical to destabilize",
+   "produced": "memo §6 deployment matrix — RECOMMENDED Option A route-level edge canary (twin Pages deployment; Cloudflare rule serves only /caregiver + /for-communities from green; rollback = delete rule in seconds; backend frozen; lead flows hit prod API by design). Option B full twin env rejected (overkill, shared DB anyway). Option C current pipeline fallback (100% exposure). Prerequisites: codify dashboard-only /api/* proxy into reviewable config; preview hostname needs Retell domain-lock + CRM sites map + CORS_ORIGINS. External validation pending per AGENTS.md research protocol."
+  },
+  {
+   "id": "ep-039",
+   "date": "2026-09-19",
+   "type": "decision-support",
+   "source": "owner: deep dive — how Dev + Hermes (Nous Research LLM) impact BID-17-PROD-001",
+   "produced": "memo §7 Dev+Hermes division of labor — Hermes 4 (70B/405B, hybrid reasoning, trained tool-calling, 131K) as independent assessor: research gather (Tool Gateway sweep→Dev triple-verifies), edge-case matrix generation, REQUIRED second-pass rubric scoring (ep-023 anti-self-grading), PR-time diff-vs-45-row-inventory loss hunt, K-1 literature summary, register audit. Dev retains all code/tests/deploy/graph writes; ocular/Gemini keeps vision lane (Hermes text-only). Access: Nous Portal proxy :8645/v1 or OpenRouter — OpenAI-compatible, secrets via env. Guardrails: advisory-only, verified-before-artifact, budget-logged."
+  },
+  {
+   "id": "ep-040",
+   "date": "2026-09-19",
+   "type": "decision-support",
+   "source": "owner: couple Dev+Hermes with TypeSafe's Jev",
+   "produced": "memo §8 three-layer stack — cascade: deterministic code → Jev typed gates (choice/score/noul, 70-500ms, ~$0.0004/decision, calibrated confidence) → Hermes deep review → Dev execute+verify. Jev placements: 45-row integration-loss noul fan-out per PR, 10-AF auto-fail screen, persona-leak choice classifier, rubric pre-screen, research source routing. Policy in code (auto|review|escalate); Jev is triage not verdict (typed ≠ correct). Access: TYPESAFE_API_KEY or jev-mcp stdio in .devin/mcp_config.json."
+  },
+  {
+   "id": "ep-041",
+   "date": "2026-09-19",
+   "type": "scope-change",
+   "source": "owner: on Jev API waitlist — descope TypeSafe layer for now",
+   "produced": "memo §8 marked DESCOPED pending TYPESAFE_API_KEY; Jev design retained as drop-in, fallbacks documented per gate (Hermes/code cover all Jev roles meanwhile — no intake blocker). Two-layer stack active: Dev execute+verify, Hermes independent assessor."
+  },
+  {
+   "id": "ep-042",
+   "date": "2026-09-19",
+   "type": "risk-assessment",
+   "source": "owner: success odds for two-workstream staging-gated approach",
+   "produced": "Split A recommended (WS-1 integration hardening: B-1/B-2/skip-link/api-v1/edge-config → staging → prod; WS-2 redesign on hardened base) over Split B (per-persona pages — shared risk = double exposure). Estimate ~85-90% clean landing WITH Option A canary + manual confirms (prod by-slug curl, Railway envs, Cloudflare proxy); ~60-70% without — staging cannot see fail-quiet env drift, and deploy config lives outside repo. Dominant residual risk = deploy-config drift, not code. Hermes paths recorded: portal.nousresearch.com or openrouter.ai/keys. AMENDMENT (ep-043): owner declined workstream split — risk is shared. Single workstream, phased internally: Phase-1 hardening commits (by-slug caller fix, telemetry API_BASE_URL, skip-link id, /api/v1 norm) ship independently to prod; Phase-2 redesign on hardened base → staging → Option A canary. Estimate unchanged ~85-90% w/ canary+confirms — consolidation removes duplicate exposure; separate commits preserve surgical revert."
+  },
+  {
+   "id": "ep-043",
+   "date": "2026-09-19",
+   "type": "capability-add",
+   "source": "owner provisioned OpenRouter key → Hermes readiness check",
+   "produced": "Hermes lane LIVE: nousresearch/hermes-4-405b verified via OpenRouter (auth ok, $100 credit, ~$0.0008/call, valid-JSON source cards). hermes-4-70b + typesafe-ai/jev absent from account catalog — Jev stays descoped. Caveat: Hermes cannot browse — Dev webfetch-verifies every source card (validated workflow). Key transited chat — rotation recommended post-setup; secrets via upload-secrets for persistence."
+  },
+  {
+   "id": "ep-044",
+   "date": "2026-09-19",
+   "type": "revision",
+   "source": "owner: '100 most likely things to go wrong' — due diligence prior to intake",
+   "produced": "Failure-mode register §9 (100 items, 7 categories) added to bid-17 integration memo. Method: Hermes-4-405B generated 100 candidates ($0.018), Dev deduped + verified against repo; 16 items marked CONFIRMED (already real: /c/:slug 404, dead staged telemetry, shim sunset, CORS allowlist, focus-ring dependency, broken skip-link, axe-incomplete contrast, OFF_TOKEN hexes, footer label inconsistency, terms.html drift, no meta desc). Highest-density quadrant identified → feeds intake mandatory-verification checklist. Seed for top-30 edge-case matrix (R4)."
+  },
+  {
+   "id": "ep-045",
+   "date": "2026-09-19",
+   "type": "capability-add",
+   "source": "owner: first-time-right ontology + graph memory for bid-17 initiative",
+   "produced": "Requirements KG expanded 109→154 nodes / 119→191 edges: EPIC-BID17-PROD + 3 phase stories, 2 marketing journeys, CON-BID17-K1..K7 (verbatim memo conflicts), GAP-BID17-007..015 (CONFIRMED live gaps incl. shim sunset, CORS allowlist, focus-ring dependency, axe-incomplete, Resend single-path), RD-BID17-* canary topology (blue-green/routes/api-frozen/rollback), DEC-BID17-HERMES + JEV-DESCOPED + PHASES, AC-BID17-001..012 mandatory checks, 3 test nodes, EVI-BID17-REGISTER. K-7 graph gap closed (caregiver surface now modeled). Hash fb8ab6d159c5ef96."
+  },
+  {
+   "id": "ep-046",
+   "date": "2026-09-19",
+   "type": "revision",
+   "source": "owner: pre-flight problem-statement tickets + Jev recheck + FAANG readiness reassessment",
+   "produced": "PF-BID17 ticket file created — 8 problem statements gating intake unlock. PF-01..06 CLOSED with artifacts: memo §10 (canary metric set, SLI table, 72h soak + abort triggers, synthetic monitoring plan, perf budget, binary-rollout limitation) + docs/ROLLBACK.md canary-flip procedure + docs/RUNBOOK.md integration-change procedures. PF-07 (Retell capacity) + PF-08 (CSP decision) OPEN — owner-gated. Jev re-probed on OpenRouter key: still absent (447 models) — remains descoped; Hermes lane unchanged. SRC-BID17-PREFLIGHT + 5 edges added to KG."
+  },
+  {
+   "id": "ep-047",
+   "date": "2026-09-19",
+   "type": "approval",
+   "source": "owner message + rendered screenshots + HTML source of bid-17 pair",
+   "produced": "K-1 RESOLVED: dark theme approved both pages (charcoal #26292e/#1d1f22, teal #2e8c7f, gold #c9a24d, paper #f5f3ee, Inter). K-6 RESOLVED: mynaani-icon-linework-dark.svg on both pages (nav 56px, footer 44px — icon<80px rule holds). Owner directed: treat R2-R4 as intake work, proceed approved. K-2 (token ADR), K-3 (widget survival), K-4 (domain lock), K-5 (Retell budget) remain OPEN as implementation constraints."
+  },
+  {
+   "id": "ep-048",
+   "date": "2026-09-19",
+   "type": "research",
+   "source": "R2-R4 executed per owner directive",
+   "produced": "R2: 38 Hermes cards → 24 verified + 1 recovered = 25 sources, buckets satisfied (8 FAANG/5 acad/12 industry). Hermes PMC/arXiv hallucination ~100% — academic recovered via Crossref DOI resolution; discards logged. R3: 4 decision matrices (vehicle=A React rewrite, deploy=A edge canary, tokens=A ADR-extend, K-1 dark mitigations via light body sections). R4: top-30 remediation matrix triple-checked vs codebase + adversarial review (12 findings, 4 adopted). Intake BID-17-PROD-001 → RESEARCH GATE PASSED, awaiting owner approval to implement."
+  },
+  {
+   "id": "ep-049",
+   "date": "2026-09-19",
+   "type": "implementation",
+   "source": "owner approved intake; post-intake actions executed",
+   "produced": "Phase-1 hardening commit d073fc0 (PartnerPage by-slug path, telemetry absolute URL, footer /api/v1, skip-link tabindex, terms.html help@, meta/OG, Retell sig warning, inquiry retry+lead-preservation log). Phase-2 redesign commit 8a4629c + pin-update 43f7133: ADR-0034 dark marketing tokens, both pages rebuilt bid-17, all integrations preserved, tests updated same-commit. Pushed feat/bid17-marketing-pages→staging (236 unit tests green, build+bundle verify green). NOT on main."
+  },
+  {
+   "id": "ep-050",
+   "date": "2026-09-19",
+   "type": "verification",
+   "source": "Deploy Staging workflow",
+   "produced": "Deploy Staging run 35483205873 GREEN end-to-end: preflight, QA (lint/security/unit), UAT (Playwright contract+e2e incl. axe WCAG 2.1 AA on both redesigned pages across chromium/firefox/webkit/mobile-pixel/mobile-iphone), CF Pages deploy, Railway backend deploy, sync verify, post-deploy smoke — all success. Two UAT rounds caught and fixed: AA contrast on muted paper text (new tokens mutedOnPaper/faintOnPaper), scrollable-region-focusable on pricing table, spec strict-mode pins."
+  },
+  {
+   "id": "ep-051",
+   "date": "2026-09-20",
+   "type": "compliance",
+   "source": "owner self-audit request",
+   "produced": "Self-audit of PS-BID17-001–004 pushes found two process gaps: skills not invoked (geragogy/senior-living-agency/journey-loop-guard) and no research artifact for the intakes. Retroactive audits run clean (geragogy: fixed uppercase label on SourcesPage; journey-loop: Footer mounts marketing-only, no loop surface; SLA: copy unchanged, evidence trail intact). Memo .ai/research/2026-09-20-bid17-defect-tickets.md written; AGENTS.md gained a defect-ticket fast-path section codifying intake+skills+memo+tests+graph gates for P0s."
+  },
+  {
+   "id": "ep-052",
+   "date": "2026-09-20",
+   "type": "verification",
+   "source": "staging integration check + owner defect batch 2",
+   "produced": "Triple-layer integration check on staging: Retell (widget/IDs/webhook-sig 401), CRM tracker (staging site id live), Stripe (mock by design, webhook validates), Resend (honeypot fail-quiet + probe sent), telemetry (recorded), edge proxy, footer API — all green. Celery/Redis resolved via Railway CLI (worker Online, redis bound). Gaps filed: PS-006 resend inbox, PS-008 retell live answer, PS-009 stripe live. Defect batch 2 (PS-010 footer gutters, PS-011 hero gift link, PS-012 RCT row wrap) implemented with intakes-first, annex-governance checked before audit."
+  }
+ ],
+ "invalidated": [
+  {
+   "id": "inv-pill-nav",
+   "direction": "'On this page' pill-row anchor menu",
+   "invalidated_by": "ep-003",
+   "valid_until": "2026-09-18",
+   "reason": "read as competing CTA row; 15px below contract min",
+   "never_repropose": true
+  },
+  {
+   "id": "inv-textlink-nav",
+   "direction": "'On this page' inline text-link menu",
+   "invalidated_by": "ep-003",
+   "valid_until": "2026-09-18",
+   "reason": "owner rejected the entire in-page-nav direction, not just the styling",
+   "never_repropose": true
+  },
+  {
+   "id": "inv-bolted-nav",
+   "direction": "any bolted-on wayfinding aid to fix page length",
+   "invalidated_by": "ep-003",
+   "valid_until": "2026-09-18",
+   "reason": "owner wants the page redesigned, not patched",
+   "never_repropose": true
+  }
+ ],
+ "personas": [
+  {
+   "id": "owner-operator",
+   "tribe": "Argentum/ASHA/NIC",
+   "register": [
+    "occupancy",
+    "NOI",
+    "LOS",
+    "labor",
+    "differentiation",
+    "portfolio"
+   ],
+   "proof": "metrics + named peers"
+  },
+  {
+   "id": "executive-director-nonprofit",
+   "tribe": "LeadingAge",
+   "register": [
+    "resident dignity",
+    "staff leverage",
+    "quality signal",
+    "board defensibility"
+   ],
+   "proof": "evidence base + implementation ease + mission fit"
+  }
+ ],
+ "surfaces": [
+  {
+   "route": "/for-communities",
+   "component": "ForCommunitiesPage",
+   "goal": "founding-partner inquiry",
+   "integrations": [
+    "retell-chat:facility",
+    "retell-voice-callback-crm",
+    "retell-webhook:partner-inquiry",
+    "telemetry:for-communities",
+    "footer-api",
+    "partner-inquiry:/partners",
+    "org-doorway:/c/:slug(LIVE-BUG-404)",
+    "whitepapers:facility-set",
+    "pricing:founding",
+    "exemption:marketing.b2b"
+   ]
+  },
+  {
+   "route": "/partners",
+   "component": "PartnershipInquiryPage",
+   "goal": "inquiry form / call",
+   "integrations": [
+    "partner-inquiry→resend",
+    "retell-chat:facility"
+   ]
+  },
+  {
+   "route": "/c/:slug",
+   "component": "PartnerPage",
+   "goal": "org onboarding",
+   "integrations": [
+    "org/by-slug API(LIVE-BUG: real path /api/v1/billing/org/by-slug)",
+    "retell-chat:facility",
+    "support-contact"
+   ],
+   "known_defect": "404s today — frontend calls /api/v1/org/by-slug, router mounts under /api/v1/billing (GAP-BID17-001)"
+  },
+  {
+   "route": "/caregiver",
+   "component": "CaregiverPage",
+   "goal": "gift-journey entry",
+   "integrations": [
+    "retell-chat:gift",
+    "retell-voice:+18774094144",
+    "telemetry:caregiver",
+    "footer-api",
+    "stripe-checkout:/gift",
+    "contact-inquiry",
+    "whitepapers:caregiver-set",
+    "data-gift-entry",
+    "exemption:marketing.caregiver"
+   ]
+  },
+  {
+   "route": "/gift",
+   "component": "GiftCheckoutPage",
+   "goal": "Stripe guest gift checkout",
+   "integrations": [
+    "stripe-checkout",
+    "retell-chat:gift",
+    "support-contact"
+   ]
+  },
+  {
+   "route": "/contact",
+   "component": "ContactPage",
+   "goal": "contact-inquiry POST",
+   "integrations": [
+    "contact-inquiry→resend"
+   ]
+  }
+ ],
+ "nodes": {
+  "Publication": [
+   {
+    "id": "pub-shn",
+    "name": "Senior Housing News",
+    "org": "Aging Media",
+    "url": "seniorhousingnews.com",
+    "teaches": "executive vocabulary, daily anxieties (occupancy, workforce, supply-demand)"
+   },
+   {
+    "id": "pub-mcknights-sl",
+    "name": "McKnight's Senior Living",
+    "url": "mcknightsseniorliving.com",
+    "teaches": "owner/operator community-level ops"
+   },
+   {
+    "id": "pub-mcknights-ltc",
+    "name": "McKnight's Long-Term Care News",
+    "url": "mcknights.com",
+    "teaches": "skilled nursing register"
+   },
+   {
+    "id": "pub-sle",
+    "name": "Senior Living Executive",
+    "org": "Argentum",
+    "url": "argentum.org/argentummedia",
+    "teaches": "leadership self-image of the buyer"
+   },
+   {
+    "id": "pub-ahead",
+    "name": "Argentum AHEAD",
+    "org": "Argentum",
+    "url": "argentum.org/argentummedia/ahead",
+    "teaches": "executive-summary format"
+   },
+   {
+    "id": "pub-provider",
+    "name": "Provider Magazine",
+    "org": "AHCA/NCAL",
+    "url": "providermagazine.com",
+    "teaches": "advocacy + quality framing"
+   },
+   {
+    "id": "pub-shb",
+    "name": "Seniors Housing Business",
+    "org": "France Media",
+    "url": "seniorshousingbusiness.com",
+    "teaches": "investment/transactions register"
+   },
+   {
+    "id": "pub-snn",
+    "name": "Skilled Nursing News",
+    "org": "Aging Media",
+    "url": "skillednursingnews.com",
+    "teaches": "SNF segment"
+   },
+   {
+    "id": "pub-hhcn",
+    "name": "Home Health Care News",
+    "org": "Aging Media",
+    "url": "homehealthcarenews.com",
+    "teaches": "home-care adjacency"
+   },
+   {
+    "id": "pub-foresight",
+    "name": "Senior Living Foresight",
+    "author": "Steve Moran",
+    "url": "seniorlivingforesight.net",
+    "teaches": "unfiltered operator voice; what the industry mocks and praises"
+   },
+   {
+    "id": "pub-iasc",
+    "name": "iAdvance Senior Care",
+    "url": "iadvanceseniorcare.com",
+    "teaches": "AL operations"
+   },
+   {
+    "id": "pub-shj",
+    "name": "Senior Housing Journal",
+    "url": "seniorhousingjournal.com",
+    "teaches": "aggregated market intelligence"
+   },
+   {
+    "id": "pub-generations",
+    "name": "Generations",
+    "org": "American Society on Aging",
+    "url": "generations.asaging.org",
+    "teaches": "academic-practitioner legitimacy register"
+   },
+   {
+    "id": "pub-mck-hcd",
+    "name": "McKnight's Home Care Daily",
+    "url": "mcknightshomecare.com",
+    "teaches": "home care segment"
+   },
+   {
+    "id": "pub-consumer-pair",
+    "name": "The Senior List + AgingCare",
+    "url": "theseniorlist.com, agingcare.com",
+    "teaches": "how the adult child is being talked to"
+   },
+   {
+    "id": "pub-bisnow",
+    "name": "Bisnow senior housing",
+    "url": "bisnow.com",
+    "teaches": "CRE/development-cycle language"
+   },
+   {
+    "id": "pub-globest",
+    "name": "GlobeSt Seniors Housing",
+    "url": "globest.com",
+    "teaches": "cap rates, transactions"
+   },
+   {
+    "id": "pub-cre-pair",
+    "name": "Connect CRE + Commercial Observer seniors housing",
+    "url": "connectcre.com, commercialobserver.com",
+    "teaches": "deals & development framing"
+   },
+   {
+    "id": "pub-nareit",
+    "name": "Nareit / REIT.com seniors housing",
+    "url": "reit.com",
+    "teaches": "how the sector is pitched to capital"
+   },
+   {
+    "id": "pub-beckers",
+    "name": "Becker's senior living coverage",
+    "url": "beckershospitalreview.com",
+    "teaches": "hospital-executive register for larger portfolios"
+   }
+  ],
+  "Association": [
+   {
+    "id": "assoc-argentum",
+    "name": "Argentum",
+    "url": "argentum.org",
+    "role": "for-profit owner/operator flagship",
+    "data_assets": [
+     "Largest Providers Report",
+     "AHEAD",
+     "workforce reports"
+    ]
+   },
+   {
+    "id": "assoc-asha",
+    "name": "American Seniors Housing Association",
+    "url": "ashaliving.org",
+    "role": "C-suite membership; ASHA 50; State of Seniors Housing research"
+   },
+   {
+    "id": "assoc-nic",
+    "name": "National Investment Center (NIC)",
+    "url": "nic.org",
+    "role": "industry scorekeeper",
+    "data_assets": [
+     "NIC MAPS occupancy data",
+     "State of Seniors Housing"
+    ]
+   },
+   {
+    "id": "assoc-leadingage",
+    "name": "LeadingAge",
+    "url": "leadingage.org",
+    "role": "nonprofit aging services; 5,300+ members, 38 state partners"
+   },
+   {
+    "id": "assoc-ahca-ncal",
+    "name": "AHCA / NCAL",
+    "url": "ahcancal.org",
+    "role": "SNF + AL advocacy; 50 state affiliates"
+   },
+   {
+    "id": "assoc-icaa",
+    "name": "International Council on Active Aging",
+    "url": "icaa.cc",
+    "role": "wellness/active-aging validation channel"
+   },
+   {
+    "id": "assoc-pioneer",
+    "name": "Pioneer Network",
+    "url": "pioneernetwork.net",
+    "role": "person-centered culture-change language"
+   },
+   {
+    "id": "assoc-gan",
+    "name": "Global Ageing Network",
+    "url": "globalageing.org",
+    "role": "international legitimacy"
+   },
+   {
+    "id": "assoc-asa",
+    "name": "American Society on Aging",
+    "url": "asaging.org",
+    "role": "professional education credibility"
+   },
+   {
+    "id": "assoc-uli",
+    "name": "ULI Senior Housing Council",
+    "url": "uli.org",
+    "role": "development/institutional real-estate voice"
+   },
+   {
+    "id": "assoc-argentum-states",
+    "name": "Argentum state partners",
+    "url": "argentum.org (state partner directory)",
+    "members": [
+     "CALA",
+     "FSLA",
+     "GSLA",
+     "Mass-ALA",
+     "KSLA",
+     "LALA",
+     "INALA",
+     "IALA",
+     "AZ ALFA",
+     "TALA",
+     "OLA",
+     "NYS ALFA",
+     "PALA",
+     "WALA"
+    ],
+    "verify_before_outreach": true
+   },
+   {
+    "id": "assoc-leadingage-states",
+    "name": "LeadingAge state partners",
+    "url": "leadingage.org/state-partners",
+    "members": [
+     "California",
+     "Illinois",
+     "Colorado",
+     "New York",
+     "Texas",
+     "Florida"
+    ],
+    "verify_before_outreach": true
+   }
+  ],
+  "TradeShow": [
+   {
+    "id": "evt-slec",
+    "name": "Senior Living Executive Conference (SLEC)",
+    "org": "Argentum / HMP Global",
+    "when": "May 2026, Nashville",
+    "url": "hmpglobalevents.com/slec",
+    "audience": "CEO/COO/CFO/ED, operators, owners"
+   },
+   {
+    "id": "evt-smash",
+    "name": "SMASH Senior Care Marketing & Sales Summit",
+    "org": "HMP Global",
+    "when": "Oct 2026, Las Vegas",
+    "url": "hmpglobalevents.com/smash",
+    "audience": "C-suite sales/marketing; occupancy+revenue register"
+   },
+   {
+    "id": "evt-nic-spring",
+    "name": "NIC Spring Conference",
+    "when": "Mar–Apr 2026, Nashville",
+    "url": "nic.org/events",
+    "audience": "investors, lenders, operators"
+   },
+   {
+    "id": "evt-nic-fall",
+    "name": "NIC Fall Conference",
+    "when": "Oct 2026, Chicago",
+    "url": "nic.org/events",
+    "audience": "same, larger"
+   },
+   {
+    "id": "evt-sl100",
+    "name": "Senior Living 100",
+    "when": "Mar 2026, Coronado CA",
+    "url": "seniorliving100.com",
+    "audience": "top-100 operator executives"
+   },
+   {
+    "id": "evt-leadingage-am",
+    "name": "LeadingAge Annual Meeting + E2 Expo",
+    "when": "Oct 2026, Philadelphia",
+    "url": "annualmeeting.leadingage.org",
+    "audience": "6,000+ nonprofit executives"
+   },
+   {
+    "id": "evt-leadingage-ls",
+    "name": "LeadingAge Leadership Summit",
+    "when": "Apr 2026, Washington DC",
+    "url": "leadingage.org",
+    "audience": "C-suite only"
+   },
+   {
+    "id": "evt-ahcancal",
+    "name": "AHCA/NCAL Convention & Expo",
+    "url": "ahcancal.org/events",
+    "audience": "SNF + AL operators"
+   },
+   {
+    "id": "evt-asha",
+    "name": "ASHA annual meeting",
+    "url": "ashaliving.org",
+    "audience": "largest-50 exec set"
+   },
+   {
+    "id": "evt-interface",
+    "name": "InterFace Seniors Housing conferences",
+    "org": "France Media",
+    "url": "francemediainc.com",
+    "audience": "regional deal-making (SE, West, Midwest, NE)"
+   },
+   {
+    "id": "evt-cala",
+    "name": "CALA Elevate",
+    "url": "caassistedliving.org",
+    "audience": "largest state market"
+   },
+   {
+    "id": "evt-state-shows",
+    "name": "FSLA / TALA / Mass-ALA annual conferences",
+    "url": "floridaseniorliving.org, talaa.org, mass-ala.org",
+    "audience": "state-level operator density"
+   },
+   {
+    "id": "evt-btg",
+    "name": "Bridge the Gap",
+    "org": "Senior Living Foresight",
+    "url": "btgvoice.com",
+    "audience": "practitioner culture"
+   },
+   {
+    "id": "evt-ppi",
+    "name": "Argentum Public Policy Institute",
+    "url": "argentum.org",
+    "audience": "advocacy register; regulatory fears"
+   },
+   {
+    "id": "evt-nic-regional",
+    "name": "NIC regional conferences",
+    "url": "nic.org",
+    "audience": "local investor-operator mix"
+   }
+  ],
+  "Agency": [
+   {
+    "id": "ag-sageage",
+    "name": "SageAge",
+    "url": "sageage.com",
+    "note": "40yrs senior-living-only; 3,000+ clients; benchmark tier",
+    "tier": "top-3"
+   },
+   {
+    "id": "ag-markentum",
+    "name": "Markentum",
+    "url": "growmarkentum.com",
+    "note": "momentum-framed digital; operator-focused"
+   },
+   {
+    "id": "ag-varsity",
+    "name": "Varsity Branding",
+    "url": "varsitybranding.com",
+    "note": "mature-market research (Project Looking Glass); benchmark tier",
+    "tier": "top-3"
+   },
+   {
+    "id": "ag-cc",
+    "name": "Craft & Communicate",
+    "url": "craftandcommunicate.com",
+    "note": "lead-gen since 2016; PR+web; benchmark tier",
+    "tier": "top-3"
+   },
+   {
+    "id": "ag-bigbuzz",
+    "name": "Big Buzz",
+    "url": "bigbuzzinc.com",
+    "note": "marketing systems for multi-site operators since 2007"
+   },
+   {
+    "id": "ag-attane",
+    "name": "Attane (ex-GlynnDevins)",
+    "url": "attaneresults.com",
+    "note": "legacy direct-marketing DNA; data-driven"
+   },
+   {
+    "id": "ag-creating-results",
+    "name": "Creating Results",
+    "url": "creatingresults.com",
+    "note": "CCRC/life plan focus"
+   },
+   {
+    "id": "ag-angell",
+    "name": "Angell Marketing",
+    "url": "angellmarketing.com",
+    "note": "community launches"
+   },
+   {
+    "id": "ag-dreamscape",
+    "name": "Dreamscape Marketing",
+    "url": "dreamscapemarketing.com",
+    "note": "senior living + healthcare digital"
+   },
+   {
+    "id": "ag-ssmg",
+    "name": "Senior Source Media Group",
+    "url": "seniorsourcemediagroup.com",
+    "note": "media buying/print heritage"
+   },
+   {
+    "id": "ag-loveco",
+    "name": "Love & Company",
+    "url": "loveandcompany.com",
+    "note": "retirement community branding + research"
+   },
+   {
+    "id": "ag-sba",
+    "name": "SB&A Advertising",
+    "url": "sba-advertising.com",
+    "note": "senior living creative"
+   },
+   {
+    "id": "ag-woodruff",
+    "name": "Woodruff",
+    "url": "woodruffw.com",
+    "note": "Kansas City; senior living + health"
+   },
+   {
+    "id": "ag-illuminage",
+    "name": "IlluminAge",
+    "url": "illuminage.com",
+    "note": "senior living web specialist"
+   },
+   {
+    "id": "ag-hmp",
+    "name": "HMP Global events creative",
+    "url": "hmpglobalevents.com",
+    "note": "the expo vernacular itself (SLEC/SMASH collateral)"
+   }
+  ],
+  "Vendor": [
+   {
+    "id": "v-aline",
+    "name": "Aline",
+    "url": "alineops.com",
+    "category": "sales/marketing suite + AI contact center",
+    "design_lesson": "AI-register integration story"
+   },
+   {
+    "id": "v-welcomehome",
+    "name": "WelcomeHome",
+    "url": "welcomehomesoftware.com",
+    "category": "senior living CRM",
+    "design_lesson": "purpose-built positioning ('generic CRMs weren't made for senior living')"
+   },
+   {
+    "id": "v-eldermark",
+    "name": "Eldermark",
+    "url": "eldermark.com",
+    "category": "EHR + CRM platform",
+    "design_lesson": "connected-platform story"
+   },
+   {
+    "id": "v-safelyyou",
+    "name": "SafelyYou",
+    "url": "safely-you.com",
+    "category": "AI fall detection",
+    "design_lesson": "metric-dense proof register: 99.25% accuracy, -45% falls, +6mo LOS, 3 peer-reviewed studies",
+    "proof_tier": "gold-standard"
+   },
+   {
+    "id": "v-august",
+    "name": "August Health",
+    "url": "augusthealth.com",
+    "category": "modern EHR",
+    "design_lesson": "operator logos above fold (Sonida, Bickford, Koelsch, Westmont)",
+    "proof_tier": "gold-standard"
+   },
+   {
+    "id": "v-yardi",
+    "name": "Yardi Senior Living",
+    "url": "yardi.com/seniorliving",
+    "category": "enterprise incumbent",
+    "design_lesson": "conservative institutional register"
+   },
+   {
+    "id": "v-pcc",
+    "name": "PointClickCare",
+    "url": "pointclickcare.com",
+    "category": "EHR incumbent",
+    "design_lesson": "institutional tone"
+   },
+   {
+    "id": "v-matrixcare",
+    "name": "MatrixCare",
+    "url": "matrixcare.com",
+    "category": "EHR incumbent",
+    "design_lesson": "institutional tone"
+   },
+   {
+    "id": "v-alis",
+    "name": "ALIS (Medtelligent)",
+    "url": "alissoftware.com",
+    "category": "AL-focused software",
+    "design_lesson": "community-level ops"
+   },
+   {
+    "id": "v-icon",
+    "name": "Icon (ex-Touchtown)",
+    "url": "iconculture.com",
+    "category": "resident engagement/comms",
+    "design_lesson": "closest competitor-adjacent benchmark"
+   },
+   {
+    "id": "v-onshift",
+    "name": "OnShift",
+    "url": "onshift.com",
+    "category": "workforce management",
+    "design_lesson": "labor-cost ROI framing"
+   },
+   {
+    "id": "v-smartlinx",
+    "name": "Smartlinx",
+    "url": "smartlinx.com",
+    "category": "workforce scheduling",
+    "design_lesson": "labor-cost ROI framing"
+   },
+   {
+    "id": "v-accushield",
+    "name": "Accushield",
+    "url": "accushield.com",
+    "category": "visitor/kiosk hardware",
+    "design_lesson": "community-level ops"
+   },
+   {
+    "id": "v-carefeed",
+    "name": "Carefeed",
+    "url": "carefeed.com",
+    "category": "resident/family comms",
+    "design_lesson": "family-experience register"
+   },
+   {
+    "id": "v-k4connect",
+    "name": "K4Connect",
+    "url": "k4connect.com",
+    "category": "resident tech platform",
+    "design_lesson": "engagement-platform framing"
+   },
+   {
+    "id": "v-tsolife",
+    "name": "TSOLife",
+    "url": "tsolife.com",
+    "category": "resident story capture",
+    "design_lesson": "legacy/emotional-differentiator register"
+   },
+   {
+    "id": "v-rendever",
+    "name": "Rendever",
+    "url": "rendever.com",
+    "category": "VR resident engagement",
+    "design_lesson": "novelty-to-outcome framing"
+   },
+   {
+    "id": "v-amba",
+    "name": "Amba",
+    "url": "amba.io",
+    "category": "passive sleep/wellness sensors",
+    "design_lesson": "passive-tech dignity register"
+   },
+   {
+    "id": "v-rtms",
+    "name": "Real Time Medical Systems",
+    "url": "rtms.com",
+    "category": "post-acute analytics",
+    "design_lesson": "readmission-ROI framing"
+   },
+   {
+    "id": "v-roobrik",
+    "name": "Roobrik (Aline Discover)",
+    "url": "alineops.com",
+    "category": "family decision-support assessments",
+    "design_lesson": "decision-support framing"
+   },
+   {
+    "id": "vnd-retell",
+    "name": "Retell AI",
+    "role": "chat widget (gift/facility agents, KB-partitioned ADR-0032) + toll-free voice + callback agent; domain-locked key; ~50 interactions/mo"
+   },
+   {
+    "id": "vnd-compai-crm",
+    "name": "CompAI CRM",
+    "role": "global crm.js tracker (hostname→campaign cmp_ef8f277f/cmp_4e2759d6) + /api/t/e ingest (Origin required) + /api/retell/webhook"
+   },
+   {
+    "id": "vnd-stripe",
+    "name": "Stripe",
+    "role": "hosted checkout /gift + webhooks via Celery; $39 self / $59 gift"
+   },
+   {
+    "id": "vnd-resend",
+    "name": "Resend",
+    "role": "sole email delivery for inquiries (no DB/CRM fallback); EMAIL_OVERRIDE_TO risk"
+   },
+   {
+    "id": "vnd-cloudflare",
+    "name": "Cloudflare",
+    "role": "Pages host + /api/* edge proxy to Railway"
+   }
+  ],
+  "AgencyWork": [
+   {
+    "id": "aw-sageage-roster",
+    "agency": "ag-sageage",
+    "type": "client_roster",
+    "published": "sageage.com/case-studies (pages 1-2)",
+    "work": [
+     "Rolling Green Village",
+     "SantaFe Senior Living",
+     "Ovation at Riverwalk (SageLife)",
+     "Bridges by EPOCH",
+     "Vantage Point",
+     "Jewish HomeLife",
+     "Hidden Springs (MadisonMarquette/12 Oaks)",
+     "amavida (Quadrum Global)",
+     "Pacifica Hollywood Hills",
+     "Diakon",
+     "Sherpa",
+     "Bluegrass Senior Living (Kentucky Farm Bureau)",
+     "Canterbury Woods",
+     "Ohio Masonic"
+    ],
+    "note": "14 named communities across developers, operators, nonprofits"
+   },
+   {
+    "id": "aw-sageage-format",
+    "agency": "ag-sageage",
+    "type": "case_format",
+    "published": "sageage.com/case-studies",
+    "pattern": "client name + one-line context (developer/operator/market) + scope of services; tagline 'Our Work Works — Generating Leads. Boosting Sales. Increasing Occupancy.'"
+   },
+   {
+    "id": "aw-sageage-amavida",
+    "agency": "ag-sageage",
+    "type": "case_study",
+    "published": "sageage.com/project/amavida",
+    "client": "amavida senior living, Fort Myers FL (developer Quadrum Global)",
+    "angle": "challenges commonly held beliefs about aging — 'youthful spirit seniors feel but aren't honored for'; website + collateral + integrated lead-gen"
+   },
+   {
+    "id": "aw-varsity-titles",
+    "agency": "ag-varsity",
+    "type": "case_titles",
+    "published": "varsitybranding.com/work",
+    "work": [
+     {
+      "category": "Occupancy",
+      "title": "A New Brand for a New Generation"
+     },
+     {
+      "category": "Campus Expansion",
+      "title": "Leveraging a New Build to Fill Existing Residences"
+     },
+     {
+      "category": "Public Relations",
+      "title": "88,993,600 Potential Impressions in 30 Months"
+     },
+     {
+      "category": "Brand Relaunch",
+      "title": "Evolving a strategic platform to reflect growth and change"
+     },
+     {
+      "category": "Alignment",
+      "title": "Merging two organizations into one powerful brand"
+     },
+     {
+      "category": "Sales Consulting",
+      "title": "75% pre-sold in four months"
+     },
+     {
+      "category": "Event Marketing",
+      "title": "The best sales tool: Your campus"
+     },
+     {
+      "category": "Sales Training",
+      "title": "Nearly 100% occupancy in 6 months"
+     },
+     {
+      "category": "Integrated Marketing",
+      "title": "Meeting a one-year sales goal in 6 months"
+     },
+     {
+      "category": "Multi-Site Synergy",
+      "title": "More than a tagline — an exceptional group of communities"
+     },
+     {
+      "category": "Rebranding a Nonprofit",
+      "title": "Giving seniors a VOICE"
+     },
+     {
+      "category": "B2B Rebranding",
+      "title": "Passion meets experience"
+     },
+     {
+      "category": "Priority Program",
+      "title": "98% pre-sales before groundbreaking"
+     },
+     {
+      "category": "Expansion Strategies",
+      "title": "Groundbreaking solutions for breaking ground"
+     }
+    ],
+    "note": "the industry's case-title grammar: category label + outcome statement, ultra-specific numbers as titles"
+   },
+   {
+    "id": "aw-varsity-voice",
+    "agency": "ag-varsity",
+    "type": "positioning",
+    "published": "varsitybranding.com",
+    "work": [
+     "'Work that is Focused, not Fragmented'",
+     "'retirement not as an end, but as a beginning'",
+     "Creative Director quote: 'we're not trying to impose an image onto a community; we're helping to communicate what it already is'",
+     "part of Pavone Group"
+    ],
+    "note": "anti-ageist reframe is their actual published brand position — bake-off inference confirmed"
+   },
+   {
+    "id": "aw-cc-positioning",
+    "agency": "ag-cc",
+    "type": "positioning",
+    "published": "craftandcommunicate.com",
+    "work": [
+     "'Lead Generation Experts for Senior Living Communities' — category named in hero",
+     "'Senior living marketing is 100% of what we do' — niche purity as credibility",
+     "'Schedule a Meeting' CTA (meeting verb, never 'demo')",
+     "one-time branding vs monthly-services-with-real-time-reporting split"
+    ],
+    "note": "their own site is the cleanest execution of the audit grammar among agencies"
+   },
+   {
+    "id": "aw-cc-metrics",
+    "agency": "ag-cc",
+    "type": "published_results",
+    "published": "craftandcommunicate.com",
+    "work": [
+     "21% YoY website traffic growth for senior living clients",
+     "22% lead conversion increase",
+     "95% of a 44-community operator's homepages rank Google page 1",
+     "500+ media placements in 2024",
+     "250+ senior living communities represented",
+     "AI-driven tools save teams 'hours per week'"
+    ],
+    "note": "agencies sell themselves with the same quantified proof they sell to clients"
+   },
+   {
+    "id": "aw-cc-testimonials",
+    "agency": "ag-cc",
+    "type": "named_testimonials",
+    "published": "craftandcommunicate.com",
+    "work": [
+     "Austin John, Novellus Living",
+     "Carri H., JCI Senior Housing",
+     "Chris Beckstrand, Avail Senior Living",
+     "Eric Meyer, 55 Resort Management Corp — 'led our communities to 100% occupancy'"
+    ],
+    "note": "name + company on every quote; partner logos: Encore, TALA, Sage Oak, Edition, Ridgeland Place"
+   },
+   {
+    "id": "aw-bigbuzz-cases",
+    "agency": "ag-bigbuzz",
+    "type": "case_studies",
+    "published": "bigbuzzinc.com/results",
+    "work": [
+     {
+      "client": "Sinceri Senior Living",
+      "title": "How Big Buzz Renamed and Rebranded a 60-Location Senior Living Operator"
+     },
+     {
+      "client": "Crista Senior Living",
+      "title": "Aligned Internal Marketing and Sales Teams on Messaging and Relationship-Based Selling to Increase New Lead Move-ins to 171%"
+     },
+     {
+      "client": "The Arbor Company",
+      "title": "Applied Programmatic Survey Data to Marketing Planning to Attract Warmer Leads Seeking Independent Living"
+     },
+     {
+      "client": "Inland Christian Home",
+      "title": "Comprehensive Marketing Initiatives Lead to Exceeded Census Goals and Campus Expansion"
+     },
+     {
+      "client": "AVL Growth Partners",
+      "title": "Increasing Sales Qualified Opportunities by an Average of 44%"
+     }
+    ],
+    "note": "'How Big Buzz [verb]ed [Client] to [outcome]' formula — outcome-in-title like Varsity but longer-form"
+   },
+   {
+    "id": "aw-bigbuzz-testimonials",
+    "agency": "ag-bigbuzz",
+    "type": "named_testimonials",
+    "published": "bigbuzzinc.com/results",
+    "work": [
+     "Missy Day, VP Marketing & Communications, Sinceri Senior Living",
+     "Lisa Detweiler, VP Sales & Marketing, Senior Services of America",
+     "David Stienstra, Inland Christian Home"
+    ],
+    "note": "VP-level titles with full company names — the title IS the credibility"
+   },
+   {
+    "id": "aw-bigbuzz-magnet",
+    "agency": "ag-bigbuzz",
+    "type": "lead_magnet",
+    "published": "bigbuzzinc.com",
+    "work": [
+     "'Get free custom tips on increasing warm leads and move-ins now'",
+     "'Schedule a complimentary strategy session and get a free initial nurture marketing plan'",
+     "Fractional CMO services positioning"
+    ],
+    "note": "the free-plan magnet: give away the strategy artifact to earn the meeting"
+   },
+   {
+    "id": "aw-sageage-rgv",
+    "agency": "ag-sageage",
+    "type": "case_anatomy",
+    "published": "sageage.com/project/rolling-green-village",
+    "client": "Rolling Green Village, Greenville SC — full continuum, 30+ yr community",
+    "anatomy": "all-caps service descriptor ('INTEGRATED CAMPAIGN FOR BRAND AWARENESS AND CONVERSION') → 'How We Created Readiness at Rolling Green Village' → Community Profile sidebar (location, care continuum, age) → Challenge stated as the BUYER'S OWN OBJECTION ('Seniors won't leave a home they've loved 30+ years for a 30-year-old community' — 'I'm not ready yet') → Solution reframes the objection → THREE big-number results with real denominators: 93% (28 of 30 sales mid-year), 163% (inquiry to goal), 39% (re-inquiries beat 30% benchmark)",
+    "note": "the complete case anatomy: objection-in-buyer's-voice is the signature move"
+   },
+   {
+    "id": "aw-cc-portfolio",
+    "agency": "ag-cc",
+    "type": "portfolio_structure",
+    "published": "craftandcommunicate.com/portfolio",
+    "work": [
+     "deliverable-organized portfolio: websites, 3D floor plans, print, PR, digital, advertising (billboards/TV/radio), logos",
+     "buyer-behavior insight published: 'the floor plans page is the most important page' to senior prospects",
+     "site quality bar stated: 'senior-friendly, accessible, mobile-friendly, updated monthly if not weekly'",
+     "7-day crisis communications coverage"
+    ],
+    "note": "portfolio proves range without a single fake screenshot — deliverable categories carry it"
+   },
+   {
+    "id": "aw-cc-trust-layer",
+    "agency": "ag-cc",
+    "type": "trust_signals",
+    "published": "craftandcommunicate.com",
+    "work": [
+     "'Helping Senior Living Operators Find Qualified Leads Since 2016' longevity claim in footer",
+     "USPTO-trademarked name and logo mark",
+     "published AI Disclosure page",
+     "accessibility toolbar running on their own site",
+     "case studies as downloadable PDFs ('How C&C Increases Digital Lead Generation', 'PR Success with an Omnichannel Strategy')"
+    ],
+    "note": "the trust layer: longevity + trademark + AI transparency + self-applied accessibility"
+   },
+   {
+    "id": "aw-markentum-results",
+    "agency": "ag-markentum",
+    "type": "published_results",
+    "published": "growmarkentum.com/our-work + /case-studies",
+    "work": [
+     {
+      "client": "Brightwater",
+      "metrics": "300% increase high-quality leads; 96% portfolio occupancy increase"
+     },
+     {
+      "client": "The Grove on Forest Lane",
+      "metrics": "437 increase in leads; 51 move-ins"
+     },
+     {
+      "client": "Harbor Retirement Associates (38 HarborChase communities)",
+      "metrics": "33% CTR increase, 15% CPC decrease, 60% more qualified leads, 77% budget increase managed"
+     },
+     {
+      "client": "Franciscan Ministries",
+      "metrics": "37% blog views increase; 31% organic traffic"
+     },
+     {
+      "client": "Uplands Village",
+      "metrics": "22% organic traffic increase"
+     },
+     {
+      "client": "Live Oak Village",
+      "metrics": "150K impressions; 8 online conversions"
+     },
+     {
+      "client": "own methodology",
+      "metrics": "51% avg lead increase on new websites; 173% best quarterly; 75% avg improvement from updates"
+     }
+    ],
+    "note": "MOVE-INS is the reported unit, not clicks — '51 move-ins', '37 move-ins' is the bottom line"
+   },
+   {
+    "id": "aw-markentum-voice",
+    "agency": "ag-markentum",
+    "type": "positioning",
+    "published": "growmarkentum.com",
+    "work": [
+     "'Engines Create Momentum. Momentum Creates Results.' — chain-of-causation tagline",
+     "'since our launch in 2015' longevity",
+     "case anatomy: named client + service-category label + % metrics + move-in count",
+     "'Results That Matter.' section header"
+    ],
+    "note": "momentum-as-brand-device; results stated in the client's business units"
+   },
+   {
+    "id": "aw-attane-ops",
+    "agency": "ag-attane",
+    "type": "operational_evidence",
+    "published": "third-party case studies (Adpulse, ActiveDEMAND)",
+    "work": [
+     "Adpulse: daily budget pacing 'within pennies' of approved monthly budgets",
+     "per-level-of-care budget allocation — 'a community has a need to drive occupancy for a certain level of care or trouble filling certain apartments'",
+     "ActiveDEMAND: drip nurture into client CRMs, virtual form submits, COVID-era virtual tours",
+     "Kyle Crocker, Dir. Marketing Automation: 'Senior Living is a long sales process — getting initial leads in and nurturing them is critical'",
+     "HQ Kansas City, MO"
+    ],
+    "note": "their proof is operational: budget discipline at apartment-type granularity — the level of specificity only real operators know"
+   },
+   {
+    "id": "aw-industry-costunit",
+    "agency": null,
+    "type": "cross_agency_metric",
+    "published": "OuterBox Artis/level-up case studies + Attane",
+    "work": [
+     "OuterBox: 54% qualified-lead growth, 39% digital-sourced move-ins, 18% lower cost-per-move-in — breaking A Place for Mom dependence",
+     "Artis/LevelUp: 50% cost-per-lead cut across 26 communities",
+     "cost-per-move-in vs third-party referral fees is THE industry's procurement metric"
+    ],
+    "note": "referral-aggregator dependence is the industry's known pain — cost-per-move-in is how buyers score vendors"
+   }
+  ],
+  "VisualLanguage": [
+   {
+    "id": "vl-safelyyou",
+    "site": "v-safelyyou",
+    "captured": "agency-screenshots/safelyyou-hero.png",
+    "palette": "teal-green brand + white field + orange CTA (highest-chroma element)",
+    "typography": "humanist serif-ish display + clean sans body",
+    "imagery": "real residents + staff around a puzzle table — warm, documentary, not stock",
+    "shapes": "rounded-corner photo card on light-tinted section",
+    "effects": "persona-routing nav ('Start Here': corporate / facility / family / partner)",
+    "signature": "warmth-documentary + metric discipline"
+   },
+   {
+    "id": "vl-august",
+    "site": "v-august",
+    "captured": "agency-screenshots/august-hero.png",
+    "palette": "white field + saturated color circles: green, pink, orange, royal blue; royal-blue CTA",
+    "typography": "large elegant display serif headline + sans body",
+    "imagery": "real diverse faces (caregivers, residents) inside color-circle crops; product UI snippets floating as cards ('Create alert for this resident?', 'Morning Routine')",
+    "shapes": "organic circles/blobs as image containers; rounded UI cards",
+    "effects": "announcement pill ('Explore Summer 2026 Updates'), translucent nav pill",
+    "signature": "joyful-humanist — the only white-hero site; compensates with saturated color shapes"
+   },
+   {
+    "id": "vl-aline",
+    "site": "v-aline",
+    "captured": "agency-screenshots/aline-hero.png",
+    "palette": "deep teal hero + orange 'Book a Call' CTA + light-blue CTA variant",
+    "typography": "heavy bold sans; wordmark in extended caps",
+    "imagery": "real person (smiling caregiver) + floating product UI cards (Resident Care Services, Income/Expense chart, Your History)",
+    "shapes": "rounded pills and cards; isometric ecosystem map elsewhere (product families color-coded blue/pink/purple)",
+    "effects": "UI cards float over person photo — product-in-context device",
+    "signature": "connected-ecosystem — teal field + floating product evidence"
+   },
+   {
+    "id": "vl-cc",
+    "site": "ag-cc",
+    "captured": "agency-screenshots/cc-hero.png",
+    "palette": "deep forest-green brand band + darkened full-bleed photo + tan/gold CTA",
+    "typography": "geometric sans, tracked-out uppercase nav, bold white hero headline",
+    "imagery": "their own team lineup in office — the agency photographs ITSELF as the hero (insider-proof made literal)",
+    "shapes": "flat blocks, no ornament; pill CTA",
+    "effects": "photo darkened for text legibility; cookie banner real",
+    "signature": "darkened-photo + gold-CTA — conservative executive register"
+   },
+   {
+    "id": "vl-varsity",
+    "site": "ag-varsity",
+    "captured": "agency-screenshots/varsity-hero.png",
+    "palette": "dark navy hero + white type + gold accent",
+    "typography": "huge thin OUTLINE display type ('FRESH PERSPECTIVES PROVEN PERFORMANCE') — editorial/contrarian face + blocky slab wordmark",
+    "imagery": "atmospheric, low-key photography",
+    "shapes": "thin outline type as the graphic itself",
+    "effects": "podcast modal on load; underline-active nav",
+    "signature": "editorial-contrarian — the page behaves like a magazine cover"
+   },
+   {
+    "id": "vl-bigbuzz",
+    "site": "ag-bigbuzz",
+    "captured": "agency-screenshots/bigbuzz-hero.png",
+    "palette": "teal/aqua band over ocean-wave imagery + gold CTA + white ghost button",
+    "typography": "bold rounded sans, centered",
+    "imagery": "their process diagram AS the hero visual (KICKOFF→FOCUS→RESEARCH→STRATEGY→CREATE→IMPLEMENT→ANALYZE/OPTIMIZE/EVOLVE circular loop)",
+    "shapes": "chevron arrows + circular process loop",
+    "effects": "water imagery bleeding into brand band",
+    "signature": "process-as-hero — sells the system visually"
+   },
+   {
+    "id": "vl-sageage",
+    "site": "ag-sageage",
+    "captured": "agency-screenshots/sageage-hero.png",
+    "palette": "dark charcoal hero + white wordmark + teal CTA",
+    "typography": "elegant serif wordmark ('SageAge' with sage-leaf glyph)",
+    "imagery": "(page loading at capture; dark full-bleed hero treatment)",
+    "shapes": "hamburger-in-circle nav; minimal chrome",
+    "effects": "slow-load spinner observed — heavyweight hero media",
+    "signature": "dark-premium restraint"
+   },
+   {
+    "id": "vl-welcomehome",
+    "site": "v-welcomehome",
+    "captured": "agency-screenshots/welcomehome-hero.png",
+    "palette": "deep navy hero + lime-green + lavender-pink (word-level color coding: 'Senior Living' lime, 'Home Care' pink) + lime CTA",
+    "typography": "heavy bold sans; multi-color emphasis inside the headline",
+    "imagery": "THE PRODUCT UI IS THE HERO — real dashboard (stat cards, bar charts, 'HOME CARE CRM' pill tab) in rounded frame",
+    "shapes": "pill buttons, dot bullets, rounded dashboard frame",
+    "effects": "announcement top-bar ('Introducing Senior Care Insights') + outlined CRM LOGIN",
+    "signature": "product-as-hero + color-coded category words"
+   },
+   {
+    "id": "vl-onshift",
+    "site": "v-onshift",
+    "captured": "agency-screenshots/onshift-hero.png",
+    "palette": "royal-blue gradient + white + giant darker chevron motif",
+    "typography": "bold white sans headline",
+    "imagery": "product UI screenshot (scheduling calendar + points dashboard) in laptop-style rounded frame",
+    "shapes": "diagonal chevron; filled white pill primary + ghost-outline secondary",
+    "effects": "primary-filled + secondary-ghost button pairing",
+    "signature": "enterprise-blue + product-as-hero"
+   }
+  ],
+  "AgencySignature": [
+   {
+    "id": "as-sageage",
+    "agency": "ag-sageage",
+    "proven_conventions": [
+     "triple-verb outcome taglines ('Generating Leads. Boosting Sales. Increasing Occupancy.')",
+     "client-roster breadth as authority (300+ providers)",
+     "context-first case format: who the client is before what we did",
+     "services span market research → creative → sales training (GROW) — full-funnel authority"
+    ],
+    "evidence": "aw-sageage-roster, aw-sageage-format, aw-sageage-amavida"
+   },
+   {
+    "id": "as-varsity",
+    "agency": "ag-varsity",
+    "proven_conventions": [
+     "case titles ARE the results: ultra-specific numbers as headlines (88,993,600 impressions; 98% pre-sales before groundbreaking)",
+     "challenge-category labels (Occupancy, Campus Expansion, Alignment) — buyer finds their problem, not the agency's service",
+     "anti-ageist reframe as brand position",
+     "qualification-form as portfolio piece (challenges/budget/timeline fields)"
+    ],
+    "evidence": "aw-varsity-titles, aw-varsity-voice"
+   },
+   {
+    "id": "as-cc",
+    "agency": "ag-cc",
+    "proven_conventions": [
+     "category + niche purity in hero ('Lead Generation Experts', '100% senior living')",
+     "published-results metrics about themselves (21% traffic, 95% page-1, 500+ placements)",
+     "meeting-verb CTA everywhere; never 'demo' for non-software",
+     "firsthand-experience claim ('our team has worked IN senior living communities')"
+    ],
+    "evidence": "aw-cc-positioning, aw-cc-metrics, aw-cc-testimonials"
+   },
+   {
+    "id": "as-bigbuzz",
+    "agency": "ag-bigbuzz",
+    "proven_conventions": [
+     "'How [Agency] [verb]ed [Client] to [outcome]' case-title formula",
+     "VP-level named testimonials with full company attribution",
+     "free strategy artifact as meeting magnet",
+     "portfolio-scale work (60-location rebrands) signals enterprise capability"
+    ],
+    "evidence": "aw-bigbuzz-cases, aw-bigbuzz-testimonials, aw-bigbuzz-magnet"
+   }
+  ],
+  "ResearchOrg": [
+   {
+    "id": "ro-b2bi",
+    "name": "LinkedIn B2B Institute / Ehrenberg-Bass",
+    "url": "business.linkedin.com/b2b-institute",
+    "teaches": "95-5 rule; design for memory + trust"
+   },
+   {
+    "id": "ro-edelman",
+    "name": "Edelman-LinkedIn Thought Leadership Impact Study",
+    "url": "edelman.com",
+    "teaches": "decision-makers judge vendors on TL quality; weak TL loses deals"
+   },
+   {
+    "id": "ro-gartner",
+    "name": "Gartner B2B buying research",
+    "url": "gartner.com",
+    "teaches": "6-10 stakeholders per buying group; arm the internal champion"
+   },
+   {
+    "id": "ro-trustradius",
+    "name": "TrustRadius B2B Buying Disconnect",
+    "url": "trustradius.com",
+    "teaches": "buyers distrust vendor claims; demos + transparent pricing + customer proof"
+   },
+   {
+    "id": "ro-dgr",
+    "name": "Demand Gen Report Content Preferences",
+    "url": "demandgenreport.com",
+    "teaches": "execs consume research reports/case studies/webinars pre-contact"
+   },
+   {
+    "id": "ro-forrester",
+    "name": "Forrester B2B buying studies",
+    "url": "forrester.com",
+    "teaches": "70%+ of journey is self-serve research"
+   },
+   {
+    "id": "ro-challenger",
+    "name": "CEB/Gartner Challenger Customer",
+    "url": "gartner.com",
+    "teaches": "sell to the mobilizer (VP/ED), not the skeptic"
+   },
+   {
+    "id": "ro-warc",
+    "name": "WARC B2B effectiveness",
+    "url": "warc.com",
+    "teaches": "creative quality correlates with B2B ROI"
+   },
+   {
+    "id": "ro-corpvisions",
+    "name": "Corporate Visions",
+    "url": "corporatevisions.com",
+    "teaches": "B2B decision-science messaging frameworks"
+   },
+   {
+    "id": "ro-nng",
+    "name": "NN/g B2B usability",
+    "url": "nngroup.com",
+    "teaches": "enterprise pages fail on jargon walls + missing proof"
+   }
+  ],
+  "Claim": [
+   {
+    "id": "claim-engagement-los",
+    "text": "resident engagement → length of stay → NOI",
+    "register": "owner-operator",
+    "status": "needs-mynaani-evidence"
+   },
+   {
+    "id": "claim-family-referral",
+    "text": "family confidence → referrals → occupancy",
+    "register": "shared",
+    "status": "needs-mynaani-evidence"
+   },
+   {
+    "id": "claim-staff-leverage",
+    "text": "self-directed resident learning → zero staff burden to run the program",
+    "register": "executive-director-nonprofit",
+    "status": "needs-mynaani-evidence"
+   },
+   {
+    "id": "claim-differentiator",
+    "text": "geragogy-grounded, cognitively-protective interface — a different method, not simplified content",
+    "register": "shared",
+    "status": "evidenced_by: whitepaper PDFs (internal)"
+   },
+   {
+    "id": "claim-founder-window",
+    "text": "founding-partner exclusivity for first N operators",
+    "register": "owner-operator",
+    "status": "internal-strategy"
+   },
+   {
+    "id": "claim-capability-not-activities",
+    "text": "the amenity competitors don't have and can't fake — capability, not activities",
+    "register": "owner-operator",
+    "status": "synthesized-hero-thesis (ep-005); Varsity reframe, unproven-category risk noted",
+    "confidence": 0.8
+   },
+   {
+    "id": "claim-hero-line",
+    "text": "AI literacy your residents can actually use. Zero work for your staff.",
+    "register": "shared",
+    "status": "synthesized hero (ep-005); staff-burden is product fact, capability claim evidenced by research corpus",
+    "confidence": 0.85
+   }
+  ],
+  "ProofPattern": [
+   {
+    "id": "pp-metric-band",
+    "pattern": "metric-dense callout band below hero",
+    "derived_from": [
+     "v-safelyyou"
+    ],
+    "confidence": 0.9,
+    "audit_evidence": "SafelyYou: '80% of largest providers already using SafelyYou' + superscript-footnoted metrics (99.25%⁴, -45%², +6mo LOS²)"
+   },
+   {
+    "id": "pp-logo-wall",
+    "pattern": "named operator logos above fold",
+    "derived_from": [
+     "v-august"
+    ],
+    "confidence": 0.9,
+    "gap": "requires signed partners — fallback: founding-partner exclusivity",
+    "audit_evidence": "Aline: 'Trusted by Leading Operators — 9,000+ communities' + ~50-logo wall; August: logo band 'Trusted by leading senior living operators'; WelcomeHome substitute: '300+ 5-star reviews, 5.0 Google rating'"
+   },
+   {
+    "id": "pp-analyst-cite",
+    "pattern": "association data cited like analyst research (NIC MAPS, ASHA State of Seniors Housing)",
+    "derived_from": [
+     "assoc-nic",
+     "assoc-asha"
+    ],
+    "confidence": 0.85
+   },
+   {
+    "id": "pp-case-card",
+    "pattern": "outcome case-study cards over feature lists",
+    "derived_from": [
+     "v-aline",
+     "v-welcomehome"
+    ],
+    "confidence": 0.85,
+    "audit_evidence": "August: case titles are outcome statements ('Bickford reduced incidents and early move-outs'); OnShift: stat inside every module (35% faster hire, 33% turnover reduction)"
+   },
+   {
+    "id": "pp-single-cta",
+    "pattern": "one primary 'book a call' CTA + executive-friendly callback channel",
+    "derived_from": [
+     "ro-trustradius",
+     "ro-gartner"
+    ],
+    "confidence": 0.9,
+    "asset": "Retell callback channel (shipped by parallel dev)",
+    "audit_evidence": "all 5 vendors: meeting-verb primary CTA (Request/Book/Schedule demo); 'Learn more' strictly secondary; same CTA repeated at page bottom"
+   },
+   {
+    "id": "pp-named-testimonial",
+    "pattern": "testimonials carry name + title + operator",
+    "derived_from": [
+     "v-aline",
+     "v-onshift",
+     "v-august"
+    ],
+    "confidence": 0.9,
+    "audit_evidence": "CFO Sodalis, CHRO Touchstone, National Care Director Atria — anonymous praise absent from top-tier pages"
+   },
+   {
+    "id": "pp-research-magnet",
+    "pattern": "proprietary industry study as content magnet for 95% not in-market",
+    "derived_from": [
+     "v-safelyyou",
+     "v-onshift",
+     "v-welcomehome"
+    ],
+    "confidence": 0.9,
+    "audit_evidence": "SafelyYou '2026 Cost of Senior Care study', OnShift 'Workforce 360', WelcomeHome 'Senior Care Insights' — our equivalent: 4 whitepapers as research briefs"
+   },
+   {
+    "id": "pp-insider-line",
+    "pattern": "insider-credibility sentence proving we are of the industry",
+    "derived_from": [
+     "v-august",
+     "v-aline"
+    ],
+    "confidence": 0.9,
+    "audit_evidence": "August: 'created by a senior living physician and an Apple engineering leader'; Aline: '91% of our team have direct senior living experience'"
+   },
+   {
+    "id": "pp-objection-challenge",
+    "pattern": "case challenge stated in the BUYER'S OWN VOICE as their objection ('I'm not ready yet'), then reframed — not described abstractly",
+    "derived_from": [
+     "aw-sageage-rgv"
+    ],
+    "confidence": 0.9
+   },
+   {
+    "id": "pp-business-unit-metrics",
+    "pattern": "results expressed in the client's business units: move-ins, occupancy %, cost-per-move-in, sales-vs-goal — never clicks/impressions as the headline",
+    "derived_from": [
+     "aw-markentum-results",
+     "aw-industry-costunit",
+     "aw-sageage-rgv"
+    ],
+    "confidence": 0.95
+   },
+   {
+    "id": "pp-real-denominators",
+    "pattern": "big-number results carry real denominators ('28 out of 30 sales', '38 communities', '437 leads → 51 move-ins') — ratio without base reads as marketing",
+    "derived_from": [
+     "aw-sageage-rgv",
+     "aw-markentum-results"
+    ],
+    "confidence": 0.9
+   },
+   {
+    "id": "pp-downloadable-proof",
+    "pattern": "case studies / research as downloadable artifacts (PDFs) — the proof itself is a lead magnet",
+    "derived_from": [
+     "aw-cc-trust-layer"
+    ],
+    "confidence": 0.8
+   },
+   {
+    "id": "pp-trust-stack",
+    "pattern": "trust layered from boring facts: 'Since 2015/2016' longevity + USPTO trademark + AI disclosure + accessibility-on-own-site",
+    "derived_from": [
+     "aw-cc-trust-layer",
+     "aw-markentum-voice"
+    ],
+    "confidence": 0.85
+   },
+   {
+    "id": "pp-ops-granularity",
+    "pattern": "credibility via operational specificity only insiders know ('budgets paced within pennies', 'level-of-care budget allocation', 'floor plans page is the most important page')",
+    "derived_from": [
+     "aw-attane-ops",
+     "aw-cc-portfolio"
+    ],
+    "confidence": 0.85
+   }
+  ],
+  "VisualConvention": [
+   {
+    "id": "vc-page-skeleton",
+    "rule": "canonical 7-section skeleton: hero → proof band → platform-as-outcomes → evidence interleave → credibility → CTA repeat → content magnet",
+    "derived_from": [
+     "audit 2026-09-18: v-safelyyou, v-august, v-aline, v-welcomehome, v-onshift"
+    ],
+    "confidence": 0.95
+   },
+   {
+    "id": "vc-hero-rule",
+    "rule": "headline ≤10 words naming the product category + one outcome sub + single meeting-verb CTA; category named plainly ('EHR','CRM','workforce')",
+    "derived_from": [
+     "audit 2026-09-18"
+    ],
+    "confidence": 0.95
+   },
+   {
+    "id": "vc-dark-hero",
+    "rule": "dark or neutral hero, single confident statement, no carousel",
+    "derived_from": [
+     "v-safelyyou",
+     "v-august"
+    ],
+    "confidence": 0.85
+   },
+   {
+    "id": "vc-proof-band",
+    "rule": "proof band immediately below hero — quantified, third-party-anchored, before any product explanation",
+    "derived_from": [
+     "v-safelyyou",
+     "v-aline"
+    ],
+    "confidence": 0.95
+   },
+   {
+    "id": "vc-scan-numbers",
+    "rule": "executives scan for numbers; whitespace serves scannability not academia; metrics footnoted/superscript-sourced",
+    "derived_from": [
+     "ro-nng",
+     "ag-varsity",
+     "v-safelyyou"
+    ],
+    "confidence": 0.9
+   },
+   {
+    "id": "vc-copy-devices",
+    "rule": "aphorism device ('system of recommendation, not record'), operational empathy ('counselors don't lose deals because they stop caring — they lose time'), motif repetition ('Built to Connect X')",
+    "derived_from": [
+     "v-aline",
+     "v-welcomehome",
+     "audit 2026-09-18"
+    ],
+    "confidence": 0.9
+   },
+   {
+    "id": "vc-dark-saturated-hero",
+    "rule": "hero is dark-saturated (deep teal/navy/royal blue/charcoal) or white-with-saturated-shapes — never light-grey-quiet; 7 of 8 audited sites",
+    "derived_from": [
+     "vl-aline",
+     "vl-welcomehome",
+     "vl-onshift",
+     "vl-sageage",
+     "vl-varsity",
+     "vl-cc",
+     "vl-bigbuzz"
+    ],
+    "confidence": 0.95,
+    "note": "direct conflict with current light-beige hero — the single biggest visual gap"
+   },
+   {
+    "id": "vc-product-or-people-hero",
+    "rule": "hero imagery is either the actual product UI (vendors) or real people/team (agencies) — never abstract or generic stock",
+    "derived_from": [
+     "vl-welcomehome",
+     "vl-onshift",
+     "vl-aline",
+     "vl-august",
+     "vl-safelyyou",
+     "vl-cc"
+    ],
+    "confidence": 0.95
+   },
+   {
+    "id": "vc-cta-highest-chroma",
+    "rule": "the CTA is the highest-chroma element on the page: orange/lime/gold/royal-blue pill against the dark field",
+    "derived_from": [
+     "all vl-* nodes"
+    ],
+    "confidence": 0.95
+   },
+   {
+    "id": "vc-word-color-coding",
+    "rule": "category words inside the headline carry distinct colors ('Senior Living' lime, 'Home Care' pink; Aline's product families blue/pink/purple)",
+    "derived_from": [
+     "vl-welcomehome",
+     "vl-aline"
+    ],
+    "confidence": 0.8
+   },
+   {
+    "id": "vc-type-pairing",
+    "rule": "either elegant display-serif headline + sans body (August, Varsity-adjacent) or heavy bold sans everywhere (Aline, OnShift, C&C, Big Buzz) — thin-outline display is Varsity's contrarian signature",
+    "derived_from": [
+     "vl-august",
+     "vl-aline",
+     "vl-onshift",
+     "vl-cc",
+     "vl-varsity"
+    ],
+    "confidence": 0.9
+   },
+   {
+    "id": "vc-announcement-pill",
+    "rule": "announcement pill/top-bar above or inside hero for the newest asset ('Explore Summer 2026 Updates', 'Introducing Senior Care Insights')",
+    "derived_from": [
+     "vl-august",
+     "vl-welcomehome"
+    ],
+    "confidence": 0.85
+   },
+   {
+    "id": "vc-rounded-containers",
+    "rule": "rounded pills/cards/frames everywhere; image crops as circles or rounded rectangles; process diagrams as chevron loops",
+    "derived_from": [
+     "all vl-* nodes"
+    ],
+    "confidence": 0.9
+   },
+   {
+    "id": "vc-nav-grammar",
+    "rule": "logo left + category nav center + utility (Login) + meeting-verb CTA right; CTA is filled pill, nav links quiet",
+    "derived_from": [
+     "all vl-* nodes"
+    ],
+    "confidence": 0.95
+   },
+   {
+    "id": "vc-no-sticky",
+    "rule": "no sticky/fixed overlays on mobile",
+    "derived_from": [
+     "internal: mobile-iphone pointer-event incident"
+    ],
+    "confidence": 1.0
+   },
+   {
+    "id": "vc-aa-floor",
+    "rule": "WCAG 2.1 AA floor stands despite marketing exemption",
+    "derived_from": [
+     "internal: axe e2e wired"
+    ],
+    "confidence": 1.0
+   },
+   {
+    "id": "vc-token-adr",
+    "rule": "new palette/type values require ADR; extend tokens, never inline hex",
+    "derived_from": [
+     "internal: design governance"
+    ],
+    "confidence": 1.0
+   }
+  ],
+  "PersonaAsset": [
+   {
+    "id": "pa-caregiver-briefs",
+    "persona": "caregiver",
+    "assets": [
+     "/whitepapers/cognitive-engagement.pdf (10 sources)",
+     "/whitepapers/geragogy-for-caregivers.pdf (12 sources)"
+    ],
+    "rule": "caregiver surfaces cite caregiver briefs — NOT the communities briefs (the-ai-gap / geragogy-the-key-to-learning)",
+    "source": "CaregiverPage.tsx L377-404"
+   },
+   {
+    "id": "pa-caregiver-stats",
+    "persona": "caregiver",
+    "assets": [
+     "CAN 2026: 90% of family caregivers use digital tools; ~4 in 10 spend 11+ hrs/wk on care coordination",
+     "Heliyon 2025: shared capability belief → highest tech-use intention",
+     "AARP 2025: caregivers adopt convenience/safety tech more than non-caregivers",
+     "Tang CSCW 2022: family as influencers/supporters/protectors/monitors"
+    ],
+    "source": "CaregiverPage.tsx SOURCES"
+   },
+   {
+    "id": "pa-communities-briefs",
+    "persona": "facility",
+    "assets": [
+     "/whitepapers/the-ai-gap.pdf (17 sources)",
+     "/whitepapers/geragogy-the-key-to-learning.pdf (16 sources)"
+    ],
+    "rule": "facility surfaces cite operator/board briefs",
+    "source": "ForCommunitiesPage.tsx"
+   }
+  ],
+  "BrandAsset": [
+   {
+    "id": "ba-logo-palette-dark",
+    "vals": [
+     "#EBEBEB cream",
+     "#98BAD4 lifted-blue",
+     "#D7E3CC lifted-sage"
+    ],
+    "status": "owner-approved 2026-09-19",
+    "for": "charcoal surfaces #26292E/#1D1F22"
+   },
+   {
+    "id": "ba-logo-files",
+    "vals": [
+     "mynaani-logo-stacked-color-light.svg (master)",
+     "mynaani-logo-stacked-color-dark.svg (intensified)",
+     "mynaani-logo-stacked-monotone-dark.svg (knockout)",
+     "mynaani-icon-circle-dark (medallion, pending)"
+    ],
+    "pipeline": "vtracer trace + palette remap",
+    "status": "traced, QA pending"
+   }
+  ]
+ },
+ "edges": [
+  {
+   "from": "pub-shn",
+   "to": "owner-operator",
+   "relation": "teaches_register"
+  },
+  {
+   "from": "pub-mcknights-sl",
+   "to": "owner-operator",
+   "relation": "teaches_register"
+  },
+  {
+   "from": "pub-sle",
+   "to": "executive-director-nonprofit",
+   "relation": "teaches_register"
+  },
+  {
+   "from": "pub-shb",
+   "to": "owner-operator",
+   "relation": "teaches_register"
+  },
+  {
+   "from": "pub-foresight",
+   "to": "owner-operator",
+   "relation": "teaches_register"
+  },
+  {
+   "from": "assoc-nic",
+   "to": "pp-analyst-cite",
+   "relation": "evidences"
+  },
+  {
+   "from": "assoc-asha",
+   "to": "pp-analyst-cite",
+   "relation": "evidences"
+  },
+  {
+   "from": "assoc-argentum",
+   "to": "owner-operator",
+   "relation": "validates_channel"
+  },
+  {
+   "from": "assoc-leadingage",
+   "to": "executive-director-nonprofit",
+   "relation": "validates_channel"
+  },
+  {
+   "from": "assoc-icaa",
+   "to": "claim-engagement-los",
+   "relation": "validates_channel"
+  },
+  {
+   "from": "evt-slec",
+   "to": "owner-operator",
+   "relation": "attended_by"
+  },
+  {
+   "from": "evt-smash",
+   "to": "owner-operator",
+   "relation": "attended_by"
+  },
+  {
+   "from": "evt-nic-spring",
+   "to": "owner-operator",
+   "relation": "attended_by"
+  },
+  {
+   "from": "evt-leadingage-am",
+   "to": "executive-director-nonprofit",
+   "relation": "attended_by"
+  },
+  {
+   "from": "evt-sl100",
+   "to": "owner-operator",
+   "relation": "attended_by"
+  },
+  {
+   "from": "ag-sageage",
+   "to": "senior-living-agency-skill",
+   "relation": "benchmarks_design",
+   "note": "top-3 bar"
+  },
+  {
+   "from": "ag-varsity",
+   "to": "senior-living-agency-skill",
+   "relation": "benchmarks_design",
+   "note": "top-3 bar"
+  },
+  {
+   "from": "ag-cc",
+   "to": "senior-living-agency-skill",
+   "relation": "benchmarks_design",
+   "note": "top-3 bar"
+  },
+  {
+   "from": "v-safelyyou",
+   "to": "pp-metric-band",
+   "relation": "sets_proof_standard"
+  },
+  {
+   "from": "v-august",
+   "to": "pp-logo-wall",
+   "relation": "sets_proof_standard"
+  },
+  {
+   "from": "v-safelyyou",
+   "to": "vc-dark-hero",
+   "relation": "benchmarks_design"
+  },
+  {
+   "from": "v-august",
+   "to": "vc-proof-band",
+   "relation": "benchmarks_design"
+  },
+  {
+   "from": "v-aline",
+   "to": "pp-case-card",
+   "relation": "sets_proof_standard"
+  },
+  {
+   "from": "v-welcomehome",
+   "to": "pp-case-card",
+   "relation": "sets_proof_standard"
+  },
+  {
+   "from": "ro-b2bi",
+   "to": "pp-single-cta",
+   "relation": "evidences"
+  },
+  {
+   "from": "ro-gartner",
+   "to": "pp-single-cta",
+   "relation": "evidences"
+  },
+  {
+   "from": "ro-trustradius",
+   "to": "pp-single-cta",
+   "relation": "evidences"
+  },
+  {
+   "from": "ro-edelman",
+   "to": "pp-analyst-cite",
+   "relation": "evidences"
+  },
+  {
+   "from": "claim-engagement-los",
+   "to": "/for-communities",
+   "relation": "serves_persona",
+   "note": "leads owner-operator framing"
+  },
+  {
+   "from": "claim-staff-leverage",
+   "to": "/for-communities",
+   "relation": "serves_persona",
+   "note": "leads ED-nonprofit framing"
+  },
+  {
+   "from": "claim-differentiator",
+   "to": "/for-communities",
+   "relation": "serves_persona",
+   "note": "differentiator beneath business case"
+  },
+  {
+   "from": "pp-single-cta",
+   "to": "/partners",
+   "relation": "implements"
+  },
+  {
+   "from": "vc-no-sticky",
+   "to": "/for-communities",
+   "relation": "conflicts_with",
+   "note": "blocks sticky nav/CTA patterns from benchmarks"
+  },
+  {
+   "from": "ag-sageage",
+   "to": "aw-sageage-roster",
+   "relation": "published_by"
+  },
+  {
+   "from": "ag-sageage",
+   "to": "as-sageage",
+   "relation": "published_by"
+  },
+  {
+   "from": "ag-varsity",
+   "to": "aw-varsity-titles",
+   "relation": "published_by"
+  },
+  {
+   "from": "ag-varsity",
+   "to": "as-varsity",
+   "relation": "published_by"
+  },
+  {
+   "from": "ag-cc",
+   "to": "aw-cc-metrics",
+   "relation": "published_by"
+  },
+  {
+   "from": "ag-cc",
+   "to": "as-cc",
+   "relation": "published_by"
+  },
+  {
+   "from": "ag-bigbuzz",
+   "to": "aw-bigbuzz-cases",
+   "relation": "published_by"
+  },
+  {
+   "from": "ag-bigbuzz",
+   "to": "as-bigbuzz",
+   "relation": "published_by"
+  },
+  {
+   "from": "aw-varsity-titles",
+   "to": "pp-case-card",
+   "relation": "evidences",
+   "note": "outcome-in-title is agency practice, not just vendor practice"
+  },
+  {
+   "from": "aw-cc-metrics",
+   "to": "pp-metric-band",
+   "relation": "evidences",
+   "note": "agencies sell themselves with quantified proof too"
+  },
+  {
+   "from": "aw-cc-testimonials",
+   "to": "pp-named-testimonial",
+   "relation": "evidences"
+  },
+  {
+   "from": "aw-bigbuzz-testimonials",
+   "to": "pp-named-testimonial",
+   "relation": "evidences",
+   "note": "VP titles + full company names"
+  },
+  {
+   "from": "aw-bigbuzz-magnet",
+   "to": "pp-research-magnet",
+   "relation": "evidences",
+   "note": "free strategy artifact = meeting magnet variant"
+  },
+  {
+   "from": "as-cc",
+   "to": "claim-hero-line",
+   "relation": "evidences",
+   "note": "niche-purity + category-named hero validated by C&C's own site"
+  },
+  {
+   "from": "aw-sageage-rgv",
+   "to": "pp-objection-challenge",
+   "relation": "evidences"
+  },
+  {
+   "from": "aw-sageage-rgv",
+   "to": "pp-real-denominators",
+   "relation": "evidences"
+  },
+  {
+   "from": "aw-markentum-results",
+   "to": "pp-business-unit-metrics",
+   "relation": "evidences"
+  },
+  {
+   "from": "aw-markentum-results",
+   "to": "pp-real-denominators",
+   "relation": "evidences"
+  },
+  {
+   "from": "aw-industry-costunit",
+   "to": "pp-business-unit-metrics",
+   "relation": "evidences"
+  },
+  {
+   "from": "aw-cc-trust-layer",
+   "to": "pp-trust-stack",
+   "relation": "evidences"
+  },
+  {
+   "from": "aw-cc-trust-layer",
+   "to": "pp-downloadable-proof",
+   "relation": "evidences"
+  },
+  {
+   "from": "aw-attane-ops",
+   "to": "pp-ops-granularity",
+   "relation": "evidences"
+  },
+  {
+   "from": "ag-markentum",
+   "to": "aw-markentum-results",
+   "relation": "published_by"
+  },
+  {
+   "from": "ag-attane",
+   "to": "aw-attane-ops",
+   "relation": "published_by"
+  }
+ ],
+ "gaps": [
+  {
+   "id": "gap-logos",
+   "question": "signed operator names/logos usable on page?",
+   "blocks": "pp-logo-wall",
+   "owner": "user"
+  },
+  {
+   "id": "gap-metrics",
+   "question": "any real pilot metrics (engagement, family feedback, staff time)?",
+   "blocks": "claim-engagement-los, claim-family-referral, claim-staff-leverage",
+   "owner": "user"
+  },
+  {
+   "id": "gap-geo",
+   "question": "national or priority states?",
+   "blocks": "state-association register tuning",
+   "owner": "user"
+  },
+  {
+   "id": "gap-agency",
+   "question": "phase 2 internal vs agency concept review?",
+   "blocks": "redesign process",
+   "owner": "user"
+  }
+ ]
+}
