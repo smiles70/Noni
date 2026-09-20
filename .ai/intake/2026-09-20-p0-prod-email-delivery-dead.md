@@ -1,6 +1,6 @@
 # PS-BID17-016 — PRODUCTION inquiry EMAIL path dead; leads still captured via CRM tracker
 
-**Status:** NEEDS OWNER ACTION — prod env config | **Severity:** P1 (downgraded 2026-09-20)
+**Status:** REMEDIATED 2026-09-20 — pending owner inbox confirmation | **Severity:** P1 (downgraded 2026-09-20)
 
 **Correction:** initial filing called this total lead loss. Owner correction:
 the crm.js tracker auto-captures every form submit (`form_submit` events
@@ -56,3 +56,29 @@ line.** GAP-BID17-013 + GAP-BID17-015 realized in production.
 - A real `/contact` submission on production produces a delivered
   email at the real inbox — verified by actual send + receipt.
 - Staging remains override-isolated.
+
+
+## Remediation applied (2026-09-20, Railway CLI)
+
+Set on production `noni-api`:
+- `RESEND_API_KEY` = owner-provided send-only key
+- `EMAIL_PROVIDER=resend`
+- `EMAIL_FROM=onboarding@resend.dev` (sandbox — delivers only to
+  account owner; mynaani.com NOT verified in Resend, 403 confirmed)
+- `EMAIL_OVERRIDE_TO=steven@mindbyndr.com` (delivers all inquiries to
+  owner inbox until domain verified)
+
+## Verified
+
+- Key+sender+recipient proven end-to-end via direct API send
+  (message id returned, delivery to account owner).
+- Real contact-inquiry on prod → `delivered:true`, no `email skipped`
+  or failure lines in logs.
+- Look for subject "Contact request — EmailPath Verification" +
+  "[mynaani] prod email path verification" at steven@mindbyndr.com.
+
+## Still open
+
+- Verify `mynaani.com` domain in Resend (DNS) → then set
+  `EMAIL_FROM=<verified sender>` and clear `EMAIL_OVERRIDE_TO`.
+- GAP-BID17-015 (no DB fallback for inquiries) remains.
