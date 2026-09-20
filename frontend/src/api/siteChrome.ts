@@ -25,7 +25,7 @@ export interface SiteFooterContent {
 
 export async function loadFooterContent(): Promise<SiteFooterContent> {
   // Footer copy is intentionally public; no Bearer token required.
-  const res = await fetch(`${API_BASE_URL}/api/site/footer`);
+  const res = await fetch(`${API_BASE_URL}/api/v1/site/footer`);
   if (!res.ok) {
     throw new Error(`Footer content load failed: ${res.status}`);
   }

@@ -12,6 +12,7 @@
  */
 
 import { shouldEmit } from "./telemetryContract";
+import { API_BASE_URL } from "./env";
 
 export type MarketingPage = "caregiver" | "for-communities";
 
@@ -49,7 +50,7 @@ function emit(page: MarketingPage, depth: number): void {
   // Dedup key covers StrictMode double-mounts and repeated fires.
   if (!shouldEmit("marketing.scroll_depth", `${page}:${depth}`)) return;
 
-  fetch("/api/v1/telemetry/marketing", {
+  fetch(`${API_BASE_URL}/api/v1/telemetry/marketing`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

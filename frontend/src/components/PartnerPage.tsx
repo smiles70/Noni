@@ -39,7 +39,7 @@ export default function PartnerPage() {
 
   useEffect(() => {
     apiClient
-      .get(`/api/v1/org/by-slug/${slug}`)
+      .get(`/api/v1/billing/org/by-slug/${slug}`)
       .then((r) => setName((r.data as { name: string }).name))
       .catch(() => setMissing(true));
   }, [slug]);

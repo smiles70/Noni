@@ -211,7 +211,7 @@ const App: React.FC = () => {
             Skip to main content
           </a>
           {transientBanner}
-          <div id="main-content">
+          <div id="main-content" tabIndex={-1}>
             <Routes>
               <Route
                 path="/"
