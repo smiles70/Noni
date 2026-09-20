@@ -2,161 +2,274 @@
  * CaregiverPage — marketing surface for adult children, family members,
  * and caregivers who want to give mynaani as a gift.
  *
+ * Bid-17 visual system (owner-approved 2026-09-19, ADR-0034): charcoal
+ * nav/hero/CTA bands on MARKETING tokens, warm-paper reading sections.
  * Governed by ADR-0030 (Marketing Surfaces Annex), NOT the learner-facing
- * geragogy contract: richer type scale, marketing header/footer, and
- * outcome blocks are permitted here — but tone stays calm, WCAG AA holds,
- * and no claims are invented. Every element is marked
- * `data-contract-exemption="marketing.caregiver"` for audit.
+ * geragogy contract — but tone stays calm, WCAG AA holds, no claims are
+ * invented. Every element is marked `data-contract-exemption=
+ * "marketing.caregiver"` for audit.
  *
- * The primary gift action remains the existing public `/gift` checkout;
- * this page explains the journey before sending the caregiver there.
- * Content is static (no envelope, no RenderGuard) per ADR-0030.
+ * Preserved integrations (do not remove): ChatWidget journey="gift",
+ * SupportContact, Footer currentPath="/caregiver", trackScrollDepth
+ * ("caregiver"), data-gift-entry attributes, whitepaper links, and the
+ * toll-free tel: line.
  */
 import { CSSProperties, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from "../design/tokens";
+import { COLORS, MARKETING, SPACING, TYPOGRAPHY } from "../design/tokens";
 import ChatWidget from "./ChatWidget";
 import SupportContact from "./SupportContact";
 import Footer from "./Footer";
 import { trackScrollDepth } from "../lib/scrollDepthTelemetry";
 
-// ---- Tokenized styles (marketing annex) ------------------------------------
+// ---- Tokenized styles (marketing annex, ADR-0034 dark palette) --------------
 
 const PAGE: CSSProperties = {
   fontFamily: TYPOGRAPHY.fontFamily,
   color: COLORS.textPrimary,
-  backgroundColor: COLORS.background,
+  backgroundColor: MARKETING.paper,
   fontSize: TYPOGRAPHY.bodySizePx,
   lineHeight: TYPOGRAPHY.bodyLineHeight,
   minHeight: "100vh",
 };
 
-const HEADER: CSSProperties = {
+const NAV: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: `${SPACING.sm}px ${SPACING.xl}px`,
-  backgroundColor: COLORS.surface,
-  borderBottom: `1px solid ${COLORS.disabled}`,
+  padding: `14px ${SPACING.xl}px`,
+  backgroundColor: MARKETING.charcoal,
 };
 
-const HEADER_NAV: CSSProperties = {
+const NAV_LINKS: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: SPACING.lg,
 };
 
-const HEADER_LINK: CSSProperties = {
-  color: COLORS.accentMutedBlue,
+const NAV_LINK: CSSProperties = {
+  color: MARKETING.mutedOnDark,
   textDecoration: "none",
-  fontSize: TYPOGRAPHY.bodySizePx,
+  fontSize: 15,
+  fontWeight: 500,
 };
 
-const HEADER_CTA: CSSProperties = {
-  display: "inline-block",
-  fontSize: TYPOGRAPHY.bodySizePx,
-  padding: `${SPACING.sm}px ${SPACING.lg}px`,
-  backgroundColor: COLORS.accentDesatGreen,
-  color: COLORS.surface,
-  borderRadius: RADIUS.lg,
+const NAV_CTA: CSSProperties = {
+  color: MARKETING.charcoalDeep,
+  backgroundColor: MARKETING.gold,
+  padding: `11px ${SPACING.lg}px`,
+  borderRadius: 24,
   fontWeight: 600,
+  fontSize: 15,
   textDecoration: "none",
 };
 
-const SECTION: CSSProperties = {
-  maxWidth: 880,
-  margin: "0 auto",
-  padding: `${SPACING.xxl}px ${SPACING.xl}px`,
+const HERO: CSSProperties = {
+  background: `linear-gradient(150deg, ${MARKETING.charcoal} 0%, ${MARKETING.charcoalDeep} 100%)`,
+  color: "#FFFFFF",
+  padding: `76px ${SPACING.xl}px`,
 };
 
-const H1: CSSProperties = {
-  fontSize: 36,
-  lineHeight: 1.25,
-  marginTop: 0,
-  marginBottom: SPACING.md,
-  color: COLORS.textPrimary,
+const HERO_INNER: CSSProperties = {
+  maxWidth: 1100,
+  margin: "0 auto",
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+  gap: 56,
+  alignItems: "center",
+};
+
+const KICKER: CSSProperties = {
+  fontSize: 13,
+  fontWeight: 700,
+  letterSpacing: 2.5,
+  textTransform: "uppercase",
+  color: MARKETING.tealBright,
+};
+
+const H1_DARK: CSSProperties = {
+  fontSize: 48,
+  fontWeight: 700,
+  lineHeight: 1.15,
+  margin: `${SPACING.md}px 0 0`,
+  color: "#FFFFFF",
+};
+
+const SUB_DARK: CSSProperties = {
+  fontSize: 18,
+  lineHeight: 1.7,
+  color: "#D4D8DC",
+  margin: `22px 0 34px`,
+  maxWidth: 520,
+};
+
+const CTA_GOLD: CSSProperties = {
+  display: "inline-block",
+  backgroundColor: MARKETING.gold,
+  color: MARKETING.charcoalDeep,
+  textDecoration: "none",
+  padding: `${SPACING.md}px 36px`,
+  borderRadius: 28,
+  fontSize: TYPOGRAPHY.bodySizePx,
   fontWeight: 700,
 };
 
-const LEAD: CSSProperties = {
-  fontSize: TYPOGRAPHY.headingScale.level2,
-  lineHeight: TYPOGRAPHY.bodyLineHeight,
-  marginTop: 0,
-  marginBottom: SPACING.xl,
-  maxWidth: 640,
-};
-
-const H2: CSSProperties = {
-  fontSize: 26,
-  lineHeight: 1.3,
-  marginTop: 0,
-  marginBottom: SPACING.lg,
-  color: COLORS.textPrimary,
-  fontWeight: 600,
-};
-
-const H3: CSSProperties = {
-  fontSize: TYPOGRAPHY.headingScale.level2,
-  marginTop: 0,
-  marginBottom: SPACING.sm,
-  color: COLORS.textPrimary,
-  fontWeight: 600,
-};
-
-const PRIMARY_BTN: CSSProperties = {
+const SUB_LINK_DARK: CSSProperties = {
   display: "inline-block",
-  fontSize: TYPOGRAPHY.bodySizePx,
-  padding: `${SPACING.md}px ${SPACING.xl}px`,
-  backgroundColor: COLORS.accentDesatGreen,
-  color: COLORS.surface,
-  borderRadius: RADIUS.lg,
-  fontWeight: 600,
-  textDecoration: "none",
+  color: MARKETING.mutedOnDark,
+  fontSize: 15,
+  marginLeft: 20,
 };
 
-const SECONDARY_BTN: CSSProperties = {
-  display: "inline-block",
-  fontSize: TYPOGRAPHY.bodySizePx,
-  padding: `${SPACING.sm}px ${SPACING.lg}px`,
-  backgroundColor: COLORS.surface,
-  color: COLORS.accentMutedBlue,
-  border: `2px solid ${COLORS.accentMutedBlue}`,
-  borderRadius: RADIUS.lg,
-  fontWeight: 600,
-  textDecoration: "none",
+const STORY_CARD: CSSProperties = {
+  background: "rgba(255,255,255,0.07)",
+  border: "1px solid rgba(255,255,255,0.18)",
+  borderRadius: 16,
+  padding: 30,
 };
 
-const TEXT_LINK: CSSProperties = {
-  color: COLORS.accentMutedBlue,
-  fontSize: TYPOGRAPHY.bodySizePx,
+const SECTION: CSSProperties = {
+  maxWidth: 1100,
+  margin: "0 auto",
+  padding: `66px ${SPACING.xl}px`,
 };
 
-const CARD_ROW: CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: SPACING.lg,
+const KICKER_LIGHT: CSSProperties = {
+  ...KICKER,
+  color: "#1F6357",
 };
 
-const CARD: CSSProperties = {
-  backgroundColor: COLORS.surface,
-  borderRadius: RADIUS.lg,
+const H2_LIGHT: CSSProperties = {
+  fontSize: 34,
+  fontWeight: 700,
+  lineHeight: 1.25,
+  margin: "10px 0 18px",
+  color: MARKETING.charcoal,
+};
+
+const PROOF_GRID: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+  gap: 18,
+  marginTop: 36,
+};
+
+const PROOF_CARD: CSSProperties = {
+  background: "#FFFFFF",
+  border: "1px solid #E2E0D8",
+  borderRadius: 12,
   padding: SPACING.lg,
-  flex: "1 1 220px",
-  boxSizing: "border-box",
 };
 
-const DIVIDER: CSSProperties = {
-  border: "none",
-  borderTop: `1px solid ${COLORS.disabled}`,
-  margin: 0,
+const PROOF_NUM: CSSProperties = {
+  fontSize: 36,
+  fontWeight: 800,
+  color: MARKETING.charcoal,
 };
 
-const LIST: CSSProperties = {
-  margin: 0,
-  paddingLeft: SPACING.lg,
+const PROOF_LABEL: CSSProperties = {
+  fontSize: 13,
+  fontWeight: 700,
+  color: COLORS.textPrimary,
+  marginTop: 6,
 };
 
-// ---- Sources (best practice: inline attribution AND a linked list) ----------
+const PROOF_BODY: CSSProperties = {
+  fontSize: 13,
+  color: "#7A7568",
+  marginTop: 8,
+  lineHeight: 1.55,
+};
+
+const OBJECTION: CSSProperties = {
+  background: "#FFFFFF",
+  border: "1px solid #E2E0D8",
+  borderRadius: 14,
+  padding: 36,
+  marginTop: 32,
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+  gap: 40,
+};
+
+const DARK_SECTION: CSSProperties = {
+  background: MARKETING.charcoalDeep,
+};
+
+const BIZ_GRID: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  gap: 18,
+  marginTop: 32,
+};
+
+const BIZ_CARD: CSSProperties = {
+  background: "rgba(255,255,255,0.06)",
+  border: "1px solid #3A3E43",
+  borderRadius: 12,
+  padding: 26,
+  color: "#FFFFFF",
+};
+
+const CTA_BAND: CSSProperties = {
+  background: MARKETING.charcoal,
+  color: "#FFFFFF",
+  textAlign: "center",
+  padding: `80px ${SPACING.xl}px`,
+};
+
+const LINK_TEAL: CSSProperties = {
+  color: "#1F6357",
+  fontWeight: 600,
+};
+
+const LINK_TEAL_DARK: CSSProperties = {
+  color: MARKETING.tealBright,
+  fontWeight: 600,
+};
+
+// ---- Content ----------------------------------------------------------------
+
+const PROOFS = [
+  {
+    n: "11+",
+    u: "hrs/week on care coordination",
+    p: "Nearly 4 in 10 family caregivers — Caregiver Action Network, 2026. This is the load you're already carrying.",
+  },
+  {
+    n: "57→28",
+    u: "% AI adoption, under-50 vs 50+",
+    p: "Pew Research, 2026 — they're being left behind by design, not ability.",
+  },
+  {
+    n: "55→75",
+    u: "% task success, 65+ vs younger",
+    p: "Nielsen Norman Group — standard design fails them; ours was built around why.",
+  },
+  {
+    n: "0",
+    u: "tech-support calls required",
+    p: "Self-guided lessons plus a named human contact — you're off the hook.",
+  },
+  {
+    n: "RCT",
+    u: "evidence training works",
+    p: "Age-appropriate training improves self-efficacy — the strongest predictor of persistence (Laganà et al.).",
+  },
+];
+
+const BIZ = [
+  {
+    cat: "For them",
+    title: "A real skill, not a babysitter app",
+    p: "They learn to actually use AI — asking questions, getting help, video-calling grandkids — on their own terms.",
+  },
+  {
+    cat: "For you",
+    title: "You get to be family",
+    p: "Calmer phone calls, fewer \u201cwhat is this?\u201d moments — you're the daughter, the son, the friend, not the help desk.",
+  },
+];
 
 const SOURCES = [
   {
@@ -196,34 +309,6 @@ const SOURCES = [
   },
 ];
 
-const OUTCOMES = [
-  {
-    title: "A thoughtful gift",
-    body: "You are giving access to calm, self-paced AI learning designed for adults 55+ — not another gadget or subscription to manage.",
-  },
-  {
-    title: "Confidence without pressure",
-    body: "The recipient moves at their own pace with plain-language explanations. There are no tests, grades, or time limits.",
-  },
-  {
-    title: "You stay in control",
-    body: "You pay once and we email the gift code to you. The recipient redeems it whenever they are ready — nothing is auto-applied.",
-  },
-];
-
-const STEPS = [
-  "Choose the gift — you do not need an account.",
-  "Enter your email and complete the secure checkout.",
-  "We send the gift code to you; share it whenever you like.",
-];
-
-const INCLUDES = [
-  "A guided AI curriculum written in plain language for adults 55+",
-  "A calm, self-paced interface — no tests, grades, or time pressure",
-  "The recipient redeems the gift code in their own account",
-  "Support from a real person if either of you needs help",
-];
-
 // ---- Page -------------------------------------------------------------------
 
 export default function CaregiverPage() {
@@ -231,282 +316,412 @@ export default function CaregiverPage() {
   useEffect(() => trackScrollDepth("caregiver"), []);
   return (
     <div style={PAGE} data-contract-exemption="marketing.caregiver">
-      {/* Marketing header — text links only, no dropdowns */}
-      <header style={HEADER}>
+      <nav style={NAV} aria-label="Caregiver">
         <Link
           to="/"
-          style={{ textDecoration: "none", color: COLORS.textPrimary }}
           aria-label="mynaani home"
+          style={{ display: "flex", alignItems: "center" }}
         >
-          <strong>mynaani</strong>
+          <img
+            src="/mynaani-icon-linework-dark.svg"
+            alt="mynaani"
+            height={56}
+            style={{ display: "block", height: 56, width: "auto" }}
+          />
         </Link>
-        <nav style={HEADER_NAV} aria-label="Caregiver">
-          <a href="#caregiver-how" style={HEADER_LINK}>
-            How it works
+        <div style={NAV_LINKS}>
+          <a href="#why" style={NAV_LINK}>
+            Why it works
           </a>
-          <a href="#caregiver-sources" style={HEADER_LINK}>
-            Sources
+          <a href="#worry" style={NAV_LINK}>
+            The worry
           </a>
-          <Link to="/for-communities" style={HEADER_LINK}>
-            For senior facilities
-          </Link>
-          <Link to="/" style={HEADER_LINK}>
-            For learners
-          </Link>
-          <Link to="/gift" style={HEADER_CTA} data-gift-entry="header">
-            Gift mynaani
-          </Link>
-        </nav>
-      </header>
+          <a href="#gift" style={NAV_LINK}>
+            Give a gift
+          </a>
+          <a href="#contact" style={NAV_CTA}>
+            Start a conversation
+          </a>
+        </div>
+      </nav>
 
       <main>
-        {/* Hero */}
-        <section style={SECTION} aria-labelledby="caregiver-hero">
-          <h1 id="caregiver-hero" style={H1}>
-            Give calm, self-paced AI learning to someone you care about
-          </h1>
-          <p style={LEAD}>
-            Mynaani explains AI in plain language, one step at a time. It was
-            designed for adults 55+ — readable type, predictable behaviour, and
-            no pressure. As a caregiver, you can give access as a gift: you pay
-            once, we send the gift code to your email, and the recipient redeems
-            it whenever they are ready.
-          </p>
-          <div style={{ display: "flex", gap: SPACING.md, flexWrap: "wrap" }}>
-            <Link to="/gift" style={PRIMARY_BTN} data-gift-entry="hero">
-              Gift mynaani
-            </Link>
-            <a href="#caregiver-how" style={SECONDARY_BTN}>
-              How gifting works
-            </a>
+        <header style={HERO}>
+          <div style={HERO_INNER}>
+            <div>
+              <span style={KICKER}>
+                AI learning for your parent or loved one
+              </span>
+              <h1 style={H1_DARK}>
+                They learn AI.{" "}
+                <span style={{ color: MARKETING.tealBright }}>
+                  You stop being tech support.
+                </span>
+              </h1>
+              <p style={SUB_DARK}>
+                Mynaani is AI learning built for the way older adults learn —
+                self-guided, self-paced, staffed by us. They gain real
+                confidence; you get a better phone call.
+              </p>
+              <a href="#contact" style={CTA_GOLD}>
+                Start a conversation
+              </a>
+              <Link to="/" style={SUB_LINK_DARK}>
+                See the learner experience →
+              </Link>
+              <div style={{ marginTop: SPACING.lg }}>
+                <Link
+                  to="/gift"
+                  style={{
+                    ...SUB_LINK_DARK,
+                    fontWeight: 700,
+                    marginLeft: 0,
+                    display: "block",
+                  }}
+                  data-gift-entry="hero"
+                >
+                  Gift mynaani →
+                </Link>
+              </div>
+              <div style={{ marginTop: SPACING.lg }}>
+                <SupportContact />
+                <ChatWidget journey="gift" />
+              </div>
+            </div>
+            <div style={STORY_CARD}>
+              <span style={{ ...KICKER, fontSize: 12 }}>
+                Why it matters, in one sentence
+              </span>
+              <p
+                style={{
+                  fontSize: 17,
+                  fontStyle: "italic",
+                  lineHeight: 1.7,
+                  color: "#EEF0F2",
+                  marginTop: 14,
+                }}
+              >
+                &ldquo;My mom learned to video-call her grandson by herself.
+                That&rsquo;s the moment that changed our calls.&rdquo;
+              </p>
+              <p
+                style={{
+                  fontSize: 13,
+                  color: MARKETING.mutedOnDark,
+                  marginTop: 16,
+                }}
+              >
+                — the kind of moment Mynaani exists to make more of
+              </p>
+            </div>
           </div>
-          <SupportContact />
-          <ChatWidget journey="gift" />
-        </section>
+        </header>
 
-        <hr style={DIVIDER} />
-
-        {/* Difference */}
-        <section style={SECTION} aria-labelledby="caregiver-difference">
-          <h2 id="caregiver-difference" style={H2}>
-            Why this is a different kind of gift
+        <section style={SECTION} id="why" aria-labelledby="cg-evidence">
+          <span style={KICKER_LIGHT}>The evidence behind the moment</span>
+          <h2 id="cg-evidence" style={H2_LIGHT}>
+            Warm on the surface, rigorous underneath.
           </h2>
-          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
-            Most technology gifts ask the recipient to adapt to the tool.
-            Mynaani was built the other way around: the interface, pacing, and
-            explanations are designed for the way older adults actually see,
-            process, and gain confidence. The result is a gift that supports
-            independence rather than creating another thing to learn.
-          </p>
-          <div style={CARD_ROW}>
-            {OUTCOMES.map((o) => (
-              <div key={o.title} style={CARD}>
-                <h3 style={H3}>{o.title}</h3>
-                <p style={{ margin: 0 }}>{o.body}</p>
+          <div style={PROOF_GRID}>
+            {PROOFS.map((c) => (
+              <div key={c.u} style={PROOF_CARD}>
+                <div style={PROOF_NUM}>{c.n}</div>
+                <div style={PROOF_LABEL}>{c.u}</div>
+                <p style={PROOF_BODY}>{c.p}</p>
               </div>
             ))}
           </div>
-        </section>
-
-        <hr style={DIVIDER} />
-
-        {/* How it works */}
-        <section style={SECTION} aria-labelledby="caregiver-how">
-          <h2 id="caregiver-how" style={H2}>
-            How gifting works
-          </h2>
-          <ol style={{ ...LIST, maxWidth: 640 }}>
-            {STEPS.map((s) => (
-              <li key={s} style={{ marginBottom: SPACING.md }}>
-                {s}
-              </li>
-            ))}
-          </ol>
-          <p style={{ marginTop: SPACING.lg, marginBottom: 0, maxWidth: 640 }}>
-            The gift code is not time-limited. If the person you care about
-            already has a mynaani account, they can redeem it there; if not,
-            they can create a free account when they redeem.
-          </p>
-        </section>
-
-        <hr style={DIVIDER} />
-
-        {/* What the gift includes */}
-        <section style={SECTION} aria-labelledby="caregiver-includes">
-          <h2 id="caregiver-includes" style={H2}>
-            What the gift includes
-          </h2>
-          <ul style={{ ...LIST, maxWidth: 640 }}>
-            {INCLUDES.map((i) => (
-              <li key={i} style={{ marginBottom: SPACING.md }}>
-                {i}
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <hr style={DIVIDER} />
-
-        {/* Designed for the person you care about */}
-        <section style={SECTION} aria-labelledby="caregiver-who">
-          <h2 id="caregiver-who" style={H2}>
-            Designed for the person you care about
-          </h2>
-          <p style={{ marginTop: 0, marginBottom: 0, maxWidth: 640 }}>
-            Mynaani is built specifically for adults 55+ — not adapted for them.
-            Our geragogy-centered curriculum and cognitively-protective
-            interface were designed for older learners from the start: readable
-            type, predictable behaviour, and an approach that respects
-            experience rather than talking down to it.
-          </p>
-        </section>
-
-        <hr style={DIVIDER} />
-
-        {/* Insights / whitepapers */}
-        <section style={SECTION} aria-labelledby="caregiver-papers">
-          <h2 id="caregiver-papers" style={H2}>
-            Insights — research briefs you can share
-          </h2>
-          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
-            Two short, fully-referenced papers you can read or share with the
-            person you are thinking about:
-          </p>
-          <div style={CARD_ROW}>
-            <div style={CARD}>
-              <h3 style={H3}>Cognitive Engagement</h3>
-              <p style={{ margin: `0 0 ${SPACING.md}px` }}>
-                Why mentally stimulating activities matter in later life, what
-                the research shows, and how caregivers can support them. 10
-                sources.
-              </p>
-              <a
-                href="/whitepapers/cognitive-engagement.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={SECONDARY_BTN}
+          <div style={OBJECTION} id="worry">
+            <div>
+              <span style={KICKER_LIGHT}>The worry this page must resolve</span>
+              <blockquote
+                style={{
+                  fontSize: 22,
+                  fontStyle: "italic",
+                  lineHeight: 1.5,
+                  color: MARKETING.charcoalDeep,
+                  margin: "14px 0 0",
+                }}
               >
-                Download the PDF
-              </a>
+                &ldquo;She&rsquo;ll get frustrated, feel stupid, and quit — like
+                every other time we&rsquo;ve tried.&rdquo;
+              </blockquote>
             </div>
-            <div style={CARD}>
-              <h3 style={H3}>Geragogy for Caregivers</h3>
-              <p style={{ margin: `0 0 ${SPACING.md}px` }}>
-                The science of helping an older adult learn, the four changes
-                aging makes, and how to support without becoming the help desk.
-                12 sources.
-              </p>
-              <a
-                href="/whitepapers/geragogy-for-caregivers.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={SECONDARY_BTN}
+            <div>
+              <h3
+                style={{
+                  fontSize: 13,
+                  letterSpacing: 2,
+                  textTransform: "uppercase",
+                  color: "#1F6357",
+                  marginTop: 0,
+                  marginBottom: 10,
+                }}
               >
-                Download the PDF
-              </a>
+                Why this time is different
+              </h3>
+              <p
+                style={{
+                  fontSize: 15,
+                  lineHeight: 1.65,
+                  color: MARKETING.inkSoft,
+                  margin: 0,
+                }}
+              >
+                Frustration comes from interfaces that punish mistakes.
+                Mynaani&rsquo;s geragogy-centered, patent-pending,
+                cognitively-protective system keeps every screen stable and
+                predictable — nothing jumps, nothing competes for attention,
+                every step reversible. Confidence is protected by design, not
+                luck.
+              </p>
             </div>
           </div>
-          <div
+        </section>
+
+        <section style={DARK_SECTION} id="gift">
+          <div style={SECTION}>
+            <span style={KICKER}>Give mynaani</span>
+            <h2 style={{ ...H2_LIGHT, color: "#FFFFFF" }}>
+              The gift of staying capable.
+            </h2>
+            <div style={BIZ_GRID}>
+              {BIZ.map((b) => (
+                <div key={b.title} style={BIZ_CARD}>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      letterSpacing: 1.5,
+                      textTransform: "uppercase",
+                      color: MARKETING.gold,
+                      fontWeight: 700,
+                    }}
+                  >
+                    {b.cat}
+                  </span>
+                  <h3 style={{ fontSize: 19, margin: "10px 0" }}>{b.title}</h3>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      color: "#D4D8DC",
+                      lineHeight: 1.6,
+                      margin: 0,
+                    }}
+                  >
+                    {b.p}
+                  </p>
+                </div>
+              ))}
+              <div style={BIZ_CARD}>
+                <span
+                  style={{
+                    fontSize: 12,
+                    letterSpacing: 1.5,
+                    textTransform: "uppercase",
+                    color: MARKETING.gold,
+                    fontWeight: 700,
+                  }}
+                >
+                  The proof
+                </span>
+                <h3 style={{ fontSize: 19, margin: "10px 0" }}>
+                  Read the research first
+                </h3>
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: "#D4D8DC",
+                    lineHeight: 1.6,
+                    margin: 0,
+                  }}
+                >
+                  Two fully-referenced briefs written for caregivers —
+                  &ldquo;Cognitive Engagement&rdquo; and &ldquo;Geragogy for
+                  Caregivers&rdquo; — free to read before you decide.{" "}
+                  <a href="#research" style={LINK_TEAL_DARK}>
+                    Download →
+                  </a>
+                </p>
+              </div>
+            </div>
+            <div style={{ marginTop: 28 }}>
+              <Link
+                to="/gift"
+                style={{ ...CTA_GOLD, display: "inline-block" }}
+                data-gift-entry="gift-section"
+              >
+                Gift mynaani
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section style={SECTION} id="research" aria-labelledby="cg-research">
+          <span style={KICKER_LIGHT}>Read the research before you decide</span>
+          <h2 id="cg-research" style={H2_LIGHT}>
+            Two briefs written for caregivers. Free.
+          </h2>
+          <div style={PROOF_GRID}>
+            <div style={PROOF_CARD}>
+              <div style={PROOF_NUM}>10</div>
+              <div style={PROOF_LABEL}>
+                sources — &ldquo;Cognitive Engagement&rdquo;
+              </div>
+              <p style={PROOF_BODY}>
+                Why mentally stimulating activities matter in later life, what
+                the research shows, and how caregivers can support them.{" "}
+                <a
+                  href="/whitepapers/cognitive-engagement.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={LINK_TEAL}
+                >
+                  Download the brief →
+                </a>
+              </p>
+            </div>
+            <div style={PROOF_CARD}>
+              <div style={PROOF_NUM}>12</div>
+              <div style={PROOF_LABEL}>
+                sources — &ldquo;Geragogy for Caregivers&rdquo;
+              </div>
+              <p style={PROOF_BODY}>
+                The science of helping an older adult learn, the four changes
+                aging makes, and how to support without becoming the help desk.{" "}
+                <a
+                  href="/whitepapers/geragogy-for-caregivers.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={LINK_TEAL}
+                >
+                  Download the brief →
+                </a>
+              </p>
+            </div>
+            <div style={{ ...PROOF_CARD, padding: 0, overflow: "hidden" }}>
+              <img
+                src="/hero-mynaani.jpg"
+                alt="The actual mynaani learner experience"
+                style={{
+                  width: "100%",
+                  height: 120,
+                  objectFit: "cover",
+                  objectPosition: "center 20%",
+                  display: "block",
+                }}
+              />
+              <div style={{ padding: "14px 18px" }}>
+                <div style={PROOF_LABEL}>The real product, not a mockup</div>
+                <p style={PROOF_BODY}>
+                  Judge the actual interface your loved one would use.{" "}
+                  <Link to="/" style={LINK_TEAL}>
+                    See the learner experience →
+                  </Link>
+                </p>
+              </div>
+            </div>
+            <div style={PROOF_CARD}>
+              <div style={PROOF_NUM}>1</div>
+              <div style={PROOF_LABEL}>business day</div>
+              <p style={PROOF_BODY}>
+                Questions about giving it? A person answers within one business
+                day — same day for anything urgent.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div style={CTA_BAND} id="contact">
+          <h2 style={{ ...H2_LIGHT, color: "#FFFFFF", marginTop: 0 }}>
+            Start a conversation
+          </h2>
+          <p
             style={{
-              marginTop: SPACING.xl,
-              backgroundColor: COLORS.surface,
-              borderRadius: RADIUS.lg,
-              padding: SPACING.lg,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: SPACING.md,
+              color: "#D4D8DC",
+              maxWidth: 560,
+              margin: "0 auto 32px",
+              fontSize: 17,
+              lineHeight: 1.6,
             }}
           >
-            <p style={{ margin: 0, maxWidth: 440 }}>
-              <strong>Get research updates.</strong> New briefs as they are
-              published — occasional, evidence-first, no noise.
-            </p>
-            <Link to="/contact" style={SECONDARY_BTN}>
-              Request research updates
-            </Link>
-          </div>
-        </section>
-
-        <hr style={DIVIDER} />
-
-        {/* Gift options */}
-        <section style={SECTION} aria-labelledby="caregiver-gift">
-          <h2 id="caregiver-gift" style={H2}>
-            Gift options
-          </h2>
-          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
-            The gift covers the paid curriculum modules. It is a one-time
-            purchase, not a subscription — the recipient will not be charged
-            again. Checkout happens on Stripe's secure payment page; your card
-            details never reach our system.
+            Questions before you decide — or ready to give it? A person answers
+            within one business day, same day for anything urgent.
           </p>
-          <div style={{ display: "flex", gap: SPACING.md, flexWrap: "wrap" }}>
-            <Link to="/gift" style={PRIMARY_BTN} data-gift-entry="section">
-              Gift mynaani
-            </Link>
-            <Link to="/contact" style={SECONDARY_BTN}>
-              Ask a question first
-            </Link>
-          </div>
-          <p style={{ marginTop: SPACING.lg, marginBottom: 0, maxWidth: 640 }}>
-            <strong>Working with a senior living community?</strong> If you are
-            exploring mynaani for a group rather than one person, see{" "}
-            <Link to="/for-communities" style={TEXT_LINK}>
-              our community program
-            </Link>
-            .
-          </p>
-        </section>
-
-        <hr style={DIVIDER} />
-
-        {/* Contact */}
-        <section style={SECTION} aria-labelledby="caregiver-contact">
-          <h2 id="caregiver-contact" style={H2}>
-            Questions before you give
-          </h2>
-          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
-            If you want to check whether mynaani is the right fit, or you need
-            help with a gift code, email us. A real person answers — usually
-            within one business day.
-          </p>
-          <Link to="/contact" style={PRIMARY_BTN}>
-            Let&apos;s talk
+          <Link to="/contact" style={CTA_GOLD}>
+            Start a conversation
           </Link>
-        </section>
-
-        <hr style={DIVIDER} />
-
-        {/* Sources */}
-        <section style={SECTION} aria-labelledby="caregiver-sources">
-          <h2 id="caregiver-sources" style={H2}>
+          <a
+            href="tel:+18774094144"
+            style={{
+              display: "block",
+              color: MARKETING.tealBright,
+              fontSize: 20,
+              fontWeight: 700,
+              marginTop: 18,
+              textDecoration: "none",
+            }}
+          >
+            1 (877) 409-4144
+          </a>
+          <p
+            style={{
+              marginTop: 20,
+              fontSize: 14,
+              color: MARKETING.mutedOnDark,
+            }}
+          >
+            Working with a senior living community?{" "}
+            <Link to="/for-communities" style={LINK_TEAL_DARK}>
+              See our community program
+            </Link>
+            {" · "}Ready to give it?{" "}
+            <Link
+              to="/gift"
+              style={LINK_TEAL_DARK}
+              data-gift-entry="footer-cta"
+            >
+              Gift mynaani →
+            </Link>
+          </p>
+        </div>
+        <section
+          style={{ ...SECTION, paddingTop: 32, paddingBottom: 40 }}
+          aria-labelledby="cg-sources"
+        >
+          <h2
+            id="cg-sources"
+            style={{
+              fontSize: 13,
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+              color: "#8A8577",
+              fontWeight: 700,
+            }}
+          >
             Sources
           </h2>
-          <p style={{ marginTop: 0, marginBottom: SPACING.lg, maxWidth: 640 }}>
-            The design and research claims on this page are grounded in the
-            following published sources:
-          </p>
-          <ul style={{ ...LIST, maxWidth: 760 }}>
+          <ul
+            style={{
+              listStyle: "none",
+              padding: 0,
+              margin: "14px 0 0",
+              fontSize: 13,
+              color: "#6B6759",
+              lineHeight: 1.7,
+            }}
+          >
             {SOURCES.map((s) => (
-              <li key={s.url} style={{ marginBottom: SPACING.lg }}>
+              <li key={s.url} style={{ marginBottom: SPACING.md }}>
                 <a
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={TEXT_LINK}
+                  style={LINK_TEAL}
                 >
                   {s.name}
                 </a>
-                <p
-                  style={{
-                    margin: `${SPACING.xs}px 0 0`,
-                    color: COLORS.textPrimary,
-                  }}
-                >
-                  {s.why}
-                </p>
+                <br />
+                {s.why}
               </li>
             ))}
           </ul>

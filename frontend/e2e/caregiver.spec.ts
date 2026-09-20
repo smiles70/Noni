@@ -1,14 +1,12 @@
 import { test, expect } from "@playwright/test";
 import { injectAxe, checkA11y } from "axe-playwright";
 
-test.describe("Caregiver marketing page", () => {
+test.describe("Caregiver marketing page (bid-17)", () => {
   test("renders the caregiver gift journey and CTA", async ({ page }) => {
     await page.goto("/caregiver");
     // Hero heading is the primary h1 on the page.
     await expect(
-      page.getByText(
-        "Give calm, self-paced AI learning to someone you care about",
-      ),
+      page.getByText("They learn AI.", { exact: false }),
     ).toBeVisible();
     const gift = page.getByRole("link", { name: /Gift mynaani/i }).first();
     await expect(gift).toBeVisible();
@@ -27,8 +25,7 @@ test.describe("Caregiver marketing page", () => {
     await expect(
       page.locator('a[href="/whitepapers/geragogy-for-caregivers.pdf"]'),
     ).toBeVisible();
-    // Use the unique body link text rather than the shared href, which
-    // appears in the header, body, and footer.
+    // Cross-persona way-back to the facility surface.
     await expect(
       page.getByRole("link", { name: /our community program/i }),
     ).toBeVisible();
@@ -36,6 +33,8 @@ test.describe("Caregiver marketing page", () => {
     await expect(
       page.getByRole("link", { name: /mynaani home/i }),
     ).toBeVisible();
+    // Toll-free line present.
+    await expect(page.locator('a[href="tel:+18774094144"]')).toBeVisible();
   });
 
   test("passes WCAG 2.1 AA automated checks (axe-core)", async ({ page }) => {

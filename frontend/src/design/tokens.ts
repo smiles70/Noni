@@ -38,10 +38,31 @@ export const COLORS = {
 
 export type ColorToken = keyof typeof COLORS;
 
+/**
+ * Marketing-surface palette — ADR-0034 (dark bid-17 annex).
+ *
+ * Scoped: these tokens are legal ONLY on `data-contract-exemption`
+ * marketing surfaces (/caregiver, /for-communities). Learner, curriculum,
+ * paywall, gift-checkout, and account surfaces use COLORS above.
+ * Contrast rules and usage notes are in ADR-0034.
+ */
+export const MARKETING = {
+  charcoal: "#26292E",
+  charcoalDeep: "#1D1F22",
+  charcoalFoot: "#141619",
+  teal: "#2E8C7F",
+  tealBright: "#6FC2B4",
+  gold: "#C9A24D",
+  paper: "#F5F3EE",
+  mutedOnDark: "#B9BEC4",
+  inkSoft: "#4A4D52",
+} as const;
+
 /** The complete, closed set of permitted color hex values. */
-export const ALLOWED_COLOR_VALUES: readonly string[] = Object.freeze(
-  Object.values(COLORS),
-);
+export const ALLOWED_COLOR_VALUES: readonly string[] = Object.freeze([
+  ...Object.values(COLORS),
+  ...Object.values(MARKETING),
+]);
 
 // ---- Spacing (CONTRACT Section I.B) -----------------------------------------
 
