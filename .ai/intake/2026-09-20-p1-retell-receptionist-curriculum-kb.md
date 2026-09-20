@@ -110,3 +110,24 @@ actual curriculum content.
 - **Graph constraint**: CON-BID17-K5 (~50 interactions/mo shared Retell
   budget) — prompt instructs concise answers that point back to the
   unit; owner to watch Retell usage post-launch.
+
+## Applied (2026-09-20, owner-approved)
+
+- `mynaani-curriculum-v1` created: `knowledge_base_1dcee504e7c01fc7`
+  with all 6 module docs (verified via get-knowledge-base).
+- Attached to receptionist LLM alongside `mynaani-voice-v2`
+  (`knowledge_base_ids` = union).
+- `## Helping with a lesson` appended to `general_prompt` (marked,
+  idempotent).
+- Isolation tripwire PASSED — the four non-target LLMs unchanged.
+- Snapshots: `.ai/audit/retell-curriculum/{pre,post}-state.json`.
+- API fix learned: `create-knowledge-base` is form-encoded and requires
+  ≥1 source at creation (first doc rides the create call).
+
+## Remaining
+
+- [ ] Owner test call: web call `call_440a7bab496b5f614c9ea8c2cdb`
+  (join page: AGENCY_BIDS/receptionist-test-call.html?t=<access_token>,
+  token ~10min TTL — regenerate via create-web-call if expired) or dial
+  1-877-409-4144. Ask a unit question → expect curriculum-grounded
+  answer; ask a practice question → expect coaching, not the answer.

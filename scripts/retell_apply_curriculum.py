@@ -151,19 +151,32 @@ def main() -> int:
     (AUDIT_DIR / "pre-state.json").write_text(json.dumps(pre, indent=1))
 
     # --- KB: create or reuse by name ---------------------------------------
+    # create-knowledge-base is form-encoded (not JSON) and requires at
+    # least one source — create carries the first doc; the rest go
+    # through add-knowledge-base-sources.
     kbs = client.call("GET", "/list-knowledge-bases").json()
     kb = next((k for k in kbs if k.get("knowledge_base_name") == CURRICULUM_KB_NAME), None)
+    pending = list(docs)
     if kb:
         kb_id = kb["knowledge_base_id"]
         print(f"{mode}: KB '{CURRICULUM_KB_NAME}' exists -> {kb_id}")
     elif apply:
-        r = client.call("POST", "/create-knowledge-base",
-                        json={"knowledge_base_name": CURRICULUM_KB_NAME})
+        first, *rest = docs
+        r = client.call(
+            "POST", "/create-knowledge-base",
+            data={
+                "knowledge_base_name": CURRICULUM_KB_NAME,
+                "knowledge_base_texts": json.dumps(
+                    [{"title": first.stem, "text": first.read_text()}]
+                ),
+            },
+        )
         kb_id = r.json()["knowledge_base_id"]
-        print(f"{mode}: created KB {kb_id}")
+        pending = rest
+        print(f"{mode}: created KB {kb_id} with source '{first.stem}'")
     else:
         kb_id = "<would-create>"
-        print(f"{mode}: would create KB '{CURRICULUM_KB_NAME}'")
+        print(f"{mode}: would create KB '{CURRICULUM_KB_NAME}' with {docs[0].stem}")
 
     client._kb_ids = {kb_id} if kb_id.startswith("knowledge_base_") else set()
 
@@ -174,7 +187,7 @@ def main() -> int:
         existing_titles = {
             s.get("title") for s in kb_state.get("knowledge_base_sources", [])
         }
-    for doc in docs:
+    for doc in pending:
         title = doc.stem  # module-0 .. module-5
         if title in existing_titles:
             print(f"{mode}: source '{title}' already present — skip")
