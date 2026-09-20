@@ -730,7 +730,7 @@ export default function CaregiverPage() {
 
       {/* MKT-FOOTER-001: shared fat footer — brand, doormat nav row,
           legal row (privacy/terms/copyright). Backend-served labels. */}
-      <Footer currentPath="/caregiver" />
+      <Footer currentPath="/caregiver" variant="dark" />
     </div>
   );
 }

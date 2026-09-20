@@ -20,7 +20,13 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import {
+  COLORS,
+  MARKETING,
+  RADIUS,
+  SPACING,
+  TYPOGRAPHY,
+} from "../design/tokens";
 import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import { loadFooterContent, type SiteFooterContent } from "../api/siteChrome";
 
@@ -89,9 +95,16 @@ const FALLBACK: SiteFooterContent = {
 interface Props {
   /** Current page path; its own nav entry is de-emphasized. */
   currentPath?: string;
+  /**
+   * "dark" renders the same backend-served content on the ADR-0034
+   * charcoal marketing palette (bid-17 pages). Content contract is
+   * identical — presentation only. PS-BID17-002.
+   */
+  variant?: "default" | "dark";
 }
 
-export default function Footer({ currentPath }: Props) {
+export default function Footer({ currentPath, variant }: Props) {
+  const dark = variant === "dark";
   const [content, setContent] = useState<SiteFooterContent>(FALLBACK);
 
   useEffect(() => {
@@ -109,24 +122,44 @@ export default function Footer({ currentPath }: Props) {
   }, []);
 
   return (
-    <footer style={FOOTER_WRAP} data-site-footer="fat">
-      <div style={FOOTER}>
-        <div style={BRAND_PLATE}>
+    <footer
+      style={dark ? FOOTER_WRAP_DARK : FOOTER_WRAP}
+      data-site-footer="fat"
+    >
+      <div style={dark ? FOOTER_DARK : FOOTER}>
+        {dark ? (
           <img
-            src="/mynaani-logo.webp"
+            src="/mynaani-icon-linework-dark.svg"
             alt={content.brand_label}
-            width={72}
-            height={75}
+            height={56}
             style={BRAND}
           />
-        </div>
-        <p style={TAGLINE}>{content.tagline}</p>
+        ) : (
+          <div style={BRAND_PLATE}>
+            <img
+              src="/mynaani-logo.webp"
+              alt={content.brand_label}
+              width={72}
+              height={75}
+              style={BRAND}
+            />
+          </div>
+        )}
+        <p style={dark ? TAGLINE_DARK : TAGLINE}>{content.tagline}</p>
         <nav aria-label="Site" style={NAV}>
           {content.nav_links.map((link) => (
             <Link
               key={link.href}
               to={link.href}
-              style={link.href === currentPath ? NAV_LINK_CURRENT : NAV_LINK}
+              style={
+                link.href === currentPath
+                  ? dark
+                    ? NAV_LINK_CURRENT_DARK
+                    : NAV_LINK_CURRENT
+                  : dark
+                    ? NAV_LINK_DARK
+                    : NAV_LINK
+              }
               aria-current={link.href === currentPath ? "page" : undefined}
             >
               {link.label}
@@ -138,7 +171,7 @@ export default function Footer({ currentPath }: Props) {
             <a
               key={link.href}
               href={link.href}
-              style={SOCIAL_LINK}
+              style={dark ? SOCIAL_LINK_DARK : SOCIAL_LINK}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`mynaani on ${link.label}`}
@@ -148,16 +181,22 @@ export default function Footer({ currentPath }: Props) {
             </a>
           ))}
         </nav>
-        <div style={HAIRLINE} />
+        <div style={dark ? HAIRLINE_DARK : HAIRLINE} />
         <div style={LEGAL_ROW}>
           <span style={LEGAL_LINKS}>
             {content.legal_links.map((link) => (
-              <Link key={link.href} to={link.href} style={LEGAL_LINK}>
+              <Link
+                key={link.href}
+                to={link.href}
+                style={dark ? LEGAL_LINK_DARK : LEGAL_LINK}
+              >
                 {link.label}
               </Link>
             ))}
           </span>
-          <span style={COPYRIGHT}>{content.copyright}</span>
+          <span style={dark ? COPYRIGHT_DARK : COPYRIGHT}>
+            {content.copyright}
+          </span>
         </div>
       </div>
     </footer>
@@ -275,4 +314,55 @@ const LEGAL_LINK: CSSProperties = {
 
 const COPYRIGHT: CSSProperties = {
   color: COLORS.background,
+};
+
+// ---- Dark variant (bid-17 marketing surfaces, ADR-0034) -------------------
+// Same backend-served content on the charcoal palette. All text meets
+// AA on charcoal: bodyOnDark ≈11:1, mutedOnDark ≈7.5:1, tealBright ≈6.4:1.
+
+const FOOTER_WRAP_DARK: CSSProperties = {
+  ...FOOTER_WRAP,
+  backgroundColor: MARKETING.charcoalDeep,
+};
+
+const FOOTER_DARK: CSSProperties = {
+  ...FOOTER,
+  backgroundColor: MARKETING.charcoal,
+  color: MARKETING.bodyOnDark,
+};
+
+const TAGLINE_DARK: CSSProperties = {
+  ...TAGLINE,
+  color: MARKETING.bodyOnDark,
+};
+
+const NAV_LINK_DARK: CSSProperties = {
+  ...NAV_LINK,
+  color: MARKETING.bodyOnDark,
+};
+
+const NAV_LINK_CURRENT_DARK: CSSProperties = {
+  ...NAV_LINK_DARK,
+  color: MARKETING.tealBright,
+  fontWeight: 600,
+};
+
+const SOCIAL_LINK_DARK: CSSProperties = {
+  ...SOCIAL_LINK,
+  color: MARKETING.mutedOnDark,
+};
+
+const HAIRLINE_DARK: CSSProperties = {
+  ...HAIRLINE,
+  borderTop: `1px solid ${MARKETING.darkCardBorder}`,
+};
+
+const LEGAL_LINK_DARK: CSSProperties = {
+  ...LEGAL_LINK,
+  color: MARKETING.mutedOnDark,
+};
+
+const COPYRIGHT_DARK: CSSProperties = {
+  ...COPYRIGHT,
+  color: MARKETING.mutedOnDark,
 };

@@ -94,3 +94,49 @@ describe("Footer — shared site footer", () => {
     expect(current?.getAttribute("href")).toBe("/caregiver");
   });
 });
+
+describe("Footer — dark marketing variant (PS-BID17-002 / ADR-0034)", () => {
+  async function renderDark(currentPath?: string) {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const root = createRoot(host);
+    await act(async () => {
+      root.render(
+        createElement(
+          MemoryRouter,
+          null,
+          createElement(Footer, { currentPath, variant: "dark" }),
+        ),
+      );
+    });
+    return host;
+  }
+
+  it("keeps the full backend-served content contract on charcoal", async () => {
+    const host = await renderDark("/caregiver");
+    const footer = host.querySelector("footer")!;
+    // Same landmarks + content: doormat nav, socials, legal row.
+    expect(footer.querySelector('nav[aria-label="Site"]')).toBeTruthy();
+    expect(footer.querySelector('nav[aria-label="Social"]')).toBeTruthy();
+    const hrefs = [...footer.querySelectorAll("a")].map((a) =>
+      a.getAttribute("href"),
+    );
+    expect(hrefs).toContain("/privacy");
+    expect(hrefs).toContain("/terms");
+    expect(footer.textContent).toContain(
+      `© ${new Date().getFullYear()} mynaani`,
+    );
+    // Brand uses the K-6 linework-dark mark directly on charcoal.
+    expect(
+      footer.querySelector('img[src="/mynaani-icon-linework-dark.svg"]'),
+    ).toBeTruthy();
+  });
+
+  it("applies the charcoal palette, not the learner green", async () => {
+    const host = await renderDark();
+    const footer = host.querySelector("footer")!;
+    expect(footer.style.backgroundColor).not.toBe("");
+    const inner = footer.firstElementChild as HTMLElement;
+    expect(inner.style.backgroundColor).toBe("rgb(38, 41, 46)"); // charcoal
+  });
+});
