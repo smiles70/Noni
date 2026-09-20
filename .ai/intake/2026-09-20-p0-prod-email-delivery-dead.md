@@ -77,6 +77,23 @@ Set on production `noni-api`:
 - Look for subject "Contact request — EmailPath Verification" +
   "[mynaani] prod email path verification" at steven@mindbyndr.com.
 
+## Domain verification progress (2026-09-20)
+
+Resend domain `mynaani.com` created via full-access key —
+id `027efb86-a671-4c96-a4be-9d11ae907730`, status `not_started`.
+DNS records required (mynaani.com DNS is at **GoDaddy** —
+domaincontrol.com nameservers — not Cloudflare):
+
+| Type | Name | Value |
+|---|---|---|
+| TXT | resend._domainkey | p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCfbVfZ2XBKDmiob9u2PdgfxtTRvnhYGXrvhZAOssVZy2avq4yeIsfAZKtWVMYM7HyQxyJRSDslH6vgftxxYjWUrg8/rHM+4EO1ouDYbGtHLt6Q7k3/78b7wS8WIcuGgfNMQLDYxpynSfpXoaXAYkCO+JPRqmTkF/LCGsmVXE4k6wIDAQAB |
+| MX  | send | feedback-smtp.us-east-1.amazonses.com (priority 10) |
+| TXT | send | v=spf1 include:amazonses.com ~all |
+| CNAME | rsend | send.forge.rmta.net |
+
+Owner adds at GoDaddy DNS management → Resend auto-verifies → then
+set prod `EMAIL_FROM=<x@mynaani.com>` and clear `EMAIL_OVERRIDE_TO`.
+
 ## Still open
 
 - Verify `mynaani.com` domain in Resend (DNS) → then set
