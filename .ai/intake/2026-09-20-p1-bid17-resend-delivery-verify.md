@@ -1,6 +1,6 @@
 # PS-BID17-006 — Resend end-to-end delivery unverified (inbox confirmation)
 
-**Status:** owner-gated | **Severity:** P1 verification gap
+**Status:** narrowed by deep dive — see below | **Severity:** P1 verification gap
 **Source:** staging integration check 2026-09-20
 
 ## Problem statement
@@ -24,10 +24,23 @@ Marked inquiry: `integration-check@mynaani.test`, subject:
 "Contact request — Integration Check", body prefixed
 "STAGING INTEGRATION CHECK 2026-09-20".
 
-## Acceptance
+## Deep-dive findings (Railway CLI + Resend API, 2026-09-20)
 
-- Owner confirms probe email received at `help@mynaani.com` (or Resend
-  dashboard shows the send event).
-- If absent: check Railway backend logs for
-  `inquiry delivery failed after retry` — the lead is preserved in logs
-  by design on double failure.
+- `EMAIL_OVERRIDE_TO=steven@mindbyndr.com` on staging — ALL staging
+  email redirects there. **The probe went to steven@mindbyndr.com,
+  not help@mynaani.com.** Correct staging isolation, not a bug.
+- `EMAIL_FROM=onboarding@resend.dev` — Resend sandbox sender (staging
+  only; prod must carry a verified domain — verify before promotion).
+- `RESEND_API_KEY` is send-only restricted (401 on list-emails) —
+  correct least-privilege.
+- No `email rejected`/`send failed`/`inquiry delivery failed` lines in
+  backend logs; retry + log-preserve contract confirmed in code.
+- GAP-BID17-015 stands: Resend is the sole delivery path, no DB
+  fallback — mitigated by retry + ERROR-log lead preservation.
+
+## Acceptance (revised)
+
+- Owner checks **steven@mindbyndr.com** for subject "Contact request —
+  Integration Check". If present → delivery path proven end-to-end.
+- Before production promotion: verify prod `EMAIL_FROM` is a verified
+  sender domain and `EMAIL_OVERRIDE_TO` is empty.

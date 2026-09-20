@@ -1,6 +1,6 @@
 # PS-BID17-008 — Retell agent live-answer path unverified (budget-gated)
 
-**Status:** owner-gated | **Severity:** P1 verification gap
+**Status:** narrowed by deep dive — two findings split to PS-013/014 | **Severity:** P1 verification gap
 **Source:** staging integration check 2026-09-20
 
 ## Problem statement
@@ -28,8 +28,23 @@ invisible until someone clicks.
 - Domain-lock check is free: Retell console → agent → allowed domains
   must include `staging.noni-web.pages.dev`.
 
-## Acceptance
+## Deep-dive findings (Retell API via token, 2026-09-20)
 
-- Owner (or delegate) clicks the widget once on `/caregiver` and once
-  on `/for-communities`; confirms the correct persona agent answers.
-- Optional: one call to the toll-free line confirms the voice path.
+- Both chat agents confirmed live + persona-correct:
+  `agent_646d…` = "MyNaani Chat Assistant" (gift),
+  `agent_719b…` = "MyNaani Chat Assistant — Facility" — both
+  llm=retell-llm, version 0 (matches baked `data-agent-version`).
+- `RETELL_CALLBACK_AGENT_ID` = `agent_f475…` "Callback Assistant
+  (staging)" → correctly webhooks to **staging** CRM.
+- FINDING A → PS-013: both chat agents' webhooks point to **prod** CRM.
+- FINDING B → PS-014: toll-free `+18774094144` has no inbound agent
+  bound in Retell (receptionist agent exists but unattached).
+- Recent call list shows prod callback-agent activity (`not_connected`
+  ×5 — outbound attempts, not staging).
+
+## Remaining acceptance
+
+- One manual widget click per page (budget: 2 interactions) — confirms
+  domain-lock acceptance + agent answer; still owner/manual.
+- Domain-lock config lives on the publishable key in Retell console —
+  not API-visible; manual check required.
