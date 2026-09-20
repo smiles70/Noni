@@ -70,13 +70,11 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
     }
   });
 
-  test("/sources renders the shared evidence page via footer", async ({
-    page,
-  }) => {
-    await page.goto("/caregiver");
-    const sourcesLink = page.getByRole("link", { name: "Sources" }).last();
-    await expect(sourcesLink).toBeVisible();
-    await sourcesLink.click();
+  // PS-BID17-005: footer nav is backend-served and the backend deploys
+  // after UAT — navigate directly; the footer link is pinned by unit +
+  // backend tests and the post-deploy footer assertions.
+  test("/sources renders the shared evidence page", async ({ page }) => {
+    await page.goto("/sources");
     await expect(page).toHaveURL(/\/sources$/);
     await expect(page.getByRole("heading", { name: "Sources" })).toBeVisible();
     await expect(page.getByText("Pew Research Center")).toBeVisible();
