@@ -42,11 +42,14 @@ intake file, the skill-invocation checklist, and this memo stub.
 
 ## Skill audit (retroactive — run 2026-09-20 after owner flagged gap)
 
-- **geragogy:** SourcesPage checked — fixed `textTransform:"uppercase"`
-  on a >2-word label (contract: all-caps ≤2 words only). All colors from
-  COLORS; heading = headingScale.level1; components = Heading/Body/List
-  only. Marketing pages carry `data-contract-exemption` so annex rules
-  (ADR-0030/0034) govern them — verified present on both.
+- **geragogy:** CORRECTED after owner review — the learner contract does
+  **not** apply to the marketing-annex family (ADR-0030: `/caregiver`,
+  `/for-communities`, `/sources`, landing). An initial audit wrongly
+  "fixed" an uppercase group label on SourcesPage; reverted — uppercase
+  kickers are the bid-17 register and permitted under the annex. The
+  real defect was the *missing exemption marker*: `/sources` now carries
+  `data-contract-exemption="marketing.sources"` so its governance is
+  explicit and auditable like the two page surfaces.
 - **senior-living-agency:** `/for-communities` copy unchanged by these
   tickets; sources relocated, not removed — evidence trail intact.
   No invented claims introduced; inline attribution retained in proof

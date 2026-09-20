@@ -30,7 +30,7 @@ const GROUP_LABEL: CSSProperties = {
   fontSize: 13,
   fontWeight: 700,
   letterSpacing: 1.5,
-
+  textTransform: "uppercase",
   color: COLORS.textPrimary,
   margin: `${SPACING.xl}px 0 ${SPACING.sm}px`,
 };
@@ -154,7 +154,7 @@ function SourceGroup({
 
 export default function SourcesPage() {
   return (
-    <div style={PAGE}>
+    <div style={PAGE} data-contract-exemption="marketing.sources">
       <main style={WRAP}>
         <h1
           style={{

@@ -209,8 +209,11 @@ Owner-reported defects are still tickets, not informal fixes. Even P0s:
    problem statement, root cause (confirmed in code, not assumed),
    options, edge cases, acceptance. Before implementation, not after.
 2. **Skill invocation is mandatory even on small diffs** — check the
-   skill list every time: any frontend page/component/style/copy change
-   invokes `geragogy`; B2B surfaces invoke `senior-living-agency`;
+   skill list every time: frontend changes invoke `geragogy` for
+   learner/product surfaces; marketing-annex surfaces (ADR-0030:
+   `/caregiver`, `/for-communities`, `/sources`, landing) are checked
+   against the annex + ADR-0034 palette instead — the learner contract
+   does NOT apply there; B2B surfaces invoke `senior-living-agency`;
    anything touching a component mounted on purchase/paywall/redemption
    surfaces (including shared chrome like `Footer`) invokes
    `journey-loop-guard` — verify mount points with grep, don't assume.
