@@ -107,3 +107,4 @@ gate). Dry-run verified against live Retell. 11 tests green.
 
 Open: GoDaddy DNS records (owner) → then EMAIL_FROM @mynaani.com +
 drop EMAIL_OVERRIDE_TO. PS-019 logo parked. PS-015/017/018 deferred.
+- 2026-09-21: PS-E2E-001 closed — local Playwright matrix completed (firefox+webkit installed, userns workaround documented in CONTRIBUTING).
