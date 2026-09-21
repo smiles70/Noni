@@ -87,3 +87,23 @@ Owner-flagged staging defects fixed and pushed (e209f1e, f9258fd): full-bleed ex
 ## 2026-09-20 — integration check + defect batch 2
 
 Staging integration triple-check: all 9 graph integrations verified live (Celery via Railway CLI). Gaps → PS-006–009. Owner defects → PS-010 footer full-bleed band, PS-011 hero gift-link removal (marker moved to nav), PS-012 RCT card removal. Governance: annex boundary checked before audit. Pushed to staging.
+
+## 2026-09-20 — prod promotion + PS-020 receptionist curriculum KB
+
+PROD DEPLOYED: `feat/bid17-marketing-pages` merged to `main` (5dd994d)
+with owner approval after full pre-flight. All deploy jobs green; prod
+verified — pages 200, forms→CRM unchanged (tracker+ingest live), both
+Retell journey agents in bundle, footer API serving, real visitor
+telemetry flowing. Prod DB confirmed at alembic head `retire_n8n_help`
+via SSH tunnel (preDeployCommand is null — migrations ran another way;
+verified state, not assumed). PS-008/013/014 resolved per owner.
+
+PS-020 (receptionist curriculum KB) implemented to staging:
+`curriculum_to_kb.py` generator (36 units → retell/kb/curriculum/*.md,
+deterministic, --check for drift) + `retell_apply_curriculum.py`
+(egress-allowlist guardrails, snapshots, isolation tripwire, --apply
+gate). Dry-run verified against live Retell. 11 tests green.
+**Retell --apply awaits owner production approval.**
+
+Open: GoDaddy DNS records (owner) → then EMAIL_FROM @mynaani.com +
+drop EMAIL_OVERRIDE_TO. PS-019 logo parked. PS-015/017/018 deferred.
