@@ -51,8 +51,10 @@ owner actually asked for, what success looks like. No intake, no pixels.
   mocks shipped pure type/layout while real agency pages run photography.
   Placeholder order: (1) on-brief generated proof via Gemini image models
   (Nano Banana — `gemini-3-pro-image` studio / `gemini-2.5-flash-image`
-  fast; matches the photo brief's subject/treatment), (2) license-clean
-  stock (Unsplash/Pexels). Mark PLACEHOLDER in a comment + one-line photo
+  fast; matches the photo brief's subject/treatment), (2) on any error or
+  quota limit, default to Pexels automatically — direct
+  `images.pexels.com` downloads need no key. Never ship an image-shaped
+  hole; never block on the fallback. Mark PLACEHOLDER in a comment + one-line photo
   brief per image (subject, treatment, placement) so real photography can
   be commissioned. A bid that omits imagery the grammar demands is an
   auto-fail.
