@@ -30,9 +30,16 @@ pytest backend/tests/ -v
 E2E (Playwright + axe) is run separately because it needs a one-time browser install:
 ```bash
 cd frontend
-npm run test:e2e:install   # one-time, ~150 MB
+npm run test:e2e:install   # one-time, ~150 MB (chromium + firefox + webkit)
 npm run test:e2e
 ```
+
+Run against a deployed site with `PLAYWRIGHT_TEST_BASE_URL=https://staging.noni-web.pages.dev`.
+On machines where user namespaces are unavailable (containers, restricted
+kernels), firefox launches but times out with `unshare(CLONE_NEWPID): EPERM`
+— prefix runs with `MOZ_DISABLE_CONTENT_SANDBOX=1
+MOZ_DISABLE_GMP_SANDBOX=1`. Webkit cold-start can exceed the 30s goto
+timeout on first run; re-run before suspecting a real failure.
 
 ## Adding a curriculum unit
 
