@@ -16,7 +16,7 @@ into a structured intake the `ad-agency` pipeline can bid on.
 | Screenshot / image (png, jpg, webp) | **ocular** MCP — `analyze_ui_screenshot` (layout/components) + `extract_text_from_image` (copy capture) | Structured layout + verbatim copy + noted conventions |
 | PDF / doc | Read tool; `pdftotext` if binary | Extracted claims, register, proof patterns |
 | HTML file or pasted markup | Parse structure — sections, components, CTAs | Page-architecture map (grammar, not skin) |
-| URL | Playwright capture (screenshot + DOM) **plus** `extract-images.mjs` harvest | Evidence snapshot + downloaded imagery in `.ai/research/evidence/<site>/` |
+| URL | `playwright-mcp` or Playwright capture (screenshot + DOM) **plus** `extract-images.mjs` harvest | Evidence snapshot + downloaded imagery in `.ai/research/evidence/<site>/` |
 | Pasted copy / brief text | Direct | Persona + goal signals into the intake doc |
 
 **Pixel-level review is mandatory for every image** — ocular analyze pass,
@@ -32,7 +32,22 @@ treatments, and density are part of the grammar being bid on.
 
 **Harvested images are evidence, never mock assets.** Copyright stands:
 they inform photo briefs and conventions; shipped mocks use license-clean
-placeholders (Unsplash/Pexels) or commissioned art.
+placeholders (Unsplash/Pexels), on-brief generated proofs (Nano Banana /
+Gemini image models), or commissioned art.
+
+## Evidence tooling (installed, use it)
+
+- **`extract-images.mjs`** — harvests every image a page serves + manifest.
+- **`extract-palette.mjs`** — dominant swatches per image (node-vibrant);
+  run on harvested screenshots so palette conventions are data, not
+  eyeballing. Needs `npm i node-vibrant`.
+- **`playwright-mcp`** (`npx @playwright/mcp`) — structured a11y snapshots
+  and live interaction for URL intake; richer than raw fetch on JS-heavy
+  sites. `chrome-devtools-mcp` adds network/console/perf detail when a page
+  misbehaves under capture.
+- **`mcp-screenshot`** (grahama1970) — every captured screenshot goes into a
+  searchable vault: BM25 text + perceptual-similarity lookup. Evidence
+  becomes queryable ("all dark-hero examples").
 
 ## Output contract
 
