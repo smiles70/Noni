@@ -16,8 +16,12 @@ owner actually asked for, what success looks like. No intake, no pixels.
 ## Stage 1 — Evidence capture (never inferred)
 
 - **Actual published work, not imagined agency style.** Capture real pages:
-  screenshots + HTML structure + copy patterns from each agency/vendor.
-  Record in graph as `Agency`/`Vendor`/`VisualConvention`/`ProofPattern` nodes.
+  screenshots + HTML structure + copy patterns + **the real imagery** —
+  run `agency-intake/extract-images.mjs` per page so the evidence base holds
+  the photographs themselves (subjects, treatment, density), not just a
+  description of them. Harvested images are evidence for photo briefs —
+  never mock assets (copyright). Record in graph as `Agency`/`Vendor`/
+  `VisualConvention`/`ProofPattern` nodes.
 - **Grammar drift guard (ep-013 lesson):** bids must translate each agency's
   *actual* page architecture — not generic colored-block skeletons wearing
   agency names. If three bids share a skeleton, they're all wrong.

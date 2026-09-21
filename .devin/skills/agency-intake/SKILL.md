@@ -16,11 +16,23 @@ into a structured intake the `ad-agency` pipeline can bid on.
 | Screenshot / image (png, jpg, webp) | **ocular** MCP — `analyze_ui_screenshot` (layout/components) + `extract_text_from_image` (copy capture) | Structured layout + verbatim copy + noted conventions |
 | PDF / doc | Read tool; `pdftotext` if binary | Extracted claims, register, proof patterns |
 | HTML file or pasted markup | Parse structure — sections, components, CTAs | Page-architecture map (grammar, not skin) |
-| URL | Playwright capture (screenshot + DOM) | Evidence snapshot in `.ai/research/agency-bids/evidence/` |
+| URL | Playwright capture (screenshot + DOM) **plus** `extract-images.mjs` harvest | Evidence snapshot + downloaded imagery in `.ai/research/evidence/<site>/` |
 | Pasted copy / brief text | Direct | Persona + goal signals into the intake doc |
 
 **Pixel-level review is mandatory for every image** — ocular analyze pass,
 not a glance. Record what the layout *does*, not what it looks like.
+
+**Imagery harvest is mandatory for every URL** —
+`node .devin/skills/agency-intake/extract-images.mjs <url>
+.ai/research/evidence/<site-slug>` downloads every image the page serves
+(img/srcset/lazy/og/css/video-poster) and writes `images-manifest.json`
+(file, source URL, bytes, alt text, context). Without the real imagery the
+evidence base describes pages instead of containing them — photo subjects,
+treatments, and density are part of the grammar being bid on.
+
+**Harvested images are evidence, never mock assets.** Copyright stands:
+they inform photo briefs and conventions; shipped mocks use license-clean
+placeholders (Unsplash/Pexels) or commissioned art.
 
 ## Output contract
 
