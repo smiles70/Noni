@@ -48,3 +48,15 @@ the support tables and sits at prod head. Residual artifacts remain.
 - [x] Railway audit — only `noni-api` in prod + staging projects, zero
       N8N vars deployed. No hosted n8n service.
 - [x] Backend suite green post-removal (788 passed); config loads clean.
+
+## Final sweep (2026-09-22)
+
+- Stale clone `/home/h/mynaani/n8n-help-flow` deleted — verified unique
+  work first (unpushed branches, untracked research docs), archived to
+  `~/Downloads/legacy-help-flow-archive-2026-09-22.tar.gz` (5.7 MB,
+  git history included) before removal.
+- Alembic version files renamed `n8n_*` → `help_flow_*` — alembic keys
+  off revision IDs, head still resolves `retire_n8n_help (head)`.
+- Zero `n8n` strings remain in `backend/`, `frontend/src/`, `alembic/`
+  filenames. ADR-0032 + intake history keep the name as retirement
+  record only.
