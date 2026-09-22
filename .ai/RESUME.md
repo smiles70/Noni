@@ -108,3 +108,4 @@ gate). Dry-run verified against live Retell. 11 tests green.
 Open: GoDaddy DNS records (owner) → then EMAIL_FROM @mynaani.com +
 drop EMAIL_OVERRIDE_TO. PS-019 logo parked. PS-015/017/018 deferred.
 - 2026-09-21: PS-E2E-001 closed — local Playwright matrix completed (firefox+webkit installed, userns workaround documented in CONTRIBUTING).
+- 2026-09-21: PS-BID17-021/022 verified on staging — /partners + /contact now carry bid-17 MARKETING grammar; form contracts, honeypots, mailto fallbacks, persona/widget isolation intact; Jev gates green at plan (0.87) and post-change (0.95 clean). Held on staging pending owner UAT.
