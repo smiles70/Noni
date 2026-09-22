@@ -1,7 +1,7 @@
 # PS-BID17-021 — /partners retains pre-bid-17 design (form page)
 
 **Date:** 2026-09-21 · **Priority:** P2 · **Parent:** PS-BID17-020 (scope A,
-Jev pick) · **Status:** implementing
+Jev pick) · **Status:** verified-staging — awaiting owner UAT + prod sign-off
 **Skills invoked:** `senior-living-agency` (B2B register + visual
 conventions), `agency-intake` n/a (no dropped assets). Jev gates run at
 plan and post-change stages — research memo records both.
@@ -52,3 +52,7 @@ forms pages were never in the diff (confirmed via `git show --stat`).
 - [ ] Unit test + e2e pin land in the same commit.
 - [ ] axe clean; no new bundle bloat beyond budget.
 - [ ] Staging-verified; prod untouched.
+
+## Verification
+
+Staging verified 2026-09-21: charcoal gradient hero + gold CTA live, form fields + honeypot + ChatWidget(facility) intact, axe 0, smoke e2e pin green. Jev post-change gate: ship 0.71, clean 0.95.

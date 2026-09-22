@@ -1,7 +1,7 @@
 # PS-BID17-022 — /contact retains pre-bid-17 design (shared form page)
 
 **Date:** 2026-09-21 · **Priority:** P2 · **Parent:** PS-BID17-020 (scope A,
-Jev pick) · **Status:** implementing
+Jev pick) · **Status:** verified-staging — awaiting owner UAT + prod sign-off
 **Skills invoked:** `senior-living-agency` (grammar) + persona rules from
 AGENTS.md — `/contact` is a **shared surface**: persona-neutral copy, no
 gift pricing, no facility tiers, **no chat widget**.
@@ -41,3 +41,7 @@ Same as PS-BID17-021 — outside bid-17 phase-2 scope.
 - [ ] POST body identical; honeypot + mailto fallback intact.
 - [ ] Unit + e2e pins same commit; axe clean.
 - [ ] Staging-verified; prod untouched.
+
+## Verification
+
+Staging verified 2026-09-21: grammar live, no ChatWidget (shared-surface rule held), honeypot intact, axe 0. Same Jev gate as 021.
