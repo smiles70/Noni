@@ -89,6 +89,13 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
     await expect(
       page.getByRole("button", { name: "Send inquiry" }),
     ).toBeVisible();
+    // PS-BID17-021: charcoal hero + gold CTA (bid-17 grammar)
+    await expect(page.getByText("Partnerships")).toBeVisible();
+    const bg = await page
+      .locator("main > div")
+      .first()
+      .evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(bg).toContain("linear-gradient");
   });
 
   test("caregiver page renders and links to gift checkout", async ({
