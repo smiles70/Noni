@@ -22,6 +22,7 @@ test.beforeEach(async ({ page }) => {
 test.describe("Curriculum help card", () => {
   test("Help swaps the lesson body for the Call me card", async ({ page }) => {
     await page.goto("/curriculum");
+    await page.waitForLoadState("networkidle");
     await page.getByRole("button", { name: "Help" }).click();
     await expect(
       page.getByRole("heading", { name: "Get help with this lesson" }),
