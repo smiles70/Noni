@@ -14,7 +14,14 @@ import { useEffect, useState } from "react";
 import { claimGift, previewGift } from "../api/billing";
 import { loadEnvelope } from "../api/envelope";
 import { RenderGuard, type RenderProposal } from "../design/RenderGuard";
-import { COLORS, MOTION, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import {
+  COLORS,
+  MARKETING,
+  MOTION,
+  RADIUS,
+  SPACING,
+  TYPOGRAPHY,
+} from "../design/tokens";
 import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import type { UIStateEnvelope } from "../design/envelope";
 import {
@@ -26,12 +33,23 @@ import {
   FIELD_LABEL,
   H1,
   H2,
-  PAGE,
   PRIMARY_BTN,
   SECONDARY_BTN,
   STACK,
   SUCCESS_TEXT,
 } from "./AccountStyles";
+
+const PAGE_BG: React.CSSProperties = {
+  minHeight: "100vh",
+  backgroundColor: MARKETING.paper,
+  paddingTop: SPACING.xl,
+};
+const GOLD_BTN: React.CSSProperties = {
+  ...PRIMARY_BTN,
+  background: MARKETING.gold,
+  color: MARKETING.charcoalDeep,
+  fontWeight: 700,
+};
 
 interface Props {
   onClaimed: () => void;
@@ -84,7 +102,7 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
 
   if (!envelope) {
     return (
-      <main style={PAGE} aria-live="polite" data-component="PendingBanner">
+      <main style={PAGE_BG} aria-live="polite" data-component="PendingBanner">
         <p style={BODY}>{error ?? "One moment — loading."}</p>
       </main>
     );
@@ -140,6 +158,9 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
       COLORS.accentDesatGreen,
       COLORS.disabled,
       COLORS.errorConfirm,
+      MARKETING.paper,
+      MARKETING.gold,
+      MARKETING.charcoalDeep,
     ],
     spacingPxUsed: [SPACING.xs, SPACING.sm, SPACING.md, SPACING.lg, SPACING.xl],
     radiusPxUsed: [RADIUS.sm, RADIUS.md],
@@ -151,7 +172,7 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
 
   return (
     <RenderGuard envelope={envelope} proposal={proposal}>
-      <main style={PAGE} aria-busy={submitting}>
+      <main style={PAGE_BG} aria-busy={submitting}>
         <h1 style={H1}>Redeem a gift</h1>
         <p style={BODY}>
           Paste the gift code you received. We will check it before anything
@@ -178,7 +199,7 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
               />
             </div>
             <div style={STACK}>
-              <button type="submit" style={PRIMARY_BTN} disabled={submitting}>
+              <button type="submit" style={GOLD_BTN} disabled={submitting}>
                 {submitting ? "Checking…" : "Check this code"}
               </button>
               <button
@@ -208,7 +229,7 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
             <div style={STACK}>
               <button
                 type="button"
-                style={PRIMARY_BTN}
+                style={GOLD_BTN}
                 onClick={handleClaim}
                 disabled={submitting}
               >
@@ -242,7 +263,7 @@ export default function GiftRedeemPage({ onClaimed, onBack, onHelp }: Props) {
               next module whenever you are ready.
             </p>
             <hr style={DIVIDER} />
-            <button type="button" style={PRIMARY_BTN} onClick={onClaimed}>
+            <button type="button" style={GOLD_BTN} onClick={onClaimed}>
               Continue
             </button>
           </section>
