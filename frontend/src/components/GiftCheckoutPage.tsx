@@ -6,7 +6,7 @@
  */
 import { useState } from "react";
 import { startGuestCheckout } from "../api/billing";
-import { COLORS, SPACING } from "../design/tokens";
+import { COLORS, MARKETING, SPACING } from "../design/tokens";
 import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import ChatWidget from "./ChatWidget";
 import {
@@ -15,13 +15,23 @@ import {
   FIELD,
   FIELD_LABEL,
   H1,
-  PAGE,
   PRIMARY_BTN,
   SECONDARY_BTN,
   STACK,
 } from "./AccountStyles";
 import SupportContact from "./SupportContact";
 
+const PAGE: React.CSSProperties = {
+  minHeight: "100vh",
+  backgroundColor: MARKETING.paper,
+  paddingTop: SPACING.xl,
+};
+const GOLD_BTN: React.CSSProperties = {
+  ...PRIMARY_BTN,
+  background: MARKETING.gold,
+  color: MARKETING.charcoalDeep,
+  fontWeight: 700,
+};
 interface Props {
   productCode: string;
   onBack: () => void;
@@ -99,7 +109,7 @@ export default function GiftCheckoutPage({ productCode, onBack }: Props) {
           onClick={handleBuy}
           disabled={submitting}
           style={{
-            ...PRIMARY_BTN,
+            ...GOLD_BTN,
             minHeight: MIN_TOUCH_TARGET.mobile,
             marginTop: SPACING.md,
           }}
@@ -119,7 +129,6 @@ export default function GiftCheckoutPage({ productCode, onBack }: Props) {
         <SupportContact />
         <ChatWidget journey="gift" />
       </div>
-      <ChatWidget journey="gift" />
     </main>
   );
 }
