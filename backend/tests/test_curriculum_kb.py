@@ -21,9 +21,7 @@ import retell_apply_curriculum as apply_mod  # noqa: E402
 class TestGenerator:
     def test_all_six_modules_render(self):
         out = gen.expected_outputs()
-        assert sorted(out) == [
-            f"module-{i}.md" for i in range(6)
-        ]
+        assert sorted(out) == [f"module-{i}.md" for i in range(6)]
 
     def test_every_unit_title_appears(self):
         out = gen.expected_outputs()
@@ -59,7 +57,9 @@ class TestGenerator:
 
 class TestEgressGuardrails:
     def _client(self):
-        return apply_mod.GuardedClient("test-key", allowed_kb_ids={"knowledge_base_ourkb"})
+        return apply_mod.GuardedClient(
+            "test-key", allowed_kb_ids={"knowledge_base_ourkb"}
+        )
 
     def test_delete_is_impossible(self):
         c = self._client()
@@ -77,8 +77,11 @@ class TestEgressGuardrails:
     def test_add_sources_only_on_own_kb(self):
         c = self._client()
         with pytest.raises(PermissionError):
-            c.call("POST", "/add-knowledge-base-sources/knowledge_base_3bee30aa46d414e4",
-                   data={})
+            c.call(
+                "POST",
+                "/add-knowledge-base-sources/knowledge_base_3bee30aa46d414e4",
+                data={},
+            )
 
     def test_no_arbitrary_post(self):
         c = self._client()

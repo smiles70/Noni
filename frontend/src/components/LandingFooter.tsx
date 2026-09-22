@@ -108,8 +108,10 @@ const LINK: CSSProperties = {
   color: COLORS.accentMutedBlue,
   textDecoration: "none",
   minHeight: MIN_TOUCH_TARGET.mobile,
+  minWidth: MIN_TOUCH_TARGET.mobile,
   display: "inline-flex",
   alignItems: "center",
+  justifyContent: "center",
   padding: `0 ${SPACING.xs}px`,
   pointerEvents: "auto",
 };
