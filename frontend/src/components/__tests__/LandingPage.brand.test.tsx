@@ -100,13 +100,14 @@ describe("LandingPage — brand plate (BRAND-LOGO-002)", () => {
       '[data-brand-plate="landing.hero"]',
     );
     expect(plate).not.toBeNull();
-    // Landmark position preserved (NN/g top-left).
+    // Landmark position preserved (NN/g top-left), nudged tight to the
+    // corner per the approved full-bleed mock.
     expect(plate!.style.position).toBe("absolute");
-    expect(plate!.style.top).toBe("32px");
-    expect(plate!.style.left).toBe("32px");
-    // Surface plate: COLORS.surface (#FAFAF8) at 25% opacity, RADIUS.lg.
-    expect(plate!.style.backgroundColor).toBe("rgba(250, 250, 248, 0.25)");
-    expect(plate!.style.borderRadius).toBe("12px");
+    expect(plate!.style.top).toBe("16px");
+    expect(plate!.style.left).toBe("24px");
+    // Bare mark — no plate background; the legibility wash underneath
+    // supplies separation from the photo.
+    expect(plate!.style.backgroundColor).toBe("");
     // Contract audit markers retained on plate and mark.
     expect(plate!.dataset.contractExemption).toBe("landing.hero");
     // Plate is non-interactive too.

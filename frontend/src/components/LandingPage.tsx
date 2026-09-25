@@ -36,16 +36,18 @@ interface Props {
 // ---- Tokenized style objects (exempt landing page only) ---------------------
 
 const H1: CSSProperties = {
-  fontSize: 32,
+  fontSize: 40,
   marginTop: 0,
   marginBottom: SPACING.sm,
   color: COLORS.textPrimary,
   lineHeight: 1.2,
-  fontWeight: 700,
+  fontWeight: 800,
 };
 
 const H2: CSSProperties = {
-  fontSize: TYPOGRAPHY.headingScale.level2,
+  // Bumped to level1 for the hero only — the subheadline reads as a
+  // statement line under the headline per the approved mock.
+  fontSize: TYPOGRAPHY.headingScale.level1,
   marginTop: 0,
   marginBottom: SPACING.lg,
   color: COLORS.textPrimary,
@@ -67,16 +69,49 @@ const PRIMARY_BTN: CSSProperties = {
   textAlign: "center",
 };
 
-const CARD: CSSProperties = {
-  position: "relative",
+// Legibility wash — a left-to-right surface gradient over the hero photo
+// so the headline keeps its contrast ratio without a card. Near-solid on
+// mobile where the photo crops narrow (per the approved mock).
+const GRADIENT_WASH: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  zIndex: 1,
+  background:
+    "linear-gradient(to right, rgba(250, 250, 248, 0.92) 0%, rgba(250, 250, 248, 0.6) 45%, rgba(250, 250, 248, 0) 70%)",
+  pointerEvents: "none",
+};
+
+const GRADIENT_WASH_MOBILE: CSSProperties = {
+  ...GRADIENT_WASH,
+  background: "rgba(250, 250, 248, 0.95)",
+};
+
+// Hero copy sits directly on the wash — left-aligned, vertically centred.
+const HERO_CONTENT: CSSProperties = {
+  position: "absolute",
+  top: "50%",
+  left: "5%",
+  transform: "translateY(-50%)",
   zIndex: 2,
-  backgroundColor: "rgba(250, 250, 248, 0.5)",
-  padding: SPACING.lg,
-  borderRadius: RADIUS.lg,
-  boxShadow: `0 ${SPACING.md}px ${SPACING.xl}px rgba(0, 0, 0, 0.12)`,
-  width: "100%",
-  maxWidth: 320,
-  boxSizing: "border-box",
+  width: "90%",
+  // Narrow column so the subheadline wraps short of the photo's faces
+  // on the right (per the approved mock).
+  maxWidth: 340,
+};
+
+const HERO_CONTENT_MOBILE: CSSProperties = {
+  ...HERO_CONTENT,
+  left: SPACING.lg,
+  right: SPACING.lg,
+  width: "auto",
+};
+
+// Mock CTA is inline-block, sized to its label — not a full-width card button.
+const HERO_BTN: CSSProperties = {
+  ...PRIMARY_BTN,
+  width: "auto",
+  minWidth: 240,
+  alignSelf: "flex-start",
 };
 
 const ACTION_STACK: CSSProperties = {
@@ -85,35 +120,29 @@ const ACTION_STACK: CSSProperties = {
   gap: SPACING.md,
 };
 
-// Brand plate — a light, almost-transparent top bar that sits slightly
-// inside the hero image on all sides. The muted logo needs just enough
-// separation from the photo, while the rounded edges and low opacity keep
-// the edge from feeling like a hard cut across the image.
+// Brand mark — bare logo floating in the upper-left corner, no plate or
+// well. The legibility wash underneath supplies the separation from the
+// photo. Must sit above GRADIENT_WASH (zIndex 1) so the wash does not dim it.
 const LOGO_PLATE: CSSProperties = {
   position: "absolute",
-  top: SPACING.xl,
-  left: SPACING.xl,
-  right: SPACING.xl,
-  zIndex: 1,
-  padding: SPACING.sm,
-  backgroundColor: "rgba(250, 250, 248, 0.25)",
-  borderRadius: RADIUS.lg,
+  top: SPACING.md,
+  left: SPACING.lg,
+  zIndex: 3,
 };
 
 const LOGO_PLATE_MOBILE: CSSProperties = {
   ...LOGO_PLATE,
-  top: SPACING.lg,
-  left: SPACING.lg,
-  right: SPACING.lg,
+  top: SPACING.sm,
+  left: SPACING.md,
 };
 
 // Logo heights used for both the mark and the hero top offset.
-const LOGO_IMG_HEIGHT = 128;
-const LOGO_IMG_HEIGHT_MOBILE = 96;
+const LOGO_IMG_HEIGHT = 120;
+const LOGO_IMG_HEIGHT_MOBILE = 88;
 
 // Stacked ~1:1 lockup, so height is fixed and width derives from the asset
-// (921×957). Sizes honour the 8px grid: 128px desktop (16×8) / 96px mobile
-// (12×8). Non-interactive: this page is already home, and adding a link would
+// (921×957). Sizes honour the 8px grid: 120px desktop (15×8) / 88px mobile
+// (11×8). Non-interactive: this page is already home, and adding a link would
 // add an actionable element for no gain.
 const LOGO_IMG: CSSProperties = {
   display: "block",
@@ -124,16 +153,6 @@ const LOGO_IMG: CSSProperties = {
 const LOGO_IMG_MOBILE: CSSProperties = {
   ...LOGO_IMG,
   height: LOGO_IMG_HEIGHT_MOBILE,
-};
-
-// Logo well — an opaque surface backing behind the mark so it remains
-// legible over the busy hero photograph. Keeps the surrounding plate
-// transparent while intensifying only the logo area.
-const LOGO_WELL: CSSProperties = {
-  display: "inline-block",
-  padding: SPACING.sm,
-  backgroundColor: "rgba(250, 250, 248, 0.9)",
-  borderRadius: RADIUS.md,
 };
 
 // Hero image is full-bleed; the light top overlay now sits on top of it.
@@ -261,7 +280,7 @@ export default function LandingPage({ onBegin, signedIn }: Props) {
   }
 
   const proposal: RenderProposal = {
-    components: ["Heading", "Body", "Button", "Card"],
+    components: ["Heading", "Body", "Button"],
     primaryActionCount: 5,
     irreversibleActionCount: 0,
     highlightedRecommendationCount: 1,
@@ -291,35 +310,9 @@ export default function LandingPage({ onBegin, signedIn }: Props) {
   const h1Style: CSSProperties = isMobile
     ? { ...H1, fontSize: TYPE_SCALE.mobile.h1 }
     : H1;
-  const cardStyle: CSSProperties = isMobile
-    ? {
-        ...CARD,
-        padding: SPACING.md,
-        // Leave room for the B2B stack above (96px) and the mini-footer
-        // strip below (~64px, including safe-area padding).
-        maxHeight: "calc(45% - 160px)",
-        overflowY: "auto",
-      }
-    : CARD;
-  const cardPosition: CSSProperties = isMobile
-    ? {
-        position: "absolute",
-        top: "55%",
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 2,
-        width: "92%",
-        maxWidth: 320,
-      }
-    : {
-        position: "absolute",
-        top: "50%",
-        right: "4%",
-        transform: "translateY(-50%)",
-        zIndex: 2,
-        width: "90%",
-        maxWidth: 340,
-      };
+  const heroContentStyle: CSSProperties = isMobile
+    ? HERO_CONTENT_MOBILE
+    : HERO_CONTENT;
 
   return (
     <>
@@ -360,56 +353,57 @@ export default function LandingPage({ onBegin, signedIn }: Props) {
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
-                objectPosition: "center 10%",
+                // Anchor subjects to the right so the left-side copy
+                // never collides with faces (mock: center right).
+                objectPosition: isMobile ? "center" : "right center",
               }}
             />
           </picture>
 
-          {/* Brand mark on a calm surface plate — upper-left landmark */}
+          {/* Brand mark floating on the wash — upper-left landmark */}
           <div
             style={isMobile ? LOGO_PLATE_MOBILE : LOGO_PLATE}
             data-contract-exemption="landing.hero"
             data-brand-plate="landing.hero"
           >
-            <div
-              style={LOGO_WELL}
-              data-logo-well="landing.hero"
+            <img
+              src="/mynaani-logo.webp"
+              alt="mynaani"
+              width={115}
+              height={120}
+              style={isMobile ? LOGO_IMG_MOBILE : LOGO_IMG}
               data-contract-exemption="landing.hero"
-            >
-              <img
-                src="/mynaani-logo.webp"
-                alt="mynaani"
-                width={123}
-                height={128}
-                style={isMobile ? LOGO_IMG_MOBILE : LOGO_IMG}
-                data-contract-exemption="landing.hero"
-              />
-            </div>
+            />
           </div>
 
-          {/* Floating action card, right side */}
-          <div data-contract-exemption="landing.hero" style={cardPosition}>
-            <div style={cardStyle}>
-              <h1 id="hero-heading" style={h1Style}>
-                {content.hero.headline}
-              </h1>
-              <h2 style={H2}>{content.hero.subheadline}</h2>
+          {/* Legibility wash between photo and copy */}
+          <div
+            style={isMobile ? GRADIENT_WASH_MOBILE : GRADIENT_WASH}
+            data-contract-exemption="landing.hero"
+            aria-hidden="true"
+          />
 
-              <div style={ACTION_STACK}>
-                {signedIn ? (
-                  <button type="button" onClick={onBegin} style={PRIMARY_BTN}>
-                    Continue learning →
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowHowItWorks(true)}
-                    style={PRIMARY_BTN}
-                  >
-                    {content.call_to_action.primary.label}
-                  </button>
-                )}
-              </div>
+          {/* Hero copy — left-aligned on the wash */}
+          <div data-contract-exemption="landing.hero" style={heroContentStyle}>
+            <h1 id="hero-heading" style={h1Style}>
+              {content.hero.headline}
+            </h1>
+            <h2 style={H2}>{content.hero.subheadline}</h2>
+
+            <div style={ACTION_STACK}>
+              {signedIn ? (
+                <button type="button" onClick={onBegin} style={HERO_BTN}>
+                  Continue learning →
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowHowItWorks(true)}
+                  style={HERO_BTN}
+                >
+                  {content.call_to_action.primary.label}
+                </button>
+              )}
             </div>
           </div>
 
