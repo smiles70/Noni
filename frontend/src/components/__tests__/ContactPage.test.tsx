@@ -73,6 +73,20 @@ describe("ContactPage — talk-to-us destination", () => {
     expect(host.textContent ?? "").not.toContain("!");
   });
 
+  it("uses the bid-17 marketing grammar and stays widget-free", async () => {
+    const host = await render();
+    const text = host.textContent ?? "";
+    expect(text).toContain("Talk to us");
+    const btn = host.querySelector(
+      'button[type="submit"]',
+    ) as HTMLButtonElement;
+    expect(btn.style.backgroundColor).toMatch(/#c9a24d|201, *162, *77/i);
+    // shared surface — no retell widget must mount
+    expect(
+      host.querySelector('[id*="retell"], script[src*="retell"]'),
+    ).toBeNull();
+  });
+
   it("posts the inquiry to the backend and shows thank-you", async () => {
     const host = await render();
     const calls: string[] = [];

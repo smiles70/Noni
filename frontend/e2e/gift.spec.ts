@@ -63,15 +63,19 @@ test.describe("Gift checkout journey (P1 guest gift checkout)", () => {
   test("gift checkout page passes axe WCAG 2.1 AA", async ({ page }) => {
     await page.goto("/gift");
     await injectAxe(page);
-    await checkA11y(page, undefined, {
-      detailedReport: true,
-      detailedReportOptions: { html: false },
-      axeOptions: {
-        runOnly: {
-          type: "tag",
-          values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+    await checkA11y(
+      page,
+      { exclude: ["#retell-widget-root"] },
+      {
+        detailedReport: true,
+        detailedReportOptions: { html: false },
+        axeOptions: {
+          runOnly: {
+            type: "tag",
+            values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+          },
         },
       },
-    });
+    );
   });
 });

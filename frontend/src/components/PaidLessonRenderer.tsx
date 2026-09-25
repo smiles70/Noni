@@ -23,7 +23,6 @@ interface Props {
   /** Called when any paid lesson load returns 402. The parent should
    *  switch to the paywall view. */
   onPaywall: (signal: PaywallSignal) => void;
-  onHelp?: () => void;
 }
 
 const PAID_SEQUENCE = [
@@ -50,7 +49,6 @@ export default function PaidLessonRenderer({
   onAccount,
   onSequenceComplete,
   onPaywall,
-  onHelp,
 }: Props) {
   return (
     <LessonRenderer
@@ -68,7 +66,6 @@ export default function PaidLessonRenderer({
       onOpenMenu={onOpenMenu}
       onAccount={onAccount}
       onPaywall={onPaywall}
-      onHelp={onHelp}
       getContinueLabel={(isLastUnit, isLastPage) =>
         isLastUnit && isLastPage ? "Finish →" : "Continue →"
       }

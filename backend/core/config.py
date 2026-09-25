@@ -60,6 +60,15 @@ class Settings(BaseSettings):
     # /api/v1/site/retell/partner-inquiry. Never shipped to the browser
     # (the widget uses the domain-locked public key instead).
     RETELL_API_KEY: str = ""
+    # Learner "Call me" callback (learner-help-channel intake): the
+    # outbound Retell agent dialed via /v2/create-phone-call, and the
+    # toll-free line it rings from. Empty agent id = capability off.
+    RETELL_CALLBACK_AGENT_ID: str = ""
+    RETELL_FROM_NUMBER: str = "+18774094144"
+    # CRM contact filing for help requests — the CRM tracking intake
+    # accepts a form_submit batch at {CRM_API_URL}/api/t/e. Empty = off.
+    CRM_API_URL: str = ""
+    CRM_SITE_ID: str = ""
 
     # Deletion grace period.
     DELETION_GRACE_PERIOD_DAYS: int = 30
@@ -79,11 +88,6 @@ class Settings(BaseSettings):
     # Sprint 27 #92: log sampling rate (0.0–1.0) for info-level request logs.
     # Errors and warnings are always logged at 100%.
     LOG_SAMPLING_RATE: float = 1.0
-
-    # N8N help-flow integration (N8N-HELP-001)
-    FEATURE_HELP_REQUESTS: bool = True
-    N8N_WEBHOOK_URL: str = ""
-    N8N_WEBHOOK_TOKEN: str = ""
 
     # CORS allowlist (comma-separated origins). Empty -> dev fallback in main.py.
     CORS_ORIGINS: str = ""

@@ -3,9 +3,8 @@
  *
  * Shared surface: serves both learner-side and facility visitors, so
  * copy stays persona-neutral — no gift pricing, no facility tiers, no
- * chat widget. Structure and field styling mirror
- * PartnershipInquiryPage: calm branded band with the toll-free number,
- * then a card form (labels above inputs, 16px+ type, 44px targets).
+ * chat widget. Visual grammar: bid-17 MARKETING tokens (charcoal hero,
+ * paper surface, gold CTA) matching /for-communities (PS-BID17-022).
  *
  * Submission: POST /api/v1/site/contact-inquiry (backend emails the
  * help inbox off the request path). If the endpoint is unreachable the
@@ -19,18 +18,15 @@ import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { API_BASE_URL } from "../api/client";
 import { loadFooterContent } from "../api/siteChrome";
-import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from "../design/tokens";
-import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
 import {
-  BODY,
-  CARD,
-  FIELD_LABEL,
-  H1,
-  H2,
-  PAGE,
-  PRIMARY_BTN,
-  STACK,
-} from "./AccountStyles";
+  COLORS,
+  MARKETING,
+  RADIUS,
+  SPACING,
+  TYPOGRAPHY,
+} from "../design/tokens";
+import { MIN_TOUCH_TARGET } from "../styles/responsiveTokens";
+import { BODY, FIELD_LABEL, H2, STACK } from "./AccountStyles";
 
 const CONTACT_EMAIL = "help@mynaani.com";
 
@@ -114,125 +110,134 @@ export default function ContactPage({ onBack }: Props) {
   if (submitted) {
     return (
       <main style={PAGE}>
-        <h1 style={H1}>Thank you</h1>
-        <p style={BODY}>
-          {fellBack
-            ? "Your message opened in your email app. If it did not, copy your details and send them to "
-            : "We received your note and a member of our team will reply. If you need us sooner, write to "}
-          <a href={`mailto:${CONTACT_EMAIL}`} style={LINK}>
-            {CONTACT_EMAIL}
-          </a>
-          .
-        </p>
-        <button onClick={onBack} style={PRIMARY_BTN}>
-          Back to mynaani
-        </button>
+        <div style={HERO}>
+          <div style={HERO_INNER}>
+            <p style={KICKER}>Talk to us</p>
+            <h1 style={H1_DARK}>Thank you</h1>
+            <p style={SUB_DARK}>
+              {fellBack
+                ? "Your message opened in your email app. If it did not, copy your details and send them to "
+                : "We received your note and a member of our team will reply. If you need us sooner, write to "}
+              <a href={`mailto:${CONTACT_EMAIL}`} style={LINK_DARK}>
+                {CONTACT_EMAIL}
+              </a>
+              .
+            </p>
+            <button onClick={onBack} style={CTA_GOLD_BTN}>
+              Back to mynaani
+            </button>
+          </div>
+        </div>
       </main>
     );
   }
 
   return (
     <main style={PAGE}>
-      <Link
-        to="/"
-        style={BACK}
-        onClick={(e) => {
-          e.preventDefault();
-          onBack();
-        }}
-      >
-        ← Back to mynaani
-      </Link>
-
       <div style={HERO}>
-        <h1 style={HERO_TITLE}>We'd love to hear from you</h1>
-        {contactPhone && (
-          <p style={HERO_BODY}>
-            Call us at{" "}
-            <a
-              href={`tel:${contactPhone.replace(/[^0-9+]/g, "")}`}
-              style={HERO_LINK}
-              aria-label="Call MyNaani, toll-free"
-            >
-              {contactPhone}
-            </a>{" "}
-            (toll-free) — the line is answered by our AI receptionist, who can
-            connect you to a person when needed. Or send us a note below and
-            we'll reply.
-          </p>
-        )}
+        <div style={HERO_INNER}>
+          <Link
+            to="/"
+            style={BACK_DARK}
+            onClick={(e) => {
+              e.preventDefault();
+              onBack();
+            }}
+          >
+            ← Back to mynaani
+          </Link>
+          <p style={KICKER}>Talk to us</p>
+          <h1 style={H1_DARK}>We'd love to hear from you</h1>
+          {contactPhone && (
+            <p style={SUB_DARK}>
+              Call us at{" "}
+              <a
+                href={`tel:${contactPhone.replace(/[^0-9+]/g, "")}`}
+                style={LINK_DARK}
+                aria-label="Call MyNaani, toll-free"
+              >
+                {contactPhone}
+              </a>{" "}
+              (toll-free) — the line is answered by our AI receptionist, who can
+              connect you to a person when needed. Or send us a note below and
+              we'll reply.
+            </p>
+          )}
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} style={FORM_CARD}>
-        <h2 style={{ ...H2, marginTop: 0 }}>Send us a note</h2>
+      <div style={FORM_WRAP}>
+        <form onSubmit={handleSubmit} style={FORM_CARD}>
+          <h2 style={{ ...H2, marginTop: 0 }}>Send us a note</h2>
 
-        <div style={STACK}>
-          <Field label="First name" required>
-            <input
-              type="text"
-              name="first_name"
-              value={form.firstName}
-              onChange={(e) => update("firstName", e.target.value)}
-              style={INPUT}
-              required
-              autoComplete="given-name"
-            />
-          </Field>
-          <Field label="Last name" required>
-            <input
-              type="text"
-              name="last_name"
-              value={form.lastName}
-              onChange={(e) => update("lastName", e.target.value)}
-              style={INPUT}
-              required
-              autoComplete="family-name"
-            />
-          </Field>
-          <Field label="Email" required>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={(e) => update("email", e.target.value)}
-              style={INPUT}
-              required
-              autoComplete="email"
-            />
-          </Field>
-          <Field label="Phone number">
-            <input
-              type="tel"
-              name="phone"
-              value={form.phone}
-              onChange={(e) => update("phone", e.target.value)}
-              style={INPUT}
-              autoComplete="tel"
-            />
-          </Field>
+          <div style={STACK}>
+            <Field label="First name" required>
+              <input
+                type="text"
+                name="first_name"
+                value={form.firstName}
+                onChange={(e) => update("firstName", e.target.value)}
+                style={INPUT}
+                required
+                autoComplete="given-name"
+              />
+            </Field>
+            <Field label="Last name" required>
+              <input
+                type="text"
+                name="last_name"
+                value={form.lastName}
+                onChange={(e) => update("lastName", e.target.value)}
+                style={INPUT}
+                required
+                autoComplete="family-name"
+              />
+            </Field>
+            <Field label="Email" required>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+                style={INPUT}
+                required
+                autoComplete="email"
+              />
+            </Field>
+            <Field label="Phone number">
+              <input
+                type="tel"
+                name="phone"
+                value={form.phone}
+                onChange={(e) => update("phone", e.target.value)}
+                style={INPUT}
+                autoComplete="tel"
+              />
+            </Field>
 
-          {/* Honeypot — visually hidden; bots fill it, humans never do. */}
-          <label style={HONEYPOT} aria-hidden="true" tabIndex={-1}>
-            Website
-            <input
-              type="text"
-              name="website"
-              value={form.website}
-              onChange={(e) => update("website", e.target.value)}
-              tabIndex={-1}
-              autoComplete="off"
-            />
-          </label>
+            {/* Honeypot — visually hidden; bots fill it, humans never do. */}
+            <label style={HONEYPOT} aria-hidden="true" tabIndex={-1}>
+              Website
+              <input
+                type="text"
+                name="website"
+                value={form.website}
+                onChange={(e) => update("website", e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </label>
 
-          <button type="submit" style={PRIMARY_BTN} disabled={submitting}>
-            {submitting ? "Sending…" : "Send message"}
-          </button>
-          <p style={PRIVACY_NOTE}>
-            We only use these details to reply to you — no marketing list, no
-            sharing.
-          </p>
-        </div>
-      </form>
+            <button type="submit" style={CTA_GOLD_BTN} disabled={submitting}>
+              {submitting ? "Sending…" : "Send message"}
+            </button>
+            <p style={PRIVACY_NOTE}>
+              We only use these details to reply to you — no marketing list, no
+              sharing.
+            </p>
+          </div>
+        </form>
+      </div>
     </main>
   );
 }
@@ -257,6 +262,84 @@ function Field({
   );
 }
 
+const PAGE: CSSProperties = {
+  minHeight: "100vh",
+  backgroundColor: MARKETING.paper,
+};
+
+const HERO: CSSProperties = {
+  background: `linear-gradient(150deg, ${MARKETING.charcoal} 0%, ${MARKETING.charcoalDeep} 100%)`,
+  color: MARKETING.paperCard,
+  padding: `${SPACING.xl}px ${SPACING.xl}px 64px`,
+};
+
+const HERO_INNER: CSSProperties = {
+  maxWidth: 760,
+  margin: "0 auto",
+};
+
+const KICKER: CSSProperties = {
+  fontSize: 13,
+  fontWeight: 700,
+  letterSpacing: 2.5,
+  textTransform: "uppercase",
+  color: MARKETING.tealBright,
+  margin: `${SPACING.md}px 0 0`,
+};
+
+const H1_DARK: CSSProperties = {
+  fontSize: 40,
+  fontWeight: 700,
+  lineHeight: 1.15,
+  margin: `${SPACING.md}px 0 0`,
+  color: MARKETING.paperCard,
+};
+
+const SUB_DARK: CSSProperties = {
+  fontSize: 18,
+  lineHeight: 1.7,
+  color: MARKETING.bodyOnDark,
+  margin: `20px 0 0`,
+};
+
+const LINK_DARK: CSSProperties = {
+  color: MARKETING.tealBright,
+};
+
+const BACK_DARK: CSSProperties = {
+  color: MARKETING.mutedOnDark,
+  textDecoration: "none",
+  display: "inline-block",
+  fontSize: 15,
+};
+
+const CTA_GOLD_BTN: CSSProperties = {
+  display: "inline-block",
+  backgroundColor: MARKETING.gold,
+  color: MARKETING.charcoalDeep,
+  border: "none",
+  cursor: "pointer",
+  padding: `${SPACING.md}px 36px`,
+  borderRadius: 28,
+  fontSize: TYPOGRAPHY.bodySizePx,
+  fontWeight: 700,
+  fontFamily: TYPOGRAPHY.fontFamily,
+  minHeight: MIN_TOUCH_TARGET.mobile,
+};
+
+const FORM_WRAP: CSSProperties = {
+  maxWidth: 760,
+  margin: "0 auto",
+  padding: `${SPACING.xl}px ${SPACING.lg}px`,
+};
+
+const FORM_CARD: CSSProperties = {
+  background: MARKETING.paperCard,
+  border: `1px solid ${MARKETING.paperEdge}`,
+  borderRadius: RADIUS.lg,
+  padding: SPACING.xl,
+};
+
 const INPUT: CSSProperties = {
   fontSize: TYPOGRAPHY.bodySizePx,
   padding: `${SPACING.sm}px ${SPACING.md}px`,
@@ -270,35 +353,6 @@ const INPUT: CSSProperties = {
   color: COLORS.textPrimary,
 };
 
-const HERO: CSSProperties = {
-  backgroundColor: COLORS.accentDesatGreen,
-  borderRadius: RADIUS.lg,
-  padding: `${SPACING.xl}px ${SPACING.lg}px`,
-  marginBottom: SPACING.xl,
-};
-
-const HERO_TITLE: CSSProperties = {
-  ...H1,
-  color: COLORS.surface,
-  marginTop: 0,
-  marginBottom: SPACING.sm,
-};
-
-const HERO_BODY: CSSProperties = {
-  ...BODY,
-  color: COLORS.surface,
-  margin: 0,
-};
-
-const HERO_LINK: CSSProperties = {
-  color: COLORS.surface,
-};
-
-const FORM_CARD: CSSProperties = {
-  ...CARD,
-  marginBottom: 0,
-};
-
 const FIELD_WRAP: CSSProperties = {
   display: "flex",
   flexDirection: "column",
@@ -306,17 +360,6 @@ const FIELD_WRAP: CSSProperties = {
 
 const REQUIRED: CSSProperties = {
   color: COLORS.errorConfirm,
-};
-
-const LINK: CSSProperties = {
-  color: COLORS.accentMutedBlue,
-};
-
-const BACK: CSSProperties = {
-  color: COLORS.accentMutedBlue,
-  textDecoration: "none",
-  display: "inline-block",
-  marginBottom: SPACING.md,
 };
 
 const PRIVACY_NOTE: CSSProperties = {

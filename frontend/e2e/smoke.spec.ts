@@ -70,6 +70,17 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
     }
   });
 
+  // PS-BID17-005: footer nav is backend-served and the backend deploys
+  // after UAT — navigate directly; the footer link is pinned by unit +
+  // backend tests and the post-deploy footer assertions.
+  test("/sources renders the shared evidence page", async ({ page }) => {
+    await page.goto("/sources");
+    await expect(page).toHaveURL(/\/sources$/);
+    await expect(page.getByRole("heading", { name: "Sources" })).toBeVisible();
+    await expect(page.getByText("Pew Research Center")).toBeVisible();
+    await expect(page.getByText("Caregiver Action Network")).toBeVisible();
+  });
+
   test("/partners renders the partner inquiry form", async ({ page }) => {
     await page.goto("/partners");
     await expect(
@@ -78,6 +89,13 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
     await expect(
       page.getByRole("button", { name: "Send inquiry" }),
     ).toBeVisible();
+    // PS-BID17-021: charcoal hero + gold CTA (bid-17 grammar)
+    await expect(page.getByText("Partnerships")).toBeVisible();
+    const bg = await page
+      .locator("main > div")
+      .first()
+      .evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(bg).toContain("linear-gradient");
   });
 
   test("caregiver page renders and links to gift checkout", async ({
@@ -85,9 +103,7 @@ test.describe("Deployed-environment smoke", { tag: "@smoke" }, () => {
   }) => {
     await page.goto("/caregiver");
     await expect(
-      page.getByText(
-        "Give calm, self-paced AI learning to someone you care about",
-      ),
+      page.getByText("They learn AI.", { exact: false }),
     ).toBeVisible();
     const gift = page.getByRole("link", { name: /Gift mynaani/i }).first();
     await expect(gift).toBeVisible();

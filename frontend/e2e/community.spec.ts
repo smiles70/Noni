@@ -1,37 +1,40 @@
 import { test, expect } from "@playwright/test";
 import { injectAxe, checkA11y } from "axe-playwright";
 
-test.describe("Partner / community journey (B2B-LANDING-001)", () => {
+test.describe("Partner / community journey (bid-17, B2B-LANDING-001)", () => {
   test("/for-communities renders the B2B marketing surface", async ({
     page,
   }) => {
     await page.goto("/for-communities");
     await expect(
-      page.getByRole("heading", { name: "AI learning grounded in geragogy" }),
-    ).toBeVisible();
-    await expect(
       page.getByRole("heading", {
-        name: "Why communities partner with mynaani",
+        name: /AI learning your residents actually finish/i,
       }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "Talk to us" })).toBeVisible();
     await expect(
-      page.getByText("Pricing — founding partner rates"),
+      page.getByRole("heading", { name: /Budget you can defend/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Start a conversation" }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Founding Partner rates" }),
     ).toBeVisible();
   });
 
   test("/for-communities exposes contact CTAs", async ({ page }) => {
     await page.goto("/for-communities");
 
-    // "Let's talk" routes to the senior-care form — not a mailto picker.
-    const primary = page.getByRole("link", { name: "Let's talk" });
-    await expect(primary).toBeVisible();
-    await expect(primary).toHaveAttribute("href", "/partners");
+    // "Start a conversation" CTAs — nav scrolls to #contact, band routes
+    // to the senior-care form — never a mailto picker.
+    const bandCta = page.locator('#contact a[href="/partners"]');
+    await expect(bandCta).toBeVisible();
+    await expect(bandCta).toHaveAttribute("href", "/partners");
 
-    // "Talk to us" routes to the /contact page — never a mailto picker.
-    const headerCta = page.getByRole("link", { name: "Talk to us" }).first();
-    await expect(headerCta).toBeVisible();
-    await expect(headerCta).toHaveAttribute("href", "/contact");
+    // Toll-free line present.
+    await expect(
+      page.locator('a[href="tel:+18774094144"]').first(),
+    ).toBeVisible();
   });
 
   test("/for-communities is a public, no-paywall surface", async ({ page }) => {
@@ -44,9 +47,7 @@ test.describe("Partner / community journey (B2B-LANDING-001)", () => {
   test("/for-communities passes axe WCAG 2.1 AA", async ({ page }) => {
     await page.goto("/for-communities");
     await expect(
-      page.getByRole("heading", {
-        name: "Why communities partner with mynaani",
-      }),
+      page.getByRole("heading", { name: /Budget you can defend/i }),
     ).toBeVisible();
     await injectAxe(page);
     await checkA11y(page, undefined, {

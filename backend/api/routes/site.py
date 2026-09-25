@@ -7,6 +7,7 @@ labels. Pure read; no auth. See `.ai/intake/2026-09-16-p2-*`.
 
 import hashlib
 import hmac
+import logging
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, BackgroundTasks, Request
@@ -22,6 +23,8 @@ from backend.models.partner_inquiry import (
 )
 from backend.models.site_chrome import SiteFooterContent
 from backend.services import email
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -41,6 +44,25 @@ def get_footer() -> JSONResponse:
     return resp
 
 
+def _send_inquiry_with_retry(to: str, subject: str, body: str) -> None:
+    """Resend-only delivery hardening: one retry, then log the full lead.
+
+    Email is the sole delivery path for these inquiries — a provider blip
+    must not silently lose a lead. On double failure the inquiry body is
+    logged at ERROR so ops can recover it from log records.
+    """
+    if email.send(to, subject, body):
+        return
+    if email.send(to, subject, body):
+        return
+    logger.error(
+        "inquiry delivery failed after retry — lead preserved in log. "
+        "subject=%s body=%s",
+        subject,
+        body,
+    )
+
+
 @router.post("/partner-inquiry", response_model=PartnerInquiryReceipt)
 def submit_partner_inquiry(
     inquiry: PartnerInquiry, background: BackgroundTasks
@@ -56,7 +78,7 @@ def submit_partner_inquiry(
         return PartnerInquiryReceipt(status="received", delivered=False)
     subject = f"Partner inquiry — {inquiry.organization}"
     body = render_inquiry(inquiry)
-    background.add_task(email.send, settings.PARTNER_INBOX, subject, body)
+    background.add_task(_send_inquiry_with_retry, settings.PARTNER_INBOX, subject, body)
     return PartnerInquiryReceipt(status="received", delivered=True)
 
 
@@ -74,7 +96,10 @@ def submit_contact_inquiry(
         return PartnerInquiryReceipt(status="received", delivered=False)
     subject = f"Contact request — {inquiry.first_name} {inquiry.last_name}"
     background.add_task(
-        email.send, settings.CONTACT_EMAIL, subject, render_contact(inquiry)
+        _send_inquiry_with_retry,
+        settings.CONTACT_EMAIL,
+        subject,
+        render_contact(inquiry),
     )
     return PartnerInquiryReceipt(status="received", delivered=True)
 
@@ -87,6 +112,10 @@ def _verify_retell_signature(raw: bytes, signature: str) -> bool:
     is the only difference). Log so ops knows the check is inactive.
     """
     if not settings.RETELL_API_KEY:
+        logger.warning(
+            "retell webhook signature check INACTIVE — RETELL_API_KEY unset; "
+            "webhook is accepting unverified partner-inquiry posts"
+        )
         return True
     expected = hmac.new(
         settings.RETELL_API_KEY.encode(), raw, hashlib.sha256

@@ -17,6 +17,7 @@ SITE_FOOTER_CONTENT: Dict[str, Any] = {
         {"label": "Gift", "href": "/gift"},
         {"label": "About us", "href": "/about"},
         {"label": "Help", "href": "/help"},
+        {"label": "Sources", "href": "/sources"},
     ],
     "legal_links": [
         {"label": "Privacy", "href": "/privacy"},

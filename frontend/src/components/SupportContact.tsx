@@ -6,7 +6,7 @@
  * AI-answered disclosure travels with the number everywhere.
  */
 import { CSSProperties } from "react";
-import { COLORS, SPACING, TYPOGRAPHY } from "../design/tokens";
+import { COLORS, MARKETING, SPACING, TYPOGRAPHY } from "../design/tokens";
 
 const BODY: CSSProperties = {
   fontSize: TYPOGRAPHY.bodySizePx,
@@ -20,19 +20,32 @@ const LINK: CSSProperties = {
   textDecoration: "underline",
 };
 
-export default function SupportContact() {
+// ADR-0034 dark-surface tones (bid-17 marketing bands): AA on charcoal.
+const BODY_DARK: CSSProperties = { ...BODY, color: MARKETING.bodyOnDark };
+const LINK_DARK: CSSProperties = {
+  ...LINK,
+  color: MARKETING.tealBright,
+};
+
+interface Props {
+  /** "dark" renders on charcoal marketing surfaces (PS-BID17-003). */
+  tone?: "light" | "dark";
+}
+
+export default function SupportContact({ tone }: Props) {
+  const dark = tone === "dark";
   return (
-    <p style={BODY}>
+    <p style={dark ? BODY_DARK : BODY}>
       Questions? Call{" "}
       <a
         href="tel:+18774094144"
-        style={LINK}
+        style={dark ? LINK_DARK : LINK}
         aria-label="Call MyNaani support, toll free, 1 8 7 7, 4 0 9, 4 1 4 4"
       >
         1 (877) 409-4144
       </a>{" "}
       — toll-free, answered by our AI assistant — or email{" "}
-      <a href="mailto:help@mynaani.com" style={LINK}>
+      <a href="mailto:help@mynaani.com" style={dark ? LINK_DARK : LINK}>
         help@mynaani.com
       </a>
       .

@@ -17,6 +17,15 @@ function securityHeadersPlugin() {
 
 export default defineConfig({
   plugins: [securityHeadersPlugin(), react()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     host: "127.0.0.1",

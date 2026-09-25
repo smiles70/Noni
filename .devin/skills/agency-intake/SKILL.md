@@ -1,0 +1,76 @@
+---
+name: agency-intake
+description: "Ideation intake for agency bake-offs — accepts dropped screenshots, PDFs, docs, HTML files, and URLs; routes each asset to the right analyzer (ocular pixel analysis for images, text extraction for PDFs, structure parse for HTML, Playwright capture for URLs); produces a structured intake doc plus evidence graph nodes. Invoke at the start of any agency bid work, before ad-agency Stage 1."
+---
+
+# Agency Intake — Asset Ingestion & Ideation Intake
+
+The front door for agency work. Kim (or any requester) drops raw material —
+screenshots, PDFs, docs, HTML, URLs, pasted copy — and this skill turns it
+into a structured intake the `ad-agency` pipeline can bid on.
+
+## Input handling — route by asset type
+
+| Dropped asset | Analyzer | Output |
+|---------------|----------|--------|
+| Screenshot / image (png, jpg, webp) | **ocular** MCP — `analyze_ui_screenshot` (layout/components) + `extract_text_from_image` (copy capture) | Structured layout + verbatim copy + noted conventions |
+| PDF / doc | Read tool; `pdftotext` if binary | Extracted claims, register, proof patterns |
+| HTML file or pasted markup | Parse structure — sections, components, CTAs | Page-architecture map (grammar, not skin) |
+| URL | `playwright-mcp` or Playwright capture (screenshot + DOM) **plus** `extract-images.mjs` harvest | Evidence snapshot + downloaded imagery in `.ai/research/evidence/<site>/` |
+| Pasted copy / brief text | Direct | Persona + goal signals into the intake doc |
+
+**Pixel-level review is mandatory for every image** — ocular analyze pass,
+not a glance. Record what the layout *does*, not what it looks like.
+
+**Imagery harvest is mandatory for every URL** —
+`node .devin/skills/agency-intake/extract-images.mjs <url>
+.ai/research/evidence/<site-slug>` downloads every image the page serves
+(img/srcset/lazy/og/css/video-poster) and writes `images-manifest.json`
+(file, source URL, bytes, alt text, context). Without the real imagery the
+evidence base describes pages instead of containing them — photo subjects,
+treatments, and density are part of the grammar being bid on.
+
+**Harvested images are evidence, never mock assets.** Copyright stands:
+they inform photo briefs and conventions; shipped mocks use license-clean
+placeholders (Unsplash/Pexels), on-brief generated proofs (Nano Banana /
+Gemini image models), or commissioned art.
+
+## Evidence tooling (installed, use it)
+
+- **`extract-images.mjs`** — harvests every image a page serves + manifest.
+- **`extract-palette.mjs`** — dominant swatches per image (node-vibrant);
+  run on harvested screenshots so palette conventions are data, not
+  eyeballing. Needs `npm i node-vibrant`.
+- **`playwright-mcp`** (`npx @playwright/mcp`) — structured a11y snapshots
+  and live interaction for URL intake; richer than raw fetch on JS-heavy
+  sites. `chrome-devtools-mcp` adds network/console/perf detail when a page
+  misbehaves under capture.
+- **`mcp-screenshot`** (grahama1970) — every captured screenshot goes into a
+  searchable vault: BM25 text + perceptual-similarity lookup. Evidence
+  becomes queryable ("all dark-hero examples").
+
+## Output contract
+
+Every intake produces `.ai/intake/YYYY-MM-DD-pN-<slug>-agency.md` containing:
+
+1. **Problem statement** — which surface, which persona (per AGENTS.md dual-
+   audience rule), what the requester asked for, what success looks like.
+2. **Asset register** — every dropped item, its analyzer, its key findings,
+   its file path if saved.
+3. **Persona declaration** — learner/caregiver (geragogy-bound) vs
+   corporate-care (senior-living-agency register). Mixed assets get split
+   into per-persona sections; leakage is an auto-fail downstream.
+4. **Evidence candidates** — claims/conventions worth graphing; feed
+   `knowledge-graph-extraction` after intake.
+5. **Bid scope** — which agencies are bidding, how many mocks each, the
+   conversion goal.
+
+## Rules
+
+- **No design work in intake.** Intake names the problem; `ad-agency`
+  Stage 1+ does the capture→rubric→bid work.
+- **Every claim needs a source.** A dropped asset IS the source — record
+  where it came from and when.
+- **Ambiguity stops the line.** If persona, surface, or scope is unclear,
+  ask before drafting — do not guess and bill the owner for rework.
+- **Files live in the repo** under `.ai/research/` — never only in chat.

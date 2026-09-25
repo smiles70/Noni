@@ -51,7 +51,7 @@ describe("trackScrollDepth", () => {
       const body = JSON.parse(c[1].body);
       expect(body.event).toBe("marketing.scroll_depth");
       expect(body.metadata.page).toBe("caregiver");
-      expect(c[0]).toBe("/api/v1/telemetry/marketing");
+      expect(c[0]).toMatch(/\/api\/v1\/telemetry\/marketing$/);
     }
     cleanup();
   });

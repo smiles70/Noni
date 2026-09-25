@@ -76,6 +76,19 @@ describe("PartnershipInquiryPage — partner contact form", () => {
     expect(host.textContent ?? "").not.toContain("!");
   });
 
+  it("uses the bid-17 marketing grammar (charcoal hero + gold CTA)", async () => {
+    const host = await render();
+    const text = host.textContent ?? "";
+    expect(text).toContain("Partnerships");
+    const h1 = host.querySelector("h1") as HTMLElement;
+    expect(h1?.style.color).toBeTruthy();
+    const btn = host.querySelector(
+      'button[type="submit"]',
+    ) as HTMLButtonElement;
+    // gold CTA #C9A24D — jsdom may normalize to rgb()
+    expect(btn.style.backgroundColor).toMatch(/#c9a24d|201, *162, *77/i);
+  });
+
   it("posts the inquiry to the backend and shows thank-you", async () => {
     const host = await render();
     const calls: string[] = [];

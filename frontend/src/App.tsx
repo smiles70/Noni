@@ -58,6 +58,7 @@ const ForCommunitiesPage = lazy(
 );
 // Caregiver marketing surface (ADR-0030) — public, static, no auth.
 const CaregiverPage = lazy(() => import("./components/CaregiverPage"));
+const SourcesPage = lazy(() => import("./components/SourcesPage"));
 const ContactPage = lazy(() => import("./components/ContactPage"));
 // EPIC-002 Phase 2-3: Add WelcomePage, AccountSetupPage, and GettingStartedPage
 const WelcomePage = lazy(() => import("./components/WelcomePage"));
@@ -211,7 +212,7 @@ const App: React.FC = () => {
             Skip to main content
           </a>
           {transientBanner}
-          <div id="main-content">
+          <div id="main-content" tabIndex={-1}>
             <Routes>
               <Route
                 path="/"
@@ -243,6 +244,14 @@ const App: React.FC = () => {
                 element={
                   <Suspense fallback={loadFallback}>
                     <CaregiverPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sources"
+                element={
+                  <Suspense fallback={loadFallback}>
+                    <SourcesPage />
                   </Suspense>
                 }
               />
@@ -383,7 +392,6 @@ const App: React.FC = () => {
                         onContinueGated={goPaywall}
                         onAccount={goAccount}
                         onOpenMenu={goMenu}
-                        onHelp={goHelp}
                       />
                     </Suspense>
                   </RequireAuth>
@@ -400,7 +408,6 @@ const App: React.FC = () => {
                         onAccount={goAccount}
                         onOpenMenu={goMenu}
                         onSequenceComplete={goLanding}
-                        onHelp={goHelp}
                       />
                     </Suspense>
                   </RequireAuth>

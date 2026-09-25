@@ -262,6 +262,39 @@ _CURRICULUM_UNIT_ENVELOPE = UIStateEnvelope(
         TransitionPermission(to_state_id="account.signin"),
         TransitionPermission(to_state_id="account.paywall"),
         TransitionPermission(to_state_id="account.settings"),
+        TransitionPermission(to_state_id="curriculum.help"),
+    ],
+)
+
+
+# Learner help card (learner-help-channel intake). Reached only from a
+# curriculum.unit render — the NavBar Help action swaps the lesson body
+# for a single Card offering one action: request a callback. FIELD is
+# authorized here (and nowhere else on learner surfaces) because the
+# callback needs a phone number, which checkout never collects. Density:
+# Call me + the phone field + NavBar ≤ 3 primary actions.
+_CURRICULUM_HELP_ENVELOPE = UIStateEnvelope(
+    state_id="curriculum.help",
+    authorized_components=[
+        AuthorizedComponent.HEADING,
+        AuthorizedComponent.BODY,
+        AuthorizedComponent.BUTTON,
+        AuthorizedComponent.CARD,
+        AuthorizedComponent.FIELD,
+        AuthorizedComponent.INDICATOR,
+        AuthorizedComponent.BLOCKED_NOTICE,
+    ],
+    interaction_limits=InteractionLimits(
+        max_primary_actions=3,
+        max_irreversible_actions=0,
+        max_highlighted_recommendations=1,
+        max_visible_text_levels=3,
+    ),
+    transition_permissions=[
+        TransitionPermission(
+            to_state_id="curriculum.unit",
+            requires_confirmation=False,
+        ),
     ],
 )
 
@@ -518,6 +551,7 @@ ENVELOPES: dict[str, UIStateEnvelope] = {
     _LANDING_PAGE_ENVELOPE.state_id: _LANDING_PAGE_ENVELOPE,
     _LANDING_FIRST_WIN_ENVELOPE.state_id: _LANDING_FIRST_WIN_ENVELOPE,
     _CURRICULUM_UNIT_ENVELOPE.state_id: _CURRICULUM_UNIT_ENVELOPE,
+    _CURRICULUM_HELP_ENVELOPE.state_id: _CURRICULUM_HELP_ENVELOPE,
     _CURRICULUM_MENU_ENVELOPE.state_id: _CURRICULUM_MENU_ENVELOPE,
     _ACCOUNT_WELCOME_ENVELOPE.state_id: _ACCOUNT_WELCOME_ENVELOPE,
     _ACCOUNT_SETUP_ENVELOPE.state_id: _ACCOUNT_SETUP_ENVELOPE,

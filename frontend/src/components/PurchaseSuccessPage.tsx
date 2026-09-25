@@ -9,18 +9,24 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { mockCheckoutComplete } from "../api/billing";
 import ChatWidget from "./ChatWidget";
+import { MARKETING, SPACING } from "../design/tokens";
 import {
   ALERT_TEXT,
   BODY,
   CARD,
   H1,
   H2,
-  PAGE,
   PRIMARY_BTN,
   SECONDARY_BTN,
   STACK,
   SUCCESS_TEXT,
 } from "./AccountStyles";
+
+const PAGE_BG: React.CSSProperties = {
+  minHeight: "100vh",
+  backgroundColor: MARKETING.paper,
+  paddingTop: SPACING.xl,
+};
 
 export default function PurchaseSuccessPage() {
   const [searchParams] = useSearchParams();
@@ -64,7 +70,7 @@ export default function PurchaseSuccessPage() {
   }, [purchase, provider, isGift]);
 
   return (
-    <main style={PAGE} aria-busy={loading}>
+    <main style={PAGE_BG} aria-busy={loading}>
       <h1 style={H1}>
         {isGift ? "Gift purchase complete" : "Purchase complete"}
       </h1>
