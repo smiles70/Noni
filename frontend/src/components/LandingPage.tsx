@@ -83,7 +83,10 @@ const GRADIENT_WASH: CSSProperties = {
 
 const GRADIENT_WASH_MOBILE: CSSProperties = {
   ...GRADIENT_WASH,
-  background: "rgba(250, 250, 248, 0.95)",
+  // Same left-to-right fade as desktop, tuned narrower: solid behind the
+  // copy block, photo visible on the right ~third of a phone screen.
+  background:
+    "linear-gradient(to right, rgba(250, 250, 248, 0.94) 0%, rgba(250, 250, 248, 0.82) 55%, rgba(250, 250, 248, 0.35) 80%, rgba(250, 250, 248, 0) 100%)",
 };
 
 // Hero copy sits directly on the wash — left-aligned, vertically centred.
@@ -256,7 +259,12 @@ export default function LandingPage({ onBegin, signedIn }: Props) {
   const [envelope, setEnvelope] = useState<UIStateEnvelope | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
-  const { isMobile } = useViewport();
+  const { isMobile: isNarrowViewport, height } = useViewport();
+  // Landscape phones (e.g. 844x390) are wide enough to miss the width
+  // breakpoint but too short for the desktop hero — the centred copy
+  // collides with the logo. Any viewport under 500px tall gets the
+  // compact mobile layout.
+  const isMobile = isNarrowViewport || height < 500;
 
   useEffect(() => {
     Promise.all([loadEnvelope("landing.page"), loadLandingPage()])
@@ -311,7 +319,11 @@ export default function LandingPage({ onBegin, signedIn }: Props) {
     ? { ...H1, fontSize: TYPE_SCALE.mobile.h1 }
     : H1;
   const heroContentStyle: CSSProperties = isMobile
-    ? HERO_CONTENT_MOBILE
+    ? height < 500
+      ? // Landscape phones: the centred block crowds the logo, so it drops
+        // below the brand zone instead of centreing on it.
+        { ...HERO_CONTENT_MOBILE, top: "56%" }
+      : HERO_CONTENT_MOBILE
     : HERO_CONTENT;
 
   return (
